@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "370532951734",
+    "project_id": "carcat-5504b",
+    "storage_bucket": "carcat-5504b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370532951734:android:5811d391ea5bab1a642817",
+        "android_client_info": {
+          "package_name": "com.carcat.carcat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsSaGvlDDiFbOTdO8dSng_16-KA5yIbHk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,11 @@
 
 class AppStrings {
   AppStrings._();
+  static const String countryAzerbaijan = "countryAzerbaijan";
+  static const String countryTurkey = "countryTurkey";
+  static const String countryRussia = "countryRussia";
+  static const String countryGeorgia = "countryGeorgia";
+  static const String countryKazakhstan = "countryKazakhstan";
 
   static const String welcomeText = "Xoş gəlmisiniz";
   static const String additionalSettings = 'additionalSettings';
@@ -10,12 +15,14 @@ class AppStrings {
   static const String superAdmin = 'superAdmin';
   static const String admin = 'admin';
   static const String user = 'user';
+  static const String homePage = 'homePage';
 
   // Login Page
   static const String loginIntoYourAccount = 'loginIntoYourAccount';
   static const String phoneLabel = 'phoneLabel';
   static const String passwordLabel = 'passwordLabel';
   static const String forgotPassword = 'forgotPassword';
+  static const String forgotPasswordPageHeader = 'forgotPasswordHeader';
   static const String rememberMe = 'rememberMe';
   static const String dontHaveAccount = 'dontHaveAccount';
 
@@ -122,4 +129,47 @@ class AppStrings {
   static const String otpResent = 'otpResent';
   static const String invalidPhoneNumber = 'invalidPhoneNumber';
   static const String errorOccurred = 'errorOccurred';
+
+  // Setup Password Page
+  static const String createPassword = 'createPassword';
+  static const String enterNewPassword = 'enterNewPassword';
+  static const String confirmNewPassword = 'confirmNewPassword';
+  static const String registerButton = 'registerButton';
+
+  // Password Requirements
+  static const String capitalLetterRequired = 'capitalLetterRequired';
+  static const String lowercaseLetterRequired = 'lowercaseLetterRequired';
+  static const String numberRequired = 'numberRequired';
+  static const String specialCharRequired = 'specialCharRequired';
+  static const String passwordsMustMatch = 'passwordsMustMatch';
+
+  // Existing strings (keep these)
+  static const String setupPasswordText = 'setupPasswordText';
+  static const String setupPasswordHintText = 'setupPasswordHintText';
+  static const String confirmPassword = 'confirmPassword';
+  static const String confirmPasswordHint = 'confirmPasswordHint';
+  static const String continueButtonText = 'continueButtonText';
+  static const String passCannotEmptyText = 'passCannotEmptyText';
+  static const String passwordRulesText = 'passwordRulesText';
+  static const String passwordsDoNotMatch = 'passwordsDoNotMatch';
+  static const String autoLoginFailed = 'autoLoginFailed';
+  static const String passwordResetSuccess = 'passwordResetSuccess';
+  static const String enterNineDigitsText = 'enterNineDigitsText';
+
+  static const String unknownInternalError = 'unknownInternalError';
+  static const String badRequest = 'badRequest';
+  static const String invalidCredentials = 'invalidCredentials';
+  static const String forbidden = 'forbidden';
+  static const String userNotFound = 'userNotFound';
+  static const String invalidData = 'invalidData';
+  static const String serverError = 'serverError';
+  static const String serviceUnavailable = 'serviceUnavailable';
+  static const String serviceDown = 'serviceDown';
+  static const String timeoutError = 'timeoutError';
+  static const String requestCancelled = 'requestCancelled';
+  static const String noInternet = 'noInternet';
+  static const String badCertificate = 'badCertificate';
+  static const String networkError = 'networkError';
+  static const String loginFailed = 'loginFailed';
+
 }

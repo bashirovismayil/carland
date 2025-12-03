@@ -10,7 +10,7 @@ import '../../../core/constants/texts/app_strings.dart';
 import '../../../cubit/auth/otp/otp_send_cubit.dart';
 import '../../../cubit/auth/otp/otp_verify_cubit.dart';
 import '../../../utils/helper/go.dart';
-import '../password/setup_pass.dart';
+import '../pass/setup_pass_content.dart';
 
 class OtpPage extends HookWidget {
   const OtpPage({
@@ -18,11 +18,17 @@ class OtpPage extends HookWidget {
     required this.phoneNumber,
     required this.verifyType,
     this.countryCode,
+    this.onSuccess,
+    this.onError,
+    this.isTestMode = false,
   });
 
   final String phoneNumber;
   final OtpVerifyType verifyType;
   final String? countryCode;
+  final Function(BuildContext context, String otpCode)? onSuccess;
+  final Function(BuildContext context, String error)? onError;
+  final bool isTestMode;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +58,6 @@ class OtpPage extends HookWidget {
       }
       return () => timer?.cancel();
     }, [isTimerActive.value]);
-
 
     String formatTimer(int seconds) {
       final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
@@ -158,7 +163,12 @@ class OtpPage extends HookWidget {
 
       isLoading.value = true;
       otpVerifyCubit.otpCode = pinController.text;
-      otpVerifyCubit.verifyOtp();
+
+      if (isTestMode) {
+        _handleTestModeContinue(context, otpVerifyCubit, onSuccess);
+      } else {
+        otpVerifyCubit.verifyOtp();
+      }
     }
 
     void handleBack() {
@@ -172,29 +182,7 @@ class OtpPage extends HookWidget {
       isLoading.value = false;
       hasError.value = false;
 
-      switch (verifyType) {
-        case OtpVerifyType.registration:
-          Go.replace(
-            context,
-            SetupPasswordPage(),
-          );
-          break;
-        case OtpVerifyType.passwordReset:
-          Go.replace(
-            context,
-            SetupPasswordPage(),
-          );
-          break;
-        case OtpVerifyType.phoneVerification:
-          Navigator.pop(context, true);
-          break;
-        case OtpVerifyType.test:
-          Go.replace(
-            context,
-            SetupPasswordPage(),
-          );
-          break;
-      }
+      _handleSuccess(context, otpVerifyCubit.otpCode, verifyType, onSuccess);
     }
 
     void handleVerifyError(String error) {
@@ -203,7 +191,12 @@ class OtpPage extends HookWidget {
       isLoading.value = false;
       hasError.value = true;
       pinController.clear();
-      showErrorSnackBar(context.currentLanguage(AppStrings.wrongOtpCode));
+
+      if (onError != null) {
+        onError!(context, error);
+      } else {
+        showErrorSnackBar(context.currentLanguage(AppStrings.wrongOtpCode));
+      }
     }
 
     final defaultPinTheme = PinTheme(
@@ -519,6 +512,66 @@ class OtpPage extends HookWidget {
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
+        ),
+      ),
+    );
+  }
+
+  // Navigation logic functions
+  static void _handleTestModeContinue(
+      BuildContext context,
+      OtpVerifyCubit otpCubit,
+      Function(BuildContext context, String otpCode)? onSuccess,
+      ) {
+    if (onSuccess != null) {
+      onSuccess(context, otpCubit.otpCode);
+    } else {
+      _navigateToSetupPassword(context);
+    }
+  }
+
+  static void _handleSuccess(
+      BuildContext context,
+      String otpCode,
+      OtpVerifyType verifyType,
+      Function(BuildContext context, String otpCode)? onSuccess,
+      ) {
+    if (onSuccess != null) {
+      onSuccess(context, otpCode);
+    } else {
+      _handleDefaultSuccess(context, verifyType);
+    }
+  }
+
+  static void _handleDefaultSuccess(BuildContext context, OtpVerifyType verifyType) {
+    switch (verifyType) {
+      case OtpVerifyType.registration:
+        _navigateToSetupPassword(context);
+        break;
+      case OtpVerifyType.passwordReset:
+        _navigateToSetupPassword(context);
+        break;
+      case OtpVerifyType.phoneVerification:
+        Navigator.pop(context, true);
+        break;
+      case OtpVerifyType.test:
+        _navigateToSetupPassword(context);
+        break;
+    }
+  }
+
+  static void _navigateToSetupPassword(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final passwordController = TextEditingController();
+    final confirmController = TextEditingController();
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SetupPassContent(
+          formKey: formKey,
+          passwordController: passwordController,
+          confirmController: confirmController,
         ),
       ),
     );

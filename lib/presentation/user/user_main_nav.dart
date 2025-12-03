@@ -1,7 +1,10 @@
+import 'package:carland/core/localization/app_translation.dart';
+import 'package:carland/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../cubit/navigation/user/patient_nav_bar_cubit.dart';
-import '../../cubit/navigation/user/patient_nav_bar_state.dart';
+import '../../core/constants/texts/app_strings.dart';
+import '../../cubit/navigation/user/user_nav_bar_cubit.dart';
+import '../../cubit/navigation/user/user_nav_bar_state.dart';
 
 class UserMainNavigationPage extends StatelessWidget {
   const UserMainNavigationPage({super.key});
@@ -19,34 +22,23 @@ class UserMainNavigationView extends StatelessWidget {
   UserMainNavigationView({super.key});
 
   final List<Widget> _pages = [
-    // const UserHomeNavigation(),
-    // AppointmentListPage(),
-    // PatientAnalyzeListPage(),
-    // const UserProfilePage(),
+    const HomePage(),
+    const HomePage(),
+
   ];
 
   List<BottomNavigationBarItem> _getNavItems(BuildContext context) {
     return [
-    //   BottomNavigationBarItem(
-    //     icon: const Icon(Icons.home_outlined),
-    //     activeIcon: const Icon(Icons.home),
-    //     label: context.currentLanguage(AppStrings.homePage),
-    //   ),
-    //   BottomNavigationBarItem(
-    //     icon: const Icon(Icons.note_add_outlined),
-    //     activeIcon: const Icon(Icons.note_add),
-    //     label: context.currentLanguage(AppStrings.appointmentList),
-    //   ),
-    //   BottomNavigationBarItem(
-    //     icon: const Icon(Icons.analytics_outlined),
-    //     activeIcon: const Icon(Icons.analytics),
-    //     label: context.currentLanguage(AppStrings.analyzes),
-    //   ),
-    //   BottomNavigationBarItem(
-    //     icon: const Icon(Icons.person_add_outlined),
-    //     activeIcon: const Icon(Icons.person_add),
-    //     label: context.currentLanguage(AppStrings.profile),
-    //   ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.home_outlined),
+        activeIcon: const Icon(Icons.home),
+        label: context.currentLanguage(AppStrings.homePage),
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.note_add_outlined),
+        activeIcon: const Icon(Icons.note_add),
+        label: context.currentLanguage(AppStrings.homePage),
+      ),
      ];
   }
 

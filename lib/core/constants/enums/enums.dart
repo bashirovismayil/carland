@@ -1,4 +1,6 @@
 import 'dart:ui';
+import '../../localization/app_translation.dart';
+import '../texts/app_strings.dart';
 
 enum LoginStatus { initial, submitting, success, error, guestMode }
 
@@ -124,19 +126,21 @@ enum AppLanguage {
 }
 
 enum CountryCode {
-  azerbaijan('+994', '🇦🇿', 'Azərbaycan'),
-  turkey('+90', '🇹🇷', 'Türkiyə'),
-  russia('+7', '🇷🇺', 'Rusiya'),
-  georgia('+995', '🇬🇪', 'Gürcüstan'),
-  kazakhstan('+7', '🇰🇿', 'Qazaxıstan');
+  azerbaijan('+994', '🇦🇿', AppStrings.countryAzerbaijan),
+  turkey('+90', '🇹🇷', AppStrings.countryTurkey),
+  russia('+7', '🇷🇺', AppStrings.countryRussia),
+  georgia('+995', '🇬🇪', AppStrings.countryGeorgia),
+  kazakhstan('+7', '🇰🇿', AppStrings.countryKazakhstan);
 
-  const CountryCode(this.code, this.flag, this.displayName);
+  const CountryCode(this.code, this.flag, this.displayNameKey);
 
   final String code;
   final String flag;
-  final String displayName;
+  final String displayNameKey;
 
   String get dialCode => code.replaceAll('+', '');
+
+  String get displayName => AppTranslation.translate(displayNameKey);
 
   static CountryCode get defaultCode => CountryCode.azerbaijan;
 
@@ -151,3 +155,4 @@ enum CountryCode {
     }
   }
 }
+

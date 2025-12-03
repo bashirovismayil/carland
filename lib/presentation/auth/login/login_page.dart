@@ -1,5 +1,7 @@
 import 'package:carland/core/extensions/auth_extensions/string_validators.dart';
 import 'package:carland/core/localization/app_translation.dart';
+import 'package:carland/presentation/auth/register/register_page.dart';
+import 'package:carland/utils/helper/go.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +11,7 @@ import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/extensions/auth_extensions/phone_number_formatter.dart';
 import '../../../cubit/auth/login/login_cubit.dart';
 import '../../../cubit/auth/login/login_state.dart';
+import '../forgot/forgot_password.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -62,11 +65,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _navigateToForgotPassword() {
-    // Navigator.pushNamed(context, '/forgot-password');
+    Go.to(context, ForgotPassword());
   }
 
   void _navigateToSignUp() {
-    // Navigator.pushNamed(context, '/register');
+    Go.to(context, RegisterPage());
   }
 
   @override

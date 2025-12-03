@@ -3,6 +3,12 @@ import '../../core/constants/texts/app_strings.dart';
 class Translations {
   static final Map<String, Map<String, String>> translations = {
     'az': {
+      AppStrings.countryAzerbaijan: 'Azərbaycan',
+      AppStrings.countryTurkey: 'Türkiyə',
+      AppStrings.countryRussia: 'Rusiya',
+      AppStrings.countryGeorgia: 'Gürcüstan',
+      AppStrings.countryKazakhstan: 'Qazaxıstan',
+
       AppStrings.skipButtonText: 'Keç',
       AppStrings.letsGetStartedText: 'Başlayaq!',
 
@@ -83,11 +89,13 @@ class Translations {
 
       // OTP Confirmation Dialog
       AppStrings.sendOtpTo: 'OTP Göndər',
-      AppStrings.sendOtpDescription: '4 rəqəmli OTP kodu telefon\nnömrəsinə göndərin',
+      AppStrings.sendOtpDescription:
+          '4 rəqəmli OTP kodu telefon\nnömrəsinə göndərin',
 
       // OTP Page
       AppStrings.otpVerification: 'OTP Doğrulama',
-      AppStrings.otpSubtitle: 'Təqdim etdiyiniz telefon nömrəsinə doğrulama kodu göndərildi',
+      AppStrings.otpSubtitle:
+          'Təqdim etdiyiniz telefon nömrəsinə doğrulama kodu göndərildi',
       AppStrings.secLeft: 'san qaldı',
       AppStrings.didntReceiveCode: 'Kod almadınız?',
       AppStrings.resendCode: 'Yenidən göndər',
@@ -100,8 +108,58 @@ class Translations {
       AppStrings.otpResent: 'Kod yenidən göndərildi',
       AppStrings.invalidPhoneNumber: 'Etibarsız telefon nömrəsi',
       AppStrings.errorOccurred: 'Xəta baş verdi',
+
+      // Setup Password Page
+      AppStrings.createPassword: 'Şifrə Yarat',
+      AppStrings.enterNewPassword: 'Yeni Şifrə Daxil Edin',
+      AppStrings.confirmNewPassword: 'Yeni Şifrəni Təsdiq Edin',
+      AppStrings.registerButton: 'Qeydiyyat',
+
+      AppStrings.setupPasswordText: 'Şifrə qurulması',
+      AppStrings.setupPasswordHintText: 'Şifrənizi daxil edin',
+      AppStrings.confirmPassword: 'Şifrəni təsdiqlə',
+      AppStrings.confirmPasswordHint: 'Şifrəni yenidən daxil edin',
+      AppStrings.continueButtonText: 'Davam et',
+      AppStrings.passCannotEmptyText: 'Şifrə boş ola bilməz',
+      AppStrings.passwordRulesText: 'Şifrə tələbləri',
+      AppStrings.passwordsDoNotMatch: 'Şifrələr uyğun deyil',
+
+      // Password Requirements
+      AppStrings.capitalLetterRequired: 'Böyük hərf əlavə edilməlidir',
+      AppStrings.lowercaseLetterRequired: 'Kiçik hərf əlavə edilməlidir',
+      AppStrings.numberRequired: 'Rəqəm əlavə edilməlidir',
+      AppStrings.specialCharRequired: 'Xüsusi simvol əlavə edilməlidir',
+      AppStrings.passwordsMustMatch: 'Şifrələr eyni olmalıdır',
+      AppStrings.forgotPasswordPageHeader: 'Şifrəni unutmusunuz',
+      AppStrings.passwordResetSuccess: 'Şifrə uğurla yeniləndi',
+      AppStrings.autoLoginFailed:
+          'Avtomatik giriş uğursuz oldu. Zəhmət olmasa giriş səhifəsi ilə daxil olun',
+
+      // LoginService Messages
+      AppStrings.unknownInternalError: 'Bilinməyən daxili xəta',
+      AppStrings.badRequest: 'Səhv sorğu',
+      AppStrings.invalidCredentials: 'İstifadəçi adı və ya şifrə yanlışdır',
+      AppStrings.forbidden: 'Girişə icazə verilməyib',
+      AppStrings.userNotFound: 'İstifadəçi tapılmadı',
+      AppStrings.invalidData: 'Məlumatlar düzgün deyil',
+      AppStrings.serverError: 'Server xətası: Zəhmət olmasa yenidən cəhd edin',
+      AppStrings.serviceUnavailable: 'Servis müvəqqəti əlçatan deyil',
+      AppStrings.serviceDown: 'Xidmət əlçatan deyil: Servislər hazırda işləmir',
+      AppStrings.timeoutError: 'Sorğu vaxtı bitdi',
+      AppStrings.requestCancelled: 'Sorğu ləğv edildi',
+      AppStrings.noInternet: 'İnternet yoxdur, şəbəkənizi yoxlayın və yenidən cəhd edin',
+      AppStrings.badCertificate: 'Təhlükəsizlik sertifikatı xətası',
+      AppStrings.networkError: 'Şəbəkə xətası baş verdi',
+      AppStrings.loginFailed: 'Giriş uğursuz oldu',
+
     },
     'en': {
+      AppStrings.countryAzerbaijan: 'Azerbaijan',
+      AppStrings.countryTurkey: 'Turkey',
+      AppStrings.countryRussia: 'Russia',
+      AppStrings.countryGeorgia: 'Georgia',
+      AppStrings.countryKazakhstan: 'Kazakhstan',
+
       AppStrings.skipButtonText: 'Skip',
       AppStrings.letsGetStartedText: "Let's Get Started!",
 
@@ -136,6 +194,7 @@ class Translations {
       AppStrings.phoneLabel: 'Phone',
       AppStrings.passwordLabel: 'Password',
       AppStrings.forgotPassword: 'Forgot Password?',
+      AppStrings.forgotPasswordPageHeader: 'Forgot Password',
       AppStrings.rememberMe: 'Remember me',
       AppStrings.dontHaveAccount: "Don't have an account?",
 
@@ -181,11 +240,13 @@ class Translations {
 
       // OTP Confirmation Dialog
       AppStrings.sendOtpTo: 'Send OTP To',
-      AppStrings.sendOtpDescription: 'Send an 4 - digits OTP code\nto phone number',
+      AppStrings.sendOtpDescription:
+          'Send an 4 - digits OTP code\nto phone number',
 
       // OTP Page
       AppStrings.otpVerification: 'OTP Verification',
-      AppStrings.otpSubtitle: 'An authorization code has been sent to your provided Phone Number',
+      AppStrings.otpSubtitle:
+          'An authorization code has been sent to your provided Phone Number',
       AppStrings.secLeft: 'sec left',
       AppStrings.didntReceiveCode: "I don't receive code",
       AppStrings.resendCode: 'Resend Code',
@@ -198,8 +259,58 @@ class Translations {
       AppStrings.otpResent: 'Code resent successfully',
       AppStrings.invalidPhoneNumber: 'Invalid phone number',
       AppStrings.errorOccurred: 'An error occurred',
+
+      // Setup Password Page
+      AppStrings.createPassword: 'Create Password',
+      AppStrings.enterNewPassword: 'Enter New Password',
+      AppStrings.confirmNewPassword: 'Confirm New Password',
+      AppStrings.registerButton: 'Register',
+
+      AppStrings.setupPasswordText: 'Set Up Password',
+      AppStrings.setupPasswordHintText: 'Enter your password',
+      AppStrings.confirmPassword: 'Confirm Password',
+      AppStrings.confirmPasswordHint: 'Re-enter your password',
+      AppStrings.continueButtonText: 'Continue',
+      AppStrings.passCannotEmptyText: 'Password cannot be empty',
+      AppStrings.passwordRulesText: 'Password Rules',
+      AppStrings.passwordsDoNotMatch: 'Passwords do not match',
+
+      // Password Requirements
+      AppStrings.capitalLetterRequired: 'The capital letter is not added yet',
+      AppStrings.lowercaseLetterRequired:
+          'The lowercase letter is not added yet',
+      AppStrings.numberRequired: 'The number is not added yet',
+      AppStrings.specialCharRequired: 'The special character is not added yet',
+      AppStrings.passwordsMustMatch: 'Both Password should be match (same)',
+      AppStrings.passwordResetSuccess: 'Password reset successful',
+      AppStrings.autoLoginFailed:
+          'Automatic login failed. Please login manually',
+
+      // LoginService Messages
+      AppStrings.unknownInternalError: 'Unknown internal error',
+      AppStrings.badRequest: 'Bad request',
+      AppStrings.invalidCredentials: 'Invalid username or password',
+      AppStrings.forbidden: 'Access forbidden',
+      AppStrings.userNotFound: 'User not found',
+      AppStrings.invalidData: 'Invalid data',
+      AppStrings.serverError: 'Server error: Please try again',
+      AppStrings.serviceUnavailable: 'Service temporarily unavailable',
+      AppStrings.serviceDown: 'Service unavailable: Services are currently down',
+      AppStrings.timeoutError: 'Request timed out',
+      AppStrings.requestCancelled: 'Request cancelled',
+      AppStrings.noInternet: 'No internet, please check your connection and try again',
+      AppStrings.badCertificate: 'Security certificate error',
+      AppStrings.networkError: 'Network error occurred',
+      AppStrings.loginFailed: 'Login failed',
+
     },
     'ru': {
+      AppStrings.countryAzerbaijan: 'Азербайджан',
+      AppStrings.countryTurkey: 'Турция',
+      AppStrings.countryRussia: 'Россия',
+      AppStrings.countryGeorgia: 'Грузия',
+      AppStrings.countryKazakhstan: 'Казахстан',
+
       AppStrings.skipButtonText: 'Пропустить',
       AppStrings.letsGetStartedText: 'Давайте начнем!',
 
@@ -280,11 +391,13 @@ class Translations {
 
       // OTP Confirmation Dialog
       AppStrings.sendOtpTo: 'Отправить OTP',
-      AppStrings.sendOtpDescription: 'Отправить 4-значный OTP код\nна номер телефона',
+      AppStrings.sendOtpDescription:
+          'Отправить 4-значный OTP код\nна номер телефона',
 
       // OTP Page
       AppStrings.otpVerification: 'OTP Верификация',
-      AppStrings.otpSubtitle: 'Код подтверждения был отправлен на указанный номер телефона',
+      AppStrings.otpSubtitle:
+          'Код подтверждения был отправлен на указанный номер телефона',
       AppStrings.secLeft: 'сек осталось',
       AppStrings.didntReceiveCode: 'Не получили код?',
       AppStrings.resendCode: 'Отправить повторно',
@@ -297,6 +410,50 @@ class Translations {
       AppStrings.otpResent: 'Код отправлен повторно',
       AppStrings.invalidPhoneNumber: 'Неверный номер телефона',
       AppStrings.errorOccurred: 'Произошла ошибка',
+
+      // Setup Password Page
+      AppStrings.createPassword: 'Создать Пароль',
+      AppStrings.enterNewPassword: 'Введите Новый Пароль',
+      AppStrings.confirmNewPassword: 'Подтвердите Новый Пароль',
+      AppStrings.registerButton: 'Регистрация',
+
+      AppStrings.setupPasswordText: 'Настройка пароля',
+      AppStrings.setupPasswordHintText: 'Введите пароль',
+      AppStrings.confirmPassword: 'Подтвердите пароль',
+      AppStrings.confirmPasswordHint: 'Введите пароль ещё раз',
+      AppStrings.continueButtonText: 'Продолжить',
+      AppStrings.passCannotEmptyText: 'Пароль не может быть пустым',
+      AppStrings.passwordRulesText: 'Правила пароля',
+      AppStrings.passwordsDoNotMatch: 'Пароли не совпадают',
+
+      // Password Requirements
+      AppStrings.capitalLetterRequired: 'Заглавная буква еще не добавлена',
+      AppStrings.lowercaseLetterRequired: 'Строчная буква еще не добавлена',
+      AppStrings.numberRequired: 'Цифра еще не добавлена',
+      AppStrings.specialCharRequired: 'Спецсимвол еще не добавлен',
+      AppStrings.passwordsMustMatch: 'Пароли должны совпадать',
+      AppStrings.forgotPasswordPageHeader: 'Забыли пароль',
+      AppStrings.passwordResetSuccess: 'Пароль успешно сброшен',
+      AppStrings.autoLoginFailed:
+          'Автоматический вход не удался. Пожалуйста, войдите вручную',
+
+      // LoginService Messages
+      AppStrings.unknownInternalError: 'Неизвестная внутренняя ошибка',
+      AppStrings.badRequest: 'Неверный запрос',
+      AppStrings.invalidCredentials: 'Неверное имя пользователя или пароль',
+      AppStrings.forbidden: 'Доступ запрещён',
+      AppStrings.userNotFound: 'Пользователь не найден',
+      AppStrings.invalidData: 'Неверные данные',
+      AppStrings.serverError: 'Ошибка сервера: Пожалуйста, попробуйте снова',
+      AppStrings.serviceUnavailable: 'Сервис временно недоступен',
+      AppStrings.serviceDown: 'Сервис недоступен: Сервисы сейчас не работают',
+      AppStrings.timeoutError: 'Время запроса истекло',
+      AppStrings.requestCancelled: 'Запрос отменён',
+      AppStrings.noInternet: 'Нет интернета, проверьте соединение и попробуйте снова',
+      AppStrings.badCertificate: 'Ошибка сертификата безопасности',
+      AppStrings.networkError: 'Произошла ошибка сети',
+      AppStrings.loginFailed: 'Вход не выполнен',
+
     },
   };
 

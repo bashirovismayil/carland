@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'patient_nav_bar_state.dart';
+import 'user_nav_bar_state.dart';
 
 class UserNavBarCubit extends Cubit<UserNavBarState> {
   UserNavBarCubit() : super(UserNavBarInitial());

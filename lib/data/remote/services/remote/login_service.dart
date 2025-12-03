@@ -1,12 +1,16 @@
 import 'package:dio/dio.dart';
+import '../../../../core/constants/texts/app_strings.dart';
+import '../../../../core/localization/app_translation.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../../../core/constants/enums/enums.dart';
+import '../../../../utils/di/locator.dart';
 import '../../../../utils/helper/app_exceptions.dart';
 import '../../models/remote/login_response.dart';
-
+import '../local/language_local_service.dart';
 
 class LoginService {
   final Dio _dio;
+  final _languageService = locator<LanguageLocalService>();
 
   LoginService(this._dio);
 
@@ -15,7 +19,7 @@ class LoginService {
     required String password,
   }) async {
     final endpoint = ApiConstants.login;
-
+    final currentLanguage = _languageService.currentLanguage;
     try {
       final response = await _dio.post(
         endpoint,
@@ -26,13 +30,15 @@ class LoginService {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Accept-Language': 'az',
+            'Accept-Language': currentLanguage,
           },
         ),
       );
 
       if (response.statusCode == null) {
-        throw AppException.server('Bilinməyən daxili xəta');
+        throw AppException.server(
+          AppTranslation.translate(AppStrings.unknownInternalError),
+        );
       }
 
       switch (response.statusCode) {
@@ -42,63 +48,70 @@ class LoginService {
 
         case 400:
           throw AppException.validation(
-            _extractErrorMessage(response.data) ?? 'Səhv sorğu',
+            _extractErrorMessage(response.data) ??
+                AppTranslation.translate(AppStrings.badRequest),
             statusCode: 400,
           );
 
         case 401:
           throw AppException(
             _extractErrorMessage(response.data) ??
-                'İstifadəçi adı və ya şifrə yanlışdır',
+                AppTranslation.translate(AppStrings.invalidCredentials),
             type: ErrorType.unauthorized,
             statusCode: 401,
           );
 
         case 403:
           throw AppException(
-            _extractErrorMessage(response.data) ?? 'Girişə icazə verilməyib',
+            _extractErrorMessage(response.data) ??
+                AppTranslation.translate(AppStrings.forbidden),
             type: ErrorType.unauthorized,
             statusCode: 403,
           );
 
         case 404:
           throw AppException.notFound(
-            _extractErrorMessage(response.data) ?? 'İstifadəçi tapılmadı',
+            _extractErrorMessage(response.data) ??
+                AppTranslation.translate(AppStrings.userNotFound),
           );
 
         case 422:
           throw AppException.validation(
-            _extractErrorMessage(response.data) ?? 'Məlumatlar düzgün deyil',
+            _extractErrorMessage(response.data) ??
+                AppTranslation.translate(AppStrings.invalidData),
             statusCode: 422,
           );
 
         case 500:
           throw AppException.server(
             _extractErrorMessage(response.data) ??
-                'Server xətası: Zəhmət olmasa yenidən cəhd edin',
+                AppTranslation.translate(AppStrings.serverError),
             statusCode: 500,
           );
 
         case 502:
           throw AppException.server(
             _extractErrorMessage(response.data) ??
-                'Servis müvəqqəti əlçatan deyil',
+                AppTranslation.translate(AppStrings.serviceUnavailable),
             statusCode: 502,
           );
 
         case 503:
           throw AppException.server(
             _extractErrorMessage(response.data) ??
-                'Xidmət əlçatan deyil: Servislər hazırda işləmir',
+                AppTranslation.translate(AppStrings.serviceDown),
             statusCode: 503,
           );
 
         case 504:
-          throw AppException.timeout(statusCode: 504);
+          throw AppException.timeout(
+            statusCode: 504,
+          );
 
         default:
           throw AppException.server(
-            _extractErrorMessage(response.data) ?? 'Giriş uğursuz oldu',
+            _extractErrorMessage(response.data) ??
+                AppTranslation.translate(AppStrings.loginFailed),
             statusCode: response.statusCode,
           );
       }
@@ -119,22 +132,24 @@ class LoginService {
           throw AppException.timeout();
 
         case DioExceptionType.badResponse:
-          throw AppException.server('Server xətası baş verdi');
+          throw AppException.server(
+            AppTranslation.translate(AppStrings.serverError),
+          );
 
         case DioExceptionType.cancel:
           throw AppException(
-            'Sorğu ləğv edildi',
+            AppTranslation.translate(AppStrings.requestCancelled),
             type: ErrorType.unknown,
           );
 
         case DioExceptionType.connectionError:
           throw AppException.network(
-            'İnternet yoxdur, şəbəkənizi yoxlayın və yenidən cəhd edin',
+            AppTranslation.translate(AppStrings.noInternet),
           );
 
         case DioExceptionType.badCertificate:
           throw AppException.network(
-            'Təhlükəsizlik sertifikatı xətası',
+            AppTranslation.translate(AppStrings.badCertificate),
           );
 
         case DioExceptionType.unknown:
@@ -142,10 +157,12 @@ class LoginService {
               e.message?.contains('Failed host lookup') == true ||
               e.message?.contains('NetworkException') == true) {
             throw AppException.network(
-              'İnternet yoxdur, şəbəkənizi yoxlayın və yenidən cəhd edin',
+              AppTranslation.translate(AppStrings.noInternet),
             );
           }
-          throw AppException.network('Şəbəkə xətası baş verdi');
+          throw AppException.network(
+            AppTranslation.translate(AppStrings.networkError),
+          );
       }
     } on AppException {
       rethrow;

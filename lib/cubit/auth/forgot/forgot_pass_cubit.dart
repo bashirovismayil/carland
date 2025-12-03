@@ -16,21 +16,16 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
   late final ForgotPasswordContractor _repo;
   late final RegisterLocalService _local;
 
-  String _formatPhoneNumber(String phoneNumber) {
-    String cleanedNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-
-    if (!cleanedNumber.startsWith('994')) {
-      cleanedNumber = '994$cleanedNumber';
-    }
-    return '+$cleanedNumber';
-  }
-
   Future<void> submit({
     required String phoneNumber,
   }) async {
     try {
       emit(ForgotPasswordLoading());
-      final formattedPhone = _formatPhoneNumber(phoneNumber);
+
+      final formattedPhone = phoneNumber.startsWith('+')
+          ? phoneNumber
+          : '+$phoneNumber';
+
       final ForgotPasswordResponse resp = await _repo.forgotPassword(
         phoneNumber: formattedPhone,
       );

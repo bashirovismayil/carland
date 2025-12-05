@@ -1,7 +1,6 @@
 import 'dart:developer';
-import 'package:carland/core/extensions/auth_extensions/auto_login.dart';
-import 'package:carland/core/localization/app_translation.dart';
-import 'package:carland/home_page.dart';
+import 'package:carcat/core/extensions/auth_extensions/auto_login.dart';
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/colors/app_colors.dart';
 import '../../../../core/constants/enums/enums.dart';
@@ -14,6 +13,7 @@ import '../../../../widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../home_page.dart';
 import '../../../utils/helper/go.dart';
 
 class SetupPassContent extends StatefulWidget {
@@ -172,7 +172,18 @@ class _SetupPassContentState extends State<SetupPassContent> {
               color: Colors.grey[400],
               letterSpacing: 2,
             ),
-            prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: SvgPicture.asset(
+                'assets/svg/password_icon.svg',
+                width: 20,
+                height: 20,
+                colorFilter: ColorFilter.mode(
+                  Colors.grey.shade500,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
@@ -233,7 +244,18 @@ class _SetupPassContentState extends State<SetupPassContent> {
               color: Colors.grey[400],
               letterSpacing: 2,
             ),
-            prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: SvgPicture.asset(
+                'assets/svg/password_icon.svg',
+                width: 20,
+                height: 20,
+                colorFilter: ColorFilter.mode(
+                  Colors.grey.shade500,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 _isConfirmPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
@@ -396,7 +418,6 @@ class _SetupPassContentState extends State<SetupPassContent> {
   }
 
   void _onSetupPassSuccess(BuildContext context) {
-    // Otomatik giriş yap
     context.performAutoLogin(
       password: widget.passwordController.text,
       phoneNumber: widget.setupType == SetupPassType.resetPassword
@@ -408,7 +429,6 @@ class _SetupPassContentState extends State<SetupPassContent> {
   void _onSetupPassError(SetupPassError state) {
     log('SetupPass Error: ${state.message}');
 
-    // Kullanıcıya hata mesajı göster
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(state.message),
@@ -433,7 +453,6 @@ class _SetupPassContentState extends State<SetupPassContent> {
   void _onLoginSuccess(BuildContext context) {
     log("Auto login successful");
 
-    // Reset password ise başarı mesajı göster
     if (widget.setupType == SetupPassType.resetPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -451,7 +470,6 @@ class _SetupPassContentState extends State<SetupPassContent> {
   void _onLoginError(BuildContext context, LoginState state) {
     log('Auto login error: ${state.errorMessage}');
 
-    // Otomatik giriş başarısız oldu, kullanıcıya bilgi ver
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

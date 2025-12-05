@@ -1,5 +1,4 @@
-import 'package:carland/core/extensions/auth_extensions/auth_form_validation.dart';
-import 'package:carland/presentation/auth/otp/otp_page.dart';
+import 'package:carcat/core/extensions/auth_extensions/auth_form_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +11,7 @@ import '../../../../cubit/auth/forgot/forgot_pass_cubit.dart';
 import '../../../../cubit/auth/forgot/forgot_pass_state.dart';
 import '../../../../widgets/custom_button.dart';
 import '../../../core/localization/app_translation.dart';
+import '../otp/otp_page.dart';
 import '../pass/setup_pass_content.dart';
 
 class ForgotPassword extends HookWidget {

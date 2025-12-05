@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "370532951734",
-    "project_id": "carcat-5504b",
-    "storage_bucket": "carcat-5504b.firebasestorage.app"
+    "project_number": "795795135554",
+    "project_id": "carcat-74ef5",
+    "storage_bucket": "carcat-74ef5.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:370532951734:android:5811d391ea5bab1a642817",
+        "mobilesdk_app_id": "1:795795135554:android:336c9c676f4522891f61db",
         "android_client_info": {
-          "package_name": "com.carcat.carcat"
+          "package_name": "com.nematmirzayev.carcat"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDsSaGvlDDiFbOTdO8dSng_16-KA5yIbHk"
+          "current_key": "AIzaSyDtsrJx1MTcAekoFN-7vMQzkhBJnd8euMY"
         }
       ],
       "services": {

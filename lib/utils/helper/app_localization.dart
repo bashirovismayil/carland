@@ -1,4 +1,4 @@
-import 'package:carland/utils/helper/translation.dart';
+import 'package:carcat/utils/helper/translation.dart';
 import 'package:flutter/material.dart';
 
 class AppLocalizations {

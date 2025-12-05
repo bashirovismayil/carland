@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/remote/services/local/login_local_services.dart';
 import '../../../core/constants/enums/enums.dart';
@@ -15,37 +16,68 @@ class LoginCubit extends Cubit<LoginState> {
   final _local = locator<LoginLocalService>();
   final _authManager = locator<AuthManagerService>();
 
-  String _formatPhoneNumber(String phoneNumber) {
+  String _formatPhoneNumber(String phoneNumber, CountryCode countryCode) {
     String cleanedNumber = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    final dialCode = countryCode.dialCode;
 
-    if (!cleanedNumber.startsWith('994')) {
-      cleanedNumber = '994$cleanedNumber';
+    debugPrint("🔵 _formatPhoneNumber:");
+    debugPrint("   - Temizlenmiş numara: $cleanedNumber");
+    debugPrint("   - Ülke kodu: ${countryCode.name}");
+    debugPrint("   - Dial code: $dialCode");
+
+    if (!cleanedNumber.startsWith(dialCode)) {
+      cleanedNumber = '$dialCode$cleanedNumber';
     }
-    return '+$cleanedNumber';
+
+    final formattedPhone = '+$cleanedNumber';
+    debugPrint("   - Formatlanmış: $formattedPhone");
+
+    return formattedPhone;
   }
 
-  Future<void> submit() async {
-    final form = state.formKey.currentState;
-    if (form == null || !form.validate()) return;
+  Future<void> submit({
+    required CountryCode countryCode,
+    bool rememberMe = true,
+  }) async {
+    debugPrint("🟢 CUBIT: submit() metodu ÇAĞRILDI!");
+    debugPrint("🔵 CUBIT: Phone = ${state.phoneController.text}");
+    debugPrint("🔵 CUBIT: Password length = ${state.passwordController.text.length}");
+    debugPrint("🔵 CUBIT: Country Code = ${countryCode.name} (${countryCode.dialCode})");
+    debugPrint("🔵 CUBIT: Remember Me = $rememberMe");
 
     if (isClosed) return;
 
+    debugPrint("🔵 CUBIT: Status = submitting olarak değiştiriliyor...");
     emit(state.copyWith(status: LoginStatus.submitting, errorMessage: null));
 
     try {
-      final formattedPhone = _formatPhoneNumber(state.phoneController.text);
+      final formattedPhone = _formatPhoneNumber(
+        state.phoneController.text,
+        countryCode,
+      );
+      debugPrint("🔵 CUBIT: Formatted phone = $formattedPhone");
 
+      debugPrint("🔵 CUBIT: API çağrısı başlıyor...");
       final resp = await _loginContractor.login(
         phoneNumber: formattedPhone,
         password: state.passwordController.text,
       );
 
+      debugPrint("🟢 CUBIT: API response alındı!");
+
       if (isClosed) return;
 
       await _local.saveLoginResponse(resp);
+      await _local.setRememberMe(rememberMe);
+
+      debugPrint(rememberMe
+          ? "🟢 CUBIT: Remember Me AÇIK - Bilgiler KALICI kaydediliyor"
+          : "🟡 CUBIT: Remember Me KAPALI - Bilgiler GEÇİCİ (app kapanınca silinecek)");
+
       await _authManager.onLoginSuccess();
 
-      log(' - Login successful - Role: ${resp.role.displayName}');
+      log('✅ Login successful - Role: ${resp.role.displayName}');
+      debugPrint("🟢 CUBIT: Login BAŞARILI! Role = ${resp.role.displayName}");
 
       if (isClosed) return;
 
@@ -54,8 +86,11 @@ class LoginCubit extends Cubit<LoginState> {
         userRole: resp.role,
         response: resp,
       ));
+
+      debugPrint("🟢 CUBIT: State SUCCESS olarak güncellendi!");
     } on AppException catch (e, s) {
-      log('Login AppException: ${e.message}', stackTrace: s);
+      log('❌ Login AppException: ${e.message}', stackTrace: s);
+      debugPrint("🔴 CUBIT: AppException = ${e.message}");
 
       if (isClosed) return;
 
@@ -64,7 +99,8 @@ class LoginCubit extends Cubit<LoginState> {
         errorMessage: e.message,
       ));
     } catch (e, s) {
-      log('Login Exception', stackTrace: s);
+      log('❌ Login Exception', error: e, stackTrace: s);
+      debugPrint("🔴 CUBIT: Exception = $e");
 
       if (isClosed) return;
 
@@ -78,13 +114,14 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> performAutoLogin({
     required String phoneNumber,
     required String password,
+    CountryCode countryCode = CountryCode.azerbaijan,
   }) async {
     if (isClosed) return;
 
     emit(state.copyWith(status: LoginStatus.submitting, errorMessage: null));
 
     try {
-      final formattedPhone = _formatPhoneNumber(phoneNumber);
+      final formattedPhone = _formatPhoneNumber(phoneNumber, countryCode);
 
       final resp = await _loginContractor.login(
         phoneNumber: formattedPhone,
@@ -96,7 +133,7 @@ class LoginCubit extends Cubit<LoginState> {
       await _local.saveLoginResponse(resp);
       await _authManager.onLoginSuccess();
 
-      log(' - Auto login successful - Role: ${resp.role.displayName}');
+      log('✅ Auto login successful - Role: ${resp.role.displayName}');
 
       if (isClosed) return;
 
@@ -106,7 +143,7 @@ class LoginCubit extends Cubit<LoginState> {
         response: resp,
       ));
     } on AppException catch (e, s) {
-      log('Auto Login AppException: ${e.message}', stackTrace: s);
+      log('❌ Auto Login AppException: ${e.message}', stackTrace: s);
 
       if (isClosed) return;
 
@@ -115,7 +152,7 @@ class LoginCubit extends Cubit<LoginState> {
         errorMessage: e.message,
       ));
     } catch (e, s) {
-      log('Auto Login Exception', stackTrace: s);
+      log('❌ Auto Login Exception', error: e, stackTrace: s);
 
       if (isClosed) return;
 
@@ -129,6 +166,7 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> performGuestLogin({
     required String phoneNumber,
     required String password,
+    CountryCode countryCode = CountryCode.azerbaijan,
   }) async {
     if (isClosed) return;
 
@@ -138,7 +176,7 @@ class LoginCubit extends Cubit<LoginState> {
       await _local.clear();
       log('Guest login started - tokens cleared');
 
-      final formattedPhone = _formatPhoneNumber(phoneNumber);
+      final formattedPhone = _formatPhoneNumber(phoneNumber, countryCode);
 
       final resp = await _loginContractor.login(
         phoneNumber: formattedPhone,
@@ -151,7 +189,7 @@ class LoginCubit extends Cubit<LoginState> {
       await _local.setGuestMode(true);
       await _authManager.onLoginSuccess();
 
-      log(' - Guest login successful - Role: ${resp.role.displayName}');
+      log('✅ Guest login successful - Role: ${resp.role.displayName}');
 
       if (isClosed) return;
 
@@ -161,7 +199,7 @@ class LoginCubit extends Cubit<LoginState> {
         response: resp,
       ));
     } on AppException catch (e, s) {
-      log('Guest Login AppException: ${e.message}', stackTrace: s);
+      log('❌ Guest Login AppException: ${e.message}', stackTrace: s);
 
       if (isClosed) return;
 
@@ -170,7 +208,7 @@ class LoginCubit extends Cubit<LoginState> {
         errorMessage: e.message,
       ));
     } catch (e, s) {
-      log('Guest Login Exception', stackTrace: s);
+      log('❌ Guest Login Exception', error: e, stackTrace: s);
 
       if (isClosed) return;
 
@@ -190,9 +228,9 @@ class LoginCubit extends Cubit<LoginState> {
       if (isClosed) return;
 
       emit(state.copyWith(status: LoginStatus.guestMode));
-      log(' - Pure guest mode activated');
+      log('✅ Pure guest mode activated');
     } catch (e, s) {
-      log('Pure guest mode error', stackTrace: s);
+      log('❌ Pure guest mode error', error: e, stackTrace: s);
 
       if (isClosed) return;
 
@@ -210,9 +248,9 @@ class LoginCubit extends Cubit<LoginState> {
       if (isClosed) return;
 
       emit(state.copyWith(status: LoginStatus.guestMode));
-      log('Entered guest mode');
+      log('✅ Entered guest mode');
     } catch (e, s) {
-      log('Guest mode error', stackTrace: s);
+      log('❌ Guest mode error', error: e, stackTrace: s);
 
       if (isClosed) return;
 

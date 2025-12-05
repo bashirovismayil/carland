@@ -1,4 +1,3 @@
-import 'package:carland/cubit/language/language_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -9,6 +8,7 @@ import '../../cubit/auth/otp/otp_send_cubit.dart';
 import '../../cubit/auth/otp/otp_verify_cubit.dart';
 import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
+import '../../cubit/language/language_cubit.dart';
 import '../../data/remote/contractor/forgot_pass_contractor.dart';
 import '../../data/remote/contractor/login_contractor.dart';
 import '../../data/remote/contractor/otp_contractor.dart';

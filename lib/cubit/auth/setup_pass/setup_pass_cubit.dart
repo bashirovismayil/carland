@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:carland/cubit/auth/setup_pass/setup_pass_state.dart';
+import 'package:carcat/cubit/auth/setup_pass/setup_pass_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/remote/contractor/setup_pass_contractor.dart';
 import '../../../data/remote/models/remote/setup_pass_response.dart';

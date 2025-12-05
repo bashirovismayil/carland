@@ -1,8 +1,5 @@
-import 'package:carland/core/localization/app_translation.dart';
-import 'package:carland/presentation/auth/auth_page.dart';
-import 'package:carland/presentation/auth/login/login_page.dart';
-import 'package:carland/presentation/introduction/widgets/onboard_content.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:carcat/core/localization/app_translation.dart';
+import 'package:carcat/presentation/introduction/widgets/onboard_content.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/enums/enums.dart';
 import '../../../core/constants/texts/app_strings.dart';
@@ -11,7 +8,7 @@ import '../../../utils/di/locator.dart';
 import '../../../utils/helper/go.dart';
 import '../../../widgets/custom_button.dart';
 import '../../widgets/segmented_progress_indicator.dart';
-import '../auth/guest/guest_mode_page.dart';
+import '../auth/auth_page.dart';
 
 class OnboardPage extends StatefulWidget {
   final bool isFromTutorial;

@@ -8,6 +8,8 @@ class LoginLocalService {
 
   final Box<String> _box;
 
+  static const String _rememberMeKey = 'remember_me';
+
   Future<void> saveLoginResponse(LoginResponse resp) async {
     await _box.put('login', jsonEncode(resp.toJson()));
     await saveAccessToken(resp.accessToken);
@@ -63,9 +65,28 @@ class LoginLocalService {
 
   Future<void> clearGuestMode() async => await _box.delete('is_guest_mode');
 
-  // Permission Checks
-  bool get canViewAdminPanel => currentUserRole.canViewAdminPanel;
+  Future<void> setRememberMe(bool value) async {
+    await _box.put(_rememberMeKey, value.toString());
+    print("💾 Remember Me durumu kaydedildi: $value");
+  }
 
+  bool get rememberMe {
+    final value = _box.get(_rememberMeKey);
+    return value == 'true';
+  }
+
+  Future<void> checkRememberMeOnStartup() async {
+    print("🔍 App başlatıldı - Remember Me kontrolü yapılıyor...");
+
+    if (!rememberMe) {
+      print("🗑️ Remember Me KAPALI - Tüm bilgiler temizleniyor...");
+      await clear();
+    } else {
+      print("✅ Remember Me AÇIK - Bilgiler korunuyor");
+    }
+  }
+
+  bool get canViewAdminPanel => currentUserRole.canViewAdminPanel;
 
   bool get canViewUserFeatures => currentUserRole.canViewUserFeatures;
 

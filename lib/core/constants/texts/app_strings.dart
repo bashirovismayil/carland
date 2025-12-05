@@ -54,7 +54,7 @@ class AppStrings {
   static const String letsGetStartedText = "letsGetStartedText";
 
   // Welcome - Auth Page
-  static const String welcomeToCarland = 'welcomeToCarland';
+  static const String welcomeToCarCat = 'welcomeToCarCat';
   static const String welcomeSubtitle = 'welcomeSubtitle';
   static const String loginButton = 'loginButton';
   static const String signUpButton = 'signUpButton';

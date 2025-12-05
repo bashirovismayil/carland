@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyAnR_hDErxvc0_6Em3RgbGWf-xHoBYVH3E</string>
+	<string>AIzaSyC9MGpUmoOF-H3wrDwFNMEDSXomRMLpmSc</string>
 	<key>GCM_SENDER_ID</key>
-	<string>370532951734</string>
+	<string>795795135554</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.carcat.carcat</string>
+	<string>com.nematmirzayev.carcat</string>
 	<key>PROJECT_ID</key>
-	<string>carcat-5504b</string>
+	<string>carcat-74ef5</string>
 	<key>STORAGE_BUCKET</key>
-	<string>carcat-5504b.firebasestorage.app</string>
+	<string>carcat-74ef5.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:370532951734:ios:1921e25630d9ca89642817</string>
+	<string>1:795795135554:ios:ea26a67bd0f6a3f21f61db</string>
 </dict>
 </plist>

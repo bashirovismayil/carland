@@ -1,15 +1,15 @@
-import 'package:carland/utils/di/locator.dart';
-import 'package:carland/utils/helper/app_localization.dart';
-import 'package:carland/utils/helper/app_router.dart';
-import 'package:carland/utils/helper/custom_multi_bloc_provider.dart';
+import 'package:carcat/utils/di/locator.dart';
+import 'package:carcat/utils/helper/app_localization.dart';
+import 'package:carcat/utils/helper/app_router.dart';
+import 'package:carcat/utils/helper/custom_multi_bloc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'core/constants/colors/app_colors.dart';
 import 'cubit/language/language_cubit.dart';
 import 'cubit/language/language_state.dart';
 import 'data/remote/services/local/onboard_local_services.dart';
+import 'data/remote/services/local/login_local_services.dart';
 import 'data/remote/services/remote/auth_manager_services.dart';
 
 class CarCatApp extends StatefulWidget {
@@ -22,20 +22,33 @@ class CarCatApp extends StatefulWidget {
 class _CarCatAppState extends State<CarCatApp> {
   final _authManager = locator<AuthManagerService>();
   final _onboardService = locator<OnboardLocalService>();
+  final _loginLocalService = locator<LoginLocalService>();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final AppRouter _appRouter;
+  late Future<void> _initializationFuture;
 
   @override
   void initState() {
     super.initState();
     _appRouter = AppRouter(_navigatorKey);
-    _setupAuthListener();
     locator.registerSingleton<GlobalKey<NavigatorState>>(_navigatorKey);
+    _initializationFuture = _initializeDependencies();
+  }
+
+  Future<void> _initializeDependencies() async {
+    await _checkRememberMeOnStartup();
+    _setupAuthListener();
+  }
+
+  Future<void> _checkRememberMeOnStartup() async {
+    print("🚀 Uygulama başlatılıyor - 'Beni Hatırla' kontrolü yapılıyor...");
+    await _loginLocalService.checkRememberMeOnStartup();
+    print("✅ 'Beni Hatırla' kontrolü ve gerekli temizlik tamamlandı.");
   }
 
   void _setupAuthListener() {
     _authManager.authStateStream.listen((authState) {
-      print(' - Auth state changed: $authState');
+      print('📡 Yetkilendirme durumu değişti: $authState');
       _handleAuthStateChange(authState);
     });
   }
@@ -52,9 +65,13 @@ class _CarCatAppState extends State<CarCatApp> {
 
   Widget _getInitialPage() {
     if (!_onboardService.isOnboardSeen) {
+      print("📖 Onboarding görülmemiş - Onboarding sayfasına yönlendiriliyor");
       return _appRouter.getOnboardPage();
     }
-    return _appRouter.getPageForAuthState(_authManager.currentAuthState);
+
+    final authState = _authManager.currentAuthState;
+    print("🔍 Mevcut yetkilendirme durumu: $authState");
+    return _appRouter.getPageForAuthState(authState);
   }
 
   @override
@@ -62,40 +79,57 @@ class _CarCatAppState extends State<CarCatApp> {
     return CustomMultiBlocProviderHelper(
       child: BlocBuilder<LanguageCubit, LanguageState>(
         builder: (context, languageState) {
-          return MaterialApp(
-            navigatorKey: _navigatorKey,
-            debugShowCheckedModeBanner: false,
-            title: 'CarCat',
-            locale: languageState.locale,
-            supportedLocales: const [
-              Locale('az', 'AZ'),
-              Locale('en', 'US'),
-              Locale('ru', 'RU'),
-            ],
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            localeResolutionCallback: (locale, supportedLocales) {
-              if (locale != null) {
-                for (var supportedLocale in supportedLocales) {
-                  if (supportedLocale.languageCode == locale.languageCode) {
-                    return supportedLocale;
-                  }
-                }
+          return FutureBuilder(
+            future: _initializationFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  home: Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryGreen,
+                      ),
+                    ),
+                  ),
+                );
               }
-              return supportedLocales.first;
-            },
 
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: AppColors.primaryGreen,
-              ),
-              useMaterial3: true,
-            ),
-            home: _getInitialPage(),
+              return MaterialApp(
+                navigatorKey: _navigatorKey,
+                debugShowCheckedModeBanner: false,
+                title: 'CarCat',
+                locale: languageState.locale,
+                supportedLocales: const [
+                  Locale('az', 'AZ'),
+                  Locale('en', 'US'),
+                  Locale('ru', 'RU'),
+                ],
+                localizationsDelegates: [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                localeResolutionCallback: (locale, supportedLocales) {
+                  if (locale != null) {
+                    for (var supportedLocale in supportedLocales) {
+                      if (supportedLocale.languageCode == locale.languageCode) {
+                        return supportedLocale;
+                      }
+                    }
+                  }
+                  return supportedLocales.first;
+                },
+                theme: ThemeData(
+                  colorScheme: ColorScheme.fromSeed(
+                    seedColor: AppColors.primaryGreen,
+                  ),
+                  useMaterial3: true,
+                ),
+                home: _getInitialPage(),
+              );
+            },
           );
         },
       ),

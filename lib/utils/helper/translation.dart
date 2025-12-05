@@ -33,7 +33,7 @@ class Translations {
           'Təmir qeydləri, texniki baxış tarixçəsi\nvə ehtiyat hissələrinə bir yerdən baxın',
 
       // Welcome Page
-      AppStrings.welcomeToCarland: 'CarCat\'a xoş gəlmisiniz',
+      AppStrings.welcomeToCarCat: 'CarCat\'a xoş gəlmisiniz',
       AppStrings.welcomeSubtitle:
           'Problemsiz avtomobil texniki baxımı üçün ağıllı köməkçiniz. İzləyin, planlaşdırın və xidmətləri bir tətbiqdən sifariş edin.',
       AppStrings.loginButton: 'Daxil ol',
@@ -183,7 +183,7 @@ class Translations {
           'View repair records, maintenance history\nand spare parts in one place',
 
       // Welcome Page
-      AppStrings.welcomeToCarland: 'Welcome to CarCat',
+      AppStrings.welcomeToCarCat: 'Welcome to CarCat',
       AppStrings.welcomeSubtitle:
           'Your smart companion for hassle-free car maintenance. Track, schedule, and book services all in one place.',
       AppStrings.loginButton: 'Login',
@@ -335,7 +335,7 @@ class Translations {
           'Просматривайте записи ремонта, историю ТО\nи запчасти в одном месте',
 
       // Welcome Page
-      AppStrings.welcomeToCarland: 'Добро пожаловать в CarCat',
+      AppStrings.welcomeToCarCat: 'Добро пожаловать в CarCat',
       AppStrings.welcomeSubtitle:
           'Ваш умный помощник для беспроблемного обслуживания автомобиля. Отслеживайте, планируйте и бронируйте услуги в одном месте.',
       AppStrings.loginButton: 'Войти',

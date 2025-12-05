@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.nematmirzayev.carland" "\0"
-            VALUE "FileDescription", "carland" "\0"
+            VALUE "CompanyName", "com.nematmirzayev.carcat" "\0"
+            VALUE "FileDescription", "carcat" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "carland" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.nematmirzayev.carland. All rights reserved." "\0"
-            VALUE "OriginalFilename", "carland.exe" "\0"
-            VALUE "ProductName", "carland" "\0"
+            VALUE "InternalName", "carcat" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.nematmirzayev.carcat. All rights reserved." "\0"
+            VALUE "OriginalFilename", "carcat.exe" "\0"
+            VALUE "ProductName", "carcat" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

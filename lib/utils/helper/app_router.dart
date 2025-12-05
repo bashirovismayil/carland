@@ -1,10 +1,7 @@
-import 'package:carland/presentation/auth/auth_page.dart';
-import 'package:carland/presentation/auth/otp/otp_page.dart';
-import 'package:carland/presentation/boss/boss_home_nav.dart';
 import 'package:flutter/material.dart';
-import '../../core/constants/enums/enums.dart';
 import '../../data/remote/services/remote/auth_manager_services.dart';
-import '../../presentation/auth/guest/guest_mode_page.dart';
+import '../../presentation/auth/auth_page.dart';
+import '../../presentation/boss/boss_home_nav.dart';
 import '../../presentation/introduction/onboard_page.dart';
 import '../../presentation/user/user_main_nav.dart';
 

@@ -1,11 +1,11 @@
-import 'package:carland/core/localization/app_translation.dart';
-import 'package:carland/presentation/auth/login/login_page.dart';
-import 'package:carland/presentation/auth/register/register_page.dart';
-import 'package:carland/utils/helper/go.dart';
+import 'package:carcat/core/localization/app_translation.dart';
+import 'package:carcat/presentation/auth/register/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/constants/texts/app_strings.dart';
+import '../../utils/helper/go.dart';
 import '../../widgets/custom_button.dart';
+import 'login/login_page.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -27,7 +27,7 @@ class AuthPage extends StatelessWidget {
 
               const Spacer(flex: 7),
               Text(
-                context.currentLanguage(AppStrings.welcomeToCarland),
+                context.currentLanguage(AppStrings.welcomeToCarCat),
                 style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w500,
@@ -51,7 +51,6 @@ class AuthPage extends StatelessWidget {
 
               const Spacer(flex: 2),
 
-              // Login Button
               CustomElevatedButton(
                 onPressed: () {
                  Go.replace(context, LoginPage());

@@ -1,6 +1,6 @@
-import 'package:carland/app.dart';
+import 'package:carcat/app.dart';
 import 'package:flutter/material.dart';
-import 'package:carland/utils/di/locator.dart';
+import 'package:carcat/utils/di/locator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 

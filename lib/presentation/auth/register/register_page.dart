@@ -1,6 +1,6 @@
-import 'package:carland/core/extensions/auth_extensions/auth_form_validation.dart';
-import 'package:carland/core/extensions/auth_extensions/string_validators.dart' hide StringValidators;
-import 'package:carland/core/localization/app_translation.dart';
+import 'package:carcat/core/extensions/auth_extensions/auth_form_validation.dart';
+import 'package:carcat/core/extensions/auth_extensions/string_validators.dart' hide StringValidators;
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +14,6 @@ import '../../../cubit/auth/register/register_cubit.dart';
 import '../../../utils/helper/go.dart';
 import '../otp/otp_page.dart';
 import '../otp/widget/otp_confirmation_dialog.dart';
-
 
 class RegisterPage extends HookWidget {
   const RegisterPage({super.key});

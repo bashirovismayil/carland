@@ -1,10 +1,10 @@
-import 'package:carland/core/localization/app_translation.dart';
-import 'package:carland/home_page.dart';
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/texts/app_strings.dart';
 import '../../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../../cubit/navigation/user/user_nav_bar_state.dart';
+import '../../home_page.dart';
 
 class UserMainNavigationPage extends StatelessWidget {
   const UserMainNavigationPage({super.key});

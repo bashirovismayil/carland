@@ -1,16 +1,21 @@
 import 'package:dio/dio.dart';
 import '../../../../../core/dio/auth_dio.dart';
 import '../../../../core/network/api_constants.dart';
+import '../../../../utils/di/locator.dart';
 import '../../models/remote/forgot_pass_response.dart';
 import '../../../../core/extensions/status/status_code_extension.dart';
+import '../local/language_local_service.dart';
 
 class ForgotPasswordService {
+  final _languageService = locator<LanguageLocalService>();
 
   Future<ForgotPasswordResponse> forgotPassword({
     required String phoneNumber,
   }) async {
+    final currentLanguage = _languageService.currentLanguage;
     final headers = {
       'Content-Type': 'application/json',
+      'Accept-Language': currentLanguage,
     };
 
     final body = {

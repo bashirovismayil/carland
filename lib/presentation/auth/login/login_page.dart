@@ -1,7 +1,6 @@
-import 'package:carland/core/extensions/auth_extensions/string_validators.dart';
-import 'package:carland/core/localization/app_translation.dart';
-import 'package:carland/presentation/auth/register/register_page.dart';
-import 'package:carland/utils/helper/go.dart';
+import 'package:carcat/core/extensions/auth_extensions/string_validators.dart' hide StringValidators;
+import 'package:carcat/core/extensions/auth_extensions/string_validators.dart';
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +10,10 @@ import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/extensions/auth_extensions/phone_number_formatter.dart';
 import '../../../cubit/auth/login/login_cubit.dart';
 import '../../../cubit/auth/login/login_state.dart';
+import '../../../data/remote/services/local/login_local_services.dart';
+import '../../../utils/helper/go.dart';
 import '../forgot/forgot_password.dart';
+import '../register/register_page.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -23,6 +25,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   late final LoginCubit _cubit;
+  final _formKey = GlobalKey<FormState>();
+
   final ValueNotifier<CountryCode> _selectedCountryCode =
   ValueNotifier(CountryCode.azerbaijan);
   final ValueNotifier<bool> _obscurePassword = ValueNotifier(true);
@@ -42,9 +46,37 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+
   void _onLoginPressed() {
-    FocusScope.of(context).unfocus();
-    _cubit.submit();
+    debugPrint("🔵 Login butonuna tıklandı");
+
+    final isValid = _formKey.currentState?.validate() ?? false;
+    debugPrint("🔵 Form validasyon durumu: $isValid");
+
+    if (isValid) {
+      FocusScope.of(context).unfocus();
+      debugPrint("🟢 Validasyon başarılı! _cubit.submit() çağrılıyor...");
+
+      final selectedCountryCode = _selectedCountryCode.value;
+      final rememberMe = _rememberMe.value;
+
+      debugPrint("🔵 Seçilen ülke kodu: ${selectedCountryCode.code} (${selectedCountryCode.dialCode})");
+      debugPrint("🔵 Remember Me: $rememberMe");
+
+      _cubit.submit(
+        countryCode: selectedCountryCode,
+        rememberMe: rememberMe,
+      );
+    } else {
+      debugPrint("🔴 Validasyon BAŞARISIZ! Lütfen alanları kontrol edin.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Lütfen tüm alanları doğru doldurun'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _showCountryCodePicker() {
@@ -91,33 +123,31 @@ class _LoginPageState extends State<LoginPage> {
                       constraints: BoxConstraints(
                         minHeight: constraints.maxHeight,
                       ),
-                      child: IntrinsicHeight(
-                        child: Form(
-                          key: state.formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 16),
-                              _buildBackButton(),
-                              const SizedBox(height: 24),
-                              _buildLogo(),
-                              const SizedBox(height: 40),
-                              _buildHeader(),
-                              const SizedBox(height: 23),
-                              _buildPhoneField(state),
-                              const SizedBox(height: 20),
-                              _buildPasswordField(state),
-                              const SizedBox(height: 8),
-                              _buildForgotPasswordButton(),
-                              const SizedBox(height: 13),
-                              _buildRememberMeCheckbox(),
-                              const Spacer(),
-                              _buildLoginButton(state),
-                              const SizedBox(height: 16),
-                              _buildSignUpRow(),
-                              const SizedBox(height: 40),
-                            ],
-                          ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 16),
+                            _buildBackButton(),
+                            const SizedBox(height: 24),
+                            _buildLogo(),
+                            const SizedBox(height: 40),
+                            _buildHeader(),
+                            const SizedBox(height: 23),
+                            _buildPhoneField(state),
+                            const SizedBox(height: 20),
+                            _buildPasswordField(state),
+                            const SizedBox(height: 8),
+                            _buildForgotPasswordButton(),
+                            const SizedBox(height: 13),
+                            _buildRememberMeCheckbox(),
+                            SizedBox(height: constraints.maxHeight * 0.15),
+                            _buildLoginButton(state),
+                            const SizedBox(height: 16),
+                            _buildSignUpRow(),
+                            const SizedBox(height: 40),
+                          ],
                         ),
                       ),
                     ),
@@ -141,11 +171,10 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _handleLoginSuccess(LoginState state) {
+  Future<void> _handleLoginSuccess(LoginState state) async {
     final role = state.userRole;
     if (role == null) return;
 
-    // Role-based navigation
     switch (role) {
       case UserRole.superAdmin:
       case UserRole.admin:
@@ -252,7 +281,7 @@ class _LoginPageState extends State<LoginPage> {
           enabled: !state.isLoading,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(9),
+            LengthLimitingTextInputFormatter(15),
             PhoneNumberFormatter.phoneFormatter,
           ],
           validator: _validatePhone,
@@ -302,10 +331,17 @@ class _LoginPageState extends State<LoginPage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.phone_outlined,
-                  size: 20,
-                  color: Colors.grey,
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: SvgPicture.asset(
+                    'assets/svg/phone.svg',
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(
+                      Colors.grey.shade500,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -336,24 +372,32 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   String? _validatePhone(String? value) {
+    debugPrint("🔵 Telefon validasyonu: '$value'");
+
     if (value == null || value.isEmpty) {
+      debugPrint("🔴 Telefon boş!");
       return context.currentLanguage(AppStrings.phoneRequired);
     }
 
     final digitsOnly = value.replaceAll(RegExp(r'\D'), '');
+    debugPrint("🔵 Sadece rakamlar: '$digitsOnly' (uzunluk: ${digitsOnly.length})");
 
     if (digitsOnly.length != 9) {
+      debugPrint("🔴 Telefon uzunluğu yanlış: ${digitsOnly.length}");
       return context.currentLanguage(AppStrings.phoneInvalidLength);
     }
 
     if (!digitsOnly.isValidPhone) {
+      debugPrint("🔴 Telefon geçersiz format!");
       return context.currentLanguage(AppStrings.phoneInvalid);
     }
 
     if (!digitsOnly.isValidMobileOperatorCode) {
+      debugPrint("🔴 Operatör kodu geçersiz!");
       return context.currentLanguage(AppStrings.phoneInvalidOperator);
     }
 
+    debugPrint("🟢 Telefon validasyonu BAŞARILI!");
     return null;
   }
 
@@ -385,21 +429,28 @@ class _LoginPageState extends State<LoginPage> {
               decoration: InputDecoration(
                 hintText: '••••••••••••••',
                 hintStyle: TextStyle(color: Colors.grey.shade400),
-                prefixIcon: Icon(
-                  Icons.lock_outline,
-                  size: 20,
-                  color: Colors.grey.shade500,
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: SvgPicture.asset(
+                    'assets/svg/password_icon.svg',
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(
+                      Colors.grey.shade500,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
+
                 suffixIcon: IconButton(
                   onPressed: () => _obscurePassword.value = !obscure,
                   icon: Icon(
-                    obscure
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
+                    obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                     size: 20,
                     color: Colors.grey.shade500,
                   ),
                 ),
+
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 16,
@@ -425,6 +476,7 @@ class _LoginPageState extends State<LoginPage> {
                   borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
                 ),
               ),
+
             );
           },
         ),
@@ -433,14 +485,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   String? _validatePassword(String? value) {
+    debugPrint("🔵 Şifre validasyonu: '${value?.replaceAll(RegExp(r'.'), '*')}'");
+
     if (value == null || value.isEmpty) {
+      debugPrint("🔴 Şifre boş!");
       return context.currentLanguage(AppStrings.passwordRequired);
     }
 
     if (value.length < 6) {
+      debugPrint("🔴 Şifre çok kısa: ${value.length}");
       return context.currentLanguage(AppStrings.passwordTooShort);
     }
 
+    debugPrint("🟢 Şifre validasyonu BAŞARILI!");
     return null;
   }
 
@@ -512,7 +569,7 @@ class _LoginPageState extends State<LoginPage> {
       child: ElevatedButton(
         onPressed: state.isLoading ? null : _onLoginPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF282828),
+          backgroundColor: const Color(0xFF282828),
           disabledBackgroundColor: Colors.grey.shade400,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(

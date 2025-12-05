@@ -1,4 +1,4 @@
-package com.nematmirzayev.carland.carland
+package com.nematmirzayev.carcat
 
 import io.flutter.embedding.android.FlutterActivity
 

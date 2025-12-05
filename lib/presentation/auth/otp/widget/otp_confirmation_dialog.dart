@@ -1,6 +1,5 @@
-import 'package:carland/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:carcat/core/localization/app_translation.dart';
 import '../../../../core/constants/texts/app_strings.dart';
 
 class OtpSendConfirmationDialog extends StatelessWidget {

@@ -167,6 +167,11 @@ class Translations {
       AppStrings.checkMyCars: 'Avtomobillərimə Bax',
       AppStrings.newCarAdded: 'Yeni Kart Əlavə Edildi',
 
+      AppStrings.homePage: 'Əsas Səhifə',
+      AppStrings.settingsPage: 'Parametrlər',
+      AppStrings.bookingPage: 'Rezervasiya',
+      AppStrings.profilePage: 'Profil Səhifəsi',
+
     },
     'en': {
       AppStrings.countryAzerbaijan: 'Azerbaijan',
@@ -333,6 +338,11 @@ class Translations {
       AppStrings.checkMyCars: 'Check My Cars',
       AppStrings.newCarAdded: 'New Card Added',
 
+      AppStrings.homePage: 'Home Page',
+      AppStrings.settingsPage: 'Settings Page',
+      AppStrings.bookingPage: 'Booking Page',
+      AppStrings.profilePage: 'Profile Page',
+
     },
     'ru': {
       AppStrings.countryAzerbaijan: 'Азербайджан',
@@ -498,6 +508,11 @@ class Translations {
       AppStrings.gotIt: 'Понятно',
       AppStrings.checkMyCars: 'Проверить Мои Автомобили',
       AppStrings.newCarAdded: 'Новая Карта Добавлена',
+
+      AppStrings.homePage: 'Главная Страница',
+      AppStrings.settingsPage: 'Страница Настроек',
+      AppStrings.bookingPage: 'Страница Бронирования',
+      AppStrings.profilePage: 'Страница Профиля',
 
     },
   };

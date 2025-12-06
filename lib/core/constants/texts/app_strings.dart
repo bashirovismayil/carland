@@ -16,6 +16,9 @@ class AppStrings {
   static const String admin = 'admin';
   static const String user = 'user';
   static const String homePage = 'homePage';
+  static const String settingsPage = 'settingsPage';
+  static const String bookingPage = 'bookingPage';
+  static const String profilePage = 'profilePage';
 
   // Login Page
   static const String loginIntoYourAccount = 'loginIntoYourAccount';

@@ -14,19 +14,19 @@ class UserMainNavigationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UserNavBarCubit(),
-      child: UserMainNavigationView(),
+      child: const UserMainNavigationView(),
     );
   }
 }
 
 class UserMainNavigationView extends StatelessWidget {
-  UserMainNavigationView({super.key});
+  const UserMainNavigationView({super.key});
 
-  final List<Widget> _pages = [
-    const HomePage(),
-    const HomePage(),
-    const HomePage(),
-    const HomePage(),
+  static const List<Widget> _pages = [
+    HomePage(),
+    HomePage(),
+    HomePage(),
+    HomePage(),
   ];
 
   @override
@@ -36,7 +36,6 @@ class UserMainNavigationView extends StatelessWidget {
         final cubit = context.read<UserNavBarCubit>();
 
         return Scaffold(
-
           body: IndexedStack(
             index: cubit.currentIndex,
             children: _pages,
@@ -47,7 +46,6 @@ class UserMainNavigationView extends StatelessWidget {
               height: 80,
               decoration: BoxDecoration(
                 color: Colors.white,
-
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.15),
@@ -71,20 +69,20 @@ class UserMainNavigationView extends StatelessWidget {
                   ),
                   _buildNavItem(
                     context: context,
-                    index: 2,
+                    index: 1,
                     currentIndex: cubit.currentIndex,
                     icon: 'assets/svg/settings_nav_icon.svg',
                     activeIcon: 'assets/svg/settings_nav_active.svg',
-                    label: 'Settings',
+                    label: context.currentLanguage(AppStrings.settingsPage),
                     onTap: () => cubit.changeTab(1),
                   ),
                   _buildNavItem(
                     context: context,
-                    index: 1,
+                    index: 2,
                     currentIndex: cubit.currentIndex,
                     icon: 'assets/svg/calendar_nav_icon.svg',
                     activeIcon: 'assets/svg/calendar_nav_icon_active.svg',
-                    label: 'Calendar',
+                    label: context.currentLanguage(AppStrings.bookingPage),
                     onTap: () => cubit.changeTab(2),
                   ),
                   _buildNavItem(
@@ -93,7 +91,7 @@ class UserMainNavigationView extends StatelessWidget {
                     currentIndex: cubit.currentIndex,
                     icon: 'assets/svg/user_nav_icon.svg',
                     activeIcon: 'assets/svg/user_nav_icon_active.svg',
-                    label: 'Profile',
+                    label: context.currentLanguage(AppStrings.profilePage),
                     onTap: () => cubit.changeTab(3),
                   ),
                 ],
@@ -129,6 +127,10 @@ class UserMainNavigationView extends StatelessWidget {
               isActive ? activeIcon : icon,
               width: 28,
               height: 28,
+              colorFilter: ColorFilter.mode(
+                isActive ? Theme.of(context).primaryColor : Colors.grey,
+                BlendMode.srcIn,
+              ),
             ),
           ),
         ),

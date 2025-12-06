@@ -5,9 +5,19 @@ import '../../utils/di/locator.dart';
 import '../../utils/helper/translation.dart';
 
 extension LocalizationExtension on BuildContext {
-  AppLocalizations get loc => AppLocalizations.of(this)!;
+  AppLocalizations? get loc => AppLocalizations.of(this);
 
-  String currentLanguage(String key) => loc.translate(key);
+  String currentLanguage(String key) {
+    try {
+      final localizations = AppLocalizations.of(this);
+      if (localizations != null) {
+        return localizations.translate(key);
+      }
+      return AppTranslation.translate(key);
+    } catch (e) {
+      return AppTranslation.translate(key);
+    }
+  }
 }
 
 class AppTranslation {

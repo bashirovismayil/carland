@@ -172,4 +172,17 @@ class AppStrings {
   static const String networkError = 'networkError';
   static const String loginFailed = 'loginFailed';
 
+  static const String registrationSuccessful = "registrationSuccessful";
+  static const String passwordResetSuccessful = "passwordResetSuccessful";
+  static const String carAdded = "carAdded";
+
+  static const String registrationSuccessSubtext = "registrationSuccessSubtext";
+  static const String passwordResetSuccessSubtext = "passwordResetSuccessSubtext";
+  static const String carAddedSubtext = "carAddedSubtext";
+
+  static const String gotIt = "gotIt";
+  static const String checkMyCars = "checkMyCars";
+
+  static const String newCarAdded = "newCarAdded";
+
 }

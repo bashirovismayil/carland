@@ -1,6 +1,7 @@
 import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/constants/texts/app_strings.dart';
 import '../../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../../cubit/navigation/user/user_nav_bar_state.dart';
@@ -12,7 +13,7 @@ class UserMainNavigationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => UserNavBarCubit(),
+      create: (context) => UserNavBarCubit(),
       child: UserMainNavigationView(),
     );
   }
@@ -24,23 +25,9 @@ class UserMainNavigationView extends StatelessWidget {
   final List<Widget> _pages = [
     const HomePage(),
     const HomePage(),
-
+    const HomePage(),
+    const HomePage(),
   ];
-
-  List<BottomNavigationBarItem> _getNavItems(BuildContext context) {
-    return [
-      BottomNavigationBarItem(
-        icon: const Icon(Icons.home_outlined),
-        activeIcon: const Icon(Icons.home),
-        label: context.currentLanguage(AppStrings.homePage),
-      ),
-      BottomNavigationBarItem(
-        icon: const Icon(Icons.note_add_outlined),
-        activeIcon: const Icon(Icons.note_add),
-        label: context.currentLanguage(AppStrings.homePage),
-      ),
-     ];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,41 +36,103 @@ class UserMainNavigationView extends StatelessWidget {
         final cubit = context.read<UserNavBarCubit>();
 
         return Scaffold(
+
           body: IndexedStack(
             index: cubit.currentIndex,
             children: _pages,
           ),
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: BottomNavigationBar(
-              currentIndex: cubit.currentIndex,
-              onTap: (index) => cubit.changeTab(index),
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: Colors.white,
-              selectedItemColor: const Color(0xFF059669),
-              unselectedItemColor: Colors.grey[600],
-              selectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 30),
+            child: Container(
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.white,
+
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, 5),
+                    spreadRadius: 0,
+                  ),
+                ],
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 11,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(
+                    context: context,
+                    index: 0,
+                    currentIndex: cubit.currentIndex,
+                    icon: 'assets/svg/home_nav_icon.svg',
+                    activeIcon: 'assets/svg/home_nav_icon_active.svg',
+                    label: context.currentLanguage(AppStrings.homePage),
+                    onTap: () => cubit.changeTab(0),
+                  ),
+                  _buildNavItem(
+                    context: context,
+                    index: 2,
+                    currentIndex: cubit.currentIndex,
+                    icon: 'assets/svg/settings_nav_icon.svg',
+                    activeIcon: 'assets/svg/settings_nav_active.svg',
+                    label: 'Settings',
+                    onTap: () => cubit.changeTab(1),
+                  ),
+                  _buildNavItem(
+                    context: context,
+                    index: 1,
+                    currentIndex: cubit.currentIndex,
+                    icon: 'assets/svg/calendar_nav_icon.svg',
+                    activeIcon: 'assets/svg/calendar_nav_icon_active.svg',
+                    label: 'Calendar',
+                    onTap: () => cubit.changeTab(2),
+                  ),
+                  _buildNavItem(
+                    context: context,
+                    index: 3,
+                    currentIndex: cubit.currentIndex,
+                    icon: 'assets/svg/user_nav_icon.svg',
+                    activeIcon: 'assets/svg/user_nav_icon_active.svg',
+                    label: 'Profile',
+                    onTap: () => cubit.changeTab(3),
+                  ),
+                ],
               ),
-              elevation: 0,
-              items: _getNavItems(context),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildNavItem({
+    required BuildContext context,
+    required int index,
+    required int currentIndex,
+    required String icon,
+    required String activeIcon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final isActive = index == currentIndex;
+
+    return Expanded(
+      child: Tooltip(
+        message: label,
+        triggerMode: TooltipTriggerMode.longPress,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: SvgPicture.asset(
+              isActive ? activeIcon : icon,
+              width: 28,
+              height: 28,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

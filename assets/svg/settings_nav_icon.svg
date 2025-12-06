@@ -1,0 +1,13 @@
+<svg width="46" height="24" viewBox="0 0 46 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Sol üstteki küçük ikon (yaklaştırılmış: translate(4,2)) -->
+  <g transform="translate(4,2)">
+    <circle cx="6" cy="6" r="5" stroke="#9D9D9D" stroke-width="1.5"/>
+    <path d="M6 4V6L7 7" stroke="#9D9D9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <path d="M31.3584 13.3567C30.1689 14.546 27.9308 14.4998 24.4992 14.4998C22.2914 14.4998 20.5014 12.7071 20.5002 10.4993C20.5002 7.07001 20.454 4.83065 21.6435 3.64138C22.8329 2.45212 23.3583 2.50027 28.6274 2.50027C29.1366 2.49809 29.3929 3.11389 29.0329 3.47394L26.3199 6.18714C25.6313 6.87582 25.6294 7.99233 26.3181 8.68092C27.0068 9.36952 28.1234 9.36959 28.8122 8.68109L31.5259 5.96855C31.886 5.60859 32.5019 5.86483 32.4997 6.37395C32.4997 11.6422 32.5479 12.1675 31.3584 13.3567Z" stroke="#9D9D9D" stroke-width="1.5"/>
+  <path d="M24.5 14.5L18.3284 20.6716C17.2239 21.7761 15.433 21.7761 14.3284 20.6716C13.2239 19.567 13.2239 17.7761 14.3284 16.6716L20.5 10.5" stroke="#9D9D9D" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M16.509 18.5H16.5" stroke="#9D9D9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+</svg>

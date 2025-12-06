@@ -15,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../home_page.dart';
 import '../../../utils/helper/go.dart';
+import '../../success/success_page.dart';
 
 class SetupPassContent extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -418,11 +419,21 @@ class _SetupPassContentState extends State<SetupPassContent> {
   }
 
   void _onSetupPassSuccess(BuildContext context) {
-    context.performAutoLogin(
-      password: widget.passwordController.text,
-      phoneNumber: widget.setupType == SetupPassType.resetPassword
-          ? widget.phoneNumber
-          : null,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SuccessPage(
+          isRegister: true,
+          onButtonPressed: () {
+            context.performAutoLogin(
+              password: widget.passwordController.text,
+              phoneNumber: widget.setupType == SetupPassType.registration
+                  ? widget.phoneNumber
+                  : null,
+            );
+          },
+        ),
+      ),
     );
   }
 

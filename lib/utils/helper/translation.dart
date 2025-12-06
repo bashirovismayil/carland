@@ -152,6 +152,21 @@ class Translations {
       AppStrings.networkError: 'Şəbəkə xətası baş verdi',
       AppStrings.loginFailed: 'Giriş uğursuz oldu',
 
+      AppStrings.registrationSuccessful: 'Qeydiyyat Uğurludur',
+      AppStrings.passwordResetSuccessful: 'Şifrə Sıfırlama Uğurlu',
+      AppStrings.carAdded: 'Avtomobil Əlavə Edildi',
+
+      AppStrings.registrationSuccessSubtext:
+      'Hesabınız uğurla yaradıldı. İndi daxil olaraq avtomobilinizin texniki xidmətini asanlıqla idarə edə bilərsiniz.',
+      AppStrings.passwordResetSuccessSubtext:
+      'Hesabınız uğurla yaradıldı. İndi daxil olaraq avtomobilinizin texniki xidmətini asanlıqla idarə edə bilərsiniz.',
+      AppStrings.carAddedSubtext:
+      'Yeni Kart Əlavə Edildi BMW M4 Sports 2024',
+
+      AppStrings.gotIt: 'Anladım',
+      AppStrings.checkMyCars: 'Avtomobillərimə Bax',
+      AppStrings.newCarAdded: 'Yeni Kart Əlavə Edildi',
+
     },
     'en': {
       AppStrings.countryAzerbaijan: 'Azerbaijan',
@@ -303,6 +318,21 @@ class Translations {
       AppStrings.networkError: 'Network error occurred',
       AppStrings.loginFailed: 'Login failed',
 
+      AppStrings.registrationSuccessful: 'Registration Successful',
+      AppStrings.passwordResetSuccessful: 'Password Reset Successful',
+      AppStrings.carAdded: 'Car Added',
+
+      AppStrings.registrationSuccessSubtext:
+      'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
+      AppStrings.passwordResetSuccessSubtext:
+      'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
+      AppStrings.carAddedSubtext:
+      'New Card Added BMW M4 Sports 2024',
+
+      AppStrings.gotIt: 'Got It',
+      AppStrings.checkMyCars: 'Check My Cars',
+      AppStrings.newCarAdded: 'New Card Added',
+
     },
     'ru': {
       AppStrings.countryAzerbaijan: 'Азербайджан',
@@ -453,6 +483,21 @@ class Translations {
       AppStrings.badCertificate: 'Ошибка сертификата безопасности',
       AppStrings.networkError: 'Произошла ошибка сети',
       AppStrings.loginFailed: 'Вход не выполнен',
+
+      AppStrings.registrationSuccessful: 'Регистрация Успешна',
+      AppStrings.passwordResetSuccessful: 'Сброс Пароля Успешен',
+      AppStrings.carAdded: 'Автомобиль Добавлен',
+
+      AppStrings.registrationSuccessSubtext:
+      'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
+      AppStrings.passwordResetSuccessSubtext:
+      'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
+      AppStrings.carAddedSubtext:
+      'Новая Карта Добавлена BMW M4 Sports 2024',
+
+      AppStrings.gotIt: 'Понятно',
+      AppStrings.checkMyCars: 'Проверить Мои Автомобили',
+      AppStrings.newCarAdded: 'Новая Карта Добавлена',
 
     },
   };

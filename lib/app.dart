@@ -88,7 +88,7 @@ class _CarCatAppState extends State<CarCatApp> {
                   home: Scaffold(
                     body: Center(
                       child: CircularProgressIndicator(
-                        color: AppColors.primaryGreen,
+                        color: AppColors.primaryBlack,
                       ),
                     ),
                   ),
@@ -123,7 +123,7 @@ class _CarCatAppState extends State<CarCatApp> {
                 },
                 theme: ThemeData(
                   colorScheme: ColorScheme.fromSeed(
-                    seedColor: AppColors.primaryGreen,
+                    seedColor: AppColors.primaryBlack,
                   ),
                   useMaterial3: true,
                 ),

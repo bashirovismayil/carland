@@ -468,7 +468,7 @@ class _SetupPassContentState extends State<SetupPassContent> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.currentLanguage(AppStrings.passwordResetSuccess)),
-          backgroundColor: AppColors.primaryGreen,
+          backgroundColor: AppColors.primaryBlack,
         ),
       );
     }

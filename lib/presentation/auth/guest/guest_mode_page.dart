@@ -271,7 +271,7 @@ class _GuestModeState extends State<GuestMode> with TickerProviderStateMixin {
         Text(
           context.currentLanguage(AppStrings.activateGuestMode),
           style: _TextStyles.toggleText.copyWith(
-            color: _isGuestMode ? AppColors.primaryGreen : Colors.grey[600],
+            color: _isGuestMode ? AppColors.primaryBlack : Colors.grey[600],
             fontWeight: _isGuestMode ? FontWeight.w600 : FontWeight.w500,
           ),
         ),
@@ -279,7 +279,7 @@ class _GuestModeState extends State<GuestMode> with TickerProviderStateMixin {
         Switch(
           value: _isGuestMode,
           onChanged: _toggleMode,
-          activeColor: AppColors.primaryGreen,
+          activeColor: AppColors.primaryBlack,
           inactiveTrackColor: Colors.grey[300],
           inactiveThumbColor: Colors.grey[600],
         ),
@@ -294,7 +294,7 @@ class _GuestModeState extends State<GuestMode> with TickerProviderStateMixin {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handleContinue,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryGreen,
+          backgroundColor: AppColors.primaryBlack,
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(

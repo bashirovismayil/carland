@@ -9,14 +9,17 @@ import '../../cubit/auth/otp/otp_verify_cubit.dart';
 import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
+import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../../data/remote/contractor/forgot_pass_contractor.dart';
 import '../../data/remote/contractor/login_contractor.dart';
 import '../../data/remote/contractor/otp_contractor.dart';
+import '../../data/remote/contractor/profile_photo_contractor.dart';
 import '../../data/remote/contractor/register_contractor.dart';
 import '../../data/remote/contractor/setup_pass_contractor.dart';
 import '../../data/remote/repository/forgot_pass_repository.dart';
 import '../../data/remote/repository/login_repository.dart';
 import '../../data/remote/repository/otp_repository.dart';
+import '../../data/remote/repository/profile_photo_repository.dart';
 import '../../data/remote/repository/register_repository.dart';
 import '../../data/remote/repository/setup_pass_repository.dart';
 import '../../data/remote/services/local/language_local_service.dart';
@@ -28,6 +31,7 @@ import '../../data/remote/services/remote/auth_manager_services.dart';
 import '../../data/remote/services/remote/forgot_pass_service.dart';
 import '../../data/remote/services/remote/login_service.dart';
 import '../../data/remote/services/remote/otp_service.dart';
+import '../../data/remote/services/remote/profile_photo_service.dart';
 import '../../data/remote/services/remote/register_service.dart';
 import '../../data/remote/services/remote/setup_pass_service.dart';
 
@@ -45,15 +49,12 @@ Future<void> setupLocator() async {
   final Box<String> languageBox = await Hive.openBox<String>('languageBox');
 
   locator.registerLazySingleton<Dio>(() => authDio);
-  // 1) Register Local Service
   locator.registerLazySingleton<RegisterLocalService>(
     () => RegisterLocalService(registerBox),
   );
-  // 2) Login Local Service
   locator.registerLazySingleton<LoginLocalService>(
     () => LoginLocalService(loginBox),
   );
-  // 3) Onboard Local Service
   locator.registerLazySingleton<OnboardLocalService>(
     () => OnboardLocalService(onboardBox),
   );
@@ -67,10 +68,8 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton<LanguageLocalService>(
     () => LanguageLocalService(languageBox),
   );
-  // Remote Service
   locator.registerLazySingleton(() => RegisterService());
   locator.registerLazySingleton<LoginService>(() => LoginService(locator()));
-  // Contractor
   locator.registerLazySingleton<RegisterContractor>(
     () => RegisterRepository(locator<RegisterService>()),
   );
@@ -80,24 +79,18 @@ Future<void> setupLocator() async {
   locator.registerFactory<LoginCubit>(
     () => LoginCubit(locator<LoginContractor>()),
   );
-  // Cubit
   locator.registerFactory(() => RegisterCubit(locator()));
-  // OTP
   locator.registerLazySingleton<OtpService>(() => OtpService());
   locator.registerLazySingleton<OtpContractor>(
     () => OtpRepository(locator<OtpService>()),
   );
-  // OTP Send Cubit
   locator.registerFactory<OtpSendCubit>(() => OtpSendCubit());
-  // OTP Verify Cubit
   locator.registerFactory<OtpVerifyCubit>(() => OtpVerifyCubit());
-  // Setup Password
   locator.registerLazySingleton<SetupPassService>(() => SetupPassService());
   locator.registerLazySingleton<SetupPassContractor>(
     () => SetupPassRepository(locator<SetupPassService>()),
   );
   locator.registerFactory<SetupPassCubit>(() => SetupPassCubit());
-  // Forgot Password
   locator.registerLazySingleton<ForgotPasswordService>(
       () => ForgotPasswordService());
   locator.registerLazySingleton<ForgotPasswordContractor>(
@@ -105,4 +98,11 @@ Future<void> setupLocator() async {
   );
   locator.registerFactory<ForgotPasswordCubit>(() => ForgotPasswordCubit());
   locator.registerFactory<LanguageCubit>(() => LanguageCubit());
+  locator.registerLazySingleton<ProfilePhotoService>(
+        () => ProfilePhotoService(),
+  );
+  locator.registerLazySingleton<ProfilePhotoContractor>(
+        () => ProfilePhotoRepository(locator<ProfilePhotoService>()),
+  );
+  locator.registerFactory<ProfilePhotoCubit>(() => ProfilePhotoCubit());
 }

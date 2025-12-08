@@ -20,6 +20,13 @@ class AppColors {
   static const Color lightGreenFill = Color(0xFFECFDF3);
   static const Color swipeButtonCompleteColor = Color(0xFF026aa2);
 
+  static const Color surfaceColor = Color(0xFFFFFFFF);
+  static const Color textPrimary = Color(0xFF1A1A1A);
+  static const Color textSecondary = Color(0xFF6B6B6B);
+  static const Color textHint = Color(0xFF9E9E9E);
+  static const Color errorColor = Color(0xFFE53935);
+  static const Color successColor = Color(0xFF43A047);
+
 
   //Onboard colors
   static const Color onboardColor_1 = Color(0xFF19836A);

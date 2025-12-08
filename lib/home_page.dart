@@ -1,3 +1,4 @@
+import 'package:carcat/widgets/profile_photo.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -7,7 +8,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('home'),
+        child: ProfilePhoto(),
       ),
     );
   }

@@ -77,11 +77,11 @@ class ApiConstants {
 
   // Profile photo
   static const uploadProfilePhoto =
-      '$baseUrl/hospital/server-hospital/api/v1/photo/upload';
+      '$baseUrl/carland/server-carland/api/v1/photo/for/user/upload';
   static const getProfilePhoto =
-      '$baseUrl/hospital/server-hospital/api/v1/photo/get';
+      '$baseUrl/carland/server-carland/api/v1/photo/for/user/get';
   static const deleteProfilePhoto =
-      '$baseUrl/hospital/server-hospital/api/v1/photo/delete';
+      '$baseUrl/carland/server-carland/api/v1/photo/for/user/delete';
 
   // Get Patient data by ID
   static const getPatientDataByID =

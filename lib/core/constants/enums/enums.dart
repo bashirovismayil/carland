@@ -43,6 +43,24 @@ enum ErrorType {
   unknown,
 }
 
+enum ScannerState {
+  initial,
+  initializing,
+  ready,
+  scanning,
+  success,
+  error,
+}
+
+enum ScannerError {
+  noCameraAvailable,
+  permissionDenied,
+  cameraInitFailed,
+  processingFailed,
+  noTextFound,
+  noVinFound,
+}
+
 enum UserRole {
   guest('GUEST'),
   user('USER'),

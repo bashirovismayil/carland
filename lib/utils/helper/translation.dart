@@ -2,522 +2,664 @@ import '../../core/constants/texts/app_strings.dart';
 
 class Translations {
   static final Map<String, Map<String, String>> translations = {
-    'az': {
-      AppStrings.countryAzerbaijan: 'Azərbaycan',
-      AppStrings.countryTurkey: 'Türkiyə',
-      AppStrings.countryRussia: 'Rusiya',
-      AppStrings.countryGeorgia: 'Gürcüstan',
-      AppStrings.countryKazakhstan: 'Qazaxıstan',
+    // Countries
+    AppStrings.countryAzerbaijan: {
+      'az': 'Azərbaycan',
+      'en': 'Azerbaijan',
+      'ru': 'Азербайджан',
+    },
+    AppStrings.countryTurkey: {
+      'az': 'Türkiyə',
+      'en': 'Turkey',
+      'ru': 'Турция',
+    },
+    AppStrings.countryRussia: {
+      'az': 'Rusiya',
+      'en': 'Russia',
+      'ru': 'Россия',
+    },
+    AppStrings.countryGeorgia: {
+      'az': 'Gürcüstan',
+      'en': 'Georgia',
+      'ru': 'Грузия',
+    },
+    AppStrings.countryKazakhstan: {
+      'az': 'Qazaxıstan',
+      'en': 'Kazakhstan',
+      'ru': 'Казахстан',
+    },
 
-      AppStrings.skipButtonText: 'Keç',
-      AppStrings.letsGetStartedText: 'Başlayaq!',
+    // Common Buttons
+    AppStrings.skipButtonText: {
+      'az': 'Keç',
+      'en': 'Skip',
+      'ru': 'Пропустить',
+    },
+    AppStrings.letsGetStartedText: {
+      'az': 'Başlayaq!',
+      'en': "Let's Get Started!",
+      'ru': 'Давайте начнем!',
+    },
+    AppStrings.closeButton: {
+      'az': 'Bağla',
+      'en': 'Close',
+      'ru': 'Закрыть',
+    },
+    AppStrings.exitButton: {
+      'az': 'Çıxış',
+      'en': 'Exit',
+      'ru': 'Выход',
+    },
+    AppStrings.nextButton: {
+      'az': 'Növbəti',
+      'en': 'Next',
+      'ru': 'Далее',
+    },
+    AppStrings.backButton: {
+      'az': 'Geri',
+      'en': 'Back',
+      'ru': 'Назад',
+    },
+    AppStrings.continueButtonText: {
+      'az': 'Davam et',
+      'en': 'Continue',
+      'ru': 'Продолжить',
+    },
+    AppStrings.gotIt: {
+      'az': 'Aydındır',
+      'en': 'Got It',
+      'ru': 'Понятно',
+    },
 
-      // Language Selection
-      AppStrings.selectLanguageToContinue: 'Davam edəcəyiniz dili seçin',
-      AppStrings.useAppInYourLanguage:
-          'Tətbiqi istədiyiniz dildə istifadə edin',
-      AppStrings.closeButton: 'Bağla',
-      AppStrings.exitButton: 'Çıxış',
-      AppStrings.admin: 'Admin',
-      AppStrings.superAdmin: 'Super Admin',
+    // Language Selection
+    AppStrings.selectLanguageToContinue: {
+      'az': 'Davam edəcəyiniz dili seçin',
+      'en': 'Select language to continue',
+      'ru': 'Выберите язык для продолжения',
+    },
+    AppStrings.useAppInYourLanguage: {
+      'az': 'Tətbiqi istədiyiniz dildə istifadə edin',
+      'en': 'Use the app in your preferred language',
+      'ru': 'Используйте приложение на удобном языке',
+    },
 
-      // Onboarding
-      AppStrings.onboardTitle_1: 'Avtomobiliniz – Bizim prioritetimiz',
-      AppStrings.onboardSubtext_1:
+    // User Roles
+    AppStrings.admin: {
+      'az': 'Admin',
+      'en': 'Admin',
+      'ru': 'Админ',
+    },
+    AppStrings.superAdmin: {
+      'az': 'Super Admin',
+      'en': 'Super Admin',
+      'ru': 'Супер Админ',
+    },
+
+    // Onboarding
+    AppStrings.onboardTitle_1: {
+      'az': 'Avtomobiliniz – Bizim prioritetimiz',
+      'en': 'Your car – Our priority',
+      'ru': 'Ваш автомобиль – Наш приоритет',
+    },
+    AppStrings.onboardSubtext_1: {
+      'az':
           'Geniş avtoservis xidmətlərinə çıxış əldə edin və avtomobilinizin qayğısını bizə həvalə edin',
-      AppStrings.onboardTitle_2: 'Servis randevusu və idarəetmə',
-      AppStrings.onboardSubtext_2:
-          'Ustalarla randevu təyin edin,\nmövcudluğu görün və xatırlatmalar alın',
-      AppStrings.onboardTitle_3: 'Servis tarixçənizi izləyin',
-      AppStrings.onboardSubtext_3:
-          'Təmir qeydləri, texniki baxış tarixçəsi\nvə ehtiyat hissələrinə bir yerdən baxın',
-
-      // Welcome Page
-      AppStrings.welcomeToCarCat: 'CarCat\'a xoş gəlmisiniz',
-      AppStrings.welcomeSubtitle:
-          'Problemsiz avtomobil texniki baxımı üçün ağıllı köməkçiniz. İzləyin, planlaşdırın və xidmətləri bir tətbiqdən sifariş edin.',
-      AppStrings.loginButton: 'Daxil ol',
-      AppStrings.signUpButton: 'Qeydiyyat',
-
-      // Login Page
-      AppStrings.loginIntoYourAccount: 'Hesabınıza daxil olun',
-      AppStrings.phoneLabel: 'Telefon',
-      AppStrings.passwordLabel: 'Şifrə',
-      AppStrings.forgotPassword: 'Şifrəni unutdunuz?',
-      AppStrings.rememberMe: 'Məni xatırla',
-      AppStrings.dontHaveAccount: 'Hesabınız yoxdur?',
-
-// Validation Messages
-      AppStrings.phoneRequired: 'Telefon nömrəsi daxil edin',
-      AppStrings.phoneInvalidLength: 'Telefon nömrəsi 9 rəqəm olmalıdır',
-      AppStrings.phoneInvalid: 'Telefon nömrəsi düzgün deyil',
-      AppStrings.phoneInvalidOperator: 'Yanlış operator kodu',
-      AppStrings.passwordRequired: 'Şifrə daxil edin',
-      AppStrings.passwordTooShort: 'Şifrə ən azı 6 simvol olmalıdır',
-
-      // Register Page
-      AppStrings.createAnAccount: 'Hesab yaradın',
-      AppStrings.nameLabel: 'Ad',
-      AppStrings.nameHint: 'Adınızı daxil edin',
-      AppStrings.surnameLabel: 'Soyad',
-      AppStrings.surnameHint: 'Soyadınızı daxil edin',
-      AppStrings.countryCodeLabel: 'Ölkə kodu',
-      AppStrings.phoneNumberLabel: 'Telefon nömrəsi',
-      AppStrings.selectCountryCode: 'Ölkə kodu seçin',
-      AppStrings.nextButton: 'Növbəti',
-      AppStrings.alreadyHaveAccount: 'Artıq hesabınız var?',
-      AppStrings.signInButton: 'Daxil ol',
-
-// Terms & Privacy
-      AppStrings.iAgreeToThe: 'Razıyam: ',
-      AppStrings.termsOfService: 'Xidmət şərtləri',
-      AppStrings.privacyPolicy: 'Məxfilik siyasəti',
-      AppStrings.pleaseAcceptTerms: 'Zəhmət olmasa şərtləri qəbul edin',
-
-// Validation Messages - Name
-      AppStrings.nameRequired: 'Ad daxil edin',
-      AppStrings.nameTooShort: 'Ad ən azı 2 simvol olmalıdır',
-      AppStrings.nameInvalid: 'Ad yalnız hərflərdən ibarət olmalıdır',
-
-// Validation Messages - Surname
-      AppStrings.surnameRequired: 'Soyad daxil edin',
-      AppStrings.surnameTooShort: 'Soyad ən azı 2 simvol olmalıdır',
-      AppStrings.surnameInvalid: 'Soyad yalnız hərflərdən ibarət olmalıdır',
-
-// Error Messages
-      AppStrings.userAlreadyExists: 'Bu istifadəçi artıq mövcuddur',
-
-      // OTP Confirmation Dialog
-      AppStrings.sendOtpTo: 'OTP Göndər',
-      AppStrings.sendOtpDescription:
-          '4 rəqəmli OTP kodu telefon\nnömrəsinə göndərin',
-
-      // OTP Page
-      AppStrings.otpVerification: 'OTP Doğrulama',
-      AppStrings.otpSubtitle:
-          'Təqdim etdiyiniz telefon nömrəsinə doğrulama kodu göndərildi',
-      AppStrings.secLeft: 'san qaldı',
-      AppStrings.didntReceiveCode: 'Kod almadınız?',
-      AppStrings.resendCode: 'Yenidən göndər',
-      AppStrings.backButton: 'Geri',
-
-// OTP Validation & Errors
-      AppStrings.enterCompleteOtp: 'Zəhmət olmasa 4 rəqəmli kodu daxil edin',
-      AppStrings.wrongOtpCode: 'Yanlış kod',
-      AppStrings.waitBeforeResend: 'Yenidən göndərmək üçün gözləyin',
-      AppStrings.otpResent: 'Kod yenidən göndərildi',
-      AppStrings.invalidPhoneNumber: 'Etibarsız telefon nömrəsi',
-      AppStrings.errorOccurred: 'Xəta baş verdi',
-
-      // Setup Password Page
-      AppStrings.createPassword: 'Şifrə Yarat',
-      AppStrings.enterNewPassword: 'Yeni Şifrə Daxil Edin',
-      AppStrings.confirmNewPassword: 'Yeni Şifrəni Təsdiq Edin',
-      AppStrings.registerButton: 'Qeydiyyat',
-
-      AppStrings.setupPasswordText: 'Şifrə qurulması',
-      AppStrings.setupPasswordHintText: 'Şifrənizi daxil edin',
-      AppStrings.confirmPassword: 'Şifrəni təsdiqlə',
-      AppStrings.confirmPasswordHint: 'Şifrəni yenidən daxil edin',
-      AppStrings.continueButtonText: 'Davam et',
-      AppStrings.passCannotEmptyText: 'Şifrə boş ola bilməz',
-      AppStrings.passwordRulesText: 'Şifrə tələbləri',
-      AppStrings.passwordsDoNotMatch: 'Şifrələr uyğun deyil',
-
-      // Password Requirements
-      AppStrings.capitalLetterRequired: 'Böyük hərf əlavə edilməlidir',
-      AppStrings.lowercaseLetterRequired: 'Kiçik hərf əlavə edilməlidir',
-      AppStrings.numberRequired: 'Rəqəm əlavə edilməlidir',
-      AppStrings.specialCharRequired: 'Xüsusi simvol əlavə edilməlidir',
-      AppStrings.passwordsMustMatch: 'Şifrələr eyni olmalıdır',
-      AppStrings.forgotPasswordPageHeader: 'Şifrəni unutmusunuz',
-      AppStrings.passwordResetSuccess: 'Şifrə uğurla yeniləndi',
-      AppStrings.autoLoginFailed:
-          'Avtomatik giriş uğursuz oldu. Zəhmət olmasa giriş səhifəsi ilə daxil olun',
-
-      // LoginService Messages
-      AppStrings.unknownInternalError: 'Bilinməyən daxili xəta',
-      AppStrings.badRequest: 'Səhv sorğu',
-      AppStrings.invalidCredentials: 'İstifadəçi adı və ya şifrə yanlışdır',
-      AppStrings.forbidden: 'Girişə icazə verilməyib',
-      AppStrings.userNotFound: 'İstifadəçi tapılmadı',
-      AppStrings.invalidData: 'Məlumatlar düzgün deyil',
-      AppStrings.serverError: 'Server xətası: Zəhmət olmasa yenidən cəhd edin',
-      AppStrings.serviceUnavailable: 'Servis müvəqqəti əlçatan deyil',
-      AppStrings.serviceDown: 'Xidmət əlçatan deyil: Servislər hazırda işləmir',
-      AppStrings.timeoutError: 'Sorğu vaxtı bitdi',
-      AppStrings.requestCancelled: 'Sorğu ləğv edildi',
-      AppStrings.noInternet: 'İnternet yoxdur, şəbəkənizi yoxlayın və yenidən cəhd edin',
-      AppStrings.badCertificate: 'Təhlükəsizlik sertifikatı xətası',
-      AppStrings.networkError: 'Şəbəkə xətası baş verdi',
-      AppStrings.loginFailed: 'Giriş uğursuz oldu',
-
-      AppStrings.registrationSuccessful: 'Qeydiyyat Uğurludur',
-      AppStrings.passwordResetSuccessful: 'Şifrə Sıfırlama Uğurlu',
-      AppStrings.carAdded: 'Avtomobil Əlavə Edildi',
-
-      AppStrings.registrationSuccessSubtext:
-      'Hesabınız uğurla yaradıldı. İndi daxil olaraq avtomobilinizin texniki xidmətini asanlıqla idarə edə bilərsiniz.',
-      AppStrings.passwordResetSuccessSubtext:
-      'Hesabınız uğurla yaradıldı. İndi daxil olaraq avtomobilinizin texniki xidmətini asanlıqla idarə edə bilərsiniz.',
-      AppStrings.carAddedSubtext:
-      'Yeni Kart Əlavə Edildi BMW M4 Sports 2024',
-
-      AppStrings.gotIt: 'Anladım',
-      AppStrings.checkMyCars: 'Avtomobillərimə Bax',
-      AppStrings.newCarAdded: 'Yeni Kart Əlavə Edildi',
-
-      AppStrings.homePage: 'Əsas Səhifə',
-      AppStrings.settingsPage: 'Parametrlər',
-      AppStrings.bookingPage: 'Rezervasiya',
-      AppStrings.profilePage: 'Profil Səhifəsi',
-
-    },
-    'en': {
-      AppStrings.countryAzerbaijan: 'Azerbaijan',
-      AppStrings.countryTurkey: 'Turkey',
-      AppStrings.countryRussia: 'Russia',
-      AppStrings.countryGeorgia: 'Georgia',
-      AppStrings.countryKazakhstan: 'Kazakhstan',
-
-      AppStrings.skipButtonText: 'Skip',
-      AppStrings.letsGetStartedText: "Let's Get Started!",
-
-      // Language Selection
-      AppStrings.selectLanguageToContinue: 'Select language to continue',
-      AppStrings.useAppInYourLanguage: 'Use the app in your preferred language',
-      AppStrings.closeButton: 'Close',
-      AppStrings.exitButton: 'Exit',
-      AppStrings.admin: 'Admin',
-      AppStrings.superAdmin: 'Super Admin',
-
-      // Onboarding
-      AppStrings.onboardTitle_1: 'Your car – Our priority',
-      AppStrings.onboardSubtext_1:
+      'en':
           'Get access to wide range of auto services\nand leave your car care to us',
-      AppStrings.onboardTitle_2: 'Service appointments & management',
-      AppStrings.onboardSubtext_2:
-          'Schedule appointments with mechanics,\ncheck availability and get reminders',
-      AppStrings.onboardTitle_3: 'Track your service history',
-      AppStrings.onboardSubtext_3:
-          'View repair records, maintenance history\nand spare parts in one place',
-
-      // Welcome Page
-      AppStrings.welcomeToCarCat: 'Welcome to CarCat',
-      AppStrings.welcomeSubtitle:
-          'Your smart companion for hassle-free car maintenance. Track, schedule, and book services all in one place.',
-      AppStrings.loginButton: 'Login',
-      AppStrings.signUpButton: 'Sign up',
-
-      // Login Page
-      AppStrings.loginIntoYourAccount: 'Login into your account',
-      AppStrings.phoneLabel: 'Phone',
-      AppStrings.passwordLabel: 'Password',
-      AppStrings.forgotPassword: 'Forgot Password?',
-      AppStrings.forgotPasswordPageHeader: 'Forgot Password',
-      AppStrings.rememberMe: 'Remember me',
-      AppStrings.dontHaveAccount: "Don't have an account?",
-
-// Validation Messages
-      AppStrings.phoneRequired: 'Please enter phone number',
-      AppStrings.phoneInvalidLength: 'Phone number must be 9 digits',
-      AppStrings.phoneInvalid: 'Invalid phone number',
-      AppStrings.phoneInvalidOperator: 'Invalid operator code',
-      AppStrings.passwordRequired: 'Please enter password',
-      AppStrings.passwordTooShort: 'Password must be at least 6 characters',
-
-      // Register Page
-      AppStrings.createAnAccount: 'Create An Account',
-      AppStrings.nameLabel: 'Name',
-      AppStrings.nameHint: 'Enter your name',
-      AppStrings.surnameLabel: 'Surname',
-      AppStrings.surnameHint: 'Enter your surname',
-      AppStrings.countryCodeLabel: 'Country Code',
-      AppStrings.phoneNumberLabel: 'Phone Number',
-      AppStrings.selectCountryCode: 'Select country code',
-      AppStrings.nextButton: 'Next',
-      AppStrings.alreadyHaveAccount: 'Already have an account?',
-      AppStrings.signInButton: 'Sign in',
-
-// Terms & Privacy
-      AppStrings.iAgreeToThe: 'I agree to ',
-      AppStrings.termsOfService: 'Terms of Service',
-      AppStrings.privacyPolicy: 'Privacy Policy',
-      AppStrings.pleaseAcceptTerms: 'Please accept terms and conditions',
-
-// Validation Messages - Name
-      AppStrings.nameRequired: 'Please enter your name',
-      AppStrings.nameTooShort: 'Name must be at least 2 characters',
-      AppStrings.nameInvalid: 'Name must contain only letters',
-
-// Validation Messages - Surname
-      AppStrings.surnameRequired: 'Please enter your surname',
-      AppStrings.surnameTooShort: 'Surname must be at least 2 characters',
-      AppStrings.surnameInvalid: 'Surname must contain only letters',
-
-// Error Messages
-      AppStrings.userAlreadyExists: 'This user already exists',
-
-      // OTP Confirmation Dialog
-      AppStrings.sendOtpTo: 'Send OTP To',
-      AppStrings.sendOtpDescription:
-          'Send an 4 - digits OTP code\nto phone number',
-
-      // OTP Page
-      AppStrings.otpVerification: 'OTP Verification',
-      AppStrings.otpSubtitle:
-          'An authorization code has been sent to your provided Phone Number',
-      AppStrings.secLeft: 'sec left',
-      AppStrings.didntReceiveCode: "I don't receive code",
-      AppStrings.resendCode: 'Resend Code',
-      AppStrings.backButton: 'Back',
-
-// OTP Validation & Errors
-      AppStrings.enterCompleteOtp: 'Please enter the complete 4-digit code',
-      AppStrings.wrongOtpCode: 'Wrong code',
-      AppStrings.waitBeforeResend: 'Please wait before resending',
-      AppStrings.otpResent: 'Code resent successfully',
-      AppStrings.invalidPhoneNumber: 'Invalid phone number',
-      AppStrings.errorOccurred: 'An error occurred',
-
-      // Setup Password Page
-      AppStrings.createPassword: 'Create Password',
-      AppStrings.enterNewPassword: 'Enter New Password',
-      AppStrings.confirmNewPassword: 'Confirm New Password',
-      AppStrings.registerButton: 'Register',
-
-      AppStrings.setupPasswordText: 'Set Up Password',
-      AppStrings.setupPasswordHintText: 'Enter your password',
-      AppStrings.confirmPassword: 'Confirm Password',
-      AppStrings.confirmPasswordHint: 'Re-enter your password',
-      AppStrings.continueButtonText: 'Continue',
-      AppStrings.passCannotEmptyText: 'Password cannot be empty',
-      AppStrings.passwordRulesText: 'Password Rules',
-      AppStrings.passwordsDoNotMatch: 'Passwords do not match',
-
-      // Password Requirements
-      AppStrings.capitalLetterRequired: 'The capital letter is not added yet',
-      AppStrings.lowercaseLetterRequired:
-          'The lowercase letter is not added yet',
-      AppStrings.numberRequired: 'The number is not added yet',
-      AppStrings.specialCharRequired: 'The special character is not added yet',
-      AppStrings.passwordsMustMatch: 'Both Password should be match (same)',
-      AppStrings.passwordResetSuccess: 'Password reset successful',
-      AppStrings.autoLoginFailed:
-          'Automatic login failed. Please login manually',
-
-      // LoginService Messages
-      AppStrings.unknownInternalError: 'Unknown internal error',
-      AppStrings.badRequest: 'Bad request',
-      AppStrings.invalidCredentials: 'Invalid username or password',
-      AppStrings.forbidden: 'Access forbidden',
-      AppStrings.userNotFound: 'User not found',
-      AppStrings.invalidData: 'Invalid data',
-      AppStrings.serverError: 'Server error: Please try again',
-      AppStrings.serviceUnavailable: 'Service temporarily unavailable',
-      AppStrings.serviceDown: 'Service unavailable: Services are currently down',
-      AppStrings.timeoutError: 'Request timed out',
-      AppStrings.requestCancelled: 'Request cancelled',
-      AppStrings.noInternet: 'No internet, please check your connection and try again',
-      AppStrings.badCertificate: 'Security certificate error',
-      AppStrings.networkError: 'Network error occurred',
-      AppStrings.loginFailed: 'Login failed',
-
-      AppStrings.registrationSuccessful: 'Registration Successful',
-      AppStrings.passwordResetSuccessful: 'Password Reset Successful',
-      AppStrings.carAdded: 'Car Added',
-
-      AppStrings.registrationSuccessSubtext:
-      'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
-      AppStrings.passwordResetSuccessSubtext:
-      'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
-      AppStrings.carAddedSubtext:
-      'New Card Added BMW M4 Sports 2024',
-
-      AppStrings.gotIt: 'Got It',
-      AppStrings.checkMyCars: 'Check My Cars',
-      AppStrings.newCarAdded: 'New Card Added',
-
-      AppStrings.homePage: 'Home Page',
-      AppStrings.settingsPage: 'Settings Page',
-      AppStrings.bookingPage: 'Booking Page',
-      AppStrings.profilePage: 'Profile Page',
-
-    },
-    'ru': {
-      AppStrings.countryAzerbaijan: 'Азербайджан',
-      AppStrings.countryTurkey: 'Турция',
-      AppStrings.countryRussia: 'Россия',
-      AppStrings.countryGeorgia: 'Грузия',
-      AppStrings.countryKazakhstan: 'Казахстан',
-
-      AppStrings.skipButtonText: 'Пропустить',
-      AppStrings.letsGetStartedText: 'Давайте начнем!',
-
-      // Language Selection
-      AppStrings.selectLanguageToContinue: 'Выберите язык для продолжения',
-      AppStrings.useAppInYourLanguage:
-          'Используйте приложение на удобном языке',
-      AppStrings.closeButton: 'Закрыть',
-      AppStrings.exitButton: 'Выход',
-      AppStrings.admin: 'Админ',
-      AppStrings.superAdmin: 'Супер Админ',
-
-      // Onboarding
-      AppStrings.onboardTitle_1: 'Ваш автомобиль – Наш приоритет',
-      AppStrings.onboardSubtext_1:
+      'ru':
           'Получите доступ к широкому спектру автосервисов\nи доверьте заботу о машине нам',
-      AppStrings.onboardTitle_2: 'Запись на сервис и управление',
-      AppStrings.onboardSubtext_2:
+    },
+    AppStrings.onboardTitle_2: {
+      'az': 'Servis randevusu və idarəetmə',
+      'en': 'Service appointments & management',
+      'ru': 'Запись на сервис и управление',
+    },
+    AppStrings.onboardSubtext_2: {
+      'az':
+          'Ustalarla randevu təyin edin,\nmövcudluğu görün və xatırlatmalar alın',
+      'en':
+          'Schedule appointments with mechanics,\ncheck availability and get reminders',
+      'ru':
           'Назначайте встречи с мастерами,\nпроверяйте доступность и получайте напоминания',
-      AppStrings.onboardTitle_3: 'Отслеживайте историю обслуживания',
-      AppStrings.onboardSubtext_3:
+    },
+    AppStrings.onboardTitle_3: {
+      'az': 'Servis tarixçənizi izləyin',
+      'en': 'Track your service history',
+      'ru': 'Отслеживайте историю обслуживания',
+    },
+    AppStrings.onboardSubtext_3: {
+      'az':
+          'Təmir qeydləri, texniki baxış tarixçəsi\nvə ehtiyat hissələrinə bir yerdən baxın',
+      'en':
+          'View repair records, maintenance history\nand spare parts in one place',
+      'ru':
           'Просматривайте записи ремонта, историю ТО\nи запчасти в одном месте',
+    },
 
-      // Welcome Page
-      AppStrings.welcomeToCarCat: 'Добро пожаловать в CarCat',
-      AppStrings.welcomeSubtitle:
+    // Welcome Page
+    AppStrings.welcomeToCarCat: {
+      'az': 'CarCat\'a xoş gəlmisiniz',
+      'en': 'Welcome to CarCat',
+      'ru': 'Добро пожаловать в CarCat',
+    },
+    AppStrings.welcomeSubtitle: {
+      'az':
+          'Problemsiz avtomobil texniki baxımı üçün ağıllı köməkçiniz. İzləyin, planlaşdırın və xidmətləri bir tətbiqdən sifariş edin.',
+      'en':
+          'Your smart companion for hassle-free car maintenance. Track, schedule, and book services all in one place.',
+      'ru':
           'Ваш умный помощник для беспроблемного обслуживания автомобиля. Отслеживайте, планируйте и бронируйте услуги в одном месте.',
-      AppStrings.loginButton: 'Войти',
-      AppStrings.signUpButton: 'Регистрация',
+    },
+    AppStrings.loginButton: {
+      'az': 'Daxil ol',
+      'en': 'Login',
+      'ru': 'Войти',
+    },
+    AppStrings.signUpButton: {
+      'az': 'Qeydiyyat',
+      'en': 'Sign up',
+      'ru': 'Регистрация',
+    },
 
-      // Login Page
-      AppStrings.loginIntoYourAccount: 'Войдите в аккаунт',
-      AppStrings.phoneLabel: 'Телефон',
-      AppStrings.passwordLabel: 'Пароль',
-      AppStrings.forgotPassword: 'Забыли пароль?',
-      AppStrings.rememberMe: 'Запомнить меня',
-      AppStrings.dontHaveAccount: 'Нет аккаунта?',
+    // Login Page
+    AppStrings.loginIntoYourAccount: {
+      'az': 'Hesabınıza daxil olun',
+      'en': 'Login into your account',
+      'ru': 'Войдите в аккаунт',
+    },
+    AppStrings.phoneLabel: {
+      'az': 'Telefon',
+      'en': 'Phone',
+      'ru': 'Телефон',
+    },
+    AppStrings.passwordLabel: {
+      'az': 'Şifrə',
+      'en': 'Password',
+      'ru': 'Пароль',
+    },
+    AppStrings.forgotPassword: {
+      'az': 'Şifrəni unutdunuz?',
+      'en': 'Forgot Password?',
+      'ru': 'Забыли пароль?',
+    },
+    AppStrings.forgotPasswordPageHeader: {
+      'az': 'Şifrəni unutmusunuz',
+      'en': 'Forgot Password',
+      'ru': 'Забыли пароль',
+    },
+    AppStrings.rememberMe: {
+      'az': 'Məni xatırla',
+      'en': 'Remember me',
+      'ru': 'Запомнить меня',
+    },
+    AppStrings.dontHaveAccount: {
+      'az': 'Hesabınız yoxdur?',
+      'en': "Don't have an account?",
+      'ru': 'Нет аккаунта?',
+    },
 
-// Validation Messages
-      AppStrings.phoneRequired: 'Введите номер телефона',
-      AppStrings.phoneInvalidLength: 'Номер телефона должен содержать 9 цифр',
-      AppStrings.phoneInvalid: 'Неверный номер телефона',
-      AppStrings.phoneInvalidOperator: 'Неверный код оператора',
-      AppStrings.passwordRequired: 'Введите пароль',
-      AppStrings.passwordTooShort: 'Пароль должен быть не менее 6 символов',
+    // Validation Messages - Phone
+    AppStrings.phoneRequired: {
+      'az': 'Telefon nömrəsi daxil edin',
+      'en': 'Please enter phone number',
+      'ru': 'Введите номер телефона',
+    },
+    AppStrings.phoneInvalidLength: {
+      'az': 'Telefon nömrəsi 9 rəqəm olmalıdır',
+      'en': 'Phone number must be 9 digits',
+      'ru': 'Номер телефона должен содержать 9 цифр',
+    },
+    AppStrings.phoneInvalid: {
+      'az': 'Telefon nömrəsi düzgün deyil',
+      'en': 'Invalid phone number',
+      'ru': 'Неверный номер телефона',
+    },
+    AppStrings.phoneInvalidOperator: {
+      'az': 'Yanlış operator kodu',
+      'en': 'Invalid operator code',
+      'ru': 'Неверный код оператора',
+    },
+    AppStrings.invalidPhoneNumber: {
+      'az': 'Etibarsız telefon nömrəsi',
+      'en': 'Invalid phone number',
+      'ru': 'Неверный номер телефона',
+    },
 
-      // Register Page
-      AppStrings.createAnAccount: 'Создать аккаунт',
-      AppStrings.nameLabel: 'Имя',
-      AppStrings.nameHint: 'Введите ваше имя',
-      AppStrings.surnameLabel: 'Фамилия',
-      AppStrings.surnameHint: 'Введите вашу фамилию',
-      AppStrings.countryCodeLabel: 'Код страны',
-      AppStrings.phoneNumberLabel: 'Номер телефона',
-      AppStrings.selectCountryCode: 'Выберите код страны',
-      AppStrings.nextButton: 'Далее',
-      AppStrings.alreadyHaveAccount: 'Уже есть аккаунт?',
-      AppStrings.signInButton: 'Войти',
+    // Validation Messages - Password
+    AppStrings.passwordRequired: {
+      'az': 'Şifrə daxil edin',
+      'en': 'Please enter password',
+      'ru': 'Введите пароль',
+    },
+    AppStrings.passwordTooShort: {
+      'az': 'Şifrə ən azı 6 simvol olmalıdır',
+      'en': 'Password must be at least 6 characters',
+      'ru': 'Пароль должен быть не менее 6 символов',
+    },
+    AppStrings.passCannotEmptyText: {
+      'az': 'Şifrə boş ola bilməz',
+      'en': 'Password cannot be empty',
+      'ru': 'Пароль не может быть пустым',
+    },
+    AppStrings.passwordsDoNotMatch: {
+      'az': 'Şifrələr uyğun deyil',
+      'en': 'Passwords do not match',
+      'ru': 'Пароли не совпадают',
+    },
+    AppStrings.passwordsMustMatch: {
+      'az': 'Şifrələr eyni olmalıdır',
+      'en': 'Both Password should be match (same)',
+      'ru': 'Пароли должны совпадать',
+    },
 
-// Terms & Privacy
-      AppStrings.iAgreeToThe: 'Я принимаю ',
-      AppStrings.termsOfService: 'Условия использования',
-      AppStrings.privacyPolicy: 'Политика конфиденциальности',
-      AppStrings.pleaseAcceptTerms: 'Пожалуйста, примите условия',
+    // Register Page
+    AppStrings.createAnAccount: {
+      'az': 'Hesab yaradın',
+      'en': 'Create An Account',
+      'ru': 'Создать аккаунт',
+    },
+    AppStrings.nameLabel: {
+      'az': 'Ad',
+      'en': 'Name',
+      'ru': 'Имя',
+    },
+    AppStrings.nameHint: {
+      'az': 'Adınızı daxil edin',
+      'en': 'Enter your name',
+      'ru': 'Введите ваше имя',
+    },
+    AppStrings.surnameLabel: {
+      'az': 'Soyad',
+      'en': 'Surname',
+      'ru': 'Фамилия',
+    },
+    AppStrings.surnameHint: {
+      'az': 'Soyadınızı daxil edin',
+      'en': 'Enter your surname',
+      'ru': 'Введите вашу фамилию',
+    },
+    AppStrings.countryCodeLabel: {
+      'az': 'Ölkə kodu',
+      'en': 'Country Code',
+      'ru': 'Код страны',
+    },
+    AppStrings.phoneNumberLabel: {
+      'az': 'Telefon nömrəsi',
+      'en': 'Phone Number',
+      'ru': 'Номер телефона',
+    },
+    AppStrings.selectCountryCode: {
+      'az': 'Ölkə kodu seçin',
+      'en': 'Select country code',
+      'ru': 'Выберите код страны',
+    },
+    AppStrings.alreadyHaveAccount: {
+      'az': 'Artıq hesabınız var?',
+      'en': 'Already have an account?',
+      'ru': 'Уже есть аккаунт?',
+    },
+    AppStrings.signInButton: {
+      'az': 'Daxil ol',
+      'en': 'Sign in',
+      'ru': 'Войти',
+    },
 
-// Validation Messages - Name
-      AppStrings.nameRequired: 'Введите имя',
-      AppStrings.nameTooShort: 'Имя должно содержать минимум 2 символа',
-      AppStrings.nameInvalid: 'Имя должно содержать только буквы',
+    // Terms & Privacy
+    AppStrings.iAgreeToThe: {
+      'az': 'Razıyam: ',
+      'en': 'I agree to ',
+      'ru': 'Я принимаю ',
+    },
+    AppStrings.termsOfService: {
+      'az': 'Xidmət şərtləri',
+      'en': 'Terms of Service',
+      'ru': 'Условия использования',
+    },
+    AppStrings.privacyPolicy: {
+      'az': 'Məxfilik siyasəti',
+      'en': 'Privacy Policy',
+      'ru': 'Политика конфиденциальности',
+    },
+    AppStrings.pleaseAcceptTerms: {
+      'az': 'Zəhmət olmasa şərtləri qəbul edin',
+      'en': 'Please accept terms and conditions',
+      'ru': 'Пожалуйста, примите условия',
+    },
 
-// Validation Messages - Surname
-      AppStrings.surnameRequired: 'Введите фамилию',
-      AppStrings.surnameTooShort: 'Фамилия должна содержать минимум 2 символа',
-      AppStrings.surnameInvalid: 'Фамилия должна содержать только буквы',
+    // Validation Messages - Name
+    AppStrings.nameRequired: {
+      'az': 'Ad daxil edin',
+      'en': 'Please enter your name',
+      'ru': 'Введите имя',
+    },
+    AppStrings.nameTooShort: {
+      'az': 'Ad ən azı 2 simvol olmalıdır',
+      'en': 'Name must be at least 2 characters',
+      'ru': 'Имя должно содержать минимум 2 символа',
+    },
+    AppStrings.nameInvalid: {
+      'az': 'Ad yalnız hərflərdən ibarət olmalıdır',
+      'en': 'Name must contain only letters',
+      'ru': 'Имя должно содержать только буквы',
+    },
 
-// Error Messages
-      AppStrings.userAlreadyExists: 'Этот пользователь уже существует',
+    // Validation Messages - Surname
+    AppStrings.surnameRequired: {
+      'az': 'Soyad daxil edin',
+      'en': 'Please enter your surname',
+      'ru': 'Введите фамилию',
+    },
+    AppStrings.surnameTooShort: {
+      'az': 'Soyad ən azı 2 simvol olmalıdır',
+      'en': 'Surname must be at least 2 characters',
+      'ru': 'Фамилия должна содержать минимум 2 символа',
+    },
+    AppStrings.surnameInvalid: {
+      'az': 'Soyad yalnız hərflərdən ibarət olmalıdır',
+      'en': 'Surname must contain only letters',
+      'ru': 'Фамилия должна содержать только буквы',
+    },
 
-      // OTP Confirmation Dialog
-      AppStrings.sendOtpTo: 'Отправить OTP',
-      AppStrings.sendOtpDescription:
-          'Отправить 4-значный OTP код\nна номер телефона',
+    // Error Messages
+    AppStrings.userAlreadyExists: {
+      'az': 'Bu istifadəçi artıq mövcuddur',
+      'en': 'This user already exists',
+      'ru': 'Этот пользователь уже существует',
+    },
+    AppStrings.userNotFound: {
+      'az': 'İstifadəçi tapılmadı',
+      'en': 'User not found',
+      'ru': 'Пользователь не найден',
+    },
+    AppStrings.errorOccurred: {
+      'az': 'Xəta baş verdi',
+      'en': 'An error occurred',
+      'ru': 'Произошла ошибка',
+    },
 
-      // OTP Page
-      AppStrings.otpVerification: 'OTP Верификация',
-      AppStrings.otpSubtitle:
-          'Код подтверждения был отправлен на указанный номер телефона',
-      AppStrings.secLeft: 'сек осталось',
-      AppStrings.didntReceiveCode: 'Не получили код?',
-      AppStrings.resendCode: 'Отправить повторно',
-      AppStrings.backButton: 'Назад',
+    // OTP Confirmation Dialog
+    AppStrings.sendOtpTo: {
+      'az': 'OTP Göndər',
+      'en': 'Send OTP To',
+      'ru': 'Отправить OTP',
+    },
+    AppStrings.sendOtpDescription: {
+      'az': '4 rəqəmli OTP kodu telefon\nnömrəsinə göndərin',
+      'en': 'Send an 4 - digits OTP code\nto phone number',
+      'ru': 'Отправить 4-значный OTP код\nна номер телефона',
+    },
 
-// OTP Validation & Errors
-      AppStrings.enterCompleteOtp: 'Пожалуйста, введите 4-значный код',
-      AppStrings.wrongOtpCode: 'Неверный код',
-      AppStrings.waitBeforeResend: 'Подождите перед повторной отправкой',
-      AppStrings.otpResent: 'Код отправлен повторно',
-      AppStrings.invalidPhoneNumber: 'Неверный номер телефона',
-      AppStrings.errorOccurred: 'Произошла ошибка',
+    // OTP Page
+    AppStrings.otpVerification: {
+      'az': 'OTP Doğrulama',
+      'en': 'OTP Verification',
+      'ru': 'OTP Верификация',
+    },
+    AppStrings.otpSubtitle: {
+      'az': 'Təqdim etdiyiniz telefon nömrəsinə doğrulama kodu göndərildi',
+      'en': 'An authorization code has been sent to your provided Phone Number',
+      'ru': 'Код подтверждения был отправлен на указанный номер телефона',
+    },
+    AppStrings.secLeft: {
+      'az': 'san qaldı',
+      'en': 'sec left',
+      'ru': 'сек осталось',
+    },
+    AppStrings.didntReceiveCode: {
+      'az': 'Kod almadınız?',
+      'en': "I don't receive code",
+      'ru': 'Не получили код?',
+    },
+    AppStrings.resendCode: {
+      'az': 'Yenidən göndər',
+      'en': 'Resend Code',
+      'ru': 'Отправить повторно',
+    },
+    AppStrings.enterCompleteOtp: {
+      'az': 'Zəhmət olmasa 4 rəqəmli kodu daxil edin',
+      'en': 'Please enter the complete 4-digit code',
+      'ru': 'Пожалуйста, введите 4-значный код',
+    },
+    AppStrings.wrongOtpCode: {
+      'az': 'Yanlış kod',
+      'en': 'Wrong code',
+      'ru': 'Неверный код',
+    },
+    AppStrings.waitBeforeResend: {
+      'az': 'Yenidən göndərmək üçün gözləyin',
+      'en': 'Please wait before resending',
+      'ru': 'Подождите перед повторной отправкой',
+    },
+    AppStrings.otpResent: {
+      'az': 'Kod yenidən göndərildi',
+      'en': 'Code resent successfully',
+      'ru': 'Код отправлен повторно',
+    },
 
-      // Setup Password Page
-      AppStrings.createPassword: 'Создать Пароль',
-      AppStrings.enterNewPassword: 'Введите Новый Пароль',
-      AppStrings.confirmNewPassword: 'Подтвердите Новый Пароль',
-      AppStrings.registerButton: 'Регистрация',
+    // Setup Password Page
+    AppStrings.createPassword: {
+      'az': 'Şifrə Yarat',
+      'en': 'Create Password',
+      'ru': 'Создать Пароль',
+    },
+    AppStrings.enterNewPassword: {
+      'az': 'Yeni Şifrə Daxil Edin',
+      'en': 'Enter New Password',
+      'ru': 'Введите Новый Пароль',
+    },
+    AppStrings.confirmNewPassword: {
+      'az': 'Yeni Şifrəni Təsdiq Edin',
+      'en': 'Confirm New Password',
+      'ru': 'Подтвердите Новый Пароль',
+    },
+    AppStrings.registerButton: {
+      'az': 'Qeydiyyat',
+      'en': 'Register',
+      'ru': 'Регистрация',
+    },
+    AppStrings.setupPasswordText: {
+      'az': 'Şifrə qurulması',
+      'en': 'Set Up Password',
+      'ru': 'Настройка пароля',
+    },
+    AppStrings.setupPasswordHintText: {
+      'az': 'Şifrənizi daxil edin',
+      'en': 'Enter your password',
+      'ru': 'Введите пароль',
+    },
+    AppStrings.confirmPassword: {
+      'az': 'Şifrəni təsdiqlə',
+      'en': 'Confirm Password',
+      'ru': 'Подтвердите пароль',
+    },
+    AppStrings.confirmPasswordHint: {
+      'az': 'Şifrəni yenidən daxil edin',
+      'en': 'Re-enter your password',
+      'ru': 'Введите пароль ещё раз',
+    },
+    AppStrings.passwordRulesText: {
+      'az': 'Şifrə tələbləri',
+      'en': 'Password Rules',
+      'ru': 'Правила пароля',
+    },
 
-      AppStrings.setupPasswordText: 'Настройка пароля',
-      AppStrings.setupPasswordHintText: 'Введите пароль',
-      AppStrings.confirmPassword: 'Подтвердите пароль',
-      AppStrings.confirmPasswordHint: 'Введите пароль ещё раз',
-      AppStrings.continueButtonText: 'Продолжить',
-      AppStrings.passCannotEmptyText: 'Пароль не может быть пустым',
-      AppStrings.passwordRulesText: 'Правила пароля',
-      AppStrings.passwordsDoNotMatch: 'Пароли не совпадают',
+    // Password Requirements
+    AppStrings.capitalLetterRequired: {
+      'az': 'Böyük hərf əlavə edilməlidir',
+      'en': 'The capital letter is not added yet',
+      'ru': 'Заглавная буква еще не добавлена',
+    },
+    AppStrings.lowercaseLetterRequired: {
+      'az': 'Kiçik hərf əlavə edilməlidir',
+      'en': 'The lowercase letter is not added yet',
+      'ru': 'Строчная буква еще не добавлена',
+    },
+    AppStrings.numberRequired: {
+      'az': 'Rəqəm əlavə edilməlidir',
+      'en': 'The number is not added yet',
+      'ru': 'Цифра еще не добавлена',
+    },
+    AppStrings.specialCharRequired: {
+      'az': 'Xüsusi simvol əlavə edilməlidir',
+      'en': 'The special character is not added yet',
+      'ru': 'Спецсимвол еще не добавлен',
+    },
+    AppStrings.passwordResetSuccess: {
+      'az': 'Şifrə uğurla yeniləndi',
+      'en': 'Password reset successful',
+      'ru': 'Пароль успешно сброшен',
+    },
+    AppStrings.autoLoginFailed: {
+      'az':
+          'Avtomatik giriş uğursuz oldu. Zəhmət olmasa giriş səhifəsi ilə daxil olun',
+      'en': 'Automatic login failed. Please login manually',
+      'ru': 'Автоматический вход не удался. Пожалуйста, войдите вручную',
+    },
 
-      // Password Requirements
-      AppStrings.capitalLetterRequired: 'Заглавная буква еще не добавлена',
-      AppStrings.lowercaseLetterRequired: 'Строчная буква еще не добавлена',
-      AppStrings.numberRequired: 'Цифра еще не добавлена',
-      AppStrings.specialCharRequired: 'Спецсимвол еще не добавлен',
-      AppStrings.passwordsMustMatch: 'Пароли должны совпадать',
-      AppStrings.forgotPasswordPageHeader: 'Забыли пароль',
-      AppStrings.passwordResetSuccess: 'Пароль успешно сброшен',
-      AppStrings.autoLoginFailed:
-          'Автоматический вход не удался. Пожалуйста, войдите вручную',
+    // LoginService Messages
+    AppStrings.unknownInternalError: {
+      'az': 'Bilinməyən daxili xəta',
+      'en': 'Unknown internal error',
+      'ru': 'Неизвестная внутренняя ошибка',
+    },
+    AppStrings.badRequest: {
+      'az': 'Səhv sorğu',
+      'en': 'Bad request',
+      'ru': 'Неверный запрос',
+    },
+    AppStrings.invalidCredentials: {
+      'az': 'İstifadəçi adı və ya şifrə yanlışdır',
+      'en': 'Invalid username or password',
+      'ru': 'Неверное имя пользователя или пароль',
+    },
+    AppStrings.forbidden: {
+      'az': 'Girişə icazə verilməyib',
+      'en': 'Access forbidden',
+      'ru': 'Доступ запрещён',
+    },
+    AppStrings.invalidData: {
+      'az': 'Məlumatlar düzgün deyil',
+      'en': 'Invalid data',
+      'ru': 'Неверные данные',
+    },
+    AppStrings.serverError: {
+      'az': 'Server xətası: Zəhmət olmasa yenidən cəhd edin',
+      'en': 'Server error: Please try again',
+      'ru': 'Ошибка сервера: Пожалуйста, попробуйте снова',
+    },
+    AppStrings.serviceUnavailable: {
+      'az': 'Servis müvəqqəti əlçatan deyil',
+      'en': 'Service temporarily unavailable',
+      'ru': 'Сервис временно недоступен',
+    },
+    AppStrings.serviceDown: {
+      'az': 'Xidmət əlçatan deyil: Servislər hazırda işləmir',
+      'en': 'Service unavailable: Services are currently down',
+      'ru': 'Сервис недоступен: Сервисы сейчас не работают',
+    },
+    AppStrings.timeoutError: {
+      'az': 'Sorğu vaxtı bitdi',
+      'en': 'Request timed out',
+      'ru': 'Время запроса истекло',
+    },
+    AppStrings.requestCancelled: {
+      'az': 'Sorğu ləğv edildi',
+      'en': 'Request cancelled',
+      'ru': 'Запрос отменён',
+    },
+    AppStrings.noInternet: {
+      'az': 'İnternet yoxdur, şəbəkənizi yoxlayın və yenidən cəhd edin',
+      'en': 'No internet, please check your connection and try again',
+      'ru': 'Нет интернета, проверьте соединение и попробуйте снова',
+    },
+    AppStrings.badCertificate: {
+      'az': 'Təhlükəsizlik sertifikatı xətası',
+      'en': 'Security certificate error',
+      'ru': 'Ошибка сертификата безопасности',
+    },
+    AppStrings.networkError: {
+      'az': 'Şəbəkə xətası baş verdi',
+      'en': 'Network error occurred',
+      'ru': 'Произошла ошибка сети',
+    },
+    AppStrings.loginFailed: {
+      'az': 'Giriş uğursuz oldu',
+      'en': 'Login failed',
+      'ru': 'Вход не выполнен',
+    },
 
-      // LoginService Messages
-      AppStrings.unknownInternalError: 'Неизвестная внутренняя ошибка',
-      AppStrings.badRequest: 'Неверный запрос',
-      AppStrings.invalidCredentials: 'Неверное имя пользователя или пароль',
-      AppStrings.forbidden: 'Доступ запрещён',
-      AppStrings.userNotFound: 'Пользователь не найден',
-      AppStrings.invalidData: 'Неверные данные',
-      AppStrings.serverError: 'Ошибка сервера: Пожалуйста, попробуйте снова',
-      AppStrings.serviceUnavailable: 'Сервис временно недоступен',
-      AppStrings.serviceDown: 'Сервис недоступен: Сервисы сейчас не работают',
-      AppStrings.timeoutError: 'Время запроса истекло',
-      AppStrings.requestCancelled: 'Запрос отменён',
-      AppStrings.noInternet: 'Нет интернета, проверьте соединение и попробуйте снова',
-      AppStrings.badCertificate: 'Ошибка сертификата безопасности',
-      AppStrings.networkError: 'Произошла ошибка сети',
-      AppStrings.loginFailed: 'Вход не выполнен',
+    // Success Messages
+    AppStrings.registrationSuccessful: {
+      'az': 'Qeydiyyat Uğurludur',
+      'en': 'Registration Successful',
+      'ru': 'Регистрация Успешна',
+    },
+    AppStrings.passwordResetSuccessful: {
+      'az': 'Şifrə Sıfırlama Uğurlu',
+      'en': 'Password Reset Successful',
+      'ru': 'Сброс Пароля Успешен',
+    },
+    AppStrings.carAdded: {
+      'az': 'Avtomobil Əlavə Edildi',
+      'en': 'Car Added',
+      'ru': 'Автомобиль Добавлен',
+    },
+    AppStrings.registrationSuccessSubtext: {
+      'az':
+          'Hesabınız uğurla yaradıldı. İndi daxil olaraq avtomobilinizin texniki xidmətini asanlıqla idarə edə bilərsiniz.',
+      'en':
+          'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
+      'ru':
+          'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
+    },
+    AppStrings.passwordResetSuccessSubtext: {
+      'az':
+          'Hesabınız uğurla yaradıldı. İndi daxil olaraq avtomobilinizin texniki xidmətini asanlıqla idarə edə bilərsiniz.',
+      'en':
+          'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
+      'ru':
+          'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
+    },
+    AppStrings.carAddedSubtext: {
+      'az': 'Yeni Kart Əlavə Edildi BMW M4 Sports 2024',
+      'en': 'New Card Added BMW M4 Sports 2024',
+      'ru': 'Новая Карта Добавлена BMW M4 Sports 2024',
+    },
+    AppStrings.checkMyCars: {
+      'az': 'Avtomobillərimə Bax',
+      'en': 'Check My Cars',
+      'ru': 'Проверить Мои Автомобили',
+    },
+    AppStrings.newCarAdded: {
+      'az': 'Yeni Kart Əlavə Edildi',
+      'en': 'New Card Added',
+      'ru': 'Новая Карта Добавлена',
+    },
 
-      AppStrings.registrationSuccessful: 'Регистрация Успешна',
-      AppStrings.passwordResetSuccessful: 'Сброс Пароля Успешен',
-      AppStrings.carAdded: 'Автомобиль Добавлен',
-
-      AppStrings.registrationSuccessSubtext:
-      'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
-      AppStrings.passwordResetSuccessSubtext:
-      'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
-      AppStrings.carAddedSubtext:
-      'Новая Карта Добавлена BMW M4 Sports 2024',
-
-      AppStrings.gotIt: 'Понятно',
-      AppStrings.checkMyCars: 'Проверить Мои Автомобили',
-      AppStrings.newCarAdded: 'Новая Карта Добавлена',
-
-      AppStrings.homePage: 'Главная Страница',
-      AppStrings.settingsPage: 'Страница Настроек',
-      AppStrings.bookingPage: 'Страница Бронирования',
-      AppStrings.profilePage: 'Страница Профиля',
-
+    // Navigation Pages
+    AppStrings.homePage: {
+      'az': 'Əsas Səhifə',
+      'en': 'Home Page',
+      'ru': 'Главная Страница',
+    },
+    AppStrings.settingsPage: {
+      'az': 'Parametrlər',
+      'en': 'Settings Page',
+      'ru': 'Страница Настроек',
+    },
+    AppStrings.bookingPage: {
+      'az': 'Rezervasiya',
+      'en': 'Booking Page',
+      'ru': 'Страница Бронирования',
+    },
+    AppStrings.profilePage: {
+      'az': 'Profil Səhifəsi',
+      'en': 'Profile Page',
+      'ru': 'Страница Профиля',
     },
   };
 
   static String translate(String key, String languageCode) {
-    return translations[languageCode]?[key] ?? key;
+    return translations[key]?[languageCode] ?? key;
   }
 }

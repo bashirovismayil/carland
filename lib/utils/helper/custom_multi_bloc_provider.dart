@@ -7,6 +7,7 @@ import '../../cubit/auth/otp/otp_verify_cubit.dart';
 import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
+import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../di/locator.dart';
 
 class CustomMultiBlocProviderHelper extends MultiBlocProvider {
@@ -36,7 +37,9 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             BlocProvider<ForgotPasswordCubit>(
               create: (_) => locator<ForgotPasswordCubit>(),
             ),
-
+            BlocProvider<ProfilePhotoCubit>(
+              create: (context) => locator<ProfilePhotoCubit>(),
+            ),
           ],
         );
 }

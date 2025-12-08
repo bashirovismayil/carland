@@ -1,4 +1,6 @@
 import 'package:carcat/core/localization/app_translation.dart';
+import 'package:carcat/presentation/settings/settings_page.dart';
+import 'package:carcat/presentation/vin/vin_scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -23,10 +25,10 @@ class UserMainNavigationView extends StatelessWidget {
   const UserMainNavigationView({super.key});
 
   static const List<Widget> _pages = [
+    VinScannerScreen(),
     HomePage(),
     HomePage(),
-    HomePage(),
-    HomePage(),
+    SettingsPage(),
   ];
 
   @override

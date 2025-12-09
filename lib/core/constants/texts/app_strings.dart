@@ -213,7 +213,7 @@ class AppStrings {
   // Add Your Car VIN Page
   static const String addYourCarVin = "addYourCarVin";
   static const String enterOrScanVin = "enterOrScanVin";
-  static const String vinAuthorizationDescription = "vinAuthorizationDescription";
+  static const String vinScanDescription = "vinAuthorizationDescription";
   static const String enterCarVin = "enterCarVin";
   static const String vinPlaceholder = "vinPlaceholder";
   static const String or = "or";

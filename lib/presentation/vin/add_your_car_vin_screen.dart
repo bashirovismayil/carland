@@ -129,7 +129,7 @@ class AddYourCarVinPage extends HookWidget {
 
   Widget _buildDescription() {
     return Text(
-      AppTranslation.translate(AppStrings.vinAuthorizationDescription),
+      AppTranslation.translate(AppStrings.vinScanDescription),
       style: const TextStyle(
         fontSize: 14,
         color: AppColors.textSecondary,

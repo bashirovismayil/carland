@@ -24,18 +24,48 @@ class AppRouter {
   }
 
   void navigateToAuthState(AuthState authState) {
+    final navigator = _navigatorKey.currentState;
+
+    if (navigator == null || !navigator.mounted) {
+      debugPrint('[AppRouter] Navigator is null or not mounted, skipping navigation');
+      return;
+    }
+
+    final context = _navigatorKey.currentContext;
+    if (context == null) {
+      debugPrint('[AppRouter] Navigator context is null, skipping navigation');
+      return;
+    }
+
     final targetPage = getPageForAuthState(authState);
     final targetRouteName = targetPage.runtimeType.toString();
 
-    if (_navigatorKey.currentContext == null) return;
+    try {
+      final currentRoute = ModalRoute.of(context)?.settings.name;
+      if (currentRoute == targetRouteName) {
+        debugPrint('[AppRouter] Already on target page: $targetRouteName');
+        return;
+      }
+    } catch (e) {
+      debugPrint('[AppRouter] Error getting current route: $e');
+    }
 
-    final currentRoute = ModalRoute.of(_navigatorKey.currentContext!)?.settings.name;
-    if (currentRoute == targetRouteName) return;
+    try {
+      navigator.pushAndRemoveUntil(
+        _createRoute(targetPage, targetRouteName),
+            (route) => false,
+      );
+      debugPrint('[AppRouter] Successfully navigated to: $targetRouteName');
+    } catch (e, stackTrace) {
+      debugPrint('[AppRouter] Navigation error: $e');
+      debugPrint('[AppRouter] Stack trace: $stackTrace');
 
-    _navigatorKey.currentState?.pushAndRemoveUntil(
-      _createRoute(targetPage, targetRouteName),
-          (route) => false,
-    );
+      try {
+        navigator.push(_createRoute(targetPage, targetRouteName));
+      } catch (e2) {
+        debugPrint('[AppRouter] Fallback navigation also failed: $e2');
+      }
+    }
   }
 
   PageRoute<T> _createRoute<T extends Object?>(Widget page, String routeName) {

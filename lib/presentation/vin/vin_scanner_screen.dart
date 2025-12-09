@@ -254,17 +254,110 @@ class _VinScannerScreenState extends State<VinScannerScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryWhite,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            Expanded(
-              child: _scannedVin != null
-                  ? _buildSuccessView()
-                  : _buildScannerView(),
+      body: _scannedVin != null ? _buildSuccessScreen() : _buildScannerScreen(),
+    );
+  }
+
+  Widget _buildScannerScreen() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Layer 1: Full screen camera
+        if (_hasPermission && _isInitialized)
+          _buildFullScreenCamera()
+        else if (!_hasPermission)
+          Container(color: Colors.black, child: _buildPermissionRequest())
+        else
+          Container(color: Colors.black, child: _buildLoadingView()),
+
+        // Layer 2: Tap to focus gesture (full screen)
+        if (_isInitialized && _hasPermission)
+          Positioned(
+            top: MediaQuery.of(context).size.height / 2 -
+                (MediaQuery.of(context).size.width * 0.7 / 2) -
+                MediaQuery.of(context).padding.top - 20,
+            right: MediaQuery.of(context).size.width * 0.15 - 20,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: Icon(
+                  _isFlashOn ? Icons.flash_on : Icons.flash_off,
+                  color: _isFlashOn ? Colors.yellow : Colors.white,
+                  size: 20,
+                ),
+                onPressed: _toggleFlash,
+                padding: EdgeInsets.zero,
+              ),
             ),
-            _buildBottomSection(),
-          ],
+          ),
+
+        // Layer 3: White overlay with scan window cutout
+        if (_hasPermission)
+          Positioned.fill(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final scanAreaSize = constraints.maxWidth * 0.5;
+
+                return CustomPaint(
+                  painter: VinScannerOverlayPainter(
+                    scanAreaWidth: scanAreaSize,
+                    scanAreaHeight: scanAreaSize,
+                    overlayColor: Colors.white.withOpacity(0.92),
+                    frameColor: const Color(0xFF2A2A2A),
+                    cornerLength: 28,
+                    cornerRadius: 12,
+                    strokeWidth: 3.5,
+                  ),
+                  child: const SizedBox.expand(),
+                );
+              },
+            ),
+          ),
+
+        // Layer 4: Focus indicator
+        if (_showFocusIndicator && _focusPoint != null)
+          Positioned(
+            left: _focusPoint!.dx - 30,
+            top: _focusPoint!.dy - 30,
+            child: _buildFocusIndicator(),
+          ),
+
+        // Layer 5: UI Elements (header, text, buttons)
+        SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              const SizedBox(height: AppTheme.spacingXl),
+              _buildTitleSection(),
+              const Spacer(),
+              if (_errorMessage != null) _buildErrorMessage(),
+              if (_isScanning && _isContinuousMode) _buildScanningIndicator(),
+              _buildBottomSection(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFullScreenCamera() {
+    final controller = _scannerService.cameraController;
+    if (controller == null || !controller.value.isInitialized) {
+      return Container(color: Colors.black);
+    }
+
+    return SizedBox.expand(
+      child: FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+          width: controller.value.previewSize?.height ?? 1,
+          height: controller.value.previewSize?.width ?? 1,
+          child: CameraPreview(controller),
         ),
       ),
     );
@@ -282,11 +375,11 @@ class _VinScannerScreenState extends State<VinScannerScreen>
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: AppColors.surfaceColor,
+              color: AppColors.lightGrey,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.08),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -295,15 +388,15 @@ class _VinScannerScreenState extends State<VinScannerScreen>
             child: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, size: 18),
               onPressed: () => Navigator.of(context).pop(),
-              color: AppColors.textPrimary,
+              color: AppColors.mediumGrey,
             ),
           ),
           const SizedBox(width: AppTheme.spacingMd),
           const Text(
             'Add your Car VIN',
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
             ),
           ),
@@ -312,23 +405,22 @@ class _VinScannerScreenState extends State<VinScannerScreen>
     );
   }
 
-  Widget _buildScannerView() {
-    return Column(
-      children: [
-        const SizedBox(height: AppTheme.spacingLg),
-        const Text(
-          'Scan Car VIN Number',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+  Widget _buildTitleSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+      child: Column(
+        children: [
+          const Text(
+            'Scan Car VIN Number',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
-        ),
-        const SizedBox(height: AppTheme.spacingSm),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingXl),
-          child: Text(
-            'Point camera at the VIN plate. Tap to focus on the text.',
+          const SizedBox(height: AppTheme.spacingSm),
+          Text(
+            'Use your car\'s Vehicle Identification Number (VIN) to fetch accurate details. You can type it in or scan via camera.',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -336,151 +428,30 @@ class _VinScannerScreenState extends State<VinScannerScreen>
               height: 1.5,
             ),
           ),
-        ),
-        const SizedBox(height: AppTheme.spacingLg),
-        Expanded(
-          child: _buildCameraPreview(),
-        ),
-        if (_errorMessage != null) _buildErrorMessage(),
-
-        // Scanning indicator
-        if (_isScanning && _isContinuousMode)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSm),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Scanning for VIN...',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-        const SizedBox(height: AppTheme.spacingMd),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildCameraPreview() {
+  Widget _buildFlashButtonRow() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMd),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black,
-            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+      padding: const EdgeInsets.only(bottom: AppTheme.spacingLg),
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5),
+          shape: BoxShape.circle,
+        ),
+        child: IconButton(
+          icon: Icon(
+            _isFlashOn ? Icons.flash_on : Icons.flash_off,
+            color: _isFlashOn ? Colors.yellow : Colors.white,
+            size: 24,
           ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Camera or placeholder
-                  if (!_hasPermission)
-                    _buildPermissionRequest()
-                  else if (!_isInitialized)
-                    _buildLoadingView()
-                  else
-                    _buildCameraView(constraints),
-
-                  // Scanner overlay
-                  if (_isInitialized && _hasPermission)
-                    _buildScannerOverlay(constraints),
-
-                  // Tap to focus gesture
-                  if (_isInitialized && _hasPermission)
-                    Positioned.fill(
-                      child: GestureDetector(
-                        onTapDown: (details) => _handleTapToFocus(
-                          details,
-                          Size(constraints.maxWidth, constraints.maxHeight),
-                        ),
-                        behavior: HitTestBehavior.translucent,
-                      ),
-                    ),
-
-                  // Focus indicator
-                  if (_showFocusIndicator && _focusPoint != null)
-                    Positioned(
-                      left: _focusPoint!.dx - 30,
-                      top: _focusPoint!.dy - 30,
-                      child: _buildFocusIndicator(),
-                    ),
-
-                  // Flash button
-                  if (_isInitialized && _hasPermission)
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: _buildFlashButton(),
-                    ),
-
-                  // Zoom slider
-                  if (_isInitialized && _hasPermission)
-                    Positioned(
-                      bottom: 12,
-                      left: 12,
-                      right: 12,
-                      child: _buildZoomSlider(),
-                    ),
-                ],
-              );
-            },
-          ),
+          onPressed: _toggleFlash,
         ),
       ),
-    );
-  }
-
-  Widget _buildCameraView(BoxConstraints constraints) {
-    final controller = _scannerService.cameraController;
-    if (controller == null || !controller.value.isInitialized) {
-      return _buildLoadingView();
-    }
-
-    final cameraAspectRatio = controller.value.aspectRatio;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-      child: OverflowBox(
-        alignment: Alignment.center,
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: constraints.maxWidth,
-            height: constraints.maxWidth / cameraAspectRatio,
-            child: CameraPreview(controller),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildScannerOverlay(BoxConstraints constraints) {
-    final scanAreaWidth = constraints.maxWidth - 32;
-    final scanAreaHeight = 80.0;
-
-    return CustomPaint(
-      painter: VinScannerOverlayPainter(
-        scanAreaWidth: scanAreaWidth,
-        scanAreaHeight: scanAreaHeight,
-      ),
-      child: const SizedBox.expand(),
     );
   }
 
@@ -508,42 +479,6 @@ class _VinScannerScreenState extends State<VinScannerScreen>
           ),
         );
       },
-    );
-  }
-
-  Widget _buildZoomSlider() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black54,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.zoom_out, color: Colors.white70, size: 18),
-          Expanded(
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                trackHeight: 2,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
-                activeTrackColor: Colors.white,
-                inactiveTrackColor: Colors.white38,
-                thumbColor: Colors.white,
-              ),
-              child: Slider(
-                value: 0.15, // Default zoom
-                min: 0.0,
-                max: 0.5, // Max %50 zoom
-                onChanged: (value) {
-                  _scannerService.setZoom(value);
-                },
-              ),
-            ),
-          ),
-          const Icon(Icons.zoom_in, color: Colors.white70, size: 18),
-        ],
-      ),
     );
   }
 
@@ -626,25 +561,6 @@ class _VinScannerScreenState extends State<VinScannerScreen>
     );
   }
 
-  Widget _buildFlashButton() {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: const BoxDecoration(
-        color: Colors.black45,
-        shape: BoxShape.circle,
-      ),
-      child: IconButton(
-        icon: Icon(
-          _isFlashOn ? Icons.flash_on : Icons.flash_off,
-          color: _isFlashOn ? Colors.yellow : Colors.white,
-          size: 20,
-        ),
-        onPressed: _toggleFlash,
-      ),
-    );
-  }
-
   Widget _buildErrorMessage() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMd),
@@ -672,116 +588,115 @@ class _VinScannerScreenState extends State<VinScannerScreen>
     );
   }
 
-  Widget _buildSuccessView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingLg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.successColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check_circle,
-                color: AppColors.successColor,
-                size: 48,
-              ),
+  Widget _buildScanningIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSm),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColors.textSecondary,
             ),
-            const SizedBox(height: AppTheme.spacingLg),
-            const Text(
-              'VIN Scanned Successfully',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Scanning for VIN...',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
             ),
-            const SizedBox(height: AppTheme.spacingMd),
-            Container(
-              padding: const EdgeInsets.all(AppTheme.spacingMd),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceColor,
-                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _scannedVin!,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'monospace',
-                      letterSpacing: 2,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  IconButton(
-                    icon: const Icon(Icons.copy, size: 20),
-                    onPressed: _copyVin,
-                    color: AppColors.textSecondary,
-                    tooltip: 'Copy VIN',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacingXl),
-            TextButton.icon(
-              onPressed: _resetScan,
-              icon: const Icon(Icons.refresh, size: 20),
-              label: const Text('Scan Again'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildBottomSection() {
-    return Padding(
-      padding: const EdgeInsets.all(AppTheme.spacingMd),
+  Widget _buildSuccessScreen() {
+    return SafeArea(
       child: Column(
         children: [
-          if (_scannedVin == null && !_isContinuousMode)
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton.icon(
-                onPressed:
-                    _isInitialized && !_isScanning ? _manualCapture : null,
-                icon: _isScanning
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.textPrimary,
-                        ),
-                      )
-                    : const Icon(Icons.camera_alt, size: 20),
-                label: Text(_isScanning ? 'Processing...' : 'Capture'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.surfaceColor,
-                  foregroundColor: AppColors.textPrimary,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-                  ),
+          _buildHeader(),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(AppTheme.spacingLg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: AppColors.successColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.check_circle,
+                        color: AppColors.successColor,
+                        size: 48,
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingLg),
+                    const Text(
+                      'VIN Scanned Successfully',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingMd),
+                    Container(
+                      padding: const EdgeInsets.all(AppTheme.spacingMd),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceColor,
+                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _scannedVin!,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'monospace',
+                              letterSpacing: 2,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          IconButton(
+                            icon: const Icon(Icons.copy, size: 20),
+                            onPressed: _copyVin,
+                            color: AppColors.textSecondary,
+                            tooltip: 'Copy VIN',
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingXl),
+                    TextButton.icon(
+                      onPressed: _resetScan,
+                      icon: const Icon(Icons.refresh, size: 20),
+                      label: const Text('Scan Again'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          if (_scannedVin != null)
-            SizedBox(
+          ),
+          Padding(
+            padding: const EdgeInsets.all(AppTheme.spacingMd),
+            child: SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
@@ -799,6 +714,45 @@ class _VinScannerScreenState extends State<VinScannerScreen>
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomSection() {
+    return Padding(
+      padding: const EdgeInsets.all(AppTheme.spacingMd),
+      child: Column(
+        children: [
+          if (!_isContinuousMode)
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                onPressed:
+                _isInitialized && !_isScanning ? _manualCapture : null,
+                icon: _isScanning
+                    ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.textPrimary,
+                  ),
+                )
+                    : const Icon(Icons.camera_alt, size: 20),
+                label: Text(_isScanning ? 'Processing...' : 'Capture'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.surfaceColor,
+                  foregroundColor: AppColors.textPrimary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
                   ),
                 ),
               ),
@@ -838,6 +792,7 @@ class VinScannerOverlayPainter extends CustomPainter {
       height: scanAreaHeight,
     );
 
+    // Draw overlay with cutout for scan area
     final overlayPath = Path()
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
       ..addRRect(
@@ -846,6 +801,7 @@ class VinScannerOverlayPainter extends CustomPainter {
 
     canvas.drawPath(overlayPath, Paint()..color = overlayColor);
 
+    // Draw corner brackets
     final cornerPaint = Paint()
       ..color = frameColor
       ..strokeWidth = strokeWidth
@@ -856,16 +812,6 @@ class VinScannerOverlayPainter extends CustomPainter {
     _drawCorner(canvas, cornerPaint, scanRect.topRight, false, true);
     _drawCorner(canvas, cornerPaint, scanRect.bottomLeft, true, false);
     _drawCorner(canvas, cornerPaint, scanRect.bottomRight, false, false);
-
-    final hintPaint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
-      ..strokeWidth = 1;
-
-    canvas.drawLine(
-      Offset(scanRect.left + 8, center.dy),
-      Offset(scanRect.right - 8, center.dy),
-      hintPaint,
-    );
   }
 
   void _drawCorner(

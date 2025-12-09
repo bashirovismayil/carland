@@ -766,10 +766,10 @@ class Translations {
       'ru': 'Введите или отсканируйте VIN',
     },
 
-    AppStrings.vinAuthorizationDescription: {
-      'az': 'Təqdim etdiyiniz telefon nömrəsinə təsdiq kodu göndərildi',
-      'en': 'An authorization code has been send to your\nprovided Phone Number',
-      'ru': 'Код авторизации был отправлен на\nуказанный номер телефона',
+    AppStrings.vinScanDescription: {
+      'az': 'Maşının ön panelində və ya sürücü qapısının kənarında yerləşən VIN kodu kameraya göstərərək skan edin',
+      'en': 'Point your camera at the VIN code located on the dashboard or driver-side door to scan it',
+      'ru': 'Наведите камеру на VIN-код, расположенный на приборной панели или на стойке водительской двери, чтобы сканировать',
     },
 
     AppStrings.enterCarVin: {

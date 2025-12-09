@@ -68,6 +68,8 @@ class LoginCubit extends Cubit<LoginState> {
       if (isClosed) return;
 
       await _local.saveLoginResponse(resp);
+      await _local.saveUserName(resp.name);
+      await _local.saveUserSurname(resp.surname);
       await _local.setRememberMe(rememberMe);
 
       debugPrint(rememberMe
@@ -131,6 +133,8 @@ class LoginCubit extends Cubit<LoginState> {
       if (isClosed) return;
 
       await _local.saveLoginResponse(resp);
+      await _local.saveUserName(resp.name);
+      await _local.saveUserSurname(resp.surname);
       await _authManager.onLoginSuccess();
 
       log('✅ Auto login successful - Role: ${resp.role.displayName}');
@@ -186,6 +190,8 @@ class LoginCubit extends Cubit<LoginState> {
       if (isClosed) return;
 
       await _local.saveLoginResponse(resp);
+      await _local.saveUserName(resp.name);
+      await _local.saveUserSurname(resp.surname);
       await _local.setGuestMode(true);
       await _authManager.onLoginSuccess();
 

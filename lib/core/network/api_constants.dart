@@ -82,44 +82,7 @@ class ApiConstants {
       '$baseUrl/carland/server-carland/api/v1/photo/for/user/get';
   static const deleteProfilePhoto =
       '$baseUrl/carland/server-carland/api/v1/photo/for/user/delete';
-
-  // Get Patient data by ID
-  static const getPatientDataByID =
-      '$baseUrl/hospital/server-hospital/api/v1/patient/get/byId?patientId=';
-
-  // Patient Analyze List
-  static const getPatientAnalyzeList =
-      '$baseUrl/hospital/server-hospital/api/v1/patient/tests';
-
-  // Patient Get Analyze PDF
-  static const getPatientAnalyzePDF =
-      '$baseUrl/hospital/server-hospital/api/v1/patient/download/test/pdf?testId=';
-
-  // Patient Upload Analyze PDF
-  static const uploadAnalyzePDF =
-      '$baseUrl/hospital/server-hospital/api/v1/patient/test/upload/pdf';
-
-  // Get Appointment List
-  static const getAppointmentList =
-      '$baseUrl/hospital/server-hospital/api/v1/appointment/list?date=';
-
-  // Get Appointment by ID from reception
-  static const getAppointmentByIdFromReception =
-      '$baseUrl/hospital/server-hospital/api/v1/appointment/get/byId?appointmentId=';
-
-  // Admin Get Hospital ID
-  static const getAdminHospitalId =
-      '$baseUrl/hospital/server-hospital/api/v1/admin/get/hospitalId';
-
-  // Doctor Get Hospital ID
-  static const getDoctorHospitalId =
-      '$baseUrl/hospital/server-hospital/api/v1/doctor/get/hospitalId';
-
-  // Base Branches
-  static const getBaseBranches =
-      '$baseUrl/hospital/server-hospital/api/v1/base/get/branches';
-
-  // Add Branch
-  static const addBranch =
-      '$baseUrl/hospital/server-hospital/api/v1/hospital/add-branch';
+  // Check VIN
+  static const checkVin =
+      '$baseUrl/carland/server-carland/api/v1/car/check/vin?vin=';
 }

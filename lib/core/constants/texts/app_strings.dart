@@ -11,6 +11,12 @@ class AppStrings {
   static const String additionalSettings = 'additionalSettings';
   static const String applicationLanguage = 'applicationLanguage';
 
+  static const String homeHelloText = "homeHelloText";
+  static const String bookYourCarServices = "bookYourCarServices";
+  static const String noCarsAddedYet = "noCarsAddedYet";
+  static const String noCarsAddedDescription = "noCarsAddedDescription";
+  static const String addCarButton = "addCarButton";
+
   static const String boss = 'boss';
   static const String superAdmin = 'superAdmin';
   static const String admin = 'admin';
@@ -187,5 +193,32 @@ class AppStrings {
   static const String checkMyCars = "checkMyCars";
 
   static const String newCarAdded = "newCarAdded";
+
+  static const String badRequestAlt = 'Yanlış sorğu göndərildi';
+  static const String unauthorizedAlt = 'İcazəniz yoxdur. Yenidən giriş edin';
+  static const String forbiddenAlt = 'Bu əməliyyatı yerinə yetirmək üçün səlahiyyətiniz yoxdur';
+  static const String notFoundAlt = 'Məlumat tapılmadı';
+  static const String conflictAlt = 'Konflikt baş verdi';
+  static const String unsupportedMediaTypeAlt = 'Dəstəklənməyən məzmun növü';
+
+  static const String internalServerErrorAlt = 'Server xətası baş verdi';
+  static const String notImplementedAlt = 'Server tərəfindən yerinə yetirilməyib';
+  static const String badGatewayAlt = 'Server əlaqə xətası';
+  static const String serviceUnavailableAlt = 'Xidmət müvəqqəti əlçatan deyil';
+  static const String gatewayTimeoutAlt = 'Server cavab vermə vaxtı doldu';
+  static const String httpVersionNotSupportedAlt = 'HTTP versiyası dəstəklənmir';
+  static const String tooManyRequestsAlt = 'Çox sayda sorğu göndərildi';
+  static const String requestTimeoutAlt = 'Sorğu vaxtı bitdi';
+
+  // Add Your Car VIN Page
+  static const String addYourCarVin = "addYourCarVin";
+  static const String enterOrScanVin = "enterOrScanVin";
+  static const String vinAuthorizationDescription = "vinAuthorizationDescription";
+  static const String enterCarVin = "enterCarVin";
+  static const String vinPlaceholder = "vinPlaceholder";
+  static const String or = "or";
+  static const String scanCarVin = "scanCarVin";
+  static const String continueButton = "continueButton";
+  static const String vinVerified = "vinVerified";
 
 }

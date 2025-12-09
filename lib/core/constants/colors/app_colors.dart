@@ -8,7 +8,7 @@ class AppColors {
   static const Color primaryWhite = Colors.white;
   static const Color primaryGrey = Colors.grey;
   static const Color mediumGrey = Color(0xFF757575);
-  static const Color lightGrey = Color(0xFFF5F5F5);
+  static const Color lightGrey = Color(0xFFF1F1F1);
   static const Color borderGrey = Color(0xFFD0D5DD);
   static const Color dividerColor = Color(0xFFD0D5DD);
   static const Color indicatorGrey = Color(0xFFF2F4F7);

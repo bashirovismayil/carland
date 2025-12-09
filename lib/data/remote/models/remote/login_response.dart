@@ -1,9 +1,10 @@
-
 import '../../../../core/constants/enums/enums.dart';
 
 class LoginResponse {
   final String accessToken;
   final String refreshToken;
+  final String name;
+  final String surname;
   final UserRole role;
   final String? message;
   final int? userId;
@@ -11,6 +12,8 @@ class LoginResponse {
   LoginResponse({
     required this.accessToken,
     required this.refreshToken,
+    required this.name,
+    required this.surname,
     required this.role,
     this.userId,
     this.message,
@@ -19,6 +22,8 @@ class LoginResponse {
   factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
         accessToken: json['accessToken'] ?? '',
         refreshToken: json['refreshToken'] ?? '',
+        name: json['name'] ?? '',
+        surname: json['surname'] ?? '',
         role: UserRole.fromString(json['role'] ?? 'GUEST'),
         userId: json['userId'] ?? 0,
         message: json['message'],
@@ -27,6 +32,8 @@ class LoginResponse {
   Map<String, dynamic> toJson() => {
         'accessToken': accessToken,
         'refreshToken': refreshToken,
+        'name': name,
+        'surname': surname,
         'role': role.value,
         'userId': userId,
         'message': message,

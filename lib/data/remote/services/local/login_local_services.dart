@@ -14,6 +14,8 @@ class LoginLocalService {
     await _box.put('login', jsonEncode(resp.toJson()));
     await saveAccessToken(resp.accessToken);
     await saveRefreshToken(resp.refreshToken);
+    await saveUserName(resp.name);
+    await saveUserSurname(resp.surname);
     await saveUserRole(resp.role);
   }
 
@@ -37,6 +39,20 @@ class LoginLocalService {
   }
 
   String? get refreshToken => _box.get('refreshToken');
+
+  // Name Operations
+  Future<void> saveUserName(String name) async {
+    if (name.isNotEmpty) await _box.put('name', name);
+  }
+
+  String? get name => _box.get('name');
+
+  // Surname Operations
+  Future<void> saveUserSurname(String surname) async {
+    if (surname.isNotEmpty) await _box.put('surname', surname);
+  }
+
+  String? get surname => _box.get('surname');
 
   // Role Operations
   Future<void> saveUserRole(UserRole role) async {

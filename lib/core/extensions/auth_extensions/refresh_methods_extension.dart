@@ -68,6 +68,8 @@ extension TokenRefreshMethods on TokenRefreshInterceptor {
             final updatedLoginResponse = LoginResponse(
               accessToken: newAccessToken,
               refreshToken: newRefreshToken,
+              name: currentLoginResponse.name,
+              surname: currentLoginResponse.surname,
               role: roleToUse,
               userId: data['userId'] as int?,
               message: data['message'] as String?,
@@ -92,6 +94,8 @@ extension TokenRefreshMethods on TokenRefreshInterceptor {
             final newLoginResponse = LoginResponse(
               accessToken: newAccessToken,
               refreshToken: newRefreshToken,
+              name: data['name'] as String? ?? '',
+              surname: data['surname'] as String? ?? '',
               role: roleToUse,
               userId: data['userId'] as int?,
               message: data['message'] as String?,

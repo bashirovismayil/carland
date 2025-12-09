@@ -657,6 +657,156 @@ class Translations {
       'en': 'Profile Page',
       'ru': 'Страница Профиля',
     },
+    // Home Page Strings
+    AppStrings.homeHelloText: {
+      'az': 'Salam, ',
+      'en': 'Hello, ',
+      'ru': 'Привет, ',
+    },
+    AppStrings.bookYourCarServices: {
+      'az': 'Avtomobil xidmətləri sifariş edin',
+      'en': 'Book your Car Services',
+      'ru': 'Забронируйте автосервис',
+    },
+    AppStrings.noCarsAddedYet: {
+      'az': 'Hələ heç bir avtomobil əlavə edilməyib',
+      'en': 'No Cars Added Yet',
+      'ru': 'Автомобили еще не добавлены',
+    },
+    AppStrings.noCarsAddedDescription: {
+      'az': 'Hələ heç bir avtomobil əlavə etməmisiniz. Texniki baxış cədvəllərini, servis tarixçəsini və rezervasiyaları izləməyə başlamaq üçün ilk avtomobilinizi əlavə edin.',
+      'en': 'You haven\'t added any cars yet. Add your first car to start tracking maintenance schedules, service history, and bookings.',
+      'ru': 'Вы еще не добавили автомобили. Добавьте свой первый автомобиль, чтобы начать отслеживать график обслуживания, историю сервиса и бронирования.',
+    },
+    AppStrings.addCarButton: {
+      'az': 'Avtomobil Əlavə Et',
+      'en': 'Add Car',
+      'ru': 'Добавить Автомобиль',
+    },
+
+    AppStrings.badRequestAlt: {
+      'az': 'Yanlış sorğu göndərildi',
+      'en': 'Bad request sent',
+      'ru': 'Отправлен неверный запрос',
+    },
+    AppStrings.unauthorizedAlt: {
+      'az': 'İcazəniz yoxdur. Yenidən giriş edin',
+      'en': 'You are not authorized. Please log in again',
+      'ru': 'У вас нет доступа. Войдите снова',
+    },
+    AppStrings.forbiddenAlt: {
+      'az': 'Bu əməliyyatı yerinə yetirmək üçün səlahiyyətiniz yoxdur',
+      'en': 'You do not have permission to perform this action',
+      'ru': 'У вас нет прав для выполнения этого действия',
+    },
+    AppStrings.notFoundAlt: {
+      'az': 'Məlumat tapılmadı',
+      'en': 'Data not found',
+      'ru': 'Данные не найдены',
+    },
+    AppStrings.conflictAlt: {
+      'az': 'Konflikt baş verdi',
+      'en': 'A conflict occurred',
+      'ru': 'Произошёл конфликт',
+    },
+    AppStrings.unsupportedMediaTypeAlt: {
+      'az': 'Dəstəklənməyən məzmun növü',
+      'en': 'Unsupported media type',
+      'ru': 'Тип содержимого не поддерживается',
+    },
+    AppStrings.internalServerErrorAlt: {
+      'az': 'Server xətası baş verdi',
+      'en': 'Internal server error occurred',
+      'ru': 'Произошла ошибка сервера',
+    },
+    AppStrings.notImplementedAlt: {
+      'az': 'Server tərəfindən yerinə yetirilməyib',
+      'en': 'Not implemented by the server',
+      'ru': 'Не реализовано на сервере',
+    },
+    AppStrings.badGatewayAlt: {
+      'az': 'Server əlaqə xətası',
+      'en': 'Bad gateway',
+      'ru': 'Ошибочный шлюз',
+    },
+    AppStrings.serviceUnavailableAlt: {
+      'az': 'Xidmət müvəqqəti əlçatan deyil',
+      'en': 'Service temporarily unavailable',
+      'ru': 'Сервис временно недоступен',
+    },
+    AppStrings.gatewayTimeoutAlt: {
+      'az': 'Server cavab vermə vaxtı doldu',
+      'en': 'Gateway timeout',
+      'ru': 'Время ожидания шлюза истекло',
+    },
+    AppStrings.requestTimeoutAlt: {
+      'az': 'Sorğu vaxtı bitdi',
+      'en': 'Request timeout',
+      'ru': 'Время ожидания запроса истекло',
+    },
+    AppStrings.tooManyRequestsAlt: {
+      'az': 'Çox sayda sorğu göndərildi. Bir az sonra yenidən cəhd edin',
+      'en': 'Too many requests. Please try again later',
+      'ru': 'Слишком много запросов. Попробуйте позже',
+    },
+    AppStrings.httpVersionNotSupportedAlt: {
+      'az': 'HTTP versiyası dəstəklənmir',
+      'en': 'HTTP version not supported',
+      'ru': 'Версия HTTP не поддерживается',
+    },
+    AppStrings.addYourCarVin: {
+      'az': 'Avtomobilinizin VIN-ini əlavə edin',
+      'en': 'Add your Car VIN',
+      'ru': 'Добавьте VIN вашего автомобиля',
+    },
+
+    AppStrings.enterOrScanVin: {
+      'az': 'VIN daxil edin və ya Skan edin',
+      'en': 'Enter or Scan VIN',
+      'ru': 'Введите или отсканируйте VIN',
+    },
+
+    AppStrings.vinAuthorizationDescription: {
+      'az': 'Təqdim etdiyiniz telefon nömrəsinə təsdiq kodu göndərildi',
+      'en': 'An authorization code has been send to your\nprovided Phone Number',
+      'ru': 'Код авторизации был отправлен на\nуказанный номер телефона',
+    },
+
+    AppStrings.enterCarVin: {
+      'az': 'Avtomobil VIN daxil edin',
+      'en': 'Enter Car Vin',
+      'ru': 'Введите VIN автомобиля',
+    },
+
+    AppStrings.vinPlaceholder: {
+      'az': 'N° 19XZE4F54NE012640',
+      'en': 'N° 19XZE4F54NE012640',
+      'ru': 'N° 19XZE4F54NE012640',
+    },
+
+    AppStrings.or: {
+      'az': 'VƏ YA',
+      'en': 'OR',
+      'ru': 'ИЛИ',
+    },
+
+    AppStrings.scanCarVin: {
+      'az': 'Avtomobil VIN-ini Skan et',
+      'en': 'Scan Car Vin',
+      'ru': 'Сканировать VIN автомобиля',
+    },
+
+    AppStrings.continueButton: {
+      'az': 'Davam et',
+      'en': 'Continue',
+      'ru': 'Продолжить',
+    },
+
+    AppStrings.vinVerified: {
+      'az': 'VIN təsdiqləndi',
+      'en': 'VIN Verified',
+      'ru': 'VIN подтвержден',
+    },
   };
 
   static String translate(String key, String languageCode) {

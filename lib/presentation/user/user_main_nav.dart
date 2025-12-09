@@ -1,3 +1,4 @@
+import 'package:carcat/core/constants/colors/app_colors.dart';
 import 'package:carcat/core/localization/app_translation.dart';
 import 'package:carcat/presentation/settings/settings_page.dart';
 import 'package:carcat/presentation/vin/vin_scanner_screen.dart';
@@ -25,7 +26,7 @@ class UserMainNavigationView extends StatelessWidget {
   const UserMainNavigationView({super.key});
 
   static const List<Widget> _pages = [
-    VinScannerScreen(),
+    HomePage(),
     HomePage(),
     HomePage(),
     SettingsPage(),
@@ -45,17 +46,9 @@ class UserMainNavigationView extends StatelessWidget {
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 30),
             child: Container(
-              height: 80,
+              height: 70,
               decoration: BoxDecoration(
                 color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 5),
-                    spreadRadius: 0,
-                  ),
-                ],
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

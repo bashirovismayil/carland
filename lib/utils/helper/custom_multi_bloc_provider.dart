@@ -8,6 +8,7 @@ import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
+import '../../cubit/vin/check/check_vin_cubit.dart';
 import '../di/locator.dart';
 
 class CustomMultiBlocProviderHelper extends MultiBlocProvider {
@@ -39,6 +40,9 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             ),
             BlocProvider<ProfilePhotoCubit>(
               create: (context) => locator<ProfilePhotoCubit>(),
+            ),
+            BlocProvider<CheckVinCubit>(
+              create: (_) => locator<CheckVinCubit>(),
             ),
           ],
         );

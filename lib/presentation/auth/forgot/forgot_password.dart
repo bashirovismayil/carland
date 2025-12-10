@@ -81,7 +81,7 @@ class _ForgotPasswordForm extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 15),
-            _buildTitleSection(),
+            _buildTitleSection(context),
             const SizedBox(height: 24),
             _buildPhoneSection(context),
             const Spacer(),
@@ -93,13 +93,38 @@ class _ForgotPasswordForm extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleSection() {
-    return Text(
-      AppTranslation.translate(AppStrings.forgotPasswordPageHeader),
-      style: const TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-      ),
+  Widget _buildTitleSection(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.lightGrey,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+            onPressed: () => Navigator.of(context).pop(),
+            color: AppColors.textPrimary,
+          ),
+        ),
+        SizedBox(width: 16),
+        Text(
+          AppTranslation.translate(AppStrings.forgotPasswordPageHeader),
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 

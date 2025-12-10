@@ -128,9 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 16),
-                            _buildBackButton(),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 60),
                             _buildLogo(),
                             const SizedBox(height: 40),
                             _buildHeader(),
@@ -205,25 +203,6 @@ class _LoginPageState extends State<LoginPage> {
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  Widget _buildBackButton() {
-    return GestureDetector(
-      onTap: () => Navigator.maybePop(context),
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.chevron_left,
-          color: Colors.black87,
-          size: 24,
-        ),
       ),
     );
   }

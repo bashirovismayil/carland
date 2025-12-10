@@ -225,6 +225,11 @@ class Translations {
       'ru': 'Неверный номер телефона',
     },
 
+    AppStrings.enterNineDigitsText: {
+      'az': 'Zəhmət olmasa 9 rəqəm daxil edin',
+      'en': 'Please enter 9 digits',
+      'ru': 'Пожалуйста, введите 9 цифр',
+    },
     // Validation Messages - Password
     AppStrings.passwordRequired: {
       'az': 'Şifrə daxil edin',

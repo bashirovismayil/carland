@@ -8,12 +8,11 @@ class ApiConstants {
       '$baseUrl/hospital/server/api/v1/device-tokens/post';
 
   // auth - SignUp
-  static const register = '$baseUrl/auth/server/api/v1/users/register?role=user';
-  static const otpCreateSend =
-      '$baseUrl/auth/server/api/v1/otp/createAndSend';
+  static const register =
+      '$baseUrl/auth/server/api/v1/users/register?role=user';
+  static const otpCreateSend = '$baseUrl/auth/server/api/v1/otp/createAndSend';
   static const otpVerify = '$baseUrl/auth/server/api/v1/otp/verify';
-  static const setPassword =
-      '$baseUrl/auth/server/api/v1/users/setPassword';
+  static const setPassword = '$baseUrl/auth/server/api/v1/users/setPassword';
 
   // Login
   static const login = '$baseUrl/auth/server/api/v1/users/login';
@@ -82,7 +81,11 @@ class ApiConstants {
       '$baseUrl/carland/server-carland/api/v1/photo/for/user/get';
   static const deleteProfilePhoto =
       '$baseUrl/carland/server-carland/api/v1/photo/for/user/delete';
+
   // Check VIN
   static const checkVin =
       '$baseUrl/carland/server-carland/api/v1/car/check/vin?vin=';
+
+  static const getColorList =
+      '$baseUrl/carland/server-carland/api/v1/car/get/color/list';
 }

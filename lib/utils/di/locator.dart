@@ -8,11 +8,13 @@ import '../../cubit/auth/otp/otp_send_cubit.dart';
 import '../../cubit/auth/otp/otp_verify_cubit.dart';
 import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
+import '../../cubit/color/get_color_list_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../../cubit/vin/check/check_vin_cubit.dart';
 import '../../data/remote/contractor/check_vin_contractor.dart';
 import '../../data/remote/contractor/forgot_pass_contractor.dart';
+import '../../data/remote/contractor/get_color_list_contractor.dart';
 import '../../data/remote/contractor/login_contractor.dart';
 import '../../data/remote/contractor/otp_contractor.dart';
 import '../../data/remote/contractor/profile_photo_contractor.dart';
@@ -20,6 +22,7 @@ import '../../data/remote/contractor/register_contractor.dart';
 import '../../data/remote/contractor/setup_pass_contractor.dart';
 import '../../data/remote/repository/check_vin_repository.dart';
 import '../../data/remote/repository/forgot_pass_repository.dart';
+import '../../data/remote/repository/get_color_list_repository.dart';
 import '../../data/remote/repository/login_repository.dart';
 import '../../data/remote/repository/otp_repository.dart';
 import '../../data/remote/repository/profile_photo_repository.dart';
@@ -33,6 +36,7 @@ import '../../data/remote/services/local/user_local_service.dart';
 import '../../data/remote/services/remote/auth_manager_services.dart';
 import '../../data/remote/services/remote/check_vin_service.dart';
 import '../../data/remote/services/remote/forgot_pass_service.dart';
+import '../../data/remote/services/remote/get_color_list_service.dart';
 import '../../data/remote/services/remote/login_service.dart';
 import '../../data/remote/services/remote/otp_service.dart';
 import '../../data/remote/services/remote/profile_photo_service.dart';
@@ -120,5 +124,17 @@ Future<void> setupLocator() async {
   );
   locator.registerFactory<CheckVinCubit>(
         () => CheckVinCubit(),
+  );
+  // Get Color List
+  locator.registerLazySingleton<GetColorListService>(
+        () => GetColorListService(),
+  );
+  locator.registerLazySingleton<GetColorListContractor>(
+        () => GetColorListRepository(
+      locator<GetColorListService>(),
+    ),
+  );
+  locator.registerFactory<GetColorListCubit>(
+        () => GetColorListCubit(),
   );
 }

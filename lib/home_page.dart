@@ -10,7 +10,6 @@ import '../../utils/di/locator.dart';
 import '../../data/remote/services/local/login_local_services.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/profile_photo.dart';
-import '../../utils/helper/go.dart';
 import 'cubit/add/car/get_car_list_cubit.dart';
 import 'cubit/add/car/get_car_list_state.dart';
 import 'data/remote/models/remote/get_car_list_response.dart';
@@ -77,7 +76,6 @@ class _HomePageState extends State<HomePage> {
                         onDelete: _showDeleteConfirmation,
                       );
                     } else if (state is GetCarListError) {
-                      // Error durumunda EmptyState göster
                       return const _EmptyState();
                     }
                     return const _EmptyState();
@@ -151,11 +149,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// ============================================================================
-// HOOK-STYLE WIDGETS (Ayrı StatelessWidget'lar olarak extract edildi)
-// ============================================================================
-
-/// Header bölümü - kullanıcı bilgisi ve bildirim ikonu
 class _HomeHeader extends StatelessWidget {
   final String userName;
 
@@ -223,7 +216,6 @@ class _HomeHeader extends StatelessWidget {
   }
 }
 
-/// Araba listesi görünümü
 class _CarListView extends StatelessWidget {
   final List<GetCarListResponse> carList;
   final VoidCallback onRefresh;
@@ -272,7 +264,7 @@ class _CarCard extends StatelessWidget {
 
         // Car Info Section
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.only(top: 8.0, left: 4.0, right: 4.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -281,8 +273,8 @@ class _CarCard extends StatelessWidget {
                 child: Text(
                   '${car.brand} ${car.model}',
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -301,7 +293,7 @@ class _CarCard extends StatelessWidget {
                   Text(
                     car.plateNumber,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 17,
                       fontWeight: FontWeight.w500,
                       color: AppColors.textSecondary,
                     ),
@@ -328,14 +320,12 @@ class _CarImageSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // carId null veya boş ise fotoğraf çekme, direkt "No Image" göster
     final hasValidCarId = car.carId != null && car.carId.toString().isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.all(3),
       child: Stack(
         children: [
-          // Car Photo - 4 köşesi de rounded
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: AspectRatio(
@@ -388,7 +378,7 @@ class _CarImageSection extends StatelessWidget {
                 icon: const Icon(
                   Icons.more_vert,
                   color: AppColors.textPrimary,
-                  size: 20,
+                  size: 25,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -402,7 +392,7 @@ class _CarImageSection extends StatelessWidget {
                         Icon(
                           Icons.delete_outline,
                           color: AppColors.errorColor,
-                          size: 20,
+                          size: 18,
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -430,7 +420,6 @@ class _CarImageSection extends StatelessWidget {
     );
   }
 
-  /// No Image placeholder widget
   Widget _buildNoImagePlaceholder() {
     return Container(
       color: AppColors.surfaceColor,

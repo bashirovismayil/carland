@@ -118,4 +118,7 @@ class ApiConstants {
 
   static const updateCarRecord =
       '$baseUrl/carland/server-carland/api/v1/car/update/record';
+
+  static const getCarList =
+      '$baseUrl/carland/server-carland/api/v1/car/get/list/by/user';
 }

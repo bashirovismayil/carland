@@ -48,10 +48,11 @@ class MaintenanceHistoryPage extends HookWidget {
                   if (state is GetCarRecordsSuccess) {
                     for (var record in state.records) {
                       if (!dateControllers.value.containsKey(record.id)) {
-                        dateControllers.value[record.id] =
-                            TextEditingController(
-                              text: DateFormat('dd/MM/yyyy').format(record.doneDate),
-                            );
+                        dateControllers.value[record.id] = TextEditingController(
+                          text: record.doneDate != null
+                              ? DateFormat('dd/MM/yyyy').format(record.doneDate!)
+                              : '',
+                        );
                       }
                       if (!mileageControllers.value.containsKey(record.id)) {
                         mileageControllers.value[record.id] =

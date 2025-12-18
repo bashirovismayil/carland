@@ -39,6 +39,7 @@ class UserMainNavigationView extends StatelessWidget {
         final cubit = context.read<UserNavBarCubit>();
 
         return Scaffold(
+          backgroundColor: AppColors.primaryWhite,
           body: IndexedStack(
             index: cubit.currentIndex,
             children: _pages,

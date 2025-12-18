@@ -1,6 +1,7 @@
 import 'package:carcat/cubit/transmission/type/transmission_type_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubit/add/car/add_car_cubit.dart';
+import '../../cubit/add/car/get_car_list_cubit.dart';
 import '../../cubit/auth/device/device_token_cubit.dart';
 import '../../cubit/auth/forgot/forgot_pass_cubit.dart';
 import '../../cubit/auth/login/login_cubit.dart';
@@ -83,6 +84,9 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             ),
             BlocProvider<UpdateCarRecordCubit>(
               create: (_) => locator<UpdateCarRecordCubit>(),
+            ),
+            BlocProvider<GetCarListCubit>(
+              create: (_) => locator<GetCarListCubit>(),
             ),
           ],
         );

@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/dio/auth_dio.dart';
 import '../../cubit/add/car/add_car_cubit.dart';
+import '../../cubit/add/car/get_car_list_cubit.dart';
 import '../../cubit/auth/forgot/forgot_pass_cubit.dart';
 import '../../cubit/auth/login/login_cubit.dart';
 import '../../cubit/auth/otp/otp_send_cubit.dart';
@@ -25,6 +26,8 @@ import '../../data/remote/contractor/add_car_contractor.dart';
 import '../../data/remote/contractor/check_vin_contractor.dart';
 import '../../data/remote/contractor/forgot_pass_contractor.dart';
 import '../../data/remote/contractor/get_body_type_contractor.dart';
+import '../../data/remote/contractor/get_car_list_contractor.dart';
+import '../../data/remote/contractor/get_car_photo_contractor.dart';
 import '../../data/remote/contractor/get_color_list_contractor.dart';
 import '../../data/remote/contractor/get_engine_type_contractor.dart';
 import '../../data/remote/contractor/get_record_contractor.dart';
@@ -42,6 +45,8 @@ import '../../data/remote/repository/add_car_repository.dart';
 import '../../data/remote/repository/check_vin_repository.dart';
 import '../../data/remote/repository/forgot_pass_repository.dart';
 import '../../data/remote/repository/get_body_type_repository.dart';
+import '../../data/remote/repository/get_car_list_repository.dart';
+import '../../data/remote/repository/get_car_photo_repository.dart';
 import '../../data/remote/repository/get_car_records_repository.dart';
 import '../../data/remote/repository/get_color_list_repository.dart';
 import '../../data/remote/repository/get_engine_type_repository.dart';
@@ -65,6 +70,8 @@ import '../../data/remote/services/remote/auth_manager_services.dart';
 import '../../data/remote/services/remote/check_vin_service.dart';
 import '../../data/remote/services/remote/forgot_pass_service.dart';
 import '../../data/remote/services/remote/get_body_type_list_service.dart';
+import '../../data/remote/services/remote/get_car_list_service.dart';
+import '../../data/remote/services/remote/get_car_photo_service.dart';
 import '../../data/remote/services/remote/get_car_records_service.dart';
 import '../../data/remote/services/remote/get_color_list_service.dart';
 import '../../data/remote/services/remote/get_engine_type_list_service.dart';
@@ -289,5 +296,28 @@ Future<void> setupLocator() async {
   );
   locator.registerFactory<UpdateCarRecordCubit>(
     () => UpdateCarRecordCubit(),
+  );
+  // Get Car List
+  locator.registerLazySingleton<GetCarListService>(
+        () => GetCarListService(),
+  );
+  locator.registerLazySingleton<GetCarListContractor>(
+        () => GetCarListRepository(
+      locator<GetCarListService>(),
+    ),
+  );
+
+  locator.registerLazySingleton<GetCarPhotoService>(
+        () => GetCarPhotoService(),
+  );
+  locator.registerLazySingleton<GetCarPhotoContractor>(
+        () => GetCarPhotoRepository(
+      locator<GetCarPhotoService>(),
+    ),
+  );
+
+// Cubit
+  locator.registerFactory<GetCarListCubit>(
+        () => GetCarListCubit(),
   );
 }

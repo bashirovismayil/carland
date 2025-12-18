@@ -200,6 +200,7 @@ class AppStrings {
   static const String notFoundAlt = 'Məlumat tapılmadı';
   static const String conflictAlt = 'Konflikt baş verdi';
   static const String unsupportedMediaTypeAlt = 'Dəstəklənməyən məzmun növü';
+  static const String fileSizeTooLarge = 'File size too large';
 
   static const String internalServerErrorAlt = 'Server xətası baş verdi';
   static const String notImplementedAlt = 'Server tərəfindən yerinə yetirilməyib';
@@ -221,4 +222,68 @@ class AppStrings {
   static const String continueButton = "continueButton";
   static const String vinVerified = "vinVerified";
 
+  // Car Details Page
+  static const String carDetails = 'carDetails';
+  static const String addCarDetails = 'addCarDetails';
+  static const String plateNumber = 'plateNumber';
+  static const String plateNumberHint = 'plateNumberHint';
+  static const String plateNumberRequired = 'plateNumberRequired';
+  static const String invalidPlateNumberFormat = 'invalidPlateNumberFormat';
+  static const String make = 'make';
+  static const String makeHint = 'makeHint';
+  static const String model = 'model';
+  static const String modelHint = 'modelHint';
+  static const String engineVolume = 'engineVolume';
+  static const String engineVolumeHint = 'engineVolumeHint';
+  static const String bodyType = 'bodyType';
+  static const String selectBodyType = 'selectBodyType';
+  static const String transmission = 'transmission';
+  static const String selectType = 'selectType';
+  static const String engineType = 'engineType';
+  static const String year = 'year';
+  static const String selectYear = 'selectYear';
+  static const String color = 'color';
+  static const String colorHint = 'colorHint';
+  static const String currentMileage = 'currentMileage';
+  static const String mileageHint = 'mileageHint';
+  static const String mileageRequired = 'mileageRequired';
+  static const String uploadPhoto = 'uploadPhoto';
+  static const String addOrDrop = 'addOrDrop';
+  static const String supportedFiles = 'supportedFiles';
+  static const String maxFileSize = 'maxFileSize';
+  static const String select = 'select';
+  static const String confirm = 'confirm';
+  static const String submit = 'submit';
+  static const String cancel = 'cancel';
+  static const String required = 'required';
+  static const String failedToAddCar = 'failedToAddCar';
+  static const String carAddedSuccessfully = 'carAddedSuccessfully';
+  static const String failedToUpdateMileage = 'failedToUpdateMileage';
+  static const String pleaseFillAllRequiredFields = 'pleaseFillAllRequiredFields';
+  static const String invalidNumberFormat = 'invalidNumberFormat';
+
+  // Image Crop Widget Strings
+  static const String imageCropTitle = 'imageCropTitle';
+  static const String imageCropOkButton = 'imageCropOkButton';
+  static const String imageLoadingText = 'imageLoadingText';
+  static const String imageLoadError = 'imageLoadError';
+  static const String cropErrorMessage = 'cropErrorMessage';
+  static const String aspectRatio1_1 = 'aspectRatio1_1';
+  static const String aspectRatio4_3 = 'aspectRatio4_3';
+  static const String aspectRatio3_4 = 'aspectRatio3_4';
+  static const String aspectRatio16_9 = 'aspectRatio16_9';
+  static const String aspectRatio9_16 = 'aspectRatio9_16';
+  static const String aspectRatioFree = 'aspectRatioFree';
+  static const String cropGestureHint = 'cropGestureHint';
+
+  static const String errorLoadingRecords = 'errorLoadingRecords';
+  static const String retry = 'retry';
+  static const String noMaintenanceRecordsFound = 'noMaintenanceRecordsFound';
+  static const String maintenanceHistory = 'maintenanceHistory';
+  static const String saved = 'saved';
+  static const String lastServiceDate = 'lastServiceDate';
+  static const String lastServiceDateHint = 'lastServiceDateHint';
+  static const String lastServiceMileage = 'lastServiceMileage';
+  static const String lastServiceMileageHint = 'lastServiceMileageHint';
+  static const String failedToUpdateRecord = 'failedToUpdateRecord';
 }

@@ -1,4 +1,6 @@
+import 'package:carcat/cubit/transmission/type/transmission_type_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cubit/add/car/add_car_cubit.dart';
 import '../../cubit/auth/device/device_token_cubit.dart';
 import '../../cubit/auth/forgot/forgot_pass_cubit.dart';
 import '../../cubit/auth/login/login_cubit.dart';
@@ -6,10 +8,17 @@ import '../../cubit/auth/otp/otp_send_cubit.dart';
 import '../../cubit/auth/otp/otp_verify_cubit.dart';
 import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
+import '../../cubit/body/type/get_body_type_cubit.dart';
 import '../../cubit/color/get_color_list_cubit.dart';
+import '../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
+import '../../cubit/mileage/update/update_car_mileage_cubit.dart';
+import '../../cubit/photo/car/upload_car_photo_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
+import '../../cubit/records/get_records/get_car_records_cubit.dart';
+import '../../cubit/records/update/update_car_record_cubit.dart';
 import '../../cubit/vin/check/check_vin_cubit.dart';
+import '../../cubit/year/list/get_year_list_cubit.dart';
 import '../di/locator.dart';
 
 class CustomMultiBlocProviderHelper extends MultiBlocProvider {
@@ -45,8 +54,35 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             BlocProvider<CheckVinCubit>(
               create: (_) => locator<CheckVinCubit>(),
             ),
+            BlocProvider<GetEngineTypeListCubit>(
+              create: (_) => locator<GetEngineTypeListCubit>(),
+            ),
+            BlocProvider<GetBodyTypeListCubit>(
+              create: (_) => locator<GetBodyTypeListCubit>(),
+            ),
+            BlocProvider<GetTransmissionListCubit>(
+              create: (_) => locator<GetTransmissionListCubit>(),
+            ),
+            BlocProvider<GetYearListCubit>(
+              create: (_) => locator<GetYearListCubit>(),
+            ),
+            BlocProvider<AddCarCubit>(
+              create: (_) => locator<AddCarCubit>(),
+            ),
+            BlocProvider<UpdateCarMileageCubit>(
+              create: (_) => locator<UpdateCarMileageCubit>(),
+            ),
             BlocProvider<GetColorListCubit>(
               create: (_) => locator<GetColorListCubit>()..getColorList(),
+            ),
+            BlocProvider<UploadCarPhotoCubit>(
+              create: (_) => locator<UploadCarPhotoCubit>(),
+            ),
+            BlocProvider<GetCarRecordsCubit>(
+              create: (_) => locator<GetCarRecordsCubit>(),
+            ),
+            BlocProvider<UpdateCarRecordCubit>(
+              create: (_) => locator<UpdateCarRecordCubit>(),
             ),
           ],
         );

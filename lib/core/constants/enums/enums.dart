@@ -61,6 +61,18 @@ enum ScannerError {
   noVinFound,
 }
 
+enum HandleCropType {
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
+  left,
+  right,
+  top,
+  bottom,
+  center,
+}
+
 enum UserRole {
   guest('GUEST'),
   user('USER'),

@@ -90,12 +90,17 @@ class AddYourCarVinPage extends HookWidget {
             ),
           ),
           const SizedBox(width: AppTheme.spacingMd),
-          Text(
-            AppTranslation.translate(AppStrings.addYourCarVin),
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+          Expanded(
+            child: Text(
+              AppTranslation.translate(AppStrings.addYourCarVin),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
             ),
           ),
         ],

@@ -88,4 +88,34 @@ class ApiConstants {
 
   static const getColorList =
       '$baseUrl/carland/server-carland/api/v1/car/get/color/list';
+
+  static const getCarPhoto =
+      '$baseUrl/carland/server-carland/api/v1/photo/for/car/get?carId=';
+
+  static const getEngineTypeList =
+      '$baseUrl/carland/server-carland/api/v1/group/by/get/engine/type/list';
+
+  static const bodyTypeList =
+      '$baseUrl/carland/server-carland/api/v1/group/by/get/body/list';
+
+  static const transmissionTypeList =
+      '$baseUrl/carland/server-carland/api/v1/group/by/get/transmission/list';
+
+  static const getYearList =
+      '$baseUrl/carland/server-carland/api/v1/group/by/get/year/list';
+
+  static const updateCarMileage =
+      '$baseUrl/carland/server-carland/api/v1/car/update/mileage';
+
+  static const uploadCarPhoto =
+      '$baseUrl/carland/server-carland/api/v1/photo/for/car/upload?carId=';
+
+  static const addCar =
+      '$baseUrl/carland/server-carland/api/v1/car/add';
+
+  static const getCarRecords =
+      '$baseUrl/carland/server-carland/api/v1/car/get/service/records?carId=';
+
+  static const updateCarRecord =
+      '$baseUrl/carland/server-carland/api/v1/car/update/record';
 }

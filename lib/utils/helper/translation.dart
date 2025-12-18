@@ -719,6 +719,11 @@ class Translations {
       'en': 'Unsupported media type',
       'ru': 'Тип содержимого не поддерживается',
     },
+    AppStrings.fileSizeTooLarge: {
+      'az': 'Fayl ölçüsü çox böyükdür',
+      'en': 'File size too large',
+      'ru': 'Размер файла слишком большой',
+    },
     AppStrings.internalServerErrorAlt: {
       'az': 'Server xətası baş verdi',
       'en': 'Internal server error occurred',
@@ -811,6 +816,313 @@ class Translations {
       'az': 'VIN təsdiqləndi',
       'en': 'VIN Verified',
       'ru': 'VIN подтвержден',
+    },
+
+    AppStrings.carDetails: {
+      'az': 'Avtomobil Məlumatları',
+      'en': 'Car Details',
+      'ru': 'Детали автомобиля',
+    },
+    AppStrings.addCarDetails: {
+      'az': 'Avtomobil Məlumatları Əlavə Et',
+      'en': 'Add Car Details',
+      'ru': 'Добавить детали автомобиля',
+    },
+    AppStrings.plateNumber: {
+      'az': 'Qeydiyyat Nişanı',
+      'en': 'Plate Number',
+      'ru': 'Номерной знак',
+    },
+    AppStrings.plateNumberHint: {
+      'az': '77-AA-609',
+      'en': '77-AA-609',
+      'ru': '77-AA-609',
+    },
+    AppStrings.plateNumberRequired: {
+      'az': 'Qeydiyyat nişanı tələb olunur',
+      'en': 'Plate number is required',
+      'ru': 'Номерной знак обязателен',
+    },
+    AppStrings.invalidPlateNumberFormat: {
+      'az': 'Yanlış qeydiyyat nişanı formatı (məs., 77-AA-609)',
+      'en': 'Invalid plate number format (e.g., 77-AA-609)',
+      'ru': 'Неверный формат номерного знака (напр., 77-AA-609)',
+    },
+    AppStrings.make: {
+      'az': 'Marka',
+      'en': 'Make',
+      'ru': 'Марка',
+    },
+    AppStrings.makeHint: {
+      'az': 'TOYOTA',
+      'en': 'TOYOTA',
+      'ru': 'TOYOTA',
+    },
+    AppStrings.model: {
+      'az': 'Model',
+      'en': 'Model',
+      'ru': 'Модель',
+    },
+    AppStrings.modelHint: {
+      'az': 'LAND CRUISER PRADO',
+      'en': 'LAND CRUISER PRADO',
+      'ru': 'LAND CRUISER PRADO',
+    },
+    AppStrings.engineVolume: {
+      'az': 'Mühərrik Həcmi',
+      'en': 'Engine Volume',
+      'ru': 'Объём двигателя',
+    },
+    AppStrings.engineVolumeHint: {
+      'az': '2800',
+      'en': '2800',
+      'ru': '2800',
+    },
+    AppStrings.bodyType: {
+      'az': 'Kuzov Tipi',
+      'en': 'Body Type',
+      'ru': 'Тип кузова',
+    },
+    AppStrings.selectBodyType: {
+      'az': 'Kuzov Tipini Seçin',
+      'en': 'Select Body Type',
+      'ru': 'Выберите тип кузова',
+    },
+    AppStrings.transmission: {
+      'az': 'Transmissiya',
+      'en': 'Transmission',
+      'ru': 'Трансмиссия',
+    },
+    AppStrings.selectType: {
+      'az': 'Tipi Seçin',
+      'en': 'Select Type',
+      'ru': 'Выберите тип',
+    },
+    AppStrings.engineType: {
+      'az': 'Mühərrik Tipi',
+      'en': 'Engine Type',
+      'ru': 'Тип двигателя',
+    },
+    AppStrings.year: {
+      'az': 'İl',
+      'en': 'Year',
+      'ru': 'Год',
+    },
+    AppStrings.selectYear: {
+      'az': 'İli Seçin',
+      'en': 'Select Year',
+      'ru': 'Выберите год',
+    },
+    AppStrings.color: {
+      'az': 'Rəng',
+      'en': 'Color',
+      'ru': 'Цвет',
+    },
+    AppStrings.colorHint: {
+      'az': 'Boz',
+      'en': 'Sandy Grey',
+      'ru': 'Песочно-серый',
+    },
+    AppStrings.currentMileage: {
+      'az': 'Cari Yürüş',
+      'en': 'Current Mileage',
+      'ru': 'Текущий пробег',
+    },
+    AppStrings.mileageHint: {
+      'az': '70092 km',
+      'en': '70092 km',
+      'ru': '70092 км',
+    },
+    AppStrings.mileageRequired: {
+      'az': 'Yürüş tələb olunur',
+      'en': 'Mileage is required',
+      'ru': 'Пробег обязателен',
+    },
+    AppStrings.uploadPhoto: {
+      'az': 'Şəkil Yüklə',
+      'en': 'Upload Photo',
+      'ru': 'Загрузить фото',
+    },
+    AppStrings.addOrDrop: {
+      'az': 'Əlavə et və ya sürüşdür-burax',
+      'en': 'Add or Drop',
+      'ru': 'Добавить или перетащить',
+    },
+    AppStrings.supportedFiles: {
+      'az': 'Dəstəklənən fayllar JPG, PNG, JPEG, MP4',
+      'en': 'Supported files JPG, PNG, JPEG, MP4',
+      'ru': 'Поддерживаемые файлы JPG, PNG, JPEG, MP4',
+    },
+    AppStrings.maxFileSize: {
+      'az': 'Maksimum fayl ölçüsü 5 MB',
+      'en': 'Maximum file size 5 MB',
+      'ru': 'Максимальный размер файла 5 МБ',
+    },
+    AppStrings.select: {
+      'az': 'Seç',
+      'en': 'Select',
+      'ru': 'Выбрать',
+    },
+    AppStrings.confirm: {
+      'az': 'Təsdiqlə',
+      'en': 'Confirm',
+      'ru': 'Подтвердить',
+    },
+    AppStrings.submit: {
+      'az': 'Göndər',
+      'en': 'Submit',
+      'ru': 'Отправить',
+    },
+    AppStrings.cancel: {
+      'az': 'Ləğv et',
+      'en': 'Cancel',
+      'ru': 'Отмена',
+    },
+    AppStrings.required: {
+      'az': 'Tələb olunur',
+      'en': 'Required',
+      'ru': 'Обязательно',
+    },
+    AppStrings.failedToAddCar: {
+      'az': 'Avtomobil əlavə edilmədi',
+      'en': 'Failed to add car',
+      'ru': 'Не удалось добавить автомобиль',
+    },
+    AppStrings.carAddedSuccessfully: {
+      'az': 'Avtomobil uğurla əlavə edildi!',
+      'en': 'Car added successfully!',
+      'ru': 'Автомобиль успешно добавлен!',
+    },
+    AppStrings.failedToUpdateMileage: {
+      'az': 'Yürüş yenilənmədi',
+      'en': 'Failed to update mileage',
+      'ru': 'Не удалось обновить пробег',
+    },
+    AppStrings.pleaseFillAllRequiredFields: {
+      'az': 'Zəhmət olmasa bütün tələb olunan sahələri doldurun',
+      'en': 'Please fill all required fields',
+      'ru': 'Пожалуйста, заполните все обязательные поля',
+    },
+    AppStrings.invalidNumberFormat : {
+      'az': 'Yanlış nömrə formatı',
+      'en': 'Invalid number format',
+      'ru': 'Неверный формат номера',
+    },
+
+    'imageCropTitle': {
+      'az': 'Şəkili Kəs',
+      'en': 'Crop Image',
+      'ru': 'Обрезать изображение',
+    },
+    'imageCropOkButton': {
+      'az': 'Tamam',
+      'en': 'OK',
+      'ru': 'ОК',
+    },
+    'imageLoadingText': {
+      'az': 'Şəkil yüklənir...',
+      'en': 'Loading image...',
+      'ru': 'Загрузка изображения...',
+    },
+    'imageLoadError': {
+      'az': 'Şəkil yüklənə bilmədi: ',
+      'en': 'Failed to load image: ',
+      'ru': 'Не удалось загрузить изображение: ',
+    },
+    'cropErrorMessage': {
+      'az': 'Kəsmə xətası: ',
+      'en': 'Crop error: ',
+      'ru': 'Ошибка обрезания: ',
+    },
+    'backButton': {
+      'az': 'Geri',
+      'en': 'Back',
+      'ru': 'Назад',
+    },
+    'aspectRatio1_1': {
+      'az': '1:1',
+      'en': '1:1',
+      'ru': '1:1',
+    },
+    'aspectRatio4_3': {
+      'az': '4:3',
+      'en': '4:3',
+      'ru': '4:3',
+    },
+    'aspectRatio3_4': {
+      'az': '3:4',
+      'en': '3:4',
+      'ru': '3:4',
+    },
+    'aspectRatio16_9': {
+      'az': '16:9',
+      'en': '16:9',
+      'ru': '16:9',
+    },
+    'aspectRatio9_16': {
+      'az': '9:16',
+      'en': '9:16',
+      'ru': '9:16',
+    },
+    'aspectRatioFree': {
+      'az': 'Sərbəst',
+      'en': 'Free',
+      'ru': 'Свободно',
+    },
+    'cropGestureHint': {
+      'az': '2 barmaqla böyütmə/kiçiltmə • Künclərdən ölçüsünü dəyişdir',
+      'en': 'Pinch to zoom • Resize from corners',
+      'ru': 'Сжимайте для масштабирования • Измените размер от углов',
+    },
+    AppStrings.errorLoadingRecords: {
+      'az': 'Qeydlər yüklənərkən xəta baş verdi',
+      'en': 'Error loading records',
+      'ru': 'Ошибка загрузки записей',
+    },
+    AppStrings.retry: {
+      'az': 'Yenidən cəhd et',
+      'en': 'Retry',
+      'ru': 'Повторить',
+    },
+    AppStrings.noMaintenanceRecordsFound: {
+      'az': 'Texniki servis qeydləri tapılmadı',
+      'en': 'No maintenance records found',
+      'ru': 'Записи о техническом обслуживании не найдены',
+    },
+    AppStrings.maintenanceHistory: {
+      'az': 'Texniki servis tarixçəsi',
+      'en': 'Maintenance History',
+      'ru': 'История обслуживания',
+    },
+    AppStrings.saved: {
+      'az': 'Saxlanıldı',
+      'en': 'Saved',
+      'ru': 'Сохранено',
+    },
+    AppStrings.lastServiceDate: {
+      'az': 'Son servis tarixi',
+      'en': 'Last Service Date',
+      'ru': 'Дата последнего обслуживания',
+    },
+    AppStrings.lastServiceDateHint: {
+      'az': '26/06/2025 - 10:00',
+      'en': '26/06/2025 - 10:00pm',
+      'ru': '26/06/2025 - 10:00',
+    },
+    AppStrings.lastServiceMileage: {
+      'az': 'Son servis yürüşü',
+      'en': 'Last service mileage',
+      'ru': 'Пробег при последнем обслуживании',
+    },
+    AppStrings.lastServiceMileageHint: {
+      'az': '70092 km',
+      'en': '70092 km',
+      'ru': '70092 км',
+    },
+    AppStrings.failedToUpdateRecord: {
+      'az': 'Qeyd yenilənərkən xəta: ',
+      'en': 'Failed to update record: ',
+      'ru': 'Не удалось обновить запись: ',
     },
   };
 

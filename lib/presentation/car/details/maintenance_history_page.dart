@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
@@ -26,7 +27,7 @@ class MaintenanceHistoryPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expandedSections = useState<Set<int>>({});
+    final expandedSectionId = useState<int?>(null);
     final completedSections = useState<Set<int>>({});
     final dateControllers = useState<Map<int, TextEditingController>>({});
     final mileageControllers = useState<Map<int, TextEditingController>>({});
@@ -150,32 +151,41 @@ class MaintenanceHistoryPage extends HookWidget {
                           return _buildServiceSection(
                             context: context,
                             record: record,
-                            isExpanded: expandedSections.value.contains(record.id),
+                            isExpanded: expandedSectionId.value == record.id,
                             isCompleted: completedSections.value.contains(record.id),
                             onExpand: () {
-                              if (expandedSections.value.contains(record.id)) {
-                                expandedSections.value = {
-                                  ...expandedSections.value
-                                }..remove(record.id);
+                              final previousExpandedId = expandedSectionId.value;
+
+                              // Eğer başka bir section açıksa, önce onu kapat ve kaydet
+                              if (previousExpandedId != null && previousExpandedId != record.id) {
+                                _handleSectionChange(
+                                  context: context,
+                                  previousRecordId: previousExpandedId,
+                                  carId: carId,
+                                  dateControllers: dateControllers.value,
+                                  mileageControllers: mileageControllers.value,
+                                  completedSections: completedSections,
+                                );
+                              }
+
+                              // Aynı section'a tıklandıysa kapat, farklıysa aç
+                              if (expandedSectionId.value == record.id) {
+                                // Kapatırken kaydet
+                                _handleSectionChange(
+                                  context: context,
+                                  previousRecordId: record.id,
+                                  carId: carId,
+                                  dateControllers: dateControllers.value,
+                                  mileageControllers: mileageControllers.value,
+                                  completedSections: completedSections,
+                                );
+                                expandedSectionId.value = null;
                               } else {
-                                expandedSections.value = {
-                                  ...expandedSections.value,
-                                  record.id
-                                };
+                                expandedSectionId.value = record.id;
                               }
                             },
                             dateController: dateControllers.value[record.id]!,
                             mileageController: mileageControllers.value[record.id]!,
-                            onSectionChange: (int previousRecordId) {
-                              _handleSectionChange(
-                                context: context,
-                                previousRecordId: previousRecordId,
-                                carId: carId,
-                                dateControllers: dateControllers.value,
-                                mileageControllers: mileageControllers.value,
-                                completedSections: completedSections,
-                              );
-                            },
                           );
                         }).toList(),
                       ),
@@ -253,7 +263,6 @@ class MaintenanceHistoryPage extends HookWidget {
     required VoidCallback onExpand,
     required TextEditingController dateController,
     required TextEditingController mileageController,
-    required Function(int) onSectionChange,
   }) {
     return BlocBuilder<UpdateCarRecordCubit, UpdateCarRecordState>(
       builder: (context, updateState) {
@@ -268,56 +277,66 @@ class MaintenanceHistoryPage extends HookWidget {
             border: Border.all(
               color: isCompleted
                   ? AppColors.successColor
-                  : Colors.grey.shade300,
+                  : Colors.transparent,
               width: isCompleted ? 2 : 1,
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
           child: Column(
             children: [
               InkWell(
-                onTap: () {
-                  if (isExpanded) {
-                    // Section is being collapsed, trigger auto-save
-                    onSectionChange(record.id);
-                  }
-                  onExpand();
-                },
+                onTap: onExpand,
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                 child: Padding(
                   padding: const EdgeInsets.all(AppTheme.spacingMd),
                   child: Row(
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: isCompleted
-                              ? AppColors.successColor
-                              : AppColors.primaryBlack,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: AppTheme.spacingSm),
                       Expanded(
                         child: Row(
                           children: [
-                            Expanded(
-                              child: Text(
-                                record.serviceName,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
-                                ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.lightGrey,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      color: isCompleted
+                                          ? AppColors.successColor
+                                          : AppColors.primaryBlack,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      record.serviceName,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                            const Spacer(),
                             if (isCompleted)
                               Container(
                                 margin: const EdgeInsets.only(right: 8),
@@ -388,7 +407,7 @@ class MaintenanceHistoryPage extends HookWidget {
                         label: AppTranslation.translate(AppStrings.lastServiceDate),
                         controller: dateController,
                         hint: AppTranslation.translate(AppStrings.lastServiceDateHint),
-                        icon: Icons.calendar_today,
+                        svgIconPath: 'assets/svg/calendar_nav_icon_active.svg',
                         isRequired: true,
                         readOnly: true,
                         onTap: () => _selectDate(context, dateController),
@@ -398,7 +417,7 @@ class MaintenanceHistoryPage extends HookWidget {
                         label: AppTranslation.translate(AppStrings.lastServiceMileage),
                         controller: mileageController,
                         hint: AppTranslation.translate(AppStrings.lastServiceMileageHint),
-                        icon: Icons.speed,
+                        svgIconPath: 'assets/svg/odometer_icon.svg',
                         isRequired: true,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
@@ -419,7 +438,7 @@ class MaintenanceHistoryPage extends HookWidget {
     required String label,
     required TextEditingController controller,
     required String hint,
-    required IconData icon,
+    required String svgIconPath,
     required bool isRequired,
     bool readOnly = false,
     VoidCallback? onTap,
@@ -484,10 +503,17 @@ class MaintenanceHistoryPage extends HookWidget {
                     color: AppColors.textSecondary.withOpacity(0.5),
                     fontWeight: FontWeight.w400,
                   ),
-                  prefixIcon: Icon(
-                    icon,
-                    color: AppColors.textSecondary,
-                    size: 20,
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: SvgPicture.asset(
+                      svgIconPath,
+                      width: 20,
+                      height: 20,
+                      colorFilter: ColorFilter.mode(
+                        AppColors.textSecondary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:carcat/presentation/vin/add_your_car_vin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import '../../core/constants/colors/app_colors.dart';
 import '../../core/constants/texts/app_strings.dart';
@@ -284,10 +285,14 @@ class _CarCard extends StatelessWidget {
               // Plate Number
               Row(
                 children: [
-                  Icon(
-                    Icons.confirmation_number_outlined,
-                    size: 18,
-                    color: AppColors.textSecondary,
+                  SvgPicture.asset(
+                    'assets/svg/car_engine_type_icon.svg',
+                    height: 18,
+                    width: 18,
+                    colorFilter: ColorFilter.mode(
+                      AppColors.textSecondary,
+                      BlendMode.srcIn,
+                    ),
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -299,7 +304,7 @@ class _CarCard extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),

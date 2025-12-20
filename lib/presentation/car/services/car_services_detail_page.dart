@@ -66,7 +66,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       if (i >= 0 && i < widget.carList.length) {
         final carId = widget.carList[i].carId;
         if (!_photoCache.containsKey(carId)) {
-          _photoCache[carId] = context.read<GetCarListCubit>().getCarPhoto(carId);
+          _photoCache[carId] =
+              context.read<GetCarListCubit>().getCarPhoto(carId);
         }
       }
     }
@@ -166,16 +167,20 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 
   Widget _buildCarCarousel() {
     return SizedBox(
-      height: 200,
+      height: 200 + 20,
       child: PageView.builder(
-        clipBehavior: Clip.none,
+        clipBehavior: Clip.hardEdge,
         controller: _pageController,
         onPageChanged: _onPageChanged,
+        padEnds: true,
         itemCount: widget.carList.length,
         itemBuilder: (context, index) {
           final car = widget.carList[index];
           final isActive = index == _currentCarIndex;
-          return _buildCarCard(car, isActive);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 15, top: 2),
+            child: _buildCarCard(car, isActive),
+          );
         },
       ),
     );
@@ -244,7 +249,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 Expanded(
                   child: _buildActionButton(
                     'Update Mileage',
-                        () {
+                    () {
                       // TODO: Implement
                     },
                   ),
@@ -253,7 +258,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 Expanded(
                   child: _buildActionButton(
                     'Update Details',
-                        () {
+                    () {
                       // TODO: Implement
                     },
                     outlined: true,
@@ -272,7 +277,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     // Get cached future or create new one
     final photoFuture = _photoCache.putIfAbsent(
       carId,
-          () => context.read<GetCarListCubit>().getCarPhoto(carId),
+      () => context.read<GetCarListCubit>().getCarPhoto(carId),
     );
 
     return ClipRRect(
@@ -312,14 +317,17 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
-  Widget _buildActionButton(String label, VoidCallback onTap, {bool outlined = false}) {
+  Widget _buildActionButton(String label, VoidCallback onTap,
+      {bool outlined = false}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         decoration: BoxDecoration(
           color: outlined ? Colors.transparent : AppColors.primaryBlack,
-          border: outlined ? Border.all(color: AppColors.primaryBlack, width: 1) : null,
+          border: outlined
+              ? Border.all(color: AppColors.primaryBlack, width: 1)
+              : null,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Text(
@@ -342,7 +350,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         widget.carList.length,
-            (index) => AnimatedContainer(
+        (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           width: _currentCarIndex == index ? 24 : 8,
           height: 8,
@@ -396,7 +404,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
-  Widget _buildServicesList(List<GetCarServicesResponse> services, {bool isLoading = false}) {
+  Widget _buildServicesList(List<GetCarServicesResponse> services,
+      {bool isLoading = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -446,7 +455,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             opacity: isLoading ? 0.5 : 1.0,
             duration: const Duration(milliseconds: 300),
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
               itemCount: services.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
@@ -531,23 +541,32 @@ class _ServiceCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  service.serviceName ?? 'Unknown Service',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      service.serviceName ?? 'Unknown Service',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 12),
               CircularPercentageChart(
                 percentage: service.kmPercentage ?? 0,
                 size: 70,

@@ -20,6 +20,7 @@ import '../../cubit/photo/car/upload_car_photo_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../../cubit/records/get_records/get_car_records_cubit.dart';
 import '../../cubit/records/update/update_car_record_cubit.dart';
+import '../../cubit/services/get_car_services_cubit.dart';
 import '../../cubit/vin/check/check_vin_cubit.dart';
 import '../../cubit/year/list/get_year_list_cubit.dart';
 import '../../data/remote/contractor/add_car_contractor.dart';
@@ -28,6 +29,7 @@ import '../../data/remote/contractor/forgot_pass_contractor.dart';
 import '../../data/remote/contractor/get_body_type_contractor.dart';
 import '../../data/remote/contractor/get_car_list_contractor.dart';
 import '../../data/remote/contractor/get_car_photo_contractor.dart';
+import '../../data/remote/contractor/get_car_services_contractor.dart';
 import '../../data/remote/contractor/get_color_list_contractor.dart';
 import '../../data/remote/contractor/get_engine_type_contractor.dart';
 import '../../data/remote/contractor/get_record_contractor.dart';
@@ -48,6 +50,7 @@ import '../../data/remote/repository/get_body_type_repository.dart';
 import '../../data/remote/repository/get_car_list_repository.dart';
 import '../../data/remote/repository/get_car_photo_repository.dart';
 import '../../data/remote/repository/get_car_records_repository.dart';
+import '../../data/remote/repository/get_car_services_repository.dart';
 import '../../data/remote/repository/get_color_list_repository.dart';
 import '../../data/remote/repository/get_engine_type_repository.dart';
 import '../../data/remote/repository/get_tranmission_type_repository.dart';
@@ -73,6 +76,7 @@ import '../../data/remote/services/remote/get_body_type_list_service.dart';
 import '../../data/remote/services/remote/get_car_list_service.dart';
 import '../../data/remote/services/remote/get_car_photo_service.dart';
 import '../../data/remote/services/remote/get_car_records_service.dart';
+import '../../data/remote/services/remote/get_car_services_list_service.dart';
 import '../../data/remote/services/remote/get_color_list_service.dart';
 import '../../data/remote/services/remote/get_engine_type_list_service.dart';
 import '../../data/remote/services/remote/get_transmission_type_service.dart';
@@ -299,25 +303,37 @@ Future<void> setupLocator() async {
   );
   // Get Car List
   locator.registerLazySingleton<GetCarListService>(
-        () => GetCarListService(),
+    () => GetCarListService(),
   );
   locator.registerLazySingleton<GetCarListContractor>(
-        () => GetCarListRepository(
+    () => GetCarListRepository(
       locator<GetCarListService>(),
     ),
   );
 
   locator.registerLazySingleton<GetCarPhotoService>(
-        () => GetCarPhotoService(),
+    () => GetCarPhotoService(),
   );
   locator.registerLazySingleton<GetCarPhotoContractor>(
-        () => GetCarPhotoRepository(
+    () => GetCarPhotoRepository(
       locator<GetCarPhotoService>(),
     ),
   );
 
 // Cubit
   locator.registerFactory<GetCarListCubit>(
-        () => GetCarListCubit(),
+    () => GetCarListCubit(),
+  );
+  // Get Car Services
+  locator.registerLazySingleton<GetCarServicesService>(
+    () => GetCarServicesService(),
+  );
+  locator.registerLazySingleton<GetCarServicesContractor>(
+    () => GetCarServicesRepository(
+      locator<GetCarServicesService>(),
+    ),
+  );
+  locator.registerFactory<GetCarServicesCubit>(
+    () => GetCarServicesCubit(),
   );
 }

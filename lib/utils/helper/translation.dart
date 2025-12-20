@@ -1095,7 +1095,7 @@ class Translations {
       'ru': 'История обслуживания',
     },
     AppStrings.saved: {
-      'az': 'Saxlanıldı',
+      'az': 'Doldu',
       'en': 'Saved',
       'ru': 'Сохранено',
     },

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:carcat/presentation/car/services/car_services_detail_page.dart';
 import 'package:carcat/presentation/vin/add_your_car_vin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -217,6 +218,8 @@ class _HomeHeader extends StatelessWidget {
   }
 }
 
+// HomePage içinde _CarListView widget'ını güncelle
+
 class _CarListView extends StatelessWidget {
   final List<GetCarListResponse> carList;
   final VoidCallback onRefresh;
@@ -238,7 +241,20 @@ class _CarListView extends StatelessWidget {
         separatorBuilder: (context, index) => const SizedBox(height: 16),
         itemBuilder: (context, index) {
           final car = carList[index];
-          return _CarCard(car: car, onDelete: onDelete);
+          return GestureDetector(
+            onTap: () {
+              // Navigate to detail page
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CarServicesDetailPage(
+                    carList: carList,
+                    initialCarIndex: index,
+                  ),
+                ),
+              );
+            },
+            child: _CarCard(car: car, onDelete: onDelete),
+          );
         },
       ),
     );

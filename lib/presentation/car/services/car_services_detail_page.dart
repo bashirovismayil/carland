@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:carcat/core/constants/texts/app_strings.dart';
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:carcat/presentation/car/services/widgets/update_mileage_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,10 +34,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   late int _currentCarIndex;
   Timer? _debounce;
 
-  // Photo cache for all cars
   final Map<int, Future<Uint8List?>> _photoCache = {};
 
-  // Previous services state for smooth transitions
   List<ResponseList>? _previousServices;
 
   @override
@@ -47,10 +47,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       viewportFraction: 0.85,
     );
 
-    // Preload photos for current and adjacent cars
     _preloadPhotos();
-
-    // Load initial car services
     _loadCarServices(widget.carList[_currentCarIndex].carId);
   }
 
@@ -62,7 +59,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   }
 
   void _preloadPhotos() {
-    // Preload current, previous and next car photos
     for (int i = _currentCarIndex - 1; i <= _currentCarIndex + 1; i++) {
       if (i >= 0 && i < widget.carList.length) {
         final carId = widget.carList[i].carId;
@@ -153,11 +149,11 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   }
 
   Widget _buildTitle() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
       child: Text(
-        'My Cars',
-        style: TextStyle(
+        AppTranslation.translate(AppStrings.myCars),
+        style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
@@ -197,8 +193,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 
     if (vin == null || vin.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('VIN not found. Please try again.'),
+        SnackBar(
+          content: Text(AppTranslation.translate(AppStrings.vinNotFound)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -283,15 +279,15 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
               children: [
                 Expanded(
                   child: _buildActionButton(
-                    'Update Mileage',
+                    AppTranslation.translate(AppStrings.updateMileage),
                         () => _showUpdateMileageDialog(car),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildActionButton(
-                    'Update Details',
-                    () {
+                    AppTranslation.translate(AppStrings.updateDetails),
+                        () {
                       // TODO: Implement
                     },
                     outlined: true,
@@ -305,12 +301,10 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
-  // Optimized photo loading with cache
   Widget _buildCarPhoto(int carId) {
-    // Get cached future or create new one
     final photoFuture = _photoCache.putIfAbsent(
       carId,
-      () => context.read<GetCarListCubit>().getCarPhoto(carId),
+          () => context.read<GetCarListCubit>().getCarPhoto(carId),
     );
 
     return ClipRRect(
@@ -382,7 +376,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         widget.carList.length,
-        (index) => AnimatedContainer(
+            (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           width: _currentCarIndex == index ? 24 : 8,
           height: 8,
@@ -409,19 +403,19 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             ),
           );
         } else if (state is GetCarServicesSuccess) {
-          _previousServices = state.servicesData.responseList; // UPDATED: responseList kullan
-          if (state.servicesData.responseList.isEmpty) { // UPDATED
-            return const Center(
+          _previousServices = state.servicesData.responseList;
+          if (state.servicesData.responseList.isEmpty) {
+            return Center(
               child: Text(
-                'No services found',
-                style: TextStyle(
+                AppTranslation.translate(AppStrings.noServicesFound),
+                style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.textSecondary,
                 ),
               ),
             );
           }
-          return _buildServicesList(state.servicesData.responseList, isLoading: false); // UPDATED
+          return _buildServicesList(state.servicesData.responseList, isLoading: false);
         } else if (state is GetCarServicesError) {
           return _buildErrorState(state.message);
         }
@@ -447,9 +441,9 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Schedule',
-                    style: TextStyle(
+                  Text(
+                    AppTranslation.translate(AppStrings.schedule),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -459,9 +453,9 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                     onPressed: () {
                       // TODO: See all
                     },
-                    child: const Text(
-                      'See All',
-                      style: TextStyle(
+                    child: Text(
+                      AppTranslation.translate(AppStrings.seeAll),
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textSecondary,
@@ -487,7 +481,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             duration: const Duration(milliseconds: 300),
             child: ListView.separated(
               padding:
-                  const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+              const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
               itemCount: services.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
@@ -513,7 +507,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Error loading services',
+            AppTranslation.translate(AppStrings.errorOccurred),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -539,7 +533,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 }
 
 class _ServiceCard extends StatelessWidget {
-  final ResponseList service; // UPDATED: Type değişti
+  final ResponseList service;
 
   const _ServiceCard({required this.service});
 
@@ -617,13 +611,13 @@ class _ServiceCard extends StatelessWidget {
                     if (value == 'edit') {}
                   },
                   itemBuilder: (context) => [
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'edit',
                       child: Row(
                         children: [
-                          Icon(Icons.edit_outlined, size: 18),
-                          SizedBox(width: 8),
-                          Text('Edit service details'),
+                          const Icon(Icons.edit_outlined, size: 18),
+                          const SizedBox(width: 8),
+                          Text(AppTranslation.translate(AppStrings.editServiceDetails)),
                         ],
                       ),
                     ),
@@ -634,13 +628,13 @@ class _ServiceCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           _buildServiceInfo(
-            'Last Service',
+            AppTranslation.translate(AppStrings.lastService),
             service.lastServiceKm,
             service.lastServiceDate,
           ),
           const SizedBox(height: 12),
           _buildServiceInfo(
-            'Next Service',
+            AppTranslation.translate(AppStrings.nextService),
             service.nextServiceKm,
             service.nextServiceDate,
           ),

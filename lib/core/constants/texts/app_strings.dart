@@ -286,4 +286,20 @@ class AppStrings {
   static const String lastServiceMileage = 'lastServiceMileage';
   static const String lastServiceMileageHint = 'lastServiceMileageHint';
   static const String failedToUpdateRecord = 'failedToUpdateRecord';
+
+  static const String myCars = 'myCars';
+  static const String updateMileage = 'updateMileage';
+  static const String updateDetails = 'updateDetails';
+  static const String noServicesFound = 'noServicesFound';
+  static const String schedule = 'schedule';
+  static const String seeAll = 'seeAll';
+  static const String lastService = 'lastService';
+  static const String nextService = 'nextService';
+  static const String vinNotFound = 'vinNotFound';
+  static const String editServiceDetails = 'editServiceDetails';
+  static const String enterMileage = 'enterMileage';
+  static const String enterCurrentMileage = 'enterCurrentMileage';
+  static const String invalidMileageError = 'invalidMileageError';
+  static const String mileageUpdatedSuccess = 'mileageUpdatedSuccess';
+  static const String saveMileage = 'saveMileage';
 }

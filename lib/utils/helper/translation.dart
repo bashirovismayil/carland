@@ -1124,6 +1124,81 @@ class Translations {
       'en': 'Failed to update record: ',
       'ru': 'Не удалось обновить запись: ',
     },
+    AppStrings.myCars: {
+      'az': 'Avtomobillərim',
+      'en': 'My Cars',
+      'ru': 'Мои автомобили',
+    },
+    AppStrings.updateMileage: {
+      'az': 'Yürüşü Yenilə',
+      'en': 'Update Mileage',
+      'ru': 'Обновить пробег',
+    },
+    AppStrings.updateDetails: {
+      'az': 'Detalları Yenilə',
+      'en': 'Update Details',
+      'ru': 'Обновить детали',
+    },
+    AppStrings.noServicesFound: {
+      'az': 'Xidmət tapılmadı',
+      'en': 'No services found',
+      'ru': 'Услуги не найдены',
+    },
+    AppStrings.schedule: {
+      'az': 'Qrafik',
+      'en': 'Schedule',
+      'ru': 'График',
+    },
+    AppStrings.seeAll: {
+      'az': 'Hamısını Gör',
+      'en': 'See All',
+      'ru': 'Показать все',
+    },
+    AppStrings.lastService: {
+      'az': 'Son Xidmət',
+      'en': 'Last Service',
+      'ru': 'Последнее техническое обслуживание',
+    },
+    AppStrings.nextService: {
+      'az': 'Sonrakı Xidmət',
+      'en': 'Next Service',
+      'ru': 'Следующее техническое обслуживание',
+    },
+    AppStrings.vinNotFound: {
+      'az': 'VIN tapılmadı. Yenidən cəhd edin.',
+      'en': 'VIN not found. Please try again.',
+      'ru': 'VIN не найден. Пожалуйста, попробуйте еще раз.',
+    },
+    AppStrings.editServiceDetails: {
+      'az': 'Xidmət detallarını redaktə et',
+      'en': 'Edit service details',
+      'ru': 'Редактировать детали услуги',
+    },
+    AppStrings.enterMileage: {
+      'az': 'Yürüşü Daxil Edin',
+      'en': 'Enter Mileage',
+      'ru': 'Введите пробег',
+    },
+    AppStrings.enterCurrentMileage: {
+      'az': 'Cari Yürüşü Daxil Edin',
+      'en': 'Enter Current Mileage',
+      'ru': 'Введите текущий пробег',
+    },
+    AppStrings.invalidMileageError: {
+      'az': 'Zəhmət olmasa etibarlı bir yürüş dəyəri daxil edin',
+      'en': 'Please enter a valid mileage',
+      'ru': 'Пожалуйста, введите действительный пробег',
+    },
+    AppStrings.mileageUpdatedSuccess: {
+      'az': 'Yürüş uğurla yeniləndi',
+      'en': 'Mileage updated successfully',
+      'ru': 'Пробег успешно обновлен',
+    },
+    AppStrings.saveMileage: {
+      'az': 'Saxla',
+      'en': 'Save Mileage',
+      'ru': 'Сохранить пробег',
+    },
   };
 
   static String translate(String key, String languageCode) {

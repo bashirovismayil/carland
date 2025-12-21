@@ -39,15 +39,15 @@ class GetCarServicesService {
         return GetCarServicesResponse.fromJson(resp.data as Map<String, dynamic>);
       } else {
         final message = _getErrorMessage(resp.statusCode ?? 0);
-        throw Exception('Get car services failed: $message');
+        throw Exception('$message');
       }
     } on DioException catch (e) {
       log('[GetCarServicesService] DioException: $e');
       if (e.response != null) {
         final message = _getErrorMessage(e.response?.statusCode ?? 0);
-        throw Exception('Get car services failed: $message');
+        throw Exception('$message');
       } else {
-        throw Exception('Get car services failed: Şəbəkə xətası');
+        throw Exception('Şəbəkə xətası');
       }
     }
   }

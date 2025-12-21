@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../../../core/constants/colors/app_colors.dart';
 import '../../../../core/constants/values/app_theme.dart';
+import '../../../../core/constants/texts/app_strings.dart';
+import '../../../../core/localization/app_translation.dart';
 import '../../../../cubit/mileage/update/update_car_mileage_cubit.dart';
 import '../../../../cubit/mileage/update/update_milage_state.dart';
 import '../../../../widgets/odometer_animation.dart';
@@ -66,8 +68,8 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
 
     if (mileage == null || mileage <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid mileage'),
+        SnackBar(
+          content: Text(AppTranslation.translate(AppStrings.invalidMileageError)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -96,8 +98,8 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
           SystemChannels.textInput.invokeMethod('TextInput.hide');
           Navigator.of(context).pop(true); // Return true on success
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Mileage updated successfully'),
+            SnackBar(
+              content: Text(AppTranslation.translate(AppStrings.mileageUpdatedSuccess)),
               backgroundColor: AppColors.successColor,
               behavior: SnackBarBehavior.floating,
             ),
@@ -160,9 +162,9 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
           // Text centered lower
           Align(
             alignment: Alignment.bottomCenter,
-            child: const Text(
-              'Enter Mileage',
-              style: TextStyle(
+            child: Text(
+              AppTranslation.translate(AppStrings.enterMileage),
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -211,9 +213,9 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Enter Current Mileage',
-          style: TextStyle(
+        Text(
+          AppTranslation.translate(AppStrings.enterCurrentMileage),
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
             color: AppColors.textPrimary,
@@ -251,7 +253,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
               letterSpacing: 1,
             ),
             decoration: InputDecoration(
-              hintText: '73912 km',
+              hintText: AppTranslation.translate(AppStrings.mileageHint),
               hintStyle: TextStyle(
                 color: AppColors.textSecondary.withOpacity(0.5),
                 fontWeight: FontWeight.w400,
@@ -316,9 +318,9 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
                     color: Colors.white,
                   ),
                 )
-                    : const Text(
-                  'Save Mileage',
-                  style: TextStyle(
+                    : Text(
+                  AppTranslation.translate(AppStrings.saveMileage),
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -340,9 +342,9 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
                     borderRadius: BorderRadius.circular(AppTheme.radiusXl),
                   ),
                 ),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(
+                child: Text(
+                  AppTranslation.translate(AppStrings.cancel),
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.primaryBlack,

@@ -16,7 +16,7 @@ class GetCarServicesService {
   final _local = locator<LoginLocalService>();
   final _languageService = locator<LanguageLocalService>();
 
-  Future<List<GetCarServicesResponse>> getCarServices(int carId) async {
+  Future<GetCarServicesResponse> getCarServices(int carId) async {
     final token = _local.accessToken;
     final currentLanguage = _languageService.currentLanguage;
 
@@ -36,13 +36,7 @@ class GetCarServicesService {
       if (resp.statusCode.isSuccess) {
         log('[GetCarServicesService] Success for carId: $carId');
 
-        if (resp.data is List) {
-          return (resp.data as List)
-              .map((item) => GetCarServicesResponse.fromJson(item as Map<String, dynamic>))
-              .toList();
-        } else {
-          return [];
-        }
+        return GetCarServicesResponse.fromJson(resp.data as Map<String, dynamic>);
       } else {
         final message = _getErrorMessage(resp.statusCode ?? 0);
         throw Exception('Get car services failed: $message');

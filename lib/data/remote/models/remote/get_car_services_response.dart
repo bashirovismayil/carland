@@ -1,35 +1,89 @@
 class GetCarServicesResponse {
-  final String? serviceName;
-  final String? actionType;
-  final int? intervalKm;
-  final int? intervalMonth;
-  final int? kmPercentage;
-  final double? monthPercentage;
-  final String? remainingKm;
-  final String? remainingMonths;
+  final int carId;
+  final String vin;
+  final List<ResponseList> responseList;
 
   GetCarServicesResponse({
-    this.serviceName,
-    this.actionType,
-    this.intervalKm,
-    this.intervalMonth,
-    this.kmPercentage,
-    this.monthPercentage,
-    this.remainingKm,
-    this.remainingMonths,
+    required this.carId,
+    required this.vin,
+    required this.responseList,
   });
 
   GetCarServicesResponse copyWith({
+    int? carId,
+    String? vin,
+    List<ResponseList>? responseList,
+  }) =>
+      GetCarServicesResponse(
+        carId: carId ?? this.carId,
+        vin: vin ?? this.vin,
+        responseList: responseList ?? this.responseList,
+      );
+
+  factory GetCarServicesResponse.fromJson(Map<String, dynamic> json) =>
+      GetCarServicesResponse(
+        carId: json['carId'] as int,
+        vin: json['vin'] as String,
+        responseList: (json['responseList'] as List)
+            .map((item) => ResponseList.fromJson(item as Map<String, dynamic>))
+            .toList(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'carId': carId,
+        'vin': vin,
+        'responseList': responseList.map((item) => item.toJson()).toList(),
+      };
+}
+
+class ResponseList {
+  final int percentageId;
+  final String serviceName;
+  final String actionType;
+  final int intervalKm;
+  final int intervalMonth;
+  final int kmPercentage;
+  final int monthPercentage;
+  final int remainingKm;
+  final String remainingMonths;
+  final int lastServiceKm;
+  final String lastServiceDate;
+  final int nextServiceKm;
+  final String nextServiceDate;
+
+  ResponseList({
+    required this.percentageId,
+    required this.serviceName,
+    required this.actionType,
+    required this.intervalKm,
+    required this.intervalMonth,
+    required this.kmPercentage,
+    required this.monthPercentage,
+    required this.remainingKm,
+    required this.remainingMonths,
+    required this.lastServiceKm,
+    required this.lastServiceDate,
+    required this.nextServiceKm,
+    required this.nextServiceDate,
+  });
+
+  ResponseList copyWith({
+    int? percentageId,
     String? serviceName,
     String? actionType,
     int? intervalKm,
     int? intervalMonth,
     int? kmPercentage,
-    double? monthPercentage,
-    String? remainingKm,
+    int? monthPercentage,
+    int? remainingKm,
     String? remainingMonths,
+    int? lastServiceKm,
+    String? lastServiceDate,
+    int? nextServiceKm,
+    String? nextServiceDate,
   }) =>
-      GetCarServicesResponse(
+      ResponseList(
+        percentageId: percentageId ?? this.percentageId,
         serviceName: serviceName ?? this.serviceName,
         actionType: actionType ?? this.actionType,
         intervalKm: intervalKm ?? this.intervalKm,
@@ -38,45 +92,84 @@ class GetCarServicesResponse {
         monthPercentage: monthPercentage ?? this.monthPercentage,
         remainingKm: remainingKm ?? this.remainingKm,
         remainingMonths: remainingMonths ?? this.remainingMonths,
+        lastServiceKm: lastServiceKm ?? this.lastServiceKm,
+        lastServiceDate: lastServiceDate ?? this.lastServiceDate,
+        nextServiceKm: nextServiceKm ?? this.nextServiceKm,
+        nextServiceDate: nextServiceDate ?? this.nextServiceDate,
       );
 
-  factory GetCarServicesResponse.fromJson(Map<String, dynamic> json) {
-    return GetCarServicesResponse(
-      serviceName: json['serviceName'] as String?,
-      actionType: json['actionType'] as String?,
-      intervalKm: _parseInt(json['intervalKm']),
-      intervalMonth: _parseInt(json['intervalMonth']),
-      kmPercentage: _parseInt(json['kmPercentage']),
-      monthPercentage: _parseDouble(json['monthPercentage']),
-      remainingKm: json['remainingKm'] as String?,
-      remainingMonths: json['remainingMonths'] as String?,
+  factory ResponseList.fromJson(Map<String, dynamic> json) {
+    // Safe parsing with null checks
+    return ResponseList(
+      percentageId: json['percentageId'] as int? ?? 0,
+      serviceName: json['serviceName'] as String? ?? '',
+      actionType: json['actionType'] as String? ?? '',
+      intervalKm: json['intervalKm'] as int? ?? 0,
+      intervalMonth: json['intervalMonth'] as int? ?? 0,
+      kmPercentage: json['kmPercentage'] as int? ?? 0,
+      monthPercentage: json['monthPercentage'] as int? ?? 0,
+      remainingKm: json['remainingKm'] as int? ?? 0,
+      remainingMonths: json['remainingMonths'] as String? ?? '0',
+      lastServiceKm: json['lastServiceKm'] as int? ?? 0,
+      lastServiceDate: json['lastServiceDate'] as String? ?? '',
+      nextServiceKm: json['nextServiceKm'] as int? ?? 0,
+      nextServiceDate: json['nextServiceDate'] as String? ?? '',
     );
   }
 
-  static int? _parseInt(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is double) return value.toInt();
-    if (value is String) return int.tryParse(value);
-    return null;
-  }
+  Map<String, dynamic> toJson() => {
+        'percentageId': percentageId,
+        'serviceName': serviceName,
+        'actionType': actionType,
+        'intervalKm': intervalKm,
+        'intervalMonth': intervalMonth,
+        'kmPercentage': kmPercentage,
+        'monthPercentage': monthPercentage,
+        'remainingKm': remainingKm,
+        'remainingMonths': remainingMonths,
+        'lastServiceKm': lastServiceKm,
+        'lastServiceDate': lastServiceDate,
+        'nextServiceKm': nextServiceKm,
+        'nextServiceDate': nextServiceDate,
+      };
+}
 
-  static double? _parseDouble(dynamic value) {
-    if (value == null) return null;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    if (value is String) return double.tryParse(value);
-    return null;
-  }
+class LastServiceDate {
+  final int year;
+  final int month;
+  final int day;
+
+  LastServiceDate({
+    required this.year,
+    required this.month,
+    required this.day,
+  });
+
+  LastServiceDate copyWith({
+    int? year,
+    int? month,
+    int? day,
+  }) =>
+      LastServiceDate(
+        year: year ?? this.year,
+        month: month ?? this.month,
+        day: day ?? this.day,
+      );
+
+  factory LastServiceDate.fromJson(Map<String, dynamic> json) =>
+      LastServiceDate(
+        year: json['year'] as int? ?? 0,
+        month: json['month'] as int? ?? 0,
+        day: json['day'] as int? ?? 0,
+      );
 
   Map<String, dynamic> toJson() => {
-    'serviceName': serviceName,
-    'actionType': actionType,
-    'intervalKm': intervalKm,
-    'intervalMonth': intervalMonth,
-    'kmPercentage': kmPercentage,
-    'monthPercentage': monthPercentage,
-    'remainingKm': remainingKm,
-    'remainingMonths': remainingMonths,
-  };
+        'year': year,
+        'month': month,
+        'day': day,
+      };
+
+  String toFormattedString() {
+    return '$day/${month.toString().padLeft(2, '0')}/$year';
+  }
 }

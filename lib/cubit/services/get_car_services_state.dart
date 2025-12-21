@@ -7,8 +7,8 @@ final class GetCarServicesInitial extends GetCarServicesState {}
 final class GetCarServicesLoading extends GetCarServicesState {}
 
 final class GetCarServicesSuccess extends GetCarServicesState {
-  final List<GetCarServicesResponse> services;
-  GetCarServicesSuccess(this.services);
+  final GetCarServicesResponse servicesData;
+  GetCarServicesSuccess(this.servicesData);
 }
 
 final class GetCarServicesError extends GetCarServicesState {

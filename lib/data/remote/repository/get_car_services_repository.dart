@@ -8,7 +8,7 @@ class GetCarServicesRepository implements GetCarServicesContractor {
   final GetCarServicesService _service;
 
   @override
-  Future<List<GetCarServicesResponse>> getCarServices(int carId) {
+  Future<GetCarServicesResponse> getCarServices(int carId) {
     return _service.getCarServices(carId);
   }
 }

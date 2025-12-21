@@ -1,0 +1,359 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import '../../../../core/constants/colors/app_colors.dart';
+import '../../../../core/constants/values/app_theme.dart';
+import '../../../../cubit/mileage/update/update_car_mileage_cubit.dart';
+import '../../../../cubit/mileage/update/update_milage_state.dart';
+import '../../../../widgets/odometer_animation.dart';
+
+class UpdateMileageDialog extends StatefulWidget {
+  final String vin;
+  final int? currentMileage;
+
+  const UpdateMileageDialog({
+    super.key,
+    required this.vin,
+    this.currentMileage,
+  });
+
+  @override
+  State<UpdateMileageDialog> createState() => _UpdateMileageDialogState();
+}
+
+class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
+  late final TextEditingController _mileageController;
+  late final FocusNode _focusNode;
+  int _displayedMileage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _displayedMileage = widget.currentMileage ?? 0;
+    _mileageController = TextEditingController(
+      text: widget.currentMileage?.toString() ?? '',
+    );
+    _focusNode = FocusNode();
+
+    _mileageController.addListener(() {
+      final value = int.tryParse(_mileageController.text.replaceAll(' ', ''));
+      if (value != null && value != _displayedMileage) {
+        setState(() {
+          _displayedMileage = value;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Keyboard'ı gizle
+    _focusNode.unfocus();
+    // Listener'ı kaldır
+    _mileageController.removeListener(_mileageController.notifyListeners);
+    // Controller'ı dispose et
+    _mileageController.dispose();
+    // FocusNode'u dispose et
+    _focusNode.dispose();
+    // Sistem seviyesinde keyboard'u kapat
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    super.dispose();
+  }
+
+  void _saveMileage() {
+    final mileage = int.tryParse(_mileageController.text.replaceAll(' ', ''));
+
+    if (mileage == null || mileage <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid mileage'),
+          backgroundColor: AppColors.errorColor,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    context.read<UpdateCarMileageCubit>().updateCarMileage(
+      vin: widget.vin,
+      mileage: mileage,
+    );
+  }
+
+  void _closeDialog() {
+    _focusNode.unfocus();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<UpdateCarMileageCubit, UpdateCarMileageState>(
+      listener: (context, state) {
+        if (state is UpdateCarMileageSuccess) {
+          _focusNode.unfocus();
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+          Navigator.of(context).pop(true); // Return true on success
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Mileage updated successfully'),
+              backgroundColor: AppColors.successColor,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        } else if (state is UpdateCarMileageError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: AppColors.errorColor,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      child: Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 15),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 24),
+                _buildSpeedometerWithOdometer(),
+                const SizedBox(height: 32),
+                _buildMileageInput(),
+                const SizedBox(height: 24),
+                _buildButtons(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return SizedBox(
+      height: 55,
+      child: Stack(
+        children: [
+          // Close button top-right
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              onPressed: _closeDialog,
+              icon: const Icon(Icons.close),
+              color: AppColors.textSecondary,
+            ),
+          ),
+
+          // Text centered lower
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: const Text(
+              'Enter Mileage',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpeedometerWithOdometer() {
+    return SizedBox(
+      height: 200,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Background speedometer image
+          Image.asset(
+            'assets/png/mileage_odometer.png',
+            height: 170,
+            fit: BoxFit.contain,
+          ),
+
+          Positioned(
+            bottom: 75,
+            child: OdometerAnimation(
+              value: _displayedMileage,
+              digits: 6,
+              digitHeight: 15,
+              digitWidth: 14,
+              textStyle: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                fontFamily: 'monospace',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMileageInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Enter Current Mileage',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+            border: Border.all(color: Colors.grey.shade300),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: _mileageController,
+            focusNode: _focusNode,
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            onEditingComplete: () {
+              _focusNode.unfocus();
+            },
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(7),
+            ],
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1,
+            ),
+            decoration: InputDecoration(
+              hintText: '73912 km',
+              hintStyle: TextStyle(
+                color: AppColors.textSecondary.withOpacity(0.5),
+                fontWeight: FontWeight.w400,
+              ),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.all(12),
+                child: SvgPicture.asset(
+                  'assets/svg/odometer_icon.svg',
+                  colorFilter: ColorFilter.mode(
+                    AppColors.textSecondary,
+                    BlendMode.srcIn,
+                  ),
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+              suffixStyle: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary,
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingLg,
+                vertical: AppTheme.spacingMd,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildButtons() {
+    return BlocBuilder<UpdateCarMileageCubit, UpdateCarMileageState>(
+      builder: (context, state) {
+        final isLoading = state is UpdateCarMileageLoading;
+
+        return Column(
+          children: [
+            // Save Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _saveMileage,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlack,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  disabledBackgroundColor: AppColors.primaryBlack.withOpacity(0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                  ),
+                ),
+                child: isLoading
+                    ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+                    : const Text(
+                  'Save Mileage',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Cancel Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: TextButton(
+                onPressed: isLoading ? null : _closeDialog,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.textSecondary,
+                  backgroundColor: AppColors.lightGrey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                  ),
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryBlack,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        );
+      },
+    );
+  }
+}

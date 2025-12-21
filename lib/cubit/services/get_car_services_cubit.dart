@@ -16,11 +16,11 @@ class GetCarServicesCubit extends Cubit<GetCarServicesState> {
     try {
       emit(GetCarServicesLoading());
 
-      final List<GetCarServicesResponse> services =
+      final GetCarServicesResponse servicesData =
       await _servicesRepo.getCarServices(carId);
 
-      log("Get Car Services Success: ${services.length} services found for carId: $carId");
-      emit(GetCarServicesSuccess(services));
+      log("Get Car Services Success: ${servicesData.responseList.length} services found for carId: $carId");
+      emit(GetCarServicesSuccess(servicesData));
     } catch (e) {
       emit(GetCarServicesError(e.toString()));
       log("Get Car Services Error: $e");

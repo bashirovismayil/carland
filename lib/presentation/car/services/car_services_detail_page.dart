@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:carcat/presentation/car/services/widgets/update_mileage_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -35,7 +36,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   final Map<int, Future<Uint8List?>> _photoCache = {};
 
   // Previous services state for smooth transitions
-  List<GetCarServicesResponse>? _previousServices;
+  List<ResponseList>? _previousServices;
 
   @override
   void initState() {
@@ -186,6 +187,40 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
+  void _showUpdateMileageDialog(GetCarListResponse car) async {
+    final currentState = context.read<GetCarServicesCubit>().state;
+    String? vin;
+
+    if (currentState is GetCarServicesSuccess) {
+      vin = currentState.servicesData.vin;
+    }
+
+    if (vin == null || vin.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('VIN not found. Please try again.'),
+          backgroundColor: AppColors.errorColor,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => UpdateMileageDialog(
+        vin: vin!,
+        currentMileage: car.mileage,
+      ),
+    );
+
+    // Refresh services if mileage was updated
+    if (result == true && mounted) {
+      _loadCarServices(car.carId);
+    }
+  }
+
   Widget _buildCarCard(GetCarListResponse car, bool isActive) {
     return AnimatedScale(
       scale: isActive ? 1.0 : 0.9,
@@ -215,7 +250,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '${car.model}',
+                          car.model,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -249,9 +284,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 Expanded(
                   child: _buildActionButton(
                     'Update Mileage',
-                    () {
-                      // TODO: Implement
-                    },
+                        () => _showUpdateMileageDialog(car),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -317,8 +350,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
-  Widget _buildActionButton(String label, VoidCallback onTap,
-      {bool outlined = false}) {
+  Widget _buildActionButton(String label, VoidCallback onTap, {bool outlined = false}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -377,8 +409,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             ),
           );
         } else if (state is GetCarServicesSuccess) {
-          _previousServices = state.services;
-          if (state.services.isEmpty) {
+          _previousServices = state.servicesData.responseList; // UPDATED: responseList kullan
+          if (state.servicesData.responseList.isEmpty) { // UPDATED
             return const Center(
               child: Text(
                 'No services found',
@@ -389,7 +421,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
               ),
             );
           }
-          return _buildServicesList(state.services, isLoading: false);
+          return _buildServicesList(state.servicesData.responseList, isLoading: false); // UPDATED
         } else if (state is GetCarServicesError) {
           return _buildErrorState(state.message);
         }
@@ -404,8 +436,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
-  Widget _buildServicesList(List<GetCarServicesResponse> services,
-      {bool isLoading = false}) {
+  Widget _buildServicesList(List<ResponseList> services, {bool isLoading = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -508,7 +539,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 }
 
 class _ServiceCard extends StatelessWidget {
-  final GetCarServicesResponse service;
+  final ResponseList service; // UPDATED: Type değişti
 
   const _ServiceCard({required this.service});
 
@@ -547,14 +578,13 @@ class _ServiceCard extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      service.serviceName ?? 'Unknown Service',
+                      service.serviceName,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -568,7 +598,7 @@ class _ServiceCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               CircularPercentageChart(
-                percentage: service.kmPercentage ?? 0,
+                percentage: service.kmPercentage,
                 size: 70,
                 strokeWidth: 7,
                 getColor: _getChartColor,
@@ -605,14 +635,14 @@ class _ServiceCard extends StatelessWidget {
           const SizedBox(height: 20),
           _buildServiceInfo(
             'Last Service',
-            service.intervalKm,
-            service.intervalMonth,
+            service.lastServiceKm,
+            service.lastServiceDate,
           ),
           const SizedBox(height: 12),
           _buildServiceInfo(
             'Next Service',
-            service.remainingKm,
-            service.remainingMonths,
+            service.nextServiceKm,
+            service.nextServiceDate,
           ),
           const SizedBox(height: 16),
         ],
@@ -620,7 +650,7 @@ class _ServiceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceInfo(String title, dynamic km, dynamic months) {
+  Widget _buildServiceInfo(String title, dynamic km, dynamic dateOrMonths) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -649,7 +679,7 @@ class _ServiceCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
-                      '$months',
+                      '$dateOrMonths',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,

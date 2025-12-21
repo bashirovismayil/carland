@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:carcat/core/constants/texts/app_strings.dart';
 import 'package:carcat/core/localization/app_translation.dart';
+import 'package:carcat/presentation/car/services/widgets/edit_service_details_dialog.dart';
 import 'package:carcat/presentation/car/services/widgets/update_mileage_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,8 +10,8 @@ import 'package:flutter_svg/svg.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/values/app_theme.dart';
 import '../../../cubit/add/car/get_car_list_cubit.dart';
-import '../../../cubit/services/get_car_services_cubit.dart';
-import '../../../cubit/services/get_car_services_state.dart';
+import '../../../cubit/services/get_services/get_car_services_cubit.dart';
+import '../../../cubit/services/get_services/get_car_services_state.dart';
 import '../../../data/remote/models/remote/get_car_list_response.dart';
 import '../../../data/remote/models/remote/get_car_services_response.dart';
 import '../../../widgets/circular_progress_chart.dart';
@@ -432,6 +433,11 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   }
 
   Widget _buildServicesList(List<ResponseList> services, {bool isLoading = false}) {
+    final currentState = context.read<GetCarServicesCubit>().state;
+    int? currentCarId;
+    if (currentState is GetCarServicesSuccess) {
+      currentCarId = currentState.servicesData.carId;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -481,13 +487,15 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             opacity: isLoading ? 0.5 : 1.0,
             duration: const Duration(milliseconds: 300),
             child: ListView.separated(
-              padding:
-              const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
               itemCount: services.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final service = services[index];
-                return _ServiceCard(service: service);
+                return _ServiceCard(
+                  service: service,
+                  carId: currentCarId ?? 0,
+                );
               },
             ),
           ),
@@ -535,17 +543,33 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 
 class _ServiceCard extends StatelessWidget {
   final ResponseList service;
+  final int carId;
 
-  const _ServiceCard({required this.service});
+  const _ServiceCard({required this.service, required this.carId});
 
   Color _getChartColor(int percentage) {
     if (percentage >= 25) {
-      return const Color(0xFF4CAF50); // Green
+      return const Color(0xFF4CAF50);
     } else if (percentage >= 10) {
-      return const Color(0xFFFFC107); // Yellow/Amber
+      return const Color(0xFFFFC107);
     } else {
-      return const Color(0xFFF44336); // Red
+      return const Color(0xFFF44336);
     }
+  }
+
+  void _showEditDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => EditServiceDetailsDialog(
+        carId: carId,
+        percentageId: service.percentageId,
+        initialLastServiceDate: service.lastServiceDate,
+        initialLastServiceKm: service.lastServiceKm,
+        initialNextServiceDate: service.nextServiceDate,
+        initialNextServiceKm: service.nextServiceKm,
+      ),
+    );
   }
 
   @override
@@ -608,8 +632,26 @@ class _ServiceCard extends StatelessWidget {
                     Icons.more_vert,
                     color: Colors.grey.shade600,
                   ),
-                  onSelected: (value) {
-                    if (value == 'edit') {}
+                  onSelected: (value) async {
+                    if (value == 'edit') {
+                      final result = await showDialog<bool>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => EditServiceDetailsDialog(
+                          carId: carId,
+                          percentageId: service.percentageId,
+                          initialLastServiceDate: service.lastServiceDate,
+                          initialLastServiceKm: service.lastServiceKm,
+                          initialNextServiceDate: service.nextServiceDate,
+                          initialNextServiceKm: service.nextServiceKm,
+                        ),
+                      );
+
+                      // Refresh if edited
+                      if (result == true && context.mounted) {
+                        // Trigger refresh in parent
+                      }
+                    }
                   },
                   itemBuilder: (context) => [
                     PopupMenuItem<String>(

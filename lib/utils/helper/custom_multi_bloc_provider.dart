@@ -18,7 +18,8 @@ import '../../cubit/photo/car/upload_car_photo_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../../cubit/records/get_records/get_car_records_cubit.dart';
 import '../../cubit/records/update/update_car_record_cubit.dart';
-import '../../cubit/services/get_car_services_cubit.dart';
+import '../../cubit/services/edit_services/edit_service_details_cubit.dart';
+import '../../cubit/services/get_services/get_car_services_cubit.dart';
 import '../../cubit/vin/check/check_vin_cubit.dart';
 import '../../cubit/year/list/get_year_list_cubit.dart';
 import '../di/locator.dart';
@@ -91,6 +92,9 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             ),
             BlocProvider<GetCarServicesCubit>(
               create: (_) => locator<GetCarServicesCubit>(),
+            ),
+            BlocProvider<EditCarServicesCubit>(
+              create: (_) => locator<EditCarServicesCubit>(),
             ),
           ],
         );

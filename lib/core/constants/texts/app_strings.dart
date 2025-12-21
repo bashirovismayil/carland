@@ -281,6 +281,7 @@ class AppStrings {
   static const String noMaintenanceRecordsFound = 'noMaintenanceRecordsFound';
   static const String maintenanceHistory = 'maintenanceHistory';
   static const String saved = 'saved';
+  static const String saveChanges = 'saveChanges';
   static const String lastServiceDate = 'lastServiceDate';
   static const String lastServiceDateHint = 'lastServiceDateHint';
   static const String lastServiceMileage = 'lastServiceMileage';
@@ -302,4 +303,15 @@ class AppStrings {
   static const String invalidMileageError = 'invalidMileageError';
   static const String mileageUpdatedSuccess = 'mileageUpdatedSuccess';
   static const String saveMileage = 'saveMileage';
+  static const String mileageAtLastService = 'mileageAtLastService';
+  static const String nextServiceDueDate = 'nextServiceDueDate';
+  static const String nextServiceMileage = 'nextServiceMileage';
+  static const String serviceDetailsUpdated = 'serviceDetailsUpdated';
+  static const String pleaseSelectLastServiceDate = 'pleaseSelectLastServiceDate';
+  static const String pleaseSelectNextServiceDate = 'pleaseSelectNextServiceDate';
+  static const String thisFieldIsRequired = 'thisFieldIsRequired';
+  static const String pleaseEnterValidMileage = 'pleaseEnterValidMileage';
+  static const String selectDate = 'selectDate';
+  static const String nextServiceDateMustBeAfterLastService = 'nextServiceDateMustBeAfterLastService';
+  static const String nextServiceKmMustBeGreaterThanLastService = 'nextServiceKmMustBeGreaterThanLastService';
 }

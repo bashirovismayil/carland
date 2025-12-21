@@ -1,4 +1,4 @@
-import '../../data/remote/models/remote/get_car_services_response.dart';
+import '../../../data/remote/models/remote/get_car_services_response.dart';
 
 sealed class GetCarServicesState {}
 

@@ -1099,6 +1099,11 @@ class Translations {
       'en': 'Saved',
       'ru': 'Сохранено',
     },
+    AppStrings.saveChanges: {
+      'az': 'Saxla',
+      'en': 'Save Changes',
+      'ru': 'Сохранить изменения',
+    },
     AppStrings.lastServiceDate: {
       'az': 'Son servis tarixi',
       'en': 'Last Service Date',
@@ -1155,12 +1160,12 @@ class Translations {
       'ru': 'Показать все',
     },
     AppStrings.lastService: {
-      'az': 'Son Xidmət',
+      'az': 'Son Servis',
       'en': 'Last Service',
       'ru': 'Последнее техническое обслуживание',
     },
     AppStrings.nextService: {
-      'az': 'Sonrakı Xidmət',
+      'az': 'Növbəti Servis',
       'en': 'Next Service',
       'ru': 'Следующее техническое обслуживание',
     },
@@ -1170,7 +1175,7 @@ class Translations {
       'ru': 'VIN не найден. Пожалуйста, попробуйте еще раз.',
     },
     AppStrings.editServiceDetails: {
-      'az': 'Servis detallarını redaktə et',
+      'az': 'Detalları redaktə et',
       'en': 'Edit service details',
       'ru': 'Редактировать детали услуги',
     },
@@ -1198,6 +1203,62 @@ class Translations {
       'az': 'Saxla',
       'en': 'Save Mileage',
       'ru': 'Сохранить пробег',
+    },
+    AppStrings.mileageAtLastService: {
+      'az': 'Son servisdəki yürüş',
+      'en': 'Mileage at Last Service',
+      'ru': 'Пробег при Последнем Обслуживании',
+    },
+    AppStrings.nextServiceDueDate: {
+      'az': 'Növbəti servis tarixi',
+      'en': 'Next Service Due Date',
+      'ru': 'Дата Следующего Обслуживания',
+    },
+    AppStrings.nextServiceMileage: {
+      'az': 'Növbəti servis yürüşü',
+      'en': 'Next Service Mileage',
+      'ru': 'Пробег Следующего Обслуживания',
+    },
+    AppStrings.serviceDetailsUpdated: {
+      'az': 'Servis məlumatları uğurla yeniləndi',
+      'en': 'Service details updated successfully',
+      'ru': 'Детали обслуживания успешно обновлены',
+    },
+    AppStrings.pleaseSelectLastServiceDate: {
+      'az': 'Zəhmət olmasa son servis tarixini seçin',
+      'en': 'Please select last service date',
+      'ru': 'Пожалуйста, выберите дату последнего обслуживания',
+    },
+    AppStrings.pleaseSelectNextServiceDate: {
+      'az': 'Zəhmət olmasa növbəti servis tarixini seçin',
+      'en': 'Please select next service date',
+      'ru': 'Пожалуйста, выберите дату следующего обслуживания',
+    },
+    AppStrings.thisFieldIsRequired: {
+      'az': 'Bu xana mütləqdir',
+      'en': 'This field is required',
+      'ru': 'Это поле обязательно',
+    },
+    AppStrings.pleaseEnterValidMileage: {
+      'az': 'Zəhmət olmasa düzgün yürüş daxil edin',
+      'en': 'Please enter a valid mileage',
+      'ru': 'Пожалуйста, введите корректный пробег',
+      'tr': 'Lütfen geçerli bir kilometre girin',
+    },
+    AppStrings.selectDate: {
+      'az': 'Tarixi seçin',
+      'en': 'Select Date',
+      'ru': 'Выберите дату',
+    },
+    AppStrings.nextServiceDateMustBeAfterLastService: {
+      'az': 'Növbəti servis tarixi son servis tarixindən sonra olmalıdır',
+      'en': 'Next service date must be after last service date',
+      'ru': 'Дата следующего обслуживания должна быть после даты последнего обслуживания',
+    },
+    AppStrings.nextServiceKmMustBeGreaterThanLastService : {
+      'az': 'Növbəti servis km son servis km-dən böyük olmalıdır',
+      'en': 'Next service km must be greater than last service km',
+      'ru': 'Км следующего обслуживания должен быть больше км последнего обслуживания',
     },
   };
 

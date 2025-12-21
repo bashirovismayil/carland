@@ -124,4 +124,7 @@ class ApiConstants {
 
   static const getCarServices =
       '$baseUrl/carland/server-carland/api/v1/car/service/percentages?carId=';
+
+  static const editCarServiceDetails =
+      '$baseUrl/carland/server-carland/api/v1/car/service/edit/percentage';
 }

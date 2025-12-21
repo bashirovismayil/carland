@@ -50,15 +50,10 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
 
   @override
   void dispose() {
-    // Keyboard'ı gizle
     _focusNode.unfocus();
-    // Listener'ı kaldır
     _mileageController.removeListener(_mileageController.notifyListeners);
-    // Controller'ı dispose et
     _mileageController.dispose();
-    // FocusNode'u dispose et
     _focusNode.dispose();
-    // Sistem seviyesinde keyboard'u kapat
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     super.dispose();
   }
@@ -149,7 +144,6 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
       height: 55,
       child: Stack(
         children: [
-          // Close button top-right
           Align(
             alignment: Alignment.topRight,
             child: IconButton(

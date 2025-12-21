@@ -13,6 +13,7 @@ import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
 import '../../cubit/body/type/get_body_type_cubit.dart';
 import '../../cubit/color/get_color_list_cubit.dart';
+import '../../cubit/delete/delete_car_cubit.dart';
 import '../../cubit/edit/edit_car_details_cubit.dart';
 import '../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
@@ -28,6 +29,7 @@ import '../../cubit/vin/check/check_vin_cubit.dart';
 import '../../cubit/year/list/get_year_list_cubit.dart';
 import '../../data/remote/contractor/add_car_contractor.dart';
 import '../../data/remote/contractor/check_vin_contractor.dart';
+import '../../data/remote/contractor/delete_car_contractor.dart';
 import '../../data/remote/contractor/edit_car_details_contractor.dart';
 import '../../data/remote/contractor/edit_service_details_contractor.dart';
 import '../../data/remote/contractor/execute_car_service_contractor.dart';
@@ -51,6 +53,7 @@ import '../../data/remote/contractor/update_mileage_contractor.dart';
 import '../../data/remote/contractor/upload_car_photo_contractor.dart';
 import '../../data/remote/repository/add_car_repository.dart';
 import '../../data/remote/repository/check_vin_repository.dart';
+import '../../data/remote/repository/delete_car_repository.dart';
 import '../../data/remote/repository/edit_car_details_repository.dart';
 import '../../data/remote/repository/edit_car_service_detail_repository.dart';
 import '../../data/remote/repository/execute_car_service_repository.dart';
@@ -80,6 +83,7 @@ import '../../data/remote/services/local/user_local_service.dart';
 import '../../data/remote/services/remote/add_car_service.dart';
 import '../../data/remote/services/remote/auth_manager_services.dart';
 import '../../data/remote/services/remote/check_vin_service.dart';
+import '../../data/remote/services/remote/delete_car_service.dart';
 import '../../data/remote/services/remote/edit_car_details_service.dart';
 import '../../data/remote/services/remote/edit_services_details_service.dart';
 import '../../data/remote/services/remote/execute_car_service.dart';
@@ -383,5 +387,17 @@ Future<void> setupLocator() async {
   );
   locator.registerFactory<EditCarDetailsCubit>(
         () => EditCarDetailsCubit(),
+  );
+  // Delete Car
+  locator.registerLazySingleton<DeleteCarService>(
+        () => DeleteCarService(),
+  );
+  locator.registerLazySingleton<DeleteCarContractor>(
+        () => DeleteCarRepository(
+      locator<DeleteCarService>(),
+    ),
+  );
+  locator.registerFactory<DeleteCarCubit>(
+        () => DeleteCarCubit(),
   );
 }

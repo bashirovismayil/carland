@@ -1283,7 +1283,26 @@ class Translations {
       'en': 'Car data not found',
       'ru': 'Данные автомобиля не найдены',
     },
-
+    AppStrings.carDeletedSuccessfully : {
+      'az': 'Avtomobil uğurla silindi',
+      'en': 'Car deleted successfully',
+      'ru': 'Автомобиль успешно удалён',
+    },
+    AppStrings.deleteCar : {
+      'az': 'Avtomobili Sil',
+      'en': 'Delete Car',
+      'ru': 'Удалить автомобиль',
+    },
+    AppStrings.deleteCarConfirmation : {
+      'az': 'Bu avtomobili silmək istədiyinizə əminsiniz?',
+      'en': 'Are you sure you want to delete this car?',
+      'ru': 'Вы уверены, что хотите удалить этот автомобиль?',
+    },
+    AppStrings.delete : {
+      'az': 'Sil',
+      'en': 'Delete',
+      'ru': 'Удалить',
+    },
   };
 
   static String translate(String key, String languageCode) {

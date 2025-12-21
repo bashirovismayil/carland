@@ -319,4 +319,8 @@ class AppStrings {
   static const String updateCarInformation = 'updateCarInformation';
   static const String carDetailsUpdated = 'carDetailsUpdated';
   static const String carDataNotFound = 'carDataNotFound';
+  static const String carDeletedSuccessfully = 'carDeletedSuccessfully';
+  static const String deleteCar = 'deleteCar';
+  static const String deleteCarConfirmation = 'deleteCarConfirmation';
+  static const String delete = 'delete';
 }

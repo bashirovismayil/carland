@@ -14,6 +14,8 @@ import '../../widgets/custom_button.dart';
 import '../../widgets/profile_photo.dart';
 import 'cubit/add/car/get_car_list_cubit.dart';
 import 'cubit/add/car/get_car_list_state.dart';
+import 'cubit/delete/delete_car_cubit.dart';
+import 'cubit/delete/delete_car_state.dart';
 import 'data/remote/models/remote/get_car_list_response.dart';
 
 class HomePage extends StatefulWidget {
@@ -96,56 +98,100 @@ class _HomePageState extends State<HomePage> {
   void _showDeleteConfirmation(GetCarListResponse car) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          'Delete Car',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: Text(
-          'Are you sure you want to delete ${car.brand} ${car.model}?',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              // TODO: Implement delete functionality
+      builder: (dialogContext) => BlocProvider.value(
+        value: context.read<DeleteCarCubit>(),
+        child: BlocListener<DeleteCarCubit, DeleteCarState>(
+          listener: (context, state) {
+            if (state is DeleteCarSuccess) {
+              Navigator.of(dialogContext).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Delete functionality will be implemented'),
-                  backgroundColor: AppColors.primaryBlack,
+                  content: Text(
+                    AppTranslation.translate(AppStrings.carDeletedSuccessfully),
+                  ),
+                  backgroundColor: AppColors.successColor,
                   behavior: SnackBarBehavior.floating,
                 ),
               );
+              _loadCarList(); // Refresh car list
+            } else if (state is DeleteCarError) {
+              Navigator.of(dialogContext).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.errorColor,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
+          child: BlocBuilder<DeleteCarCubit, DeleteCarState>(
+            builder: (context, state) {
+              final isLoading = state is DeleteCarLoading;
+
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: Text(
+                  AppTranslation.translate(AppStrings.deleteCar),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                content: Text(
+                  AppTranslation.translate(AppStrings.deleteCarConfirmation)
+                      .replaceAll('{brand}', car.brand ?? '')
+                      .replaceAll('{model}', car.model),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: isLoading
+                        ? null
+                        : () => Navigator.of(dialogContext).pop(),
+                    child: Text(
+                      AppTranslation.translate(AppStrings.cancel),
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                      context
+                          .read<DeleteCarCubit>()
+                          .deleteCar(carId: car.carId);
+                    },
+                    child: isLoading
+                        ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.errorColor,
+                      ),
+                    )
+                        : Text(
+                      AppTranslation.translate(AppStrings.delete),
+                      style: TextStyle(
+                        color: AppColors.errorColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              );
             },
-            child: Text(
-              'Delete',
-              style: TextStyle(
-                color: AppColors.errorColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           ),
-        ],
+        ),
       ),
     );
   }

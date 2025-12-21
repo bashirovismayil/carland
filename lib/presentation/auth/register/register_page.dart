@@ -546,7 +546,7 @@ class RegisterPage extends HookWidget {
           context.currentLanguage(AppStrings.alreadyHaveAccount),
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade600,
+            color: Colors.black,
           ),
         ),
         TextButton(
@@ -560,7 +560,7 @@ class RegisterPage extends HookWidget {
             context.currentLanguage(AppStrings.signInButton),
             style: const TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w800,
               color: Colors.black,
             ),
           ),

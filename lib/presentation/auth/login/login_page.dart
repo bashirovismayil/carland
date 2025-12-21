@@ -130,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             const SizedBox(height: 60),
                             _buildLogo(),
-                            const SizedBox(height: 40),
+                            const SizedBox(height: 50),
                             _buildHeader(),
                             const SizedBox(height: 23),
                             _buildPhoneField(state),
@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                             _buildForgotPasswordButton(),
                             const SizedBox(height: 13),
                             _buildRememberMeCheckbox(),
-                            SizedBox(height: constraints.maxHeight * 0.15),
+                            SizedBox(height: constraints.maxHeight * 0.20),
                             _buildLoginButton(state),
                             const SizedBox(height: 16),
                             _buildSignUpRow(),
@@ -220,8 +220,8 @@ class _LoginPageState extends State<LoginPage> {
     return Row(
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: 14,
+          height: 14,
           decoration: const BoxDecoration(
             color: Colors.black,
             shape: BoxShape.circle,
@@ -232,7 +232,7 @@ class _LoginPageState extends State<LoginPage> {
           context.currentLanguage(AppStrings.loginIntoYourAccount),
           style: const TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             color: Colors.black,
           ),
         ),
@@ -247,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           context.currentLanguage(AppStrings.phoneLabel),
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -387,7 +387,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           context.currentLanguage(AppStrings.passwordLabel),
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -584,7 +584,8 @@ class _LoginPageState extends State<LoginPage> {
           context.currentLanguage(AppStrings.dontHaveAccount),
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade600,
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
           ),
         ),
         TextButton(
@@ -598,7 +599,7 @@ class _LoginPageState extends State<LoginPage> {
             context.currentLanguage(AppStrings.signUpButton),
             style: const TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w800,
               color: Colors.black,
             ),
           ),

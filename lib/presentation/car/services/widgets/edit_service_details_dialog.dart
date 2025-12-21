@@ -262,13 +262,13 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
                   _buildHeader(),
                   const SizedBox(height: 30),
                   _buildLastServiceDateField(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   _buildLastServiceKmField(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   _buildNextServiceDateField(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   _buildNextServiceKmField(),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 17),
                   _buildButtons(),
                 ],
               ),
@@ -337,27 +337,30 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
                 ),
               ],
             ),
-            child: Row(
-              children: [
-                SvgPicture.asset(
-                  'assets/svg/calendar_nav_icon_active.svg',
-                  width: 20,
-                  height: 20,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  _lastServiceDate != null
-                      ? _formatDate(_lastServiceDate)
-                      : AppTranslation.translate(AppStrings.selectDate),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: _lastServiceDate != null
-                        ? AppColors.textPrimary
-                        : AppColors.textSecondary.withOpacity(0.5),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 3.0),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    'assets/svg/calendar_nav_icon_active.svg',
+                    width: 20,
+                    height: 20,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Text(
+                    _lastServiceDate != null
+                        ? _formatDate(_lastServiceDate)
+                        : AppTranslation.translate(AppStrings.selectDate),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: _lastServiceDate != null
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -412,13 +415,14 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
                 fontWeight: FontWeight.w400,
               ),
               prefixIcon: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.fromLTRB(20, 12, 12, 12),
                 child: SvgPicture.asset(
                   'assets/svg/odometer_icon.svg',
                   width: 20,
                   height: 20,
                 ),
               ),
+
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: AppTheme.spacingLg,
@@ -544,7 +548,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
                 fontWeight: FontWeight.w400,
               ),
               prefixIcon: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.fromLTRB(19, 12, 12, 12),
                 child: SvgPicture.asset(
                   'assets/svg/odometer_icon.svg',
                   width: 20,

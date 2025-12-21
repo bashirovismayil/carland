@@ -1303,6 +1303,11 @@ class Translations {
       'en': 'Delete',
       'ru': 'Удалить',
     },
+    AppStrings.termsAndConditions : {
+      'az': 'İstifadə Şərtləri',
+      'en': 'Terms and Conditions',
+      'ru': 'Условия использования',
+    },
   };
 
   static String translate(String key, String languageCode) {

@@ -25,6 +25,7 @@ class AppStrings {
   static const String settingsPage = 'settingsPage';
   static const String bookingPage = 'bookingPage';
   static const String profilePage = 'profilePage';
+  static const String termsAndConditions = 'termsAndConditions';
 
   // Login Page
   static const String loginIntoYourAccount = 'loginIntoYourAccount';

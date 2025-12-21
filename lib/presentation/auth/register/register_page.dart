@@ -1,6 +1,8 @@
 import 'package:carcat/core/extensions/auth_extensions/auth_form_validation.dart';
-import 'package:carcat/core/extensions/auth_extensions/string_validators.dart' hide StringValidators;
+import 'package:carcat/core/extensions/auth_extensions/string_validators.dart'
+    hide StringValidators;
 import 'package:carcat/core/localization/app_translation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +14,8 @@ import '../../../core/extensions/auth_extensions/phone_number_formatter.dart';
 import '../../../cubit/auth/otp/otp_send_cubit.dart';
 import '../../../cubit/auth/register/register_cubit.dart';
 import '../../../utils/helper/go.dart';
+import '../../terms_and_privacy/privacy_policy.dart';
+import '../../terms_and_privacy/terms_page.dart';
 import '../otp/otp_page.dart';
 import '../otp/widget/otp_confirmation_dialog.dart';
 
@@ -105,7 +109,8 @@ class RegisterPage extends HookWidget {
 
         final formattedPhone = '${selectedCountryCode.value.code} $cleanPhone';
 
-        final fullPhoneForBackend = '${selectedCountryCode.value.dialCode}$cleanPhone';
+        final fullPhoneForBackend =
+            '${selectedCountryCode.value.dialCode}$cleanPhone';
 
         final confirmed = await OtpSendConfirmationDialog.show(
           context: context,
@@ -177,7 +182,8 @@ class RegisterPage extends HookWidget {
                             const SizedBox(height: 22),
                             _buildTermsCheckbox(context, agreeToTerms),
                             const SizedBox(height: 30),
-                            _buildNextButton(context, isSubmitting.value, onNextPressed),
+                            _buildNextButton(
+                                context, isSubmitting.value, onNextPressed),
                             const SizedBox(height: 17),
                             _buildSignInRow(context, navigateToLogin),
                           ],
@@ -228,10 +234,10 @@ class RegisterPage extends HookWidget {
   }
 
   Widget _buildNameField(
-      BuildContext context,
-      RegisterCubit cubit,
-      bool isLoading,
-      ) {
+    BuildContext context,
+    RegisterCubit cubit,
+    bool isLoading,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -268,10 +274,10 @@ class RegisterPage extends HookWidget {
   }
 
   Widget _buildSurnameField(
-      BuildContext context,
-      RegisterCubit cubit,
-      bool isLoading,
-      ) {
+    BuildContext context,
+    RegisterCubit cubit,
+    bool isLoading,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -308,12 +314,12 @@ class RegisterPage extends HookWidget {
   }
 
   Widget _buildPhoneSection(
-      BuildContext context,
-      RegisterCubit cubit,
-      CountryCode selectedCode,
-      VoidCallback onCountryTap,
-      bool isLoading,
-      ) {
+    BuildContext context,
+    RegisterCubit cubit,
+    CountryCode selectedCode,
+    VoidCallback onCountryTap,
+    bool isLoading,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -416,7 +422,7 @@ class RegisterPage extends HookWidget {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32),
                     borderSide:
-                    const BorderSide(color: Colors.black, width: 1.5),
+                        const BorderSide(color: Colors.black, width: 1.5),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32),
@@ -425,7 +431,7 @@ class RegisterPage extends HookWidget {
                   focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32),
                     borderSide:
-                    BorderSide(color: Colors.red.shade400, width: 1.5),
+                        BorderSide(color: Colors.red.shade400, width: 1.5),
                   ),
                 ),
               ),
@@ -437,9 +443,9 @@ class RegisterPage extends HookWidget {
   }
 
   Widget _buildTermsCheckbox(
-      BuildContext context,
-      ValueNotifier<bool> agreeToTerms,
-      ) {
+    BuildContext context,
+    ValueNotifier<bool> agreeToTerms,
+  ) {
     return GestureDetector(
       onTap: () => agreeToTerms.value = !agreeToTerms.value,
       behavior: HitTestBehavior.opaque,
@@ -479,6 +485,15 @@ class RegisterPage extends HookWidget {
                       fontWeight: FontWeight.w700,
                       decoration: TextDecoration.underline,
                     ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const TermsAndConditionsPage(),
+                          ),
+                        );
+                      },
                   ),
                   const TextSpan(text: ', '),
                   TextSpan(
@@ -488,6 +503,14 @@ class RegisterPage extends HookWidget {
                       fontWeight: FontWeight.w700,
                       decoration: TextDecoration.underline,
                     ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const PrivacyPolicyPage(),
+                          ),
+                        );
+                      },
                   ),
                   const TextSpan(text: '.'),
                 ],
@@ -500,10 +523,10 @@ class RegisterPage extends HookWidget {
   }
 
   Widget _buildNextButton(
-      BuildContext context,
-      bool isLoading,
-      VoidCallback onPressed,
-      ) {
+    BuildContext context,
+    bool isLoading,
+    VoidCallback onPressed,
+  ) {
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -520,20 +543,20 @@ class RegisterPage extends HookWidget {
         ),
         child: isLoading
             ? const SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        )
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
             : Text(
-          context.currentLanguage(AppStrings.nextButton),
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+                context.currentLanguage(AppStrings.nextButton),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
       ),
     );
   }

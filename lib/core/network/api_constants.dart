@@ -29,22 +29,10 @@ class ApiConstants {
       '$baseUrl/hospital/server-hospital/api/v1/super-admin/add-details';
   static const adminAddDetails =
       '$baseUrl/hospital/server-hospital/api/v1/admin/add-details';
-  static const doctorAddDetails =
-      '$baseUrl/hospital/server-hospital/api/v1/doctor/add-details';
-  static const patientAddDetails =
-      '$baseUrl/hospital/server-hospital/api/v1/patient/add-details';
 
   // Create Calendar - Doctor
   static const createCalendar =
       '$baseUrl/hospital/server-hospital/api/v1/calendar/create';
-
-  // Get User Details
-  static const getPatientDetails =
-      '$baseUrl/hospital/server-hospital/api/v1/patient/profile/get';
-
-  // Get Doctor Details
-  static const getDoctorDetails =
-      '$baseUrl/hospital/server-hospital/api/v1/doctor/profile/get';
 
   // Get Admin Details
   static const getAdminDetails =
@@ -57,14 +45,6 @@ class ApiConstants {
   // Update Patient Details
   static const updatePatientDetails =
       '$baseUrl/hospital/server-hospital/api/v1/patient/update/profile';
-
-  // Update Doctor Details
-  static const updateDoctorDetails =
-      '$baseUrl/hospital/server-hospital/api/v1/doctor/update/profile';
-
-  // Doctor work status
-  static const updateDoctorWorkStatus =
-      '$baseUrl/hospital/server-hospital/api/v1/doctor/set/availability?atWork=';
 
   // Update Admin Details
   static const updateAdminDetails =

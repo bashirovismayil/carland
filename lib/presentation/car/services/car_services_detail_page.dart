@@ -295,6 +295,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -378,14 +379,14 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         widget.carList.length,
             (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: _currentCarIndex == index ? 24 : 8,
-          height: 8,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: _currentCarIndex == index ? 32 : 8,
+          height: 6,
+          margin: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
             color: _currentCarIndex == index
                 ? AppColors.primaryBlack
                 : AppColors.primaryBlack.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(3),
           ),
         ),
       ),

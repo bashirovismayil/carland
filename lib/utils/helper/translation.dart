@@ -1170,7 +1170,7 @@ class Translations {
       'ru': 'VIN не найден. Пожалуйста, попробуйте еще раз.',
     },
     AppStrings.editServiceDetails: {
-      'az': 'Xidmət detallarını redaktə et',
+      'az': 'Servis detallarını redaktə et',
       'en': 'Edit service details',
       'ru': 'Редактировать детали услуги',
     },

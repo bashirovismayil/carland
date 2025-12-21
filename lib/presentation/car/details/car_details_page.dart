@@ -1062,7 +1062,6 @@ class CarDetailsPage extends HookWidget {
                 );
                 return;
               }
-              // Convert carId to String
               final carIdString = carId.toString();
 
               Navigator.of(context).push(
@@ -1073,15 +1072,12 @@ class CarDetailsPage extends HookWidget {
                 ),
               );
 
-              // Step 2: Check if photo is selected
               if (selectedImage.value != null) {
-                // Photo var, upload et
                 context.read<UploadCarPhotoCubit>().uploadCarPhoto(
                       carId: carIdString,
                       imageFile: selectedImage.value!,
                     );
               } else {
-                // Photo yok, direkt mileage update'e geç
                 final vin = vinController.text.trim();
                 final mileage =
                     int.tryParse(mileageController.text.trim()) ?? 0;

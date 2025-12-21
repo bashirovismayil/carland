@@ -190,7 +190,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
           ),
 
           Positioned(
-            bottom: 75,
+            bottom: 80,
             child: OdometerAnimation(
               value: _displayedMileage,
               digits: 6,

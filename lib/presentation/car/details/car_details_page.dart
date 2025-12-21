@@ -45,7 +45,7 @@ class CarDetailsPage extends HookWidget {
   Widget build(BuildContext context) {
     final vinController = useTextEditingController(text: carData.vin ?? '');
     final plateController =
-        useTextEditingController(text: carData.plateNumber ?? '');
+    useTextEditingController(text: carData.plateNumber ?? '');
     final makeController = useTextEditingController(text: carData.brand ?? '');
     final modelController = useTextEditingController(text: carData.model ?? '');
     final engineController = useTextEditingController(
@@ -66,6 +66,13 @@ class CarDetailsPage extends HookWidget {
     final isSubmitting = useState(false);
 
     final plateFormatter = useMemoized(() => AzerbaijanPlateNumberFormatter());
+
+    // GlobalKeys for dropdown positioning
+    final bodyTypeKey = useMemoized(() => GlobalKey());
+    final transmissionKey = useMemoized(() => GlobalKey());
+    final engineTypeKey = useMemoized(() => GlobalKey());
+    final yearKey = useMemoized(() => GlobalKey());
+    final colorKey = useMemoized(() => GlobalKey());
 
     final fieldRequirements = useMemoized(() {
       return {
@@ -177,7 +184,7 @@ class CarDetailsPage extends HookWidget {
                       _buildTextField(
                         controller: engineController,
                         label:
-                            AppTranslation.translate(AppStrings.engineVolume),
+                        AppTranslation.translate(AppStrings.engineVolume),
                         hint: AppTranslation.translate(
                             AppStrings.engineVolumeHint),
                         svgIcon: 'assets/svg/car_engine_icon.svg',
@@ -203,12 +210,12 @@ class CarDetailsPage extends HookWidget {
                         controller: bodyTypeController,
                         label: AppTranslation.translate(AppStrings.bodyType),
                         hint:
-                            AppTranslation.translate(AppStrings.selectBodyType),
+                        AppTranslation.translate(AppStrings.selectBodyType),
                         svgIcon: 'assets/svg/car_body_type_icon.svg',
                         cubitBuilder: () =>
                             context.read<GetBodyTypeListCubit>(),
                         stateBuilder: (context) =>
-                            context.watch<GetBodyTypeListCubit>().state,
+                        context.watch<GetBodyTypeListCubit>().state,
                         itemsExtractor: (state) {
                           if (state is GetBodyTypeListSuccess) {
                             return state.bodyTypes
@@ -218,6 +225,7 @@ class CarDetailsPage extends HookWidget {
                           return [];
                         },
                         isRequired: true,
+                        dropdownKey: bodyTypeKey,
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
@@ -226,13 +234,13 @@ class CarDetailsPage extends HookWidget {
                         context: context,
                         controller: transmissionController,
                         label:
-                            AppTranslation.translate(AppStrings.transmission),
+                        AppTranslation.translate(AppStrings.transmission),
                         hint: AppTranslation.translate(AppStrings.selectType),
                         svgIcon: 'assets/svg/car_transmission_icon.svg',
                         cubitBuilder: () =>
                             context.read<GetTransmissionListCubit>(),
                         stateBuilder: (context) =>
-                            context.watch<GetTransmissionListCubit>().state,
+                        context.watch<GetTransmissionListCubit>().state,
                         itemsExtractor: (state) {
                           if (state is GetTransmissionListSuccess) {
                             return state.transmissions
@@ -242,6 +250,7 @@ class CarDetailsPage extends HookWidget {
                           return [];
                         },
                         isRequired: true,
+                        dropdownKey: transmissionKey,
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
@@ -255,7 +264,7 @@ class CarDetailsPage extends HookWidget {
                         cubitBuilder: () =>
                             context.read<GetEngineTypeListCubit>(),
                         stateBuilder: (context) =>
-                            context.watch<GetEngineTypeListCubit>().state,
+                        context.watch<GetEngineTypeListCubit>().state,
                         itemsExtractor: (state) {
                           if (state is GetEngineTypeListSuccess) {
                             return state.engineTypes
@@ -265,6 +274,7 @@ class CarDetailsPage extends HookWidget {
                           return [];
                         },
                         isRequired: true,
+                        dropdownKey: engineTypeKey,
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
@@ -277,7 +287,7 @@ class CarDetailsPage extends HookWidget {
                         svgIcon: 'assets/svg/calendar_nav_icon.svg',
                         cubitBuilder: () => context.read<GetYearListCubit>(),
                         stateBuilder: (context) =>
-                            context.watch<GetYearListCubit>().state,
+                        context.watch<GetYearListCubit>().state,
                         itemsExtractor: (state) {
                           if (state is GetYearListSuccess) {
                             return state.years
@@ -287,6 +297,7 @@ class CarDetailsPage extends HookWidget {
                           return [];
                         },
                         isRequired: true,
+                        dropdownKey: yearKey,
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
@@ -300,7 +311,7 @@ class CarDetailsPage extends HookWidget {
                         context: context,
                         cubitBuilder: () => context.read<GetColorListCubit>(),
                         stateBuilder: (context) =>
-                            context.watch<GetColorListCubit>().state,
+                        context.watch<GetColorListCubit>().state,
                         itemsExtractor: (state) {
                           if (state is GetColorListSuccess) {
                             return state.colors
@@ -309,6 +320,7 @@ class CarDetailsPage extends HookWidget {
                           }
                           return [];
                         },
+                        dropdownKey: colorKey,
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
@@ -316,7 +328,7 @@ class CarDetailsPage extends HookWidget {
                       _buildTextField(
                         controller: mileageController,
                         label:
-                            AppTranslation.translate(AppStrings.currentMileage),
+                        AppTranslation.translate(AppStrings.currentMileage),
                         hint: AppTranslation.translate(AppStrings.mileageHint),
                         svgIcon: 'assets/svg/odometer_icon.svg',
                         enabled: true,
@@ -489,12 +501,12 @@ class CarDetailsPage extends HookWidget {
                 ),
                 boxShadow: enabled
                     ? [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ]
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
                     : null,
               ),
               child: TextField(
@@ -509,7 +521,7 @@ class CarDetailsPage extends HookWidget {
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                   color:
-                      enabled ? AppColors.textPrimary : AppColors.textSecondary,
+                  enabled ? AppColors.textPrimary : AppColors.textSecondary,
                   overflow: TextOverflow.ellipsis,
                 ),
                 maxLines: 1,
@@ -521,16 +533,16 @@ class CarDetailsPage extends HookWidget {
                   ),
                   prefixIcon: svgIcon != null
                       ? Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: SvgPicture.asset(
-                            svgIcon,
-                            color: enabled
-                                ? AppColors.textSecondary
-                                : Colors.grey.shade400,
-                            width: 20,
-                            height: 20,
-                          ),
-                        )
+                    padding: const EdgeInsets.all(12.0),
+                    child: SvgPicture.asset(
+                      svgIcon,
+                      color: enabled
+                          ? AppColors.textSecondary
+                          : Colors.grey.shade400,
+                      width: 20,
+                      height: 20,
+                    ),
+                  )
                       : null,
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
@@ -569,11 +581,12 @@ class CarDetailsPage extends HookWidget {
     required List<String> Function(dynamic) itemsExtractor,
     bool isRequired = false,
     String? Function(String?)? validator,
+    required GlobalKey dropdownKey,
   }) {
     return FormField<String>(
       initialValue: controller.text,
       validator: validator ??
-          (value) {
+              (value) {
             if (isRequired && (value == null || value.trim().isEmpty)) {
               return AppTranslation.translate(AppStrings.required);
             }
@@ -622,14 +635,16 @@ class CarDetailsPage extends HookWidget {
             GestureDetector(
               onTap: isLoading || items.isEmpty
                   ? null
-                  : () => _showDropdownModal(
-                        context,
-                        label,
-                        items,
-                        controller,
-                        fieldState,
-                      ),
+                  : () => _showDropdownMenu(
+                context,
+                label,
+                items,
+                controller,
+                fieldState,
+                dropdownKey,
+              ),
               child: Container(
+                key: dropdownKey,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(AppTheme.radiusXl),
@@ -668,25 +683,25 @@ class CarDetailsPage extends HookWidget {
                     Expanded(
                       child: isLoading
                           ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.textSecondary,
-                              ),
-                            )
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.textSecondary,
+                        ),
+                      )
                           : Text(
-                              controller.text.isEmpty ? hint : controller.text,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: controller.text.isEmpty
-                                    ? AppColors.textSecondary.withOpacity(0.5)
-                                    : AppColors.textPrimary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                        controller.text.isEmpty ? hint : controller.text,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: controller.text.isEmpty
+                              ? AppColors.textSecondary.withOpacity(0.5)
+                              : AppColors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const Icon(
                       Icons.keyboard_arrow_down_rounded,
@@ -714,192 +729,88 @@ class CarDetailsPage extends HookWidget {
     );
   }
 
-  void _showDropdownModal(
-    BuildContext context,
-    String title,
-    List<String> items,
-    TextEditingController controller,
-    FormFieldState<String> fieldState,
-  ) {
-    final selectedValue = ValueNotifier<String?>(
-      controller.text.isNotEmpty ? controller.text : null,
-    );
+  void _showDropdownMenu(
+      BuildContext context,
+      String title,
+      List<String> items,
+      TextEditingController controller,
+      FormFieldState<String> fieldState,
+      GlobalKey key,
+      ) {
+    final RenderBox renderBox =
+    key.currentContext!.findRenderObject() as RenderBox;
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+    final Size size = renderBox.size;
 
-    showModalBottomSheet(
+    showMenu<String>(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (modalContext) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.6,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(AppTheme.radiusXl),
-              topRight: Radius.circular(AppTheme.radiusXl),
-            ),
-          ),
-          child: Column(
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy + size.height,
+        offset.dx + size.width,
+        0,
+      ),
+      constraints: BoxConstraints(
+        maxHeight: 300,
+        minWidth: size.width,
+        maxWidth: size.width,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+      ),
+      color: Colors.white,
+      elevation: 8,
+      items: items.map((item) {
+        final isSelected = controller.text == item;
+        return PopupMenuItem<String>(
+          value: item,
+          child: Row(
             children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingLg),
-                child: Row(
-                  children: [
-                    Text(
-                      '${AppTranslation.translate(AppStrings.select)} $title',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(modalContext),
-                      color: AppColors.textSecondary,
-                    ),
-                  ],
-                ),
-              ),
-              Divider(height: 1, color: Colors.grey.shade200),
-
-              // List
               Expanded(
-                child: ValueListenableBuilder<String?>(
-                  valueListenable: selectedValue,
-                  builder: (context, selected, child) {
-                    return ListView.separated(
-                      padding: const EdgeInsets.all(AppTheme.spacingMd),
-                      itemCount: items.length,
-                      separatorBuilder: (context, index) => Divider(
-                        height: 1,
-                        color: Colors.grey.shade200,
-                      ),
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        final isSelected = selected == item;
-
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppTheme.spacingMd,
-                            vertical: AppTheme.spacingSm,
-                          ),
-                          title: Text(
-                            item,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w500,
-                              color: isSelected
-                                  ? AppColors.primaryBlack
-                                  : AppColors.textPrimary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: isSelected
-                              ? Container(
-                                  width: 24,
-                                  height: 24,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.primaryBlack,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                )
-                              : Container(
-                                  width: 24,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.grey.shade300,
-                                      width: 2,
-                                    ),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                          onTap: () {
-                            selectedValue.value = item;
-                          },
-                        );
-                      },
-                    );
-                  },
+                child: Text(
+                  item,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected
+                        ? AppColors.primaryBlack
+                        : AppColors.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-
-              // Bottom Button
-              Container(
-                padding: const EdgeInsets.only(
-                    bottom: AppTheme.spacingXl, left: 15, right: 15),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
+              if (isSelected)
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryBlack,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 14,
+                  ),
                 ),
-                child: ValueListenableBuilder<String?>(
-                  valueListenable: selectedValue,
-                  builder: (context, value, child) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: value != null
-                            ? () {
-                                controller.text = value;
-                                fieldState.didChange(value);
-                                Navigator.pop(modalContext);
-                              }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: value != null
-                              ? AppColors.primaryBlack
-                              : AppColors.lightGrey,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          disabledBackgroundColor: AppColors.lightGrey,
-                          disabledForegroundColor: AppColors.textSecondary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppTheme.radiusXl),
-                          ),
-                        ),
-                        child: Text(
-                          AppTranslation.translate(AppStrings.confirm),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
             ],
           ),
         );
-      },
-    );
+      }).toList(),
+    ).then((value) {
+      if (value != null) {
+        controller.text = value;
+        fieldState.didChange(value);
+      }
+    });
   }
 
   Widget _buildUploadPhotoSection(
-    ValueNotifier<File?> selectedImage, {
-    required bool isRequired,
-    required BuildContext context,
-  }) {
+      ValueNotifier<File?> selectedImage, {
+        required bool isRequired,
+        required BuildContext context,
+      }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -943,81 +854,81 @@ class CarDetailsPage extends HookWidget {
               ),
               child: selectedImage.value != null
                   ? ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(AppTheme.radiusMd - 2),
-                      child: Stack(
-                        children: [
-                          Image.file(
-                            selectedImage.value!,
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: GestureDetector(
-                              onTap: () => selectedImage.value = null,
-                              child: Container(
-                                width: 32,
-                                height: 32,
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.6),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 64,
-                          height: 64,
-                          child: Center(
-                            child: SvgPicture.asset(
-                              'assets/svg/add_or_drop.svg',
-                              width: 50,
-                              height: 50,
-                              color: AppColors.primaryBlack,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: AppTheme.spacingMd),
-                        Text(
-                          AppTranslation.translate(AppStrings.addOrDrop),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: AppTheme.spacingSm),
-                        Text(
-                          AppTranslation.translate(AppStrings.supportedFiles),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          AppTranslation.translate(AppStrings.maxFileSize),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary.withOpacity(0.7),
-                          ),
-                        ),
-                      ],
+                borderRadius:
+                BorderRadius.circular(AppTheme.radiusMd - 2),
+                child: Stack(
+                  children: [
+                    Image.file(
+                      selectedImage.value!,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
                     ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: () => selectedImage.value = null,
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+                  : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 64,
+                    height: 64,
+                    child: Center(
+                      child: SvgPicture.asset(
+                        'assets/svg/add_or_drop.svg',
+                        width: 50,
+                        height: 50,
+                        color: AppColors.primaryBlack,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingMd),
+                  Text(
+                    AppTranslation.translate(AppStrings.addOrDrop),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingSm),
+                  Text(
+                    AppTranslation.translate(AppStrings.supportedFiles),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    AppTranslation.translate(AppStrings.maxFileSize),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -1026,22 +937,22 @@ class CarDetailsPage extends HookWidget {
   }
 
   Widget _buildBottomSection(
-    BuildContext context,
-    GlobalKey<FormState> formKey,
-    ValueNotifier<bool> isSubmitting,
-    ValueNotifier<File?> selectedImage,
-    TextEditingController vinController,
-    TextEditingController plateController,
-    TextEditingController makeController,
-    TextEditingController modelController,
-    TextEditingController engineController,
-    TextEditingController bodyTypeController,
-    TextEditingController transmissionController,
-    TextEditingController engineTypeController,
-    TextEditingController yearController,
-    TextEditingController colorController,
-    TextEditingController mileageController,
-  ) {
+      BuildContext context,
+      GlobalKey<FormState> formKey,
+      ValueNotifier<bool> isSubmitting,
+      ValueNotifier<File?> selectedImage,
+      TextEditingController vinController,
+      TextEditingController plateController,
+      TextEditingController makeController,
+      TextEditingController modelController,
+      TextEditingController engineController,
+      TextEditingController bodyTypeController,
+      TextEditingController transmissionController,
+      TextEditingController engineTypeController,
+      TextEditingController yearController,
+      TextEditingController colorController,
+      TextEditingController mileageController,
+      ) {
     return MultiBlocListener(
       listeners: [
         // Step 1: AddCar API Response
@@ -1074,18 +985,18 @@ class CarDetailsPage extends HookWidget {
 
               if (selectedImage.value != null) {
                 context.read<UploadCarPhotoCubit>().uploadCarPhoto(
-                      carId: carIdString,
-                      imageFile: selectedImage.value!,
-                    );
+                  carId: carIdString,
+                  imageFile: selectedImage.value!,
+                );
               } else {
                 final vin = vinController.text.trim();
                 final mileage =
                     int.tryParse(mileageController.text.trim()) ?? 0;
 
                 context.read<UpdateCarMileageCubit>().updateCarMileage(
-                      vin: vin,
-                      mileage: mileage,
-                    );
+                  vin: vin,
+                  mileage: mileage,
+                );
               }
             } else if (state is AddCarError) {
               isSubmitting.value = false;
@@ -1107,9 +1018,9 @@ class CarDetailsPage extends HookWidget {
               final vin = vinController.text.trim();
               final mileage = int.tryParse(mileageController.text.trim()) ?? 0;
               context.read<UpdateCarMileageCubit>().updateCarMileage(
-                    vin: vin,
-                    mileage: mileage,
-                  );
+                vin: vin,
+                mileage: mileage,
+              );
             } else if (state is UploadCarPhotoError) {
               isSubmitting.value = false;
 
@@ -1126,9 +1037,9 @@ class CarDetailsPage extends HookWidget {
               final mileage = int.tryParse(mileageController.text.trim()) ?? 0;
 
               context.read<UpdateCarMileageCubit>().updateCarMileage(
-                    vin: vin,
-                    mileage: mileage,
-                  );
+                vin: vin,
+                mileage: mileage,
+              );
             }
           },
         ),
@@ -1173,49 +1084,49 @@ class CarDetailsPage extends HookWidget {
               onPressed: isSubmitting.value
                   ? null
                   : () => _submitForm(
-                        context,
-                        formKey,
-                        isSubmitting,
-                        selectedImage,
-                        vinController,
-                        plateController,
-                        makeController,
-                        modelController,
-                        engineController,
-                        bodyTypeController,
-                        transmissionController,
-                        engineTypeController,
-                        yearController,
-                        colorController,
-                        mileageController,
-                      ),
+                context,
+                formKey,
+                isSubmitting,
+                selectedImage,
+                vinController,
+                plateController,
+                makeController,
+                modelController,
+                engineController,
+                bodyTypeController,
+                transmissionController,
+                engineTypeController,
+                yearController,
+                colorController,
+                mileageController,
+              ),
               backgroundColor: AppColors.primaryBlack,
               foregroundColor: Colors.white,
               borderRadius: BorderRadius.circular(AppTheme.radiusXl),
               elevation: 0,
               child: isSubmitting.value
                   ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
                   : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.check_circle_outline, size: 20),
-                        const SizedBox(width: AppTheme.spacingSm),
-                        Text(
-                          AppTranslation.translate(AppStrings.submit),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.check_circle_outline, size: 20),
+                  const SizedBox(width: AppTheme.spacingSm),
+                  Text(
+                    AppTranslation.translate(AppStrings.submit),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 15),
             CustomElevatedButton(
@@ -1224,7 +1135,7 @@ class CarDetailsPage extends HookWidget {
                 MaterialPageRoute(
                   builder: (context) => const UserMainNavigationPage(),
                 ),
-                (route) => false,
+                    (route) => false,
               ),
               backgroundColor: AppColors.lightGrey,
               foregroundColor: Colors.white,
@@ -1294,22 +1205,22 @@ class CarDetailsPage extends HookWidget {
   }
 
   void _submitForm(
-    BuildContext context,
-    GlobalKey<FormState> formKey,
-    ValueNotifier<bool> isSubmitting,
-    ValueNotifier<File?> selectedImage,
-    TextEditingController vinController,
-    TextEditingController plateController,
-    TextEditingController makeController,
-    TextEditingController modelController,
-    TextEditingController engineController,
-    TextEditingController bodyTypeController,
-    TextEditingController transmissionController,
-    TextEditingController engineTypeController,
-    TextEditingController yearController,
-    TextEditingController colorController,
-    TextEditingController mileageController,
-  ) {
+      BuildContext context,
+      GlobalKey<FormState> formKey,
+      ValueNotifier<bool> isSubmitting,
+      ValueNotifier<File?> selectedImage,
+      TextEditingController vinController,
+      TextEditingController plateController,
+      TextEditingController makeController,
+      TextEditingController modelController,
+      TextEditingController engineController,
+      TextEditingController bodyTypeController,
+      TextEditingController transmissionController,
+      TextEditingController engineTypeController,
+      TextEditingController yearController,
+      TextEditingController colorController,
+      TextEditingController mileageController,
+      ) {
     if (isSubmitting.value) return;
     isSubmitting.value = true;
 
@@ -1351,7 +1262,7 @@ class CarDetailsPage extends HookWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-              Text(AppTranslation.translate(AppStrings.invalidNumberFormat)),
+          Text(AppTranslation.translate(AppStrings.invalidNumberFormat)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -1361,17 +1272,17 @@ class CarDetailsPage extends HookWidget {
 
     // Step 1: Call AddCar API (without photo)
     context.read<AddCarCubit>().addCar(
-          vin: vinController.text.trim(),
-          plateNumber: plateController.text.trim(),
-          brand: makeController.text.trim(),
-          model: modelController.text.trim(),
-          modelYear: year,
-          engineType: engineTypeController.text.trim(),
-          engineVolume: engineVol,
-          transmissionType: transmissionController.text.trim(),
-          bodyType: bodyTypeController.text.trim(),
-          color: colorController.text.trim(),
-          mileage: mileage,
-        );
+      vin: vinController.text.trim(),
+      plateNumber: plateController.text.trim(),
+      brand: makeController.text.trim(),
+      model: modelController.text.trim(),
+      modelYear: year,
+      engineType: engineTypeController.text.trim(),
+      engineVolume: engineVol,
+      transmissionType: transmissionController.text.trim(),
+      bodyType: bodyTypeController.text.trim(),
+      color: colorController.text.trim(),
+      mileage: mileage,
+    );
   }
 }

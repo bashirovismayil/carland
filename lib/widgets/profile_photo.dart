@@ -36,7 +36,7 @@ class _ProfilePhotoState extends State<ProfilePhoto> {
 
     return GestureDetector(
       onTap: () {
-        context.read<UserNavBarCubit>().goToSettingaPage();
+        context.read<UserNavBarCubit>().goToSettingsPage();
       },
       child: BlocProvider.value(
         value: _cubit,

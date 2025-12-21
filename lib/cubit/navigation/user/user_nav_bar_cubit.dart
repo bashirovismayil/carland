@@ -20,7 +20,7 @@ class UserNavBarCubit extends Cubit<UserNavBarState> {
     changeTab(0);
   }
 
-  void goToSettingaPage() {
+  void goToSettingsPage() {
     changeTab(3);
   }
 }

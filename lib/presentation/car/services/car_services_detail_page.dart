@@ -15,6 +15,7 @@ import '../../../cubit/services/get_services/get_car_services_state.dart';
 import '../../../data/remote/models/remote/get_car_list_response.dart';
 import '../../../data/remote/models/remote/get_car_services_response.dart';
 import '../../../widgets/circular_progress_chart.dart';
+import '../details/edit_car_details_page.dart';
 
 class CarServicesDetailPage extends StatefulWidget {
   final List<GetCarListResponse> carList;
@@ -289,9 +290,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 Expanded(
                   child: _buildActionButton(
                     AppTranslation.translate(AppStrings.updateDetails),
-                        () {
-                      // TODO: Implement
-                    },
+                        () => _showEditCarDetailsPage(car),
                     outlined: true,
                   ),
                 ),
@@ -302,6 +301,49 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         ),
       ),
     );
+  }
+  void _showEditCarDetailsPage(GetCarListResponse car) async {
+    final currentState = context.read<GetCarServicesCubit>().state;
+    String? vin;
+    int? carId;
+
+    if (currentState is GetCarServicesSuccess) {
+      vin = currentState.servicesData.vin;
+      carId = currentState.servicesData.carId;
+    }
+
+    if (vin == null || vin.isEmpty || carId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppTranslation.translate(AppStrings.carDataNotFound)),
+          backgroundColor: AppColors.errorColor,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => EditCarDetailsPage(
+          carId: carId!,
+          vin: vin!,
+          initialPlateNumber: car.plateNumber,
+          initialColor: car.color,
+          initialMileage: car.mileage,
+          initialModelYear: car.modelYear,
+          initialEngineType: car.engineType,
+          initialEngineVolume: car.engineVolume,
+          initialTransmissionType: car.transmissionType,
+          initialBodyType: car.bodyType,
+        ),
+      ),
+    );
+
+    // Refresh if updated
+    if (result == true && mounted) {
+      _refreshCurrentCarServices();
+    }
   }
 
   Widget _buildCarPhoto(int carId) {

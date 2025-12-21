@@ -314,4 +314,9 @@ class AppStrings {
   static const String selectDate = 'selectDate';
   static const String nextServiceDateMustBeAfterLastService = 'nextServiceDateMustBeAfterLastService';
   static const String nextServiceKmMustBeGreaterThanLastService = 'nextServiceKmMustBeGreaterThanLastService';
+
+  static const String editCarDetails = 'editCarDetails';
+  static const String updateCarInformation = 'updateCarInformation';
+  static const String carDetailsUpdated = 'carDetailsUpdated';
+  static const String carDataNotFound = 'carDataNotFound';
 }

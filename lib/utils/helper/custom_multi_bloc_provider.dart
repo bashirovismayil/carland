@@ -11,6 +11,7 @@ import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
 import '../../cubit/body/type/get_body_type_cubit.dart';
 import '../../cubit/color/get_color_list_cubit.dart';
+import '../../cubit/edit/edit_car_details_cubit.dart';
 import '../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/mileage/update/update_car_mileage_cubit.dart';
@@ -99,6 +100,9 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             ),
             BlocProvider<ExecuteCarServiceCubit>(
               create: (_) => locator<ExecuteCarServiceCubit>(),
+            ),
+            BlocProvider<EditCarDetailsCubit>(
+              create: (_) => locator<EditCarDetailsCubit>(),
             ),
           ],
         );

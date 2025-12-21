@@ -1260,6 +1260,30 @@ class Translations {
       'en': 'Next service km must be greater than last service km',
       'ru': 'Км следующего обслуживания должен быть больше км последнего обслуживания',
     },
+    AppStrings.editCarDetails: {
+      'az': 'Avtomobil Detallarını Redaktə Et',
+      'en': 'Edit Car Details',
+      'ru': 'Редактировать детали автомобиля',
+    },
+
+    AppStrings.updateCarInformation: {
+      'az': 'Avtomobil Məlumatlarını Yenilə',
+      'en': 'Update Car Information',
+      'ru': 'Обновить информацию об автомобиле',
+    },
+
+    AppStrings.carDetailsUpdated: {
+      'az': 'Avtomobil detalları uğurla yeniləndi',
+      'en': 'Car details updated successfully',
+      'ru': 'Детали автомобиля успешно обновлены',
+    },
+
+    AppStrings.carDataNotFound: {
+      'az': 'Avtomobil məlumatları tapılmadı',
+      'en': 'Car data not found',
+      'ru': 'Данные автомобиля не найдены',
+    },
+
   };
 
   static String translate(String key, String languageCode) {

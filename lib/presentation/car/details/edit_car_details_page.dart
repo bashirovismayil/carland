@@ -638,10 +638,6 @@ class EditCarDetailsPage extends HookWidget {
       TextEditingController controller,
       FormFieldState<String> fieldState,
       ) {
-    final selectedValue = ValueNotifier<String?>(
-      controller.text.isNotEmpty ? controller.text : null,
-    );
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -681,119 +677,62 @@ class EditCarDetailsPage extends HookWidget {
               ),
               Divider(height: 1, color: Colors.grey.shade200),
               Expanded(
-                child: ValueListenableBuilder<String?>(
-                  valueListenable: selectedValue,
-                  builder: (context, selected, child) {
-                    return ListView.separated(
-                      padding: const EdgeInsets.all(AppTheme.spacingMd),
-                      itemCount: items.length,
-                      separatorBuilder: (context, index) => Divider(
-                        height: 1,
-                        color: Colors.grey.shade200,
-                      ),
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        final isSelected = selected == item;
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(AppTheme.spacingMd),
+                  itemCount: items.length,
+                  separatorBuilder: (context, index) => Divider(
+                    height: 1,
+                    color: Colors.grey.shade200,
+                  ),
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    final isSelected = controller.text == item;
 
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppTheme.spacingMd,
-                            vertical: AppTheme.spacingSm,
-                          ),
-                          title: Text(
-                            item,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                              color: isSelected ? AppColors.primaryBlack : AppColors.textPrimary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: isSelected
-                              ? Container(
-                            width: 24,
-                            height: 24,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primaryBlack,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.check,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          )
-                              : Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey.shade300,
-                                width: 2,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          onTap: () {
-                            selectedValue.value = item;
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.only(
-                  bottom: AppTheme.spacingXl,
-                  left: 15,
-                  right: 15,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
-                ),
-                child: ValueListenableBuilder<String?>(
-                  valueListenable: selectedValue,
-                  builder: (context, value, child) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: value != null
-                            ? () {
-                          controller.text = value;
-                          fieldState.didChange(value);
-                          Navigator.pop(modalContext);
-                        }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: value != null
-                              ? AppColors.primaryBlack
-                              : AppColors.lightGrey,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          disabledBackgroundColor: AppColors.lightGrey,
-                          disabledForegroundColor: AppColors.textSecondary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-                          ),
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppTheme.spacingMd,
+                        vertical: AppTheme.spacingSm,
+                      ),
+                      title: Text(
+                        item,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          color: isSelected ? AppColors.primaryBlack : AppColors.textPrimary,
                         ),
-                        child: Text(
-                          AppTranslation.translate(AppStrings.confirm),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: isSelected
+                          ? Container(
+                        width: 24,
+                        height: 24,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primaryBlack,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      )
+                          : Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 2,
                           ),
+                          shape: BoxShape.circle,
                         ),
                       ),
+                      onTap: () {
+                        controller.text = item;
+                        fieldState.didChange(item);
+                        Navigator.pop(modalContext);
+                      },
                     );
                   },
                 ),

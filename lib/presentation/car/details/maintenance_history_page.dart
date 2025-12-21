@@ -64,7 +64,7 @@ class MaintenanceHistoryPage extends HookWidget {
                       if (!mileageControllers.value.containsKey(record.id)) {
                         mileageControllers.value[record.id] =
                             TextEditingController(
-                          text: '${record.doneKm}',
+                              text: record.doneKm != null ? '${record.doneKm}' : '',
                         );
                       }
                     }
@@ -635,7 +635,6 @@ class MaintenanceHistoryPage extends HookWidget {
           listener: (context, state) {
             if (state is ExecuteCarServiceSuccess) {
               log('[MaintenanceHistory] Execute Car Service Success: ${state.message}');
-              // Success sonrası navigasyon
               Navigator.push(
                 context,
                 MaterialPageRoute(

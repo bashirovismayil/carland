@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:carcat/presentation/user/user_main_nav.dart';
 import 'package:carcat/utils/helper/go.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,8 @@ import '../../../cubit/records/get_records/get_car_records_cubit.dart';
 import '../../../cubit/records/get_records/get_car_records_state.dart';
 import '../../../cubit/records/update/update_car_record_cubit.dart';
 import '../../../cubit/records/update/update_car_record_state.dart';
+import '../../../cubit/services/execute/execute_car_service_cubit.dart';
+import '../../../cubit/services/execute/execute_car_service_state.dart';
 import '../../../data/remote/models/remote/GetCarRecordsResponse.dart';
 import '../../success/success_page.dart';
 
@@ -49,17 +53,19 @@ class MaintenanceHistoryPage extends HookWidget {
                   if (state is GetCarRecordsSuccess) {
                     for (var record in state.records) {
                       if (!dateControllers.value.containsKey(record.id)) {
-                        dateControllers.value[record.id] = TextEditingController(
+                        dateControllers.value[record.id] =
+                            TextEditingController(
                           text: record.doneDate != null
-                              ? DateFormat('dd/MM/yyyy').format(record.doneDate!)
+                              ? DateFormat('dd/MM/yyyy')
+                                  .format(record.doneDate!)
                               : '',
                         );
                       }
                       if (!mileageControllers.value.containsKey(record.id)) {
                         mileageControllers.value[record.id] =
                             TextEditingController(
-                              text: '${record.doneKm}',
-                            );
+                          text: '${record.doneKm}',
+                        );
                       }
                     }
                   }
@@ -85,7 +91,8 @@ class MaintenanceHistoryPage extends HookWidget {
                             ),
                             const SizedBox(height: AppTheme.spacingMd),
                             Text(
-                              AppTranslation.translate(AppStrings.errorLoadingRecords),
+                              AppTranslation.translate(
+                                  AppStrings.errorLoadingRecords),
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -110,7 +117,8 @@ class MaintenanceHistoryPage extends HookWidget {
                                 backgroundColor: AppColors.primaryBlack,
                                 foregroundColor: Colors.white,
                               ),
-                              child: Text(AppTranslation.translate(AppStrings.retry)),
+                              child: Text(
+                                  AppTranslation.translate(AppStrings.retry)),
                             ),
                           ],
                         ),
@@ -131,7 +139,8 @@ class MaintenanceHistoryPage extends HookWidget {
                               ),
                               const SizedBox(height: AppTheme.spacingMd),
                               Text(
-                                AppTranslation.translate(AppStrings.noMaintenanceRecordsFound),
+                                AppTranslation.translate(
+                                    AppStrings.noMaintenanceRecordsFound),
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -152,12 +161,15 @@ class MaintenanceHistoryPage extends HookWidget {
                             context: context,
                             record: record,
                             isExpanded: expandedSectionId.value == record.id,
-                            isCompleted: completedSections.value.contains(record.id),
+                            isCompleted:
+                                completedSections.value.contains(record.id),
                             onExpand: () {
-                              final previousExpandedId = expandedSectionId.value;
+                              final previousExpandedId =
+                                  expandedSectionId.value;
 
                               // Eğer başka bir section açıksa, önce onu kapat ve kaydet
-                              if (previousExpandedId != null && previousExpandedId != record.id) {
+                              if (previousExpandedId != null &&
+                                  previousExpandedId != record.id) {
                                 _handleSectionChange(
                                   context: context,
                                   previousRecordId: previousExpandedId,
@@ -185,7 +197,8 @@ class MaintenanceHistoryPage extends HookWidget {
                               }
                             },
                             dateController: dateControllers.value[record.id]!,
-                            mileageController: mileageControllers.value[record.id]!,
+                            mileageController:
+                                mileageControllers.value[record.id]!,
                           );
                         }).toList(),
                       ),
@@ -199,7 +212,7 @@ class MaintenanceHistoryPage extends HookWidget {
             _buildBottomSection(
               context,
               completedSections,
-                  () {
+              () {
                 final state = context.read<GetCarRecordsCubit>().state;
                 if (state is GetCarRecordsSuccess) {
                   return state.records.length;
@@ -275,9 +288,7 @@ class MaintenanceHistoryPage extends HookWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             border: Border.all(
-              color: isCompleted
-                  ? AppColors.successColor
-                  : Colors.transparent,
+              color: isCompleted ? AppColors.successColor : Colors.transparent,
               width: isCompleted ? 2 : 1,
             ),
             boxShadow: [
@@ -345,29 +356,21 @@ class MaintenanceHistoryPage extends HookWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.successColor.withOpacity(0.1),
+                                  color:
+                                      AppColors.successColor.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
+                                child:
+
                                     Icon(
                                       Icons.check_circle,
                                       size: 14,
                                       color: AppColors.successColor,
                                     ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      AppTranslation.translate(AppStrings.saved),
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.successColor,
-                                      ),
-                                    ),
-                                  ],
+
+
                                 ),
-                              ),
+
                           ],
                         ),
                       ),
@@ -404,9 +407,11 @@ class MaintenanceHistoryPage extends HookWidget {
                       Divider(height: 1, color: Colors.grey.shade200),
                       const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
-                        label: AppTranslation.translate(AppStrings.lastServiceDate),
+                        label: AppTranslation.translate(
+                            AppStrings.lastServiceDate),
                         controller: dateController,
-                        hint: AppTranslation.translate(AppStrings.lastServiceDateHint),
+                        hint: AppTranslation.translate(
+                            AppStrings.lastServiceDateHint),
                         svgIconPath: 'assets/svg/calendar_nav_icon_active.svg',
                         isRequired: true,
                         readOnly: true,
@@ -414,9 +419,11 @@ class MaintenanceHistoryPage extends HookWidget {
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
-                        label: AppTranslation.translate(AppStrings.lastServiceMileage),
+                        label: AppTranslation.translate(
+                            AppStrings.lastServiceMileage),
                         controller: mileageController,
-                        hint: AppTranslation.translate(AppStrings.lastServiceMileageHint),
+                        hint: AppTranslation.translate(
+                            AppStrings.lastServiceMileageHint),
                         svgIconPath: 'assets/svg/odometer_icon.svg',
                         isRequired: true,
                         keyboardType: TextInputType.number,
@@ -530,9 +537,9 @@ class MaintenanceHistoryPage extends HookWidget {
   }
 
   Future<void> _selectDate(
-      BuildContext context,
-      TextEditingController controller,
-      ) async {
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -556,6 +563,8 @@ class MaintenanceHistoryPage extends HookWidget {
       controller.text = DateFormat('dd/MM/yyyy').format(picked);
     }
   }
+
+  // maintenance_history_page.dart içinde
 
   void _handleSectionChange({
     required BuildContext context,
@@ -587,43 +596,46 @@ class MaintenanceHistoryPage extends HookWidget {
 
     if (mileage == null) return;
 
-    // Call update API
     context.read<UpdateCarRecordCubit>().updateCarRecord(
-      carId: int.parse(carId),
-      recordId: previousRecordId,
-      doneDate: formattedDate,
-      doneKm: mileage,
-    );
+          carId: int.parse(carId),
+          recordId: previousRecordId,
+          doneDate: formattedDate,
+          doneKm: mileage,
+        );
 
-    // Mark as completed
     completedSections.value = {...completedSections.value, previousRecordId};
   }
+
+  // maintenance_history_page.dart
 
   Widget _buildBottomSection(
       BuildContext context,
       ValueNotifier<Set<int>> completedSections,
       int totalRecords,
       ) {
-    return BlocListener<UpdateCarRecordCubit, UpdateCarRecordState>(
-      listener: (context, state) {
-        if (state is UpdateCarRecordError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${AppTranslation.translate(AppStrings.failedToUpdateRecord)}${state.message}'),
-              backgroundColor: AppColors.errorColor,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.all(AppTheme.spacingMd),
-        child: SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: completedSections.value.length == totalRecords
-                ? () {
+    return MultiBlocListener(
+      listeners: [
+        // Update Record Listener (Execute çağrısını kaldırdık)
+        BlocListener<UpdateCarRecordCubit, UpdateCarRecordState>(
+          listener: (context, state) {
+            if (state is UpdateCarRecordError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      '${AppTranslation.translate(AppStrings.failedToUpdateRecord)}${state.message}'),
+                  backgroundColor: AppColors.errorColor,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
+        ),
+        // Execute Car Service Listener
+        BlocListener<ExecuteCarServiceCubit, ExecuteCarServiceState>(
+          listener: (context, state) {
+            if (state is ExecuteCarServiceSuccess) {
+              log('[MaintenanceHistory] Execute Car Service Success: ${state.message}');
+              // Success sonrası navigasyon
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -635,37 +647,77 @@ class MaintenanceHistoryPage extends HookWidget {
                   ),
                 ),
               );
+            } else if (state is ExecuteCarServiceError) {
+              log('[MaintenanceHistory] Execute Car Service Error: ${state.message}');
+              // Hata durumunda kullanıcıya bildirme (opsiyonel)
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      '${AppTranslation.translate(AppStrings.errorOccurred)}: ${state.message}'),
+                  backgroundColor: AppColors.errorColor,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
             }
-                : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: completedSections.value.length == totalRecords
-                  ? AppColors.primaryBlack
-                  : AppColors.lightGrey,
-              foregroundColor: completedSections.value.length == totalRecords
-                  ? Colors.white
-                  : AppColors.textSecondary,
-              elevation: 0,
-              disabledBackgroundColor: AppColors.lightGrey,
-              disabledForegroundColor: AppColors.textSecondary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.check_circle_outline, size: 20),
-                const SizedBox(width: AppTheme.spacingSm),
-                Text(
-                  '${AppTranslation.translate(AppStrings.submit)} (${completedSections.value.length}/$totalRecords)',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+          },
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.all(AppTheme.spacingMd),
+        child: BlocBuilder<ExecuteCarServiceCubit, ExecuteCarServiceState>(
+          builder: (context, executeState) {
+            final isExecuting = executeState is ExecuteCarServiceLoading;
+
+            return SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: completedSections.value.length == totalRecords && !isExecuting
+                    ? () {
+                  log('[MaintenanceHistory] Submit pressed, executing car service for carId: $carId');
+                  context.read<ExecuteCarServiceCubit>().executeCarService(int.parse(carId));
+                }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: completedSections.value.length == totalRecords
+                      ? AppColors.primaryBlack
+                      : AppColors.lightGrey,
+                  foregroundColor: completedSections.value.length == totalRecords
+                      ? Colors.white
+                      : AppColors.textSecondary,
+                  elevation: 0,
+                  disabledBackgroundColor: AppColors.lightGrey,
+                  disabledForegroundColor: AppColors.textSecondary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
                   ),
                 ),
-              ],
-            ),
-          ),
+                child: isExecuting
+                    ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+                    : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.check_circle_outline, size: 20),
+                    const SizedBox(width: AppTheme.spacingSm),
+                    Text(
+                      '${AppTranslation.translate(AppStrings.submit)} (${completedSections.value.length}/$totalRecords)',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

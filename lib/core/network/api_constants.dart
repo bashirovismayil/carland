@@ -130,4 +130,7 @@ class ApiConstants {
 
   static const editCarDetails =
       '$baseUrl/carland/server-carland/api/v1/car/edit/details';
+
+  static const executeCarService =
+      '$baseUrl/carland/server-carland/api/v1/car/service/execute/percentages?carId=';
 }

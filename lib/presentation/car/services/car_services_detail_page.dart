@@ -496,7 +496,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 return _ServiceCard(
                   service: service,
                   carId: currentCarId ?? 0,
-                  onRefresh: _refreshCurrentCarServices, // Callback eklendi
+                  onRefresh: _refreshCurrentCarServices,
                 );
               },
             ),
@@ -683,7 +683,7 @@ class _ServiceCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              flex: 1,
+              flex: 2,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -707,7 +707,7 @@ class _ServiceCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 5),
             Flexible(
               flex: 1,
               child: Row(

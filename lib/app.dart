@@ -5,6 +5,7 @@ import 'package:carcat/utils/helper/custom_multi_bloc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'core/constants/colors/app_colors.dart';
 import 'cubit/language/language_cubit.dart';
 import 'cubit/language/language_state.dart';
@@ -41,14 +42,14 @@ class _CarCatAppState extends State<CarCatApp> {
   }
 
   Future<void> _checkRememberMeOnStartup() async {
-    print("🚀 Uygulama başlatılıyor - 'Beni Hatırla' kontrolü yapılıyor...");
+    print("🚀 App achildi - 'remember me check edilir...");
     await _loginLocalService.checkRememberMeOnStartup();
-    print("✅ 'Beni Hatırla' kontrolü ve gerekli temizlik tamamlandı.");
+    print("✅ remember me tamamlandı.");
   }
 
   void _setupAuthListener() {
     _authManager.authStateStream.listen((authState) {
-      print('📡 Yetkilendirme durumu değişti: $authState');
+      print('📡 AuthState deyişdi: $authState');
       _handleAuthStateChange(authState);
     });
   }
@@ -65,12 +66,12 @@ class _CarCatAppState extends State<CarCatApp> {
 
   Widget _getInitialPage() {
     if (!_onboardService.isOnboardSeen) {
-      print("📖 Onboarding görülmemiş - Onboarding sayfasına yönlendiriliyor");
+      print("📖 Onboarding görülmeyib - Onboarding page-e gedir");
       return _appRouter.getOnboardPage();
     }
 
     final authState = _authManager.currentAuthState;
-    print("🔍 Mevcut yetkilendirme durumu: $authState");
+    print("🔍 Mövcud state: $authState");
     return _appRouter.getPageForAuthState(authState);
   }
 
@@ -124,6 +125,9 @@ class _CarCatAppState extends State<CarCatApp> {
                 theme: ThemeData(
                   colorScheme: ColorScheme.fromSeed(
                     seedColor: AppColors.primaryBlack,
+                  ),
+                  textTheme: GoogleFonts.poppinsTextTheme(
+                    Theme.of(context).textTheme,
                   ),
                   useMaterial3: true,
                 ),

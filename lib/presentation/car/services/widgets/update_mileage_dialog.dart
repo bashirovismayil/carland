@@ -129,7 +129,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
                 _buildSpeedometerWithOdometer(),
                 const SizedBox(height: 32),
                 _buildMileageInput(),
-                const SizedBox(height: 24),
+                const SizedBox(height: 19),
                 _buildButtons(),
               ],
             ),
@@ -211,7 +211,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
           AppTranslation.translate(AppStrings.enterCurrentMileage),
           style: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
         ),
@@ -242,7 +242,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
               LengthLimitingTextInputFormatter(7),
             ],
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               letterSpacing: 1,
             ),
@@ -253,7 +253,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
                 fontWeight: FontWeight.w400,
               ),
               prefixIcon: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.fromLTRB(20, 12, 12, 12),
                 child: SvgPicture.asset(
                   'assets/svg/odometer_icon.svg',
                   colorFilter: ColorFilter.mode(
@@ -321,7 +321,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             // Cancel Button
             SizedBox(

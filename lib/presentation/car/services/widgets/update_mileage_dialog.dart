@@ -160,7 +160,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
               AppTranslation.translate(AppStrings.enterMileage),
               style: const TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 color: AppColors.textPrimary,
               ),
             ),
@@ -176,7 +176,6 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Background speedometer image
           Image.asset(
             'assets/png/mileage_odometer.png',
             height: 170,

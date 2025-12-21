@@ -218,8 +218,6 @@ class _HomeHeader extends StatelessWidget {
   }
 }
 
-// HomePage içinde _CarListView widget'ını güncelle
-
 class _CarListView extends StatelessWidget {
   final List<GetCarListResponse> carList;
   final VoidCallback onRefresh;
@@ -316,7 +314,7 @@ class _CarCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
+                      color: AppColors.plateNumberColor,
                     ),
                   ),
                 ],
@@ -329,7 +327,6 @@ class _CarCard extends StatelessWidget {
   }
 }
 
-/// Araba fotoğrafı bölümü - 4 köşesi de yuvarlatılmış
 class _CarImageSection extends StatelessWidget {
   final GetCarListResponse car;
   final void Function(GetCarListResponse car) onDelete;
@@ -350,7 +347,7 @@ class _CarImageSection extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: AspectRatio(
-              aspectRatio: 6 / 3.5,
+              aspectRatio: 7 / 3.5,
               child: hasValidCarId
                   ? FutureBuilder<Uint8List?>(
                 future: context.read<GetCarListCubit>().getCarPhoto(car.carId),
@@ -468,7 +465,6 @@ class _CarImageSection extends StatelessWidget {
   }
 }
 
-/// Boş durum gösterimi
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
@@ -515,7 +511,6 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-/// Hata durumu gösterimi (artık kullanılmıyor ama referans için bırakıldı)
 class _ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;

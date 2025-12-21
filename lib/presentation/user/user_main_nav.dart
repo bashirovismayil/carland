@@ -1,5 +1,6 @@
 import 'package:carcat/core/constants/colors/app_colors.dart';
 import 'package:carcat/core/localization/app_translation.dart';
+import 'package:carcat/presentation/history/history_page.dart';
 import 'package:carcat/presentation/settings/settings_page.dart';
 import 'package:carcat/presentation/vin/vin_scanner_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import '../../core/constants/texts/app_strings.dart';
 import '../../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../../cubit/navigation/user/user_nav_bar_state.dart';
 import '../../home_page.dart';
+import '../reservation/reservation_list_page.dart';
 
 class UserMainNavigationPage extends StatelessWidget {
   const UserMainNavigationPage({super.key});
@@ -27,8 +29,8 @@ class UserMainNavigationView extends StatelessWidget {
 
   static const List<Widget> _pages = [
     HomePage(),
-    HomePage(),
-    HomePage(),
+    HistoryPage(),
+    ReservationListPage(),
     SettingsPage(),
   ];
 

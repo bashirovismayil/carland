@@ -516,23 +516,11 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            AppTranslation.translate(AppStrings.errorOccurred),
+            message,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(
-              message,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
             ),
           ),
         ],

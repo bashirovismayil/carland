@@ -103,17 +103,14 @@ class RegisterPage extends HookWidget {
         final rawPhone = registerCubit.phoneController.text;
         final cleanPhone = rawPhone.replaceAll(RegExp(r'\D'), '');
 
-        // Full phone number with country code for display
         final formattedPhone = '${selectedCountryCode.value.code} $cleanPhone';
 
-        // Full phone number with dial code for backend (e.g., 994501234567)
         final fullPhoneForBackend = '${selectedCountryCode.value.dialCode}$cleanPhone';
 
         final confirmed = await OtpSendConfirmationDialog.show(
           context: context,
           phoneNumber: formattedPhone,
           onConfirm: () async {
-            // Send OTP with full number including dial code
             await otpSendCubit.sendOtp(fullPhoneForBackend);
           },
         );
@@ -122,7 +119,7 @@ class RegisterPage extends HookWidget {
           Go.to(
             context,
             OtpPage(
-              phoneNumber: fullPhoneForBackend, // Pass full number with dial code
+              phoneNumber: fullPhoneForBackend,
               verifyType: OtpVerifyType.registration,
               countryCode: selectedCountryCode.value.code,
             ),
@@ -177,13 +174,12 @@ class RegisterPage extends HookWidget {
                               showCountryCodePicker,
                               isSubmitting.value,
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 22),
                             _buildTermsCheckbox(context, agreeToTerms),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 30),
                             _buildNextButton(context, isSubmitting.value, onNextPressed),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 17),
                             _buildSignInRow(context, navigateToLogin),
-                            const SizedBox(height: 16),
                           ],
                         ),
                       ),
@@ -211,8 +207,8 @@ class RegisterPage extends HookWidget {
     return Row(
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: 14,
+          height: 14,
           decoration: const BoxDecoration(
             color: Colors.black,
             shape: BoxShape.circle,
@@ -242,7 +238,7 @@ class RegisterPage extends HookWidget {
         Text(
           context.currentLanguage(AppStrings.nameLabel),
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: Colors.black87,
           ),
@@ -282,7 +278,7 @@ class RegisterPage extends HookWidget {
         Text(
           context.currentLanguage(AppStrings.surnameLabel),
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: Colors.black87,
           ),
@@ -330,7 +326,7 @@ class RegisterPage extends HookWidget {
               Text(
                 context.currentLanguage(AppStrings.countryCodeLabel),
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Colors.black87,
                 ),
@@ -384,7 +380,7 @@ class RegisterPage extends HookWidget {
               Text(
                 context.currentLanguage(AppStrings.phoneNumberLabel),
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Colors.black87,
                 ),

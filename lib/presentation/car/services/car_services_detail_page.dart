@@ -75,20 +75,21 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     context.read<GetCarServicesCubit>().getCarServices(carId);
   }
 
+  void _refreshCurrentCarServices() {
+    _loadCarServices(widget.carList[_currentCarIndex].carId);
+  }
+
   void _onPageChanged(int index) {
     setState(() {
       _currentCarIndex = index;
     });
 
-    // Cancel previous debounce timer
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-    // Debounce API call - wait 350ms after user stops scrolling
     _debounce = Timer(const Duration(milliseconds: 350), () {
       _loadCarServices(widget.carList[index].carId);
     });
 
-    // Preload adjacent photos
     _preloadPhotos();
   }
 
@@ -214,7 +215,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 
     // Refresh services if mileage was updated
     if (result == true && mounted) {
-      _loadCarServices(car.carId);
+      _refreshCurrentCarServices();
     }
   }
 
@@ -495,6 +496,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 return _ServiceCard(
                   service: service,
                   carId: currentCarId ?? 0,
+                  onRefresh: _refreshCurrentCarServices, // Callback eklendi
                 );
               },
             ),
@@ -532,8 +534,13 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 class _ServiceCard extends StatelessWidget {
   final ResponseList service;
   final int carId;
+  final VoidCallback onRefresh;
 
-  const _ServiceCard({required this.service, required this.carId});
+  const _ServiceCard({
+    required this.service,
+    required this.carId,
+    required this.onRefresh,
+  });
 
   Color _getChartColor(int percentage) {
     if (percentage >= 25) {
@@ -543,21 +550,6 @@ class _ServiceCard extends StatelessWidget {
     } else {
       return const Color(0xFFF44336);
     }
-  }
-
-  void _showEditDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => EditServiceDetailsDialog(
-        carId: carId,
-        percentageId: service.percentageId,
-        initialLastServiceDate: service.lastServiceDate,
-        initialLastServiceKm: service.lastServiceKm,
-        initialNextServiceDate: service.nextServiceDate,
-        initialNextServiceKm: service.nextServiceKm,
-      ),
-    );
   }
 
   @override
@@ -635,9 +627,8 @@ class _ServiceCard extends StatelessWidget {
                         ),
                       );
 
-                      // Refresh if edited
-                      if (result == true && context.mounted) {
-                        // Trigger refresh in parent
+                      if (result == true) {
+                        onRefresh();
                       }
                     }
                   },

@@ -167,8 +167,6 @@ class CarDetailsPage extends HookWidget {
                         isRequired: false,
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
-
-                      // Model (Disabled - from checkVin)
                       _buildTextField(
                         controller: modelController,
                         label: AppTranslation.translate(AppStrings.model),
@@ -178,8 +176,6 @@ class CarDetailsPage extends HookWidget {
                         isRequired: false,
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
-
-                      // Engine Volume (was in Row, now Column)
                       _buildTextField(
                         controller: engineController,
                         label:

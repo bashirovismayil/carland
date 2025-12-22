@@ -158,7 +158,6 @@ class CarDetailsPage extends HookWidget {
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
-                      // Make (Disabled - from checkVin)
                       _buildTextField(
                         controller: makeController,
                         label: AppTranslation.translate(AppStrings.make),

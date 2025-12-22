@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();  
+              Navigator.of(context).pop();
             },
             child: Text(
               AppTranslation.translate(AppStrings.cancel),

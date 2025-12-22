@@ -10,8 +10,13 @@ import '../utils/di/locator.dart';
 
 class ProfilePhoto extends StatefulWidget {
   final double? radius;
+  final bool openDrawerOnTap;
 
-  const ProfilePhoto({super.key, this.radius});
+  const ProfilePhoto({
+    super.key,
+    this.radius,
+    this.openDrawerOnTap = true,
+  });
 
   @override
   State<ProfilePhoto> createState() => _ProfilePhotoState();
@@ -36,7 +41,11 @@ class _ProfilePhotoState extends State<ProfilePhoto> {
 
     return GestureDetector(
       onTap: () {
-        context.read<UserNavBarCubit>().goToSettingsPage();
+        if (widget.openDrawerOnTap) {
+          Scaffold.of(context).openDrawer();
+        } else {
+          context.read<UserNavBarCubit>().goToSettingsPage();
+        }
       },
       child: BlocProvider.value(
         value: _cubit,

@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:carcat/presentation/user/user_main_nav.dart';
 import 'package:carcat/utils/helper/go.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +63,7 @@ class MaintenanceHistoryPage extends HookWidget {
                       if (!mileageControllers.value.containsKey(record.id)) {
                         mileageControllers.value[record.id] =
                             TextEditingController(
-                              text: record.doneKm != null ? '${record.doneKm}' : '',
+                          text: record.doneKm != null ? '${record.doneKm}' : '',
                         );
                       }
                     }
@@ -167,7 +166,6 @@ class MaintenanceHistoryPage extends HookWidget {
                               final previousExpandedId =
                                   expandedSectionId.value;
 
-                              // Eğer başka bir section açıksa, önce onu kapat ve kaydet
                               if (previousExpandedId != null &&
                                   previousExpandedId != record.id) {
                                 _handleSectionChange(
@@ -180,9 +178,7 @@ class MaintenanceHistoryPage extends HookWidget {
                                 );
                               }
 
-                              // Aynı section'a tıklandıysa kapat, farklıysa aç
                               if (expandedSectionId.value == record.id) {
-                                // Kapatırken kaydet
                                 _handleSectionChange(
                                   context: context,
                                   previousRecordId: record.id,
@@ -320,56 +316,17 @@ class MaintenanceHistoryPage extends HookWidget {
                                 color: AppColors.lightGrey,
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 6,
-                                    height: 6,
-                                    decoration: BoxDecoration(
-                                      color: isCompleted
-                                          ? AppColors.successColor
-                                          : AppColors.primaryBlack,
-                                      shape: BoxShape.circle,
-                                    ),
+                              child: Flexible(
+                                child: Text(
+                                  record.serviceName,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textPrimary,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      record.serviceName,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColors.textPrimary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                            const Spacer(),
-                            if (isCompleted)
-                              Container(
-                                margin: const EdgeInsets.only(right: 8),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      AppColors.successColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child:
-
-                                    Icon(
-                                      Icons.check_circle,
-                                      size: 14,
-                                      color: AppColors.successColor,
-                                    ),
-
-
-                                ),
 
                           ],
                         ),
@@ -564,8 +521,6 @@ class MaintenanceHistoryPage extends HookWidget {
     }
   }
 
-  // maintenance_history_page.dart içinde
-
   void _handleSectionChange({
     required BuildContext context,
     required int previousRecordId,
@@ -586,7 +541,6 @@ class MaintenanceHistoryPage extends HookWidget {
       return;
     }
 
-    // Convert date from dd/MM/yyyy to yyyy-MM-dd
     final dateParts = dateText.split('/');
     if (dateParts.length != 3) return;
 
@@ -606,16 +560,13 @@ class MaintenanceHistoryPage extends HookWidget {
     completedSections.value = {...completedSections.value, previousRecordId};
   }
 
-  // maintenance_history_page.dart
-
   Widget _buildBottomSection(
-      BuildContext context,
-      ValueNotifier<Set<int>> completedSections,
-      int totalRecords,
-      ) {
+    BuildContext context,
+    ValueNotifier<Set<int>> completedSections,
+    int totalRecords,
+  ) {
     return MultiBlocListener(
       listeners: [
-        // Update Record Listener (Execute çağrısını kaldırdık)
         BlocListener<UpdateCarRecordCubit, UpdateCarRecordState>(
           listener: (context, state) {
             if (state is UpdateCarRecordError) {
@@ -648,7 +599,6 @@ class MaintenanceHistoryPage extends HookWidget {
               );
             } else if (state is ExecuteCarServiceError) {
               log('[MaintenanceHistory] Execute Car Service Error: ${state.message}');
-              // Hata durumunda kullanıcıya bildirme (opsiyonel)
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -671,19 +621,24 @@ class MaintenanceHistoryPage extends HookWidget {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: completedSections.value.length == totalRecords && !isExecuting
+                onPressed: completedSections.value.length == totalRecords &&
+                        !isExecuting
                     ? () {
-                  log('[MaintenanceHistory] Submit pressed, executing car service for carId: $carId');
-                  context.read<ExecuteCarServiceCubit>().executeCarService(int.parse(carId));
-                }
+                        log('[MaintenanceHistory] Submit pressed, executing car service for carId: $carId');
+                        context
+                            .read<ExecuteCarServiceCubit>()
+                            .executeCarService(int.parse(carId));
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: completedSections.value.length == totalRecords
-                      ? AppColors.primaryBlack
-                      : AppColors.lightGrey,
-                  foregroundColor: completedSections.value.length == totalRecords
-                      ? Colors.white
-                      : AppColors.textSecondary,
+                  backgroundColor:
+                      completedSections.value.length == totalRecords
+                          ? AppColors.primaryBlack
+                          : AppColors.lightGrey,
+                  foregroundColor:
+                      completedSections.value.length == totalRecords
+                          ? Colors.white
+                          : AppColors.textSecondary,
                   elevation: 0,
                   disabledBackgroundColor: AppColors.lightGrey,
                   disabledForegroundColor: AppColors.textSecondary,
@@ -693,27 +648,27 @@ class MaintenanceHistoryPage extends HookWidget {
                 ),
                 child: isExecuting
                     ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
                     : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.check_circle_outline, size: 20),
-                    const SizedBox(width: AppTheme.spacingSm),
-                    Text(
-                      '${AppTranslation.translate(AppStrings.submit)} (${completedSections.value.length}/$totalRecords)',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.check_circle_outline, size: 20),
+                          const SizedBox(width: AppTheme.spacingSm),
+                          Text(
+                            '${AppTranslation.translate(AppStrings.submit)} (${completedSections.value.length}/$totalRecords)',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             );
           },

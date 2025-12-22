@@ -11,6 +11,7 @@ import '../../cubit/auth/otp/otp_send_cubit.dart';
 import '../../cubit/auth/otp/otp_verify_cubit.dart';
 import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
+import '../../cubit/auth/user/user/user_add_details_cubit.dart';
 import '../../cubit/body/type/get_body_type_cubit.dart';
 import '../../cubit/color/get_color_list_cubit.dart';
 import '../../cubit/delete/delete_car_cubit.dart';
@@ -51,6 +52,7 @@ import '../../data/remote/contractor/setup_pass_contractor.dart';
 import '../../data/remote/contractor/update_car_records_contractor.dart';
 import '../../data/remote/contractor/update_mileage_contractor.dart';
 import '../../data/remote/contractor/upload_car_photo_contractor.dart';
+import '../../data/remote/contractor/user_add_details_contractor.dart';
 import '../../data/remote/repository/add_car_repository.dart';
 import '../../data/remote/repository/check_vin_repository.dart';
 import '../../data/remote/repository/delete_car_repository.dart';
@@ -75,6 +77,7 @@ import '../../data/remote/repository/setup_pass_repository.dart';
 import '../../data/remote/repository/update_car_records_repository.dart';
 import '../../data/remote/repository/update_car_repository.dart';
 import '../../data/remote/repository/upload_car_photo_repository.dart';
+import '../../data/remote/repository/user_add_details_repository.dart';
 import '../../data/remote/services/local/language_local_service.dart';
 import '../../data/remote/services/local/login_local_services.dart';
 import '../../data/remote/services/local/onboard_local_services.dart';
@@ -105,6 +108,7 @@ import '../../data/remote/services/remote/setup_pass_service.dart';
 import '../../data/remote/services/remote/update_car_mileage_service.dart';
 import '../../data/remote/services/remote/update_car_records_service.dart';
 import '../../data/remote/services/remote/upload_car_photo_service.dart';
+import '../../data/remote/services/remote/user_add_details_service.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -399,5 +403,16 @@ Future<void> setupLocator() async {
   );
   locator.registerFactory<DeleteCarCubit>(
         () => DeleteCarCubit(),
+  );
+  locator.registerLazySingleton<UserAddDetailsService>(
+        () => UserAddDetailsService(),
+  );
+  locator.registerLazySingleton<UserAddDetailsContractor>(
+        () => UserAddDetailsRepository(
+      locator<UserAddDetailsService>(),
+    ),
+  );
+  locator.registerFactory<UserAddDetailsCubit>(
+        () => UserAddDetailsCubit(),
   );
 }

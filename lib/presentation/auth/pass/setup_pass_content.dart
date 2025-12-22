@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:carcat/core/extensions/auth_extensions/auto_login.dart';
 import 'package:carcat/core/localization/app_translation.dart';
+import 'package:carcat/presentation/user/user_main_nav.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/colors/app_colors.dart';
 import '../../../../core/constants/enums/enums.dart';
@@ -13,6 +14,7 @@ import '../../../../widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../cubit/auth/user/user/user_add_details_cubit.dart';
 import '../../../home_page.dart';
 import '../../../utils/helper/go.dart';
 import '../../success/success_page.dart';
@@ -424,8 +426,8 @@ class _SetupPassContentState extends State<SetupPassContent> {
       MaterialPageRoute(
         builder: (context) => SuccessPage(
           isRegister: true,
-          onButtonPressed: () {
-            context.performAutoLogin(
+          onButtonPressed: () async {
+            await context.performAutoLogin(
               password: widget.passwordController.text,
               phoneNumber: widget.setupType == SetupPassType.registration
                   ? widget.phoneNumber
@@ -436,6 +438,7 @@ class _SetupPassContentState extends State<SetupPassContent> {
       ),
     );
   }
+
 
   void _onSetupPassError(SetupPassError state) {
     log('SetupPass Error: ${state.message}');
@@ -461,8 +464,19 @@ class _SetupPassContentState extends State<SetupPassContent> {
     }
   }
 
-  void _onLoginSuccess(BuildContext context) {
+  void _onLoginSuccess(BuildContext context) async {
     log("Auto login successful");
+
+    if (widget.setupType == SetupPassType.registration) {
+      log("Calling addUserDetails after successful registration login...");
+
+      try {
+        final response = await context.read<UserAddDetailsCubit>().addUserDetails();
+        log("✅ User details added successfully: $response");
+      } catch (e) {
+        log("❌ Error adding user details: $e");
+      }
+    }
 
     if (widget.setupType == SetupPassType.resetPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -472,9 +486,9 @@ class _SetupPassContentState extends State<SetupPassContent> {
         ),
       );
     }
-    Go.replaceAndRemove(
-      context,
-      HomePage(),
+
+    Go.replaceAndRemoveWithoutContext(
+      UserMainNavigationPage(),
     );
   }
 

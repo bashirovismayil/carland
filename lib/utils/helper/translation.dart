@@ -155,6 +155,16 @@ class Translations {
       'en': 'Login',
       'ru': 'Войти',
     },
+    AppStrings.logout: {
+      'az': 'Çıxış',
+      'en': 'Log Out',
+      'ru': 'Выйти',
+    },
+    AppStrings.areYouSureYouWantToLogOut : {
+      'az': 'Hesabdan çıxmaq istədiyinizə əminsiniz?',
+      'en': 'Are you sure you want to log out?',
+      'ru': 'Вы уверены, что хотите выйти из аккаунта?',
+    },
     AppStrings.signUpButton: {
       'az': 'Qeydiyyat',
       'en': 'Sign up',

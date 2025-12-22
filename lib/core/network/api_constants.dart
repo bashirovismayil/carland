@@ -54,6 +54,9 @@ class ApiConstants {
   static const updateSuperAdminDetails =
       '$baseUrl/hospital/server-hospital/api/v1/super-admin/update/profile';
 
+  // User add details
+  static const userAddDetails = '$baseUrl/carland/server-carland/api/v1/user/add-details';
+
   // Profile photo
   static const uploadProfilePhoto =
       '$baseUrl/carland/server-carland/api/v1/photo/for/user/upload';

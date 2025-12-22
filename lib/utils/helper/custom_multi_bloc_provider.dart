@@ -9,6 +9,7 @@ import '../../cubit/auth/otp/otp_send_cubit.dart';
 import '../../cubit/auth/otp/otp_verify_cubit.dart';
 import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
+import '../../cubit/auth/user/user/user_add_details_cubit.dart';
 import '../../cubit/body/type/get_body_type_cubit.dart';
 import '../../cubit/color/get_color_list_cubit.dart';
 import '../../cubit/delete/delete_car_cubit.dart';
@@ -107,6 +108,9 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             ),
             BlocProvider<DeleteCarCubit>(
               create: (_) => locator<DeleteCarCubit>(),
+            ),
+            BlocProvider<UserAddDetailsCubit>(
+              create: (_) => locator<UserAddDetailsCubit>(),
             ),
           ],
         );

@@ -1,6 +1,9 @@
 import 'dart:typed_data';
+import 'package:carcat/presentation/auth/auth_page.dart';
 import 'package:carcat/presentation/car/services/car_services_detail_page.dart';
 import 'package:carcat/presentation/vin/add_your_car_vin_screen.dart';
+import 'package:carcat/utils/helper/go.dart';
+import 'package:carcat/widgets/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -28,11 +31,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _local = locator<LoginLocalService>();
   String _userName = 'User';
+  String _userSurname = 'Surname';
 
   @override
   void initState() {
     super.initState();
     _loadUserName();
+    _loadSurname();
     _loadCarList();
   }
 
@@ -45,17 +50,89 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _loadSurname() {
+    final surname = _local.surname;
+    if (surname != null && surname.isNotEmpty) {
+      setState(() {
+        _userSurname = surname;
+      });
+    }
+  }
+
   void _loadCarList() {
     context.read<GetCarListCubit>().getCarList();
+  }
+
+  void _handleLogout() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          AppTranslation.translate(AppStrings.logout),
+          style: const TextStyle(
+            // const eklemek performansı artırır
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          AppTranslation.translate(AppStrings.areYouSureYouWantToLogOut),
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.red,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();  
+            },
+            child: Text(
+              AppTranslation.translate(AppStrings.cancel),
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+
+          TextButton(
+            onPressed: () async {
+              locator<LoginLocalService>().logout();
+
+              if (context.mounted) {
+                Go.replaceAndRemove(context, AuthPage());
+              }
+            },
+            child: Text(
+              AppTranslation.translate(AppStrings.logout),
+              style: TextStyle(
+                color: AppColors.errorColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: CustomDrawer(
+        userName: _userName,
+        userSurname: _userSurname,
+        onLogout: _handleLogout,
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 0),
+          padding: const EdgeInsets.only(
+              top: 16.0, left: 16.0, right: 16.0, bottom: 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -113,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                   behavior: SnackBarBehavior.floating,
                 ),
               );
-              _loadCarList(); // Refresh car list
+              _loadCarList();
             } else if (state is DeleteCarError) {
               Navigator.of(dialogContext).pop();
               ScaffoldMessenger.of(context).showSnackBar(
@@ -166,26 +243,26 @@ class _HomePageState extends State<HomePage> {
                     onPressed: isLoading
                         ? null
                         : () {
-                      context
-                          .read<DeleteCarCubit>()
-                          .deleteCar(carId: car.carId);
-                    },
+                            context
+                                .read<DeleteCarCubit>()
+                                .deleteCar(carId: car.carId);
+                          },
                     child: isLoading
                         ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.errorColor,
-                      ),
-                    )
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.errorColor,
+                            ),
+                          )
                         : Text(
-                      AppTranslation.translate(AppStrings.delete),
-                      style: TextStyle(
-                        color: AppColors.errorColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                            AppTranslation.translate(AppStrings.delete),
+                            style: TextStyle(
+                              color: AppColors.errorColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ],
               );
@@ -206,6 +283,7 @@ class _HomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        // ProfilePhoto artık drawer açacak (openDrawerOnTap: true default)
         const ProfilePhoto(),
         const SizedBox(width: 12),
         Expanded(
@@ -287,7 +365,6 @@ class _CarListView extends StatelessWidget {
           final car = carList[index];
           return GestureDetector(
             onTap: () {
-              // Navigate to detail page
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => CarServicesDetailPage(
@@ -305,7 +382,6 @@ class _CarListView extends StatelessWidget {
   }
 }
 
-/// Tek bir araba kartı
 class _CarCard extends StatelessWidget {
   final GetCarListResponse car;
   final void Function(GetCarListResponse car) onDelete;
@@ -320,16 +396,12 @@ class _CarCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Car Image Section
         _CarImageSection(car: car, onDelete: onDelete),
-
-        // Car Info Section
         Padding(
           padding: const EdgeInsets.only(top: 8.0, left: 4.0, right: 4.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Brand + Model
               Expanded(
                 child: Text(
                   '${car.brand} ${car.model}',
@@ -342,7 +414,6 @@ class _CarCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              // Plate Number
               Row(
                 children: [
                   SvgPicture.asset(
@@ -396,33 +467,34 @@ class _CarImageSection extends StatelessWidget {
               aspectRatio: 7 / 3.5,
               child: hasValidCarId
                   ? FutureBuilder<Uint8List?>(
-                future: context.read<GetCarListCubit>().getCarPhoto(car.carId),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Container(
-                      color: AppColors.surfaceColor,
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.primaryBlack,
-                        ),
-                      ),
-                    );
-                  } else if (snapshot.hasError || snapshot.data == null) {
-                    return _buildNoImagePlaceholder();
-                  }
-                  return Image.memory(
-                    snapshot.data!,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  );
-                },
-              )
+                      future: context
+                          .read<GetCarListCubit>()
+                          .getCarPhoto(car.carId),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            color: AppColors.surfaceColor,
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.primaryBlack,
+                              ),
+                            ),
+                          );
+                        } else if (snapshot.hasError || snapshot.data == null) {
+                          return _buildNoImagePlaceholder();
+                        }
+                        return Image.memory(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        );
+                      },
+                    )
                   : _buildNoImagePlaceholder(),
             ),
           ),
-
-          // Top Right Menu Button
           Positioned(
             top: 8,
             right: 8,
@@ -612,7 +684,6 @@ class _ErrorState extends StatelessWidget {
     );
   }
 }
-
 
 class _AddCarButton extends StatelessWidget {
   final VoidCallback onCarAdded;

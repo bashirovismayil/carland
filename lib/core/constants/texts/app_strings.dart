@@ -67,6 +67,7 @@ class AppStrings {
   static const String welcomeToCarCat = 'welcomeToCarCat';
   static const String welcomeSubtitle = 'welcomeSubtitle';
   static const String loginButton = 'loginButton';
+  static const String logout = 'logout';
   static const String signUpButton = 'signUpButton';
 
   // OnboardingContentPage - Language Selection
@@ -100,6 +101,7 @@ class AppStrings {
   static const String nextButton = 'nextButton';
   static const String alreadyHaveAccount = 'alreadyHaveAccount';
   static const String signInButton = 'signInButton';
+  static const String areYouSureYouWantToLogOut = 'AreYouSureYouWantToLogOut';
 
 // Terms & Privacy
   static const String iAgreeToThe = 'iAgreeToThe';

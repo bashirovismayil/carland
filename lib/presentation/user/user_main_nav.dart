@@ -2,7 +2,6 @@ import 'package:carcat/core/constants/colors/app_colors.dart';
 import 'package:carcat/core/localization/app_translation.dart';
 import 'package:carcat/presentation/history/history_page.dart';
 import 'package:carcat/presentation/settings/settings_page.dart';
-import 'package:carcat/presentation/vin/vin_scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -47,11 +46,13 @@ class UserMainNavigationView extends StatelessWidget {
             children: _pages,
           ),
           bottomNavigationBar: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 30),
+            // vertical: 30 yerine 'only' kullanarak üst boşluğu (top) kıstık
+            padding: const EdgeInsets.only(left: 2, right: 2, top: 10, bottom: 30),
             child: Container(
               height: 70,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -112,22 +113,38 @@ class UserMainNavigationView extends StatelessWidget {
   }) {
     final isActive = index == currentIndex;
 
+    final double iconOffset = (index == 1) ? 6.0 : 0.0;
+
     return Expanded(
       child: Tooltip(
         message: label,
         triggerMode: TooltipTriggerMode.longPress,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(15),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: SvgPicture.asset(
-              isActive ? activeIcon : icon,
-              width: 28,
-              height: 28,
-              colorFilter: ColorFilter.mode(
-                isActive ? Theme.of(context).primaryColor : Colors.grey,
-                BlendMode.srcIn,
+          borderRadius: BorderRadius.circular(30),
+          child: Center(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: isActive ? Colors.black : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.only(left: iconOffset),
+                  child: SvgPicture.asset(
+                    isActive ? activeIcon : icon,
+                    width: 24,
+                    height: 24,
+                    colorFilter: ColorFilter.mode(
+                      isActive ? Colors.white : Colors.grey,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

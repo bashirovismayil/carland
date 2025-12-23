@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../cubit/auth/user/user/user_add_details_cubit.dart';
-import '../../../home_page.dart';
+import '../../home/home_page.dart';
 import '../../../utils/helper/go.dart';
 import '../../success/success_page.dart';
 

@@ -46,7 +46,6 @@ class UserMainNavigationView extends StatelessWidget {
             children: _pages,
           ),
           bottomNavigationBar: Padding(
-            // vertical: 30 yerine 'only' kullanarak üst boşluğu (top) kıstık
             padding: const EdgeInsets.only(left: 2, right: 2, top: 10, bottom: 30),
             child: Container(
               height: 70,

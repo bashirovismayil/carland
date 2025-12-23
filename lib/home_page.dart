@@ -4,6 +4,7 @@ import 'package:carcat/presentation/car/services/car_services_detail_page.dart';
 import 'package:carcat/presentation/vin/add_your_car_vin_screen.dart';
 import 'package:carcat/utils/helper/go.dart';
 import 'package:carcat/widgets/custom_drawer.dart';
+import 'package:carcat/widgets/logout_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -66,57 +67,7 @@ class _HomePageState extends State<HomePage> {
   void _handleLogout() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(
-          AppTranslation.translate(AppStrings.logout),
-          style: const TextStyle(
-            // const eklemek performansı artırır
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: Text(
-          AppTranslation.translate(AppStrings.areYouSureYouWantToLogOut),
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.red,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text(
-              AppTranslation.translate(AppStrings.cancel),
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-
-          TextButton(
-            onPressed: () async {
-              locator<LoginLocalService>().logout();
-
-              if (context.mounted) {
-                Go.replaceAndRemove(context, AuthPage());
-              }
-            },
-            child: Text(
-              AppTranslation.translate(AppStrings.logout),
-              style: TextStyle(
-                color: AppColors.errorColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
+      builder: (context) => const LogoutDialog(),
     );
   }
 

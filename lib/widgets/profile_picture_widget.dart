@@ -10,7 +10,12 @@ import '../cubit/photo/profile/profile_photo_state.dart';
 import '../utils/di/locator.dart';
 
 class ProfilePictureWidget extends StatefulWidget {
-  const ProfilePictureWidget({super.key});
+  final bool isEdit;
+
+  const ProfilePictureWidget({
+    super.key,
+    required this.isEdit,
+  });
 
   @override
   _ProfilePictureWidgetState createState() => _ProfilePictureWidgetState();
@@ -118,38 +123,54 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
     return null;
   }
 
-  Widget _buildAvatar(ImageProvider? provider, ProfilePhotoState state) {
+  Widget _buildAvatar(ImageProvider? provider, ProfilePhotoState state, double size) {
+    final borderWidth = size * 0.06;
+    final padding = size * 0.08;
+    final avatarRadius = (size - (borderWidth * 2) - (padding * 2)) / 2;
+    final iconSize = size * 0.6;
+
     return Container(
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
+        border: Border.all(color: AppColors.primaryBlack, width: borderWidth),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 5,
+            spreadRadius: size * 0.04,
+            blurRadius: size * 0.1,
             offset: const Offset(0, 1),
           ),
         ],
       ),
+      padding: EdgeInsets.all(padding),
       child: CircleAvatar(
-        radius: 50,
+        radius: avatarRadius,
         backgroundColor: Colors.grey[200],
         backgroundImage: provider,
         child: provider == null
-            ? Icon(Icons.person, size: 60, color: AppColors.primaryBlack)
+            ? Icon(Icons.person, size: iconSize, color: AppColors.primaryBlack)
             : null,
       ),
     );
   }
 
-  Widget _buildEditButton() {
+  Widget _buildEditButton(double size) {
+    if (!widget.isEdit) {
+      return const SizedBox.shrink();
+    }
+
+    final buttonRadius = size * 0.17;
+    final innerRadius = size * 0.20;
+    final iconSize = size * 0.17;
+
     return Positioned(
-      bottom: -5,
-      right: 0.1,
+      bottom: size * 0.15,
+      right: size * 0.005,
       child: InkWell(
         onTap: _showImageSourceDialog,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(buttonRadius),
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -163,12 +184,12 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
             ],
           ),
           child: CircleAvatar(
-            radius: 15,
+            radius: buttonRadius,
             backgroundColor: Colors.white,
             child: CircleAvatar(
-              radius: 12,
+              radius: innerRadius,
               backgroundColor: AppColors.primaryBlack,
-              child: const Icon(Icons.edit, size: 15, color: Colors.white),
+              child: Icon(Icons.camera_alt_outlined, size: iconSize, color: Colors.white),
             ),
           ),
         ),
@@ -176,21 +197,24 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
     );
   }
 
-  Widget _buildOverlay(ProfilePhotoState state) {
+  Widget _buildOverlay(ProfilePhotoState state, double size) {
     if (state is ProfilePhotoUploading || (state is ProfilePhotoLoading && _serverImageData == null)) {
+      final progressSize = size * 0.3; // %30 of size
+      final strokeWidth = size * 0.02; // %2 of size
+
       return Positioned.fill(
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.black.withOpacity(state is ProfilePhotoUploading ? 0.5 : 0.3),
           ),
-          child: const Center(
+          child: Center(
             child: SizedBox(
-              width: 30,
-              height: 30,
+              width: progressSize,
+              height: progressSize,
               child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlack),
+                strokeWidth: strokeWidth,
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primaryBlack),
               ),
             ),
           ),
@@ -223,15 +247,25 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
         builder: (context, state) {
           final imageProvider = _getImageProvider();
 
-          return Center(
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                _buildAvatar(imageProvider, state),
-                _buildOverlay(state),
-                _buildEditButton(),
-              ],
-            ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final size = constraints.maxWidth.isFinite
+                  ? constraints.maxWidth
+                  : constraints.maxHeight.isFinite
+                  ? constraints.maxHeight
+                  : 100.0; // fallback size
+
+              return Center(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    _buildAvatar(imageProvider, state, size),
+                    _buildOverlay(state, size),
+                    _buildEditButton(size),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),

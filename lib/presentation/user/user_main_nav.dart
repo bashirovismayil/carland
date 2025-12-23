@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/constants/texts/app_strings.dart';
 import '../../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../../cubit/navigation/user/user_nav_bar_state.dart';
-import '../../home_page.dart';
+import '../home/home_page.dart';
 import '../reservation/reservation_list_page.dart';
 
 class UserMainNavigationPage extends StatelessWidget {

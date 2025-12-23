@@ -492,7 +492,7 @@ class _CarImageSection extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'Delete Car',
+                          AppTranslation.translate(AppStrings.deleteCar),
                           style: TextStyle(
                             color: AppColors.errorColor,
                             fontSize: 14,

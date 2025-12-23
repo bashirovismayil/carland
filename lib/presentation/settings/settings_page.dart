@@ -53,7 +53,6 @@ class _SettingsPageState extends State<SettingsPage> {
             backgroundColor: AppColors.backgroundGrey,
             elevation: 0,
             leading: GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
               child: Stack(
                 alignment: Alignment.center,
                 children: [

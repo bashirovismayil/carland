@@ -42,7 +42,6 @@ class SetupPassContent extends StatefulWidget {
 class _SetupPassContentState extends State<SetupPassContent> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
   bool get _hasUppercase => widget.passwordController.text.contains(RegExp(r'[A-Z]'));
   bool get _hasLowercase => widget.passwordController.text.contains(RegExp(r'[a-z]'));
   bool get _hasNumber => widget.passwordController.text.contains(RegExp(r'[0-9]'));
@@ -420,7 +419,17 @@ class _SetupPassContentState extends State<SetupPassContent> {
     }
   }
 
-  void _onSetupPassSuccess(BuildContext context) {
+  Future<void> _onSetupPassSuccess(BuildContext context) async {
+    if (widget.setupType == SetupPassType.registration) {
+      try {
+        log("📤 Calling addUserDetails before navigating to success page...");
+        final response = await context.read<UserAddDetailsCubit>().addUserDetails();
+        log("✅ User details added successfully: $response");
+      } catch (e) {
+        log("❌ Error adding user details: $e");
+      }
+    }
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -438,7 +447,6 @@ class _SetupPassContentState extends State<SetupPassContent> {
       ),
     );
   }
-
 
   void _onSetupPassError(SetupPassError state) {
     log('SetupPass Error: ${state.message}');
@@ -464,20 +472,8 @@ class _SetupPassContentState extends State<SetupPassContent> {
     }
   }
 
-  void _onLoginSuccess(BuildContext context) async {
+  void _onLoginSuccess(BuildContext context) {
     log("Auto login successful");
-
-    if (widget.setupType == SetupPassType.registration) {
-      log("Calling addUserDetails after successful registration login...");
-
-      try {
-        final response = await context.read<UserAddDetailsCubit>().addUserDetails();
-        log("✅ User details added successfully: $response");
-      } catch (e) {
-        log("❌ Error adding user details: $e");
-      }
-    }
-
     if (widget.setupType == SetupPassType.resetPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -486,7 +482,6 @@ class _SetupPassContentState extends State<SetupPassContent> {
         ),
       );
     }
-
     Go.replaceAndRemoveWithoutContext(
       UserMainNavigationPage(),
     );
@@ -509,6 +504,5 @@ class _SetupPassContentState extends State<SetupPassContent> {
         ),
       ),
     );
-
   }
 }

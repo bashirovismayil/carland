@@ -25,7 +25,7 @@ class GetCarPhotoService {
         options: Options(
           responseType: ResponseType.bytes,
           headers: {
-            'Accept': 'image/*',
+            'Accept': '*/*',
             'Accept-Language': currentLanguage,
             'X-Client-Timezone': 'Asia/Baku',
             if (token != null) 'Authorization': 'Bearer $token',
@@ -35,6 +35,8 @@ class GetCarPhotoService {
 
       if (resp.statusCode.isSuccess) {
         log('[GetCarPhotoService] Success: Photo received');
+        log('[GetCarPhotoService] Response Content-Type: ${resp.headers.value('content-type')}');
+        log('[GetCarPhotoService] Response Data Length: ${resp.data.length}');
         return Uint8List.fromList(resp.data);
       } else {
         final message = _getErrorMessage(resp.statusCode ?? 0);

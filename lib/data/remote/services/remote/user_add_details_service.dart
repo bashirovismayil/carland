@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:carcat/data/remote/services/local/register_local_service.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/texts/app_strings.dart';
 import '../../../../core/dio/auth_dio.dart';
@@ -11,7 +12,7 @@ import '../local/language_local_service.dart';
 import '../local/login_local_services.dart';
 
 class UserAddDetailsService {
-  final _local = locator<LoginLocalService>();
+  final _local = locator<RegisterLocalService>();
   final _languageService = locator<LanguageLocalService>();
 
   Future<UserAddDetailsResponse> addUserDetails() async {

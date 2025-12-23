@@ -68,7 +68,7 @@ class ProfilePhotoService {
         options: Options(
           responseType: ResponseType.bytes,
           headers: {
-            'Accept': 'image/*',
+            'Accept': '*/*',
             'Accept-Language': currentLanguage,
             'X-Client-Timezone': 'Asia/Baku'
           },
@@ -76,6 +76,7 @@ class ProfilePhotoService {
       );
 
       log('[ProfilePhotoService] Get Response Status: ${resp.statusCode}');
+      log('[ProfilePhotoService] Get Response Content-Type: ${resp.headers.value('content-type')}');
       log('[ProfilePhotoService] Get Response Data Length: ${resp.data.length}');
 
       return resp.data as Uint8List;

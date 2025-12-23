@@ -1019,35 +1019,30 @@ class Translations {
       'ru': 'Неверный формат номера',
     },
 
-    'imageCropTitle': {
+    AppStrings.imageCropTitle: {
       'az': 'Şəkili Kəs',
       'en': 'Crop Image',
       'ru': 'Обрезать изображение',
     },
-    'imageCropOkButton': {
+    AppStrings.imageCropOkButton: {
       'az': 'Tamam',
       'en': 'OK',
       'ru': 'ОК',
     },
-    'imageLoadingText': {
+    AppStrings.imageLoadingText: {
       'az': 'Şəkil yüklənir...',
       'en': 'Loading image...',
       'ru': 'Загрузка изображения...',
     },
-    'imageLoadError': {
+    AppStrings.imageLoadError: {
       'az': 'Şəkil yüklənə bilmədi: ',
       'en': 'Failed to load image: ',
       'ru': 'Не удалось загрузить изображение: ',
     },
-    'cropErrorMessage': {
+    AppStrings.cropErrorMessage: {
       'az': 'Kəsmə xətası: ',
       'en': 'Crop error: ',
       'ru': 'Ошибка обрезания: ',
-    },
-    'backButton': {
-      'az': 'Geri',
-      'en': 'Back',
-      'ru': 'Назад',
     },
     'aspectRatio1_1': {
       'az': '1:1',
@@ -1317,6 +1312,83 @@ class Translations {
       'az': 'İstifadə Şərtləri',
       'en': 'Terms and Conditions',
       'ru': 'Условия использования',
+    },
+    AppStrings.settings: {
+      'az': 'Parametrlər',
+      'en': 'Settings',
+      'ru': 'Настройки',
+    },
+
+    // Section Headers
+    AppStrings.general: {
+      'az': 'Ümumi',
+      'en': 'General',
+      'ru': 'Основные',
+    },
+    AppStrings.feedback: {
+      'az': 'Rəy',
+      'en': 'Feedback',
+      'ru': 'Отзыв',
+    },
+    AppStrings.legals: {
+      'az': 'Qanuni',
+      'en': 'Legals',
+      'ru': 'Правовые',
+    },
+
+    // General Section
+    AppStrings.language: {
+      'az': 'Dil',
+      'en': 'Language',
+      'ru': 'Язык',
+    },
+    AppStrings.changeAppLanguage: {
+      'az': 'Tətbiq dilini dəyişin',
+      'en': 'Change App Language',
+      'ru': 'Изменить язык приложения',
+    },
+    AppStrings.changeTheLanguage: {
+      'az': 'Dili dəyişin',
+      'en': 'Change the Language',
+      'ru': 'Изменить язык приложения',
+    },
+    AppStrings.password: {
+      'az': 'Şifrə',
+      'en': 'Password',
+      'ru': 'Пароль',
+    },
+    AppStrings.setAppPassword: {
+      'az': 'Tətbiq şifrəsi təyin edin',
+      'en': 'Set App Password',
+      'ru': 'Установить пароль приложения',
+    },
+
+    // Feedback Section
+    AppStrings.appFeedback: {
+      'az': 'Tətbiq Rəyi',
+      'en': 'App Feedback',
+      'ru': 'Отзыв о приложении',
+    },
+    AppStrings.addFeedbackAboutApp: {
+      'az': 'Tətbiq haqqında rəy əlavə edin',
+      'en': 'Add feedback about app',
+      'ru': 'Добавить отзыв о приложении',
+    },
+    AppStrings.bugReport: {
+      'az': 'Xəta Hesabatı',
+      'en': 'Bug Report',
+      'ru': 'Отчет об ошибке',
+    },
+    AppStrings.reportBugOrError: {
+      'az': 'Hər hansı bir xəta və ya səhvi bildirin',
+      'en': 'Report any kind of bug or Error',
+      'ru': 'Сообщить о любой ошибке',
+    },
+
+    AppStrings.setYourPrivacy: {
+      'az': 'Məxfilik seçimlərini təyin edin',
+      'en': 'Set your Privacy',
+      'ru': 'Установить вашу конфиденциальность',
     },
   };
 

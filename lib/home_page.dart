@@ -12,6 +12,8 @@ import 'package:lottie/lottie.dart';
 import '../../core/constants/colors/app_colors.dart';
 import '../../core/constants/texts/app_strings.dart';
 import '../../core/localization/app_translation.dart';
+import '../../cubit/language/language_cubit.dart';
+import '../../cubit/language/language_state.dart';
 import '../../utils/di/locator.dart';
 import '../../data/remote/services/local/login_local_services.dart';
 import '../../widgets/custom_button.dart';
@@ -73,53 +75,57 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      drawer: CustomDrawer(
-        userName: _userName,
-        userSurname: _userSurname,
-        onLogout: _handleLogout,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(
-              top: 16.0, left: 16.0, right: 16.0, bottom: 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _HomeHeader(userName: _userName),
-              const SizedBox(height: 24),
-              Expanded(
-                child: BlocBuilder<GetCarListCubit, GetCarListState>(
-                  builder: (context, state) {
-                    if (state is GetCarListLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primaryBlack,
-                        ),
-                      );
-                    } else if (state is GetCarListSuccess) {
-                      if (state.carList.isEmpty) {
-                        return const _EmptyState();
-                      }
-                      return _CarListView(
-                        carList: state.carList,
-                        onRefresh: _loadCarList,
-                        onDelete: _showDeleteConfirmation,
-                      );
-                    } else if (state is GetCarListError) {
-                      return const _EmptyState();
-                    }
-                    return const _EmptyState();
-                  },
-                ),
-              ),
-              const SizedBox(height: 5),
-              _AddCarButton(onCarAdded: _loadCarList),
-            ],
+    return BlocBuilder<LanguageCubit, LanguageState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          drawer: CustomDrawer(
+            userName: _userName,
+            userSurname: _userSurname,
+            onLogout: _handleLogout,
           ),
-        ),
-      ),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  top: 16.0, left: 16.0, right: 16.0, bottom: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _HomeHeader(userName: _userName),
+                  const SizedBox(height: 24),
+                  Expanded(
+                    child: BlocBuilder<GetCarListCubit, GetCarListState>(
+                      builder: (context, state) {
+                        if (state is GetCarListLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primaryBlack,
+                            ),
+                          );
+                        } else if (state is GetCarListSuccess) {
+                          if (state.carList.isEmpty) {
+                            return const _EmptyState();
+                          }
+                          return _CarListView(
+                            carList: state.carList,
+                            onRefresh: _loadCarList,
+                            onDelete: _showDeleteConfirmation,
+                          );
+                        } else if (state is GetCarListError) {
+                          return const _EmptyState();
+                        }
+                        return const _EmptyState();
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  _AddCarButton(onCarAdded: _loadCarList),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -194,26 +200,26 @@ class _HomePageState extends State<HomePage> {
                     onPressed: isLoading
                         ? null
                         : () {
-                            context
-                                .read<DeleteCarCubit>()
-                                .deleteCar(carId: car.carId);
-                          },
+                      context
+                          .read<DeleteCarCubit>()
+                          .deleteCar(carId: car.carId);
+                    },
                     child: isLoading
                         ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.errorColor,
-                            ),
-                          )
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.errorColor,
+                      ),
+                    )
                         : Text(
-                            AppTranslation.translate(AppStrings.delete),
-                            style: TextStyle(
-                              color: AppColors.errorColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                      AppTranslation.translate(AppStrings.delete),
+                      style: TextStyle(
+                        color: AppColors.errorColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ],
               );
@@ -232,63 +238,66 @@ class _HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // ProfilePhoto artık drawer açacak (openDrawerOnTap: true default)
-        const ProfilePhoto(),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    return BlocBuilder<LanguageCubit, LanguageState>(
+      builder: (context, state) {
+        return Row(
+          children: [
+            const ProfilePhoto(),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    AppTranslation.translate(AppStrings.homeHelloText),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        AppTranslation.translate(AppStrings.homeHelloText),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      Text(
+                        userName,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        '👋',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ],
                   ),
                   Text(
-                    userName,
+                    AppTranslation.translate(AppStrings.bookYourCarServices),
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      fontSize: 14.5,
+                      color: Colors.grey,
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Text(
-                    '👋',
-                    style: TextStyle(fontSize: 20),
                   ),
                 ],
               ),
-              Text(
-                AppTranslation.translate(AppStrings.bookYourCarServices),
-                style: const TextStyle(
-                  fontSize: 14.5,
-                  color: Colors.grey,
-                ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: AppColors.lightGrey,
+                shape: BoxShape.circle,
               ),
-            ],
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: const BoxDecoration(
-            color: AppColors.lightGrey,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.notifications,
-            color: Colors.black87,
-            size: 24,
-          ),
-        ),
-      ],
+              child: const Icon(
+                Icons.notifications,
+                color: Colors.black87,
+                size: 24,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -418,31 +427,31 @@ class _CarImageSection extends StatelessWidget {
               aspectRatio: 7 / 3.5,
               child: hasValidCarId
                   ? FutureBuilder<Uint8List?>(
-                      future: context
-                          .read<GetCarListCubit>()
-                          .getCarPhoto(car.carId),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Container(
-                            color: AppColors.surfaceColor,
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.primaryBlack,
-                              ),
-                            ),
-                          );
-                        } else if (snapshot.hasError || snapshot.data == null) {
-                          return _buildNoImagePlaceholder();
-                        }
-                        return Image.memory(
-                          snapshot.data!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        );
-                      },
-                    )
+                future: context
+                    .read<GetCarListCubit>()
+                    .getCarPhoto(car.carId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return Container(
+                      color: AppColors.surfaceColor,
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primaryBlack,
+                        ),
+                      ),
+                    );
+                  } else if (snapshot.hasError || snapshot.data == null) {
+                    return _buildNoImagePlaceholder();
+                  }
+                  return Image.memory(
+                    snapshot.data!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  );
+                },
+              )
                   : _buildNoImagePlaceholder(),
             ),
           ),
@@ -539,43 +548,47 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Spacer(),
-        SizedBox(
-          width: 200,
-          height: 200,
-          child: Lottie.asset(
-            'assets/lottie/no_result_animation.json',
-            fit: BoxFit.contain,
-          ),
-        ),
-        const SizedBox(height: 32),
-        Text(
-          AppTranslation.translate(AppStrings.noCarsAddedYet),
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Text(
-            AppTranslation.translate(AppStrings.noCarsAddedDescription),
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              height: 1.5,
+    return BlocBuilder<LanguageCubit, LanguageState>(
+      builder: (context, state) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Spacer(),
+            SizedBox(
+              width: 200,
+              height: 200,
+              child: Lottie.asset(
+                'assets/lottie/no_result_animation.json',
+                fit: BoxFit.contain,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const Spacer(),
-      ],
+            const SizedBox(height: 32),
+            Text(
+              AppTranslation.translate(AppStrings.noCarsAddedYet),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                AppTranslation.translate(AppStrings.noCarsAddedDescription),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const Spacer(),
+          ],
+        );
+      },
     );
   }
 }
@@ -643,43 +656,47 @@ class _AddCarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomElevatedButton(
-      onPressed: () async {
-        final result = await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const AddYourCarVinPage(),
+    return BlocBuilder<LanguageCubit, LanguageState>(
+      builder: (context, state) {
+        return CustomElevatedButton(
+          onPressed: () async {
+            final result = await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const AddYourCarVinPage(),
+              ),
+            );
+
+            if (result == true && context.mounted) {
+              onCarAdded();
+            }
+          },
+          width: double.infinity,
+          height: 60,
+          backgroundColor: Colors.black87,
+          foregroundColor: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          elevation: 0,
+          icon: Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white, width: 2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.add,
+              size: 15,
+            ),
+          ),
+          iconPadding: const EdgeInsets.only(right: 12),
+          child: Text(
+            AppTranslation.translate(AppStrings.addCarButton),
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         );
-
-        if (result == true && context.mounted) {
-          onCarAdded();
-        }
       },
-      width: double.infinity,
-      height: 60,
-      backgroundColor: Colors.black87,
-      foregroundColor: Colors.white,
-      borderRadius: BorderRadius.circular(30),
-      elevation: 0,
-      icon: Container(
-        padding: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 2),
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.add,
-          size: 15,
-        ),
-      ),
-      iconPadding: const EdgeInsets.only(right: 12),
-      child: Text(
-        AppTranslation.translate(AppStrings.addCarButton),
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
     );
   }
 }

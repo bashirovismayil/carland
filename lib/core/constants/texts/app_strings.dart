@@ -326,4 +326,27 @@ class AppStrings {
   static const String deleteCar = 'deleteCar';
   static const String deleteCarConfirmation = 'deleteCarConfirmation';
   static const String delete = 'delete';
+
+  static const String settings = 'settings';
+
+  // Section Headers
+  static const String general = 'general';
+  static const String feedback = 'feedback';
+  static const String legals = 'legals';
+
+  // General Section
+  static const String language = 'language';
+  static const String changeAppLanguage = 'changeAppLanguage';
+  static const String changeTheLanguage = 'changeTheLanguage';
+  static const String password = 'password';
+  static const String setAppPassword = 'setAppPassword';
+
+  // Feedback Section
+  static const String appFeedback = 'appFeedback';
+  static const String addFeedbackAboutApp = 'addFeedbackAboutApp';
+  static const String bugReport = 'bugReport';
+  static const String reportBugOrError = 'reportBugOrError';
+
+  // Legals Section
+  static const String setYourPrivacy = 'setYourPrivacy';
 }

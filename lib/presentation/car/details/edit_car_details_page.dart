@@ -287,8 +287,6 @@ class EditCarDetailsPage extends HookWidget {
     );
   }
 
-// PART 2 - Continuation
-
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -318,13 +316,15 @@ class EditCarDetailsPage extends HookWidget {
             ),
           ),
           const SizedBox(width: AppTheme.spacingMd),
-          Text(
-            AppTranslation.translate(AppStrings.editCarDetails),
-            maxLines: 2,
-            style: const TextStyle(
-              fontSize: 21,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+          Expanded(
+            child: Text(
+              AppTranslation.translate(AppStrings.editCarDetails),
+              maxLines: 2,
+              style: const TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
         ],
@@ -344,12 +344,16 @@ class EditCarDetailsPage extends HookWidget {
           ),
         ),
         const SizedBox(width: AppTheme.spacingSm),
-        Text(
-          AppTranslation.translate(AppStrings.updateCarInformation),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+        Expanded(
+          child: Text(
+            AppTranslation.translate(AppStrings.updateCarInformation),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -659,15 +663,19 @@ class EditCarDetailsPage extends HookWidget {
                 padding: const EdgeInsets.all(AppTheme.spacingLg),
                 child: Row(
                   children: [
-                    Text(
-                      '${AppTranslation.translate(AppStrings.select)} $title',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                    Expanded(
+                      child: Text(
+                        '${AppTranslation.translate(AppStrings.select)} $title',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: AppTheme.spacingSm),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => Navigator.pop(modalContext),

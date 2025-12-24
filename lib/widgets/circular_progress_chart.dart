@@ -122,7 +122,6 @@ class _CircularChartPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = (size.width - strokeWidth) / 2;
 
-    // Background circle
     final backgroundPaint = Paint()
       ..color = color.withOpacity(0.15)
       ..strokeWidth = strokeWidth

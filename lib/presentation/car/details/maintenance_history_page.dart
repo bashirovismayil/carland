@@ -54,17 +54,17 @@ class MaintenanceHistoryPage extends HookWidget {
                       if (!dateControllers.value.containsKey(record.id)) {
                         dateControllers.value[record.id] =
                             TextEditingController(
-                          text: record.doneDate != null
-                              ? DateFormat('dd/MM/yyyy')
+                              text: record.doneDate != null
+                                  ? DateFormat('dd/MM/yyyy')
                                   .format(record.doneDate!)
-                              : '',
-                        );
+                                  : '',
+                            );
                       }
                       if (!mileageControllers.value.containsKey(record.id)) {
                         mileageControllers.value[record.id] =
                             TextEditingController(
-                          text: record.doneKm != null ? '${record.doneKm}' : '',
-                        );
+                              text: record.doneKm != null ? '${record.doneKm}' : '',
+                            );
                       }
                     }
                   }
@@ -161,7 +161,7 @@ class MaintenanceHistoryPage extends HookWidget {
                             record: record,
                             isExpanded: expandedSectionId.value == record.id,
                             isCompleted:
-                                completedSections.value.contains(record.id),
+                            completedSections.value.contains(record.id),
                             onExpand: () {
                               final previousExpandedId =
                                   expandedSectionId.value;
@@ -194,7 +194,7 @@ class MaintenanceHistoryPage extends HookWidget {
                             },
                             dateController: dateControllers.value[record.id]!,
                             mileageController:
-                                mileageControllers.value[record.id]!,
+                            mileageControllers.value[record.id]!,
                           );
                         }).toList(),
                       ),
@@ -208,7 +208,7 @@ class MaintenanceHistoryPage extends HookWidget {
             _buildBottomSection(
               context,
               completedSections,
-              () {
+                  () {
                 final state = context.read<GetCarRecordsCubit>().state;
                 if (state is GetCarRecordsSuccess) {
                   return state.records.length;
@@ -307,16 +307,16 @@ class MaintenanceHistoryPage extends HookWidget {
                       Expanded(
                         child: Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.lightGrey,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Flexible(
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.lightGrey,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                                 child: Text(
                                   record.serviceName,
                                   style: const TextStyle(
@@ -324,10 +324,11 @@ class MaintenanceHistoryPage extends HookWidget {
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.textPrimary,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ),
-
                           ],
                         ),
                       ),
@@ -494,9 +495,9 @@ class MaintenanceHistoryPage extends HookWidget {
   }
 
   Future<void> _selectDate(
-    BuildContext context,
-    TextEditingController controller,
-  ) async {
+      BuildContext context,
+      TextEditingController controller,
+      ) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -551,20 +552,20 @@ class MaintenanceHistoryPage extends HookWidget {
     if (mileage == null) return;
 
     context.read<UpdateCarRecordCubit>().updateCarRecord(
-          carId: int.parse(carId),
-          recordId: previousRecordId,
-          doneDate: formattedDate,
-          doneKm: mileage,
-        );
+      carId: int.parse(carId),
+      recordId: previousRecordId,
+      doneDate: formattedDate,
+      doneKm: mileage,
+    );
 
     completedSections.value = {...completedSections.value, previousRecordId};
   }
 
   Widget _buildBottomSection(
-    BuildContext context,
-    ValueNotifier<Set<int>> completedSections,
-    int totalRecords,
-  ) {
+      BuildContext context,
+      ValueNotifier<Set<int>> completedSections,
+      int totalRecords,
+      ) {
     return MultiBlocListener(
       listeners: [
         BlocListener<UpdateCarRecordCubit, UpdateCarRecordState>(
@@ -622,23 +623,23 @@ class MaintenanceHistoryPage extends HookWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: completedSections.value.length == totalRecords &&
-                        !isExecuting
+                    !isExecuting
                     ? () {
-                        log('[MaintenanceHistory] Submit pressed, executing car service for carId: $carId');
-                        context
-                            .read<ExecuteCarServiceCubit>()
-                            .executeCarService(int.parse(carId));
-                      }
+                  log('[MaintenanceHistory] Submit pressed, executing car service for carId: $carId');
+                  context
+                      .read<ExecuteCarServiceCubit>()
+                      .executeCarService(int.parse(carId));
+                }
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      completedSections.value.length == totalRecords
-                          ? AppColors.primaryBlack
-                          : AppColors.lightGrey,
+                  completedSections.value.length == totalRecords
+                      ? AppColors.primaryBlack
+                      : AppColors.lightGrey,
                   foregroundColor:
-                      completedSections.value.length == totalRecords
-                          ? Colors.white
-                          : AppColors.textSecondary,
+                  completedSections.value.length == totalRecords
+                      ? Colors.white
+                      : AppColors.textSecondary,
                   elevation: 0,
                   disabledBackgroundColor: AppColors.lightGrey,
                   disabledForegroundColor: AppColors.textSecondary,
@@ -648,27 +649,27 @@ class MaintenanceHistoryPage extends HookWidget {
                 ),
                 child: isExecuting
                     ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
                     : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.check_circle_outline, size: 20),
-                          const SizedBox(width: AppTheme.spacingSm),
-                          Text(
-                            '${AppTranslation.translate(AppStrings.submit)} (${completedSections.value.length}/$totalRecords)',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.check_circle_outline, size: 20),
+                    const SizedBox(width: AppTheme.spacingSm),
+                    Text(
+                      '${AppTranslation.translate(AppStrings.submit)} (${completedSections.value.length}/$totalRecords)',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
+                    ),
+                  ],
+                ),
               ),
             );
           },

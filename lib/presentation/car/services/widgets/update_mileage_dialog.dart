@@ -29,6 +29,9 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
   late final FocusNode _focusNode;
   int _displayedMileage = 0;
 
+  static const int _maxMileageDigits = 6;
+  static const int _maxMileageValue = 999999;
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +42,8 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
     _focusNode = FocusNode();
 
     _mileageController.addListener(() {
-      final value = int.tryParse(_mileageController.text.replaceAll(' ', ''));
+      final cleanText = _mileageController.text.replaceAll(' ', '');
+      final value = int.tryParse(cleanText);
       if (value != null && value != _displayedMileage) {
         setState(() {
           _displayedMileage = value;
@@ -65,6 +69,17 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppTranslation.translate(AppStrings.invalidMileageError)),
+          backgroundColor: AppColors.errorColor,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    if (mileage > _maxMileageValue) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${AppTranslation.translate(AppStrings.invalidMileageError)} (Max: $_maxMileageValue)'),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -238,7 +253,8 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
             },
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(7),
+              // ✅ 6 haneli maksimum sınırlaması
+              _MileageLengthFormatter(_maxMileageDigits),
             ],
             style: const TextStyle(
               fontSize: 16,
@@ -350,5 +366,25 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
         );
       },
     );
+  }
+}
+
+class _MileageLengthFormatter extends TextInputFormatter {
+  final int maxLength;
+
+  _MileageLengthFormatter(this.maxLength);
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    final cleanText = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    if (cleanText.length > maxLength) {
+      return oldValue;
+    }
+
+    return newValue;
   }
 }

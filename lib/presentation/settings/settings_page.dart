@@ -1,4 +1,5 @@
 import 'package:carcat/core/constants/colors/app_colors.dart';
+import 'package:carcat/presentation/settings/profile_edit.dart';
 import 'package:carcat/presentation/terms_and_privacy/privacy_policy.dart';
 import 'package:carcat/utils/helper/go.dart';
 import 'package:carcat/widgets/profile_picture_widget.dart';
@@ -119,7 +120,7 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   child: Row(
                     children: [
                       const SizedBox(
@@ -138,12 +139,24 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                       ),
-                      SvgPicture.asset(
-                        'assets/svg/settings_edit.svg',
-                        width: 20,
-                        height: 20,
-                        colorFilter: const ColorFilter.mode(
-                            Colors.black, BlendMode.srcIn),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ProfileEditPage(),
+                            ),
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          'assets/svg/settings_edit.svg',
+                          width: 21,
+                          height: 21,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.black,
+                            BlendMode.srcIn,
+                          ),
+                        ),
                       ),
                     ],
                   ),

@@ -43,110 +43,118 @@ class SuccessPage extends StatelessWidget {
     }
     return AppTranslation.translate(AppStrings.gotIt);
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              const Spacer(),
-              const SizedBox(height: 60),
-              Text(
-                _title,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E1E1E),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
                 ),
-                textAlign: TextAlign.center,
-              ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 60),
+                        Text(
+                          _title,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E1E1E),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
 
-              if (isCarAdded && carModel != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  _subtitle,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF9E9E9E),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                        if (isCarAdded && carModel != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            _subtitle,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF9E9E9E),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                        const SizedBox(height: 40),
+                        Container(
+                          width: 280,
+                          height: 280,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: SvgPicture.asset(
+                              'assets/svg/success_car.svg',
+                              width: 180,
+                              height: 180,
+                            ),
+                          ),
+                        ),
 
-              const SizedBox(height: 40),
+                        const Expanded(child: SizedBox(height: 20)),
 
-              // Success Car Icon
-              Container(
-                width: 280,
-                height: 280,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: SvgPicture.asset(
-                    'assets/svg/success_car.svg',
-                    width: 180,
-                    height: 180,
-                  ),
-                ),
-              ),
+                        // Subtitle Text (for non-car-added cases)
+                        if (!isCarAdded)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Text(
+                              isPasswordReset
+                                  ? AppTranslation.translate(
+                                  AppStrings.passwordResetSuccessSubtext)
+                                  : AppTranslation.translate(
+                                  AppStrings.registrationSuccessSubtext),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF9E9E9E),
+                                height: 1.5,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
 
-              const Spacer(),
+                        const SizedBox(height: 40),
 
-              // Subtitle Text (for non-car-added cases)
-              if (!isCarAdded)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text(
-                    isPasswordReset
-                        ? AppTranslation.translate(
-                            AppStrings.passwordResetSuccessSubtext)
-                        : AppTranslation.translate(
-                            AppStrings.registrationSuccessSubtext),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF9E9E9E),
-                      height: 1.5,
+                        // Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: onButtonPressed ??
+                                    () => Navigator.of(context).pop(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2D2D2D),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              _buttonText,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+                      ],
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-              const SizedBox(height: 40),
-
-              // Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed:
-                      onButtonPressed ?? () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2D2D2D),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    _buttonText,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
                   ),
                 ),
               ),
-
-              const SizedBox(height: 40),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

@@ -864,9 +864,9 @@ class Translations {
       'ru': 'Марка',
     },
     AppStrings.makeHint: {
-      'az': 'TOYOTA',
-      'en': 'TOYOTA',
-      'ru': 'TOYOTA',
+      'az': 'məs., TOYOTA',
+      'en': 'e.g., TOYOTA',
+      'ru': 'напр., TOYOTA',
     },
     AppStrings.model: {
       'az': 'Model',
@@ -874,9 +874,9 @@ class Translations {
       'ru': 'Модель',
     },
     AppStrings.modelHint: {
-      'az': 'LAND CRUISER PRADO',
-      'en': 'LAND CRUISER PRADO',
-      'ru': 'LAND CRUISER PRADO',
+      'az': 'məs., LAND CRUISER PRADO',
+      'en': 'e.g., LAND CRUISER PRADO',
+      'ru': 'напр., LAND CRUISER PRADO',
     },
     AppStrings.engineVolume: {
       'az': 'Mühərrik Həcmi',

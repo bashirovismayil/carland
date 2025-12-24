@@ -127,7 +127,7 @@ class _CarCatAppState extends State<CarCatApp> {
                     seedColor: AppColors.primaryBlack,
                   ),
                   textTheme: GoogleFonts.poppinsTextTheme(
-                    Theme.of(context).textTheme,
+                    ThemeData.light().textTheme,
                   ),
                   useMaterial3: true,
                 ),

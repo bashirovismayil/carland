@@ -42,11 +42,23 @@ class SetupPassContent extends StatefulWidget {
 class _SetupPassContentState extends State<SetupPassContent> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-  bool get _hasUppercase => widget.passwordController.text.contains(RegExp(r'[A-Z]'));
-  bool get _hasLowercase => widget.passwordController.text.contains(RegExp(r'[a-z]'));
-  bool get _hasNumber => widget.passwordController.text.contains(RegExp(r'[0-9]'));
-  bool get _hasSpecialChar => widget.passwordController.text.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-  bool get _passwordsMatch => widget.passwordController.text.isNotEmpty &&
+
+  UserAddDetailsCubit? _userDetailsCubit;
+
+  bool get _hasUppercase =>
+      widget.passwordController.text.contains(RegExp(r'[A-Z]'));
+
+  bool get _hasLowercase =>
+      widget.passwordController.text.contains(RegExp(r'[a-z]'));
+
+  bool get _hasNumber =>
+      widget.passwordController.text.contains(RegExp(r'[0-9]'));
+
+  bool get _hasSpecialChar => widget.passwordController.text
+      .contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
+  bool get _passwordsMatch =>
+      widget.passwordController.text.isNotEmpty &&
       widget.confirmController.text.isNotEmpty &&
       widget.passwordController.text == widget.confirmController.text;
 
@@ -55,6 +67,11 @@ class _SetupPassContentState extends State<SetupPassContent> {
     super.initState();
     widget.passwordController.addListener(() => setState(() {}));
     widget.confirmController.addListener(() => setState(() {}));
+    try {
+      _userDetailsCubit = context.read<UserAddDetailsCubit>();
+    } catch (e) {
+      log("⚠️ UserAddDetailsCubit not found: $e");
+    }
   }
 
   @override
@@ -188,10 +205,13 @@ class _SetupPassContentState extends State<SetupPassContent> {
             ),
             suffixIcon: IconButton(
               icon: Icon(
-                _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _isPasswordVisible
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 color: Colors.grey[400],
               ),
-              onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+              onPressed: () =>
+                  setState(() => _isPasswordVisible = !_isPasswordVisible),
             ),
             filled: true,
             fillColor: Colors.grey[50],
@@ -207,13 +227,17 @@ class _SetupPassContentState extends State<SetupPassContent> {
               borderRadius: BorderRadius.circular(30),
               borderSide: const BorderSide(color: Colors.black, width: 1.5),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return context.currentLanguage(AppStrings.passwordRequired);
             }
-            if (!_hasUppercase || !_hasLowercase || !_hasNumber || !_hasSpecialChar) {
+            if (!_hasUppercase ||
+                !_hasLowercase ||
+                !_hasNumber ||
+                !_hasSpecialChar) {
               return context.currentLanguage(AppStrings.passwordRulesText);
             }
             return null;
@@ -260,10 +284,13 @@ class _SetupPassContentState extends State<SetupPassContent> {
             ),
             suffixIcon: IconButton(
               icon: Icon(
-                _isConfirmPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _isConfirmPasswordVisible
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 color: Colors.grey[400],
               ),
-              onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+              onPressed: () => setState(
+                  () => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
             ),
             filled: true,
             fillColor: Colors.grey[50],
@@ -279,7 +306,8 @@ class _SetupPassContentState extends State<SetupPassContent> {
               borderRadius: BorderRadius.circular(30),
               borderSide: const BorderSide(color: Colors.black, width: 1.5),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -403,44 +431,35 @@ class _SetupPassContentState extends State<SetupPassContent> {
     if (!widget.formKey.currentState!.validate()) return;
 
     context.read<SetupPassCubit>().submit(
-      password: widget.passwordController.text,
-      confirmPassword: widget.confirmController.text,
-    );
+          password: widget.passwordController.text,
+          confirmPassword: widget.confirmController.text,
+        );
   }
 
   void _handleSetupPassState(BuildContext context, SetupPassState state) {
-    switch (state.runtimeType) {
-      case SetupPassSuccess:
-        _onSetupPassSuccess(context);
-        break;
-      case SetupPassError:
-        _onSetupPassError(state as SetupPassError);
-        break;
+    if (state is SetupPassSuccess) {
+      _onSetupPassSuccess();
+    } else if (state is SetupPassError) {
+      _onSetupPassError(state);
     }
   }
 
-  Future<void> _onSetupPassSuccess(BuildContext context) async {
-    if (widget.setupType == SetupPassType.registration) {
-      try {
-        log("📤 Calling addUserDetails before navigating to success page...");
-        final response = await context.read<UserAddDetailsCubit>().addUserDetails();
-        log("✅ User details added successfully: $response");
-      } catch (e) {
-        log("❌ Error adding user details: $e");
-      }
-    }
+  void _onSetupPassSuccess() {
     if (!mounted) return;
+
+    final savedPassword = widget.passwordController.text;
+    final savedPhone = widget.phoneNumber;
+    final isRegistration = widget.setupType == SetupPassType.registration;
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SuccessPage(
+        builder: (_) => SuccessPage(
           isRegister: true,
           onButtonPressed: () async {
             await context.performAutoLogin(
-              password: widget.passwordController.text,
-              phoneNumber: widget.setupType == SetupPassType.registration
-                  ? widget.phoneNumber
-                  : null,
+              password: savedPassword,
+              phoneNumber: isRegistration ? savedPhone : null,
             );
           },
         ),
@@ -449,8 +468,9 @@ class _SetupPassContentState extends State<SetupPassContent> {
   }
 
   void _onSetupPassError(SetupPassError state) {
-    log('SetupPass Error: ${state.message}');
+    if (!mounted) return;
 
+    log('SetupPass Error: ${state.message}');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(state.message),
@@ -462,32 +482,51 @@ class _SetupPassContentState extends State<SetupPassContent> {
   void _handleLoginState(BuildContext context, LoginState state) {
     switch (state.status) {
       case LoginStatus.success:
-        _onLoginSuccess(context);
+        _onLoginSuccess();
         break;
       case LoginStatus.error:
-        _onLoginError(context, state);
+        _onLoginError(state);
         break;
       default:
         break;
     }
   }
 
-  void _onLoginSuccess(BuildContext context) {
-    log("Auto login successful");
+  Future<void> _onLoginSuccess() async {
+    if (!mounted) return;
+
+    log("✅ Auto login successful, token alındı");
+
+    if (widget.setupType == SetupPassType.registration &&
+        _userDetailsCubit != null) {
+      try {
+        log("📤 UserAddDetails call edilir...");
+        await _userDetailsCubit!.addUserDetails();
+        log("✅ User details add olundu");
+      } catch (e) {
+        log("❌ User details error: $e");
+        return;
+      }
+    }
+
+    if (!mounted) return;
+
     if (widget.setupType == SetupPassType.resetPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.currentLanguage(AppStrings.passwordResetSuccess)),
+          content:
+              Text(AppTranslation.translate(AppStrings.passwordResetSuccess)),
           backgroundColor: AppColors.primaryBlack,
         ),
       );
     }
-    Go.replaceAndRemoveWithoutContext(
-      UserMainNavigationPage(),
-    );
+
+    Go.replaceAndRemoveWithoutContext(UserMainNavigationPage());
   }
 
-  void _onLoginError(BuildContext context, LoginState state) {
+  void _onLoginError(LoginState state) {
+    if (!mounted) return;
+
     log('Auto login error: ${state.errorMessage}');
 
     ScaffoldMessenger.of(context).showSnackBar(

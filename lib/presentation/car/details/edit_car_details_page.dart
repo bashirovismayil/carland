@@ -320,6 +320,7 @@ class EditCarDetailsPage extends HookWidget {
           const SizedBox(width: AppTheme.spacingMd),
           Text(
             AppTranslation.translate(AppStrings.editCarDetails),
+            maxLines: 2,
             style: const TextStyle(
               fontSize: 21,
               fontWeight: FontWeight.w800,

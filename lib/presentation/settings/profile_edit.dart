@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../core/constants/colors/app_colors.dart';
 import '../../data/remote/services/local/login_local_services.dart';
 import '../../utils/di/locator.dart';
+import '../../widgets/delete_account_widget.dart';
 import '../../widgets/global_phone_input.dart';
 import '../../widgets/profile_picture_widget.dart';
 import '../auth/register/widgets/label_text_field.dart';
@@ -104,6 +105,8 @@ class ProfileEditPage extends HookWidget {
                           },
                           validator: (_) => null,
                         ),
+                        const DeleteAccountWidget(),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),

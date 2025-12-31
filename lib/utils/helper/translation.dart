@@ -1390,6 +1390,33 @@ class Translations {
       'en': 'Set your Privacy',
       'ru': 'Установить вашу конфиденциальность',
     },
+    AppStrings.deleteAccount: {
+      'az': 'Hesabı sil',
+      'en': 'Delete Account',
+      'ru': 'Удалить аккаунт',
+    },
+    AppStrings.deleteAccountWarning: {
+      'az': 'Hesabınızı silmək istədiyinizə əminsiniz? Bütün məlumatlarınız silinəcək və bu əməliyyat geri qaytarılmayacaq.',
+      'en':
+          'Are you sure you want to delete your account? All your data will be lost and this action cannot be undone.',
+      'ru':
+          'Вы уверены, что хотите удалить свой аккаунт? Все ваши данные будут потеряны, и это действие нельзя будет отменить.',
+    },
+    AppStrings.deleteAccountPermanent: {
+      'az': 'Bu əməliyyat geri qaytarıla bilməz.',
+      'en': 'This action cannot be undone.',
+      'ru': 'Это действие нельзя будет отменить.',
+    },
+    AppStrings.deleteMyAccount: {
+      'az': 'Hesabımı sil',
+      'en': 'Delete My Account',
+      'ru': 'Удалить мой аккаунт',
+    },
+    AppStrings.accountDeletedSuccessfully: {
+      'az': 'Hesab uğurla silindi',
+      'en': 'Account deleted successfully',
+      'ru': 'Аккаунт успешно удалён',
+    },
   };
 
   static String translate(String key, String languageCode) {

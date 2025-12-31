@@ -7,6 +7,10 @@ class ApiConstants {
   static const deviceToken =
       '$baseUrl/hospital/server/api/v1/device-tokens/post';
 
+  // Delete account
+  static const deleteAccount =
+      '$baseUrl/auth/server/api/v1/users/delete';
+
   // auth - SignUp
   static const register =
       '$baseUrl/auth/server/api/v1/users/register?role=user';

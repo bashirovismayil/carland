@@ -349,4 +349,9 @@ class AppStrings {
 
   // Legals Section
   static const String setYourPrivacy = 'setYourPrivacy';
+  static const deleteAccount = 'delete_account';
+  static const deleteAccountWarning = 'delete_account_warning';
+  static const deleteAccountPermanent = 'delete_account_permanent';
+  static const deleteMyAccount = 'delete_my_account';
+  static const accountDeletedSuccessfully = 'account_deleted_successfully';
 }

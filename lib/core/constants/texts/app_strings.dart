@@ -7,6 +7,19 @@ class AppStrings {
   static const String countryGeorgia = "countryGeorgia";
   static const String countryKazakhstan = "countryKazakhstan";
 
+  static const String january = 'january';
+  static const String february = 'february';
+  static const String march = 'march';
+  static const String april = 'april';
+  static const String may = 'may';
+  static const String june = 'june';
+  static const String july = 'july';
+  static const String august = 'august';
+  static const String september = 'september';
+  static const String october = 'october';
+  static const String november = 'november';
+  static const String december = 'december';
+
   static const String welcomeText = "Xoş gəlmisiniz";
   static const String additionalSettings = 'additionalSettings';
   static const String applicationLanguage = 'applicationLanguage';
@@ -272,7 +285,7 @@ class AppStrings {
 
   // Image Crop Widget Strings
   static const String imageCropTitle = 'imageCropTitle';
-  static const String imageCropOkButton = 'imageCropOkButton';
+  static const String okButton = 'imageCropOkButton';
   static const String imageLoadingText = 'imageLoadingText';
   static const String imageLoadError = 'imageLoadError';
   static const String cropErrorMessage = 'cropErrorMessage';

@@ -29,6 +29,67 @@ class Translations {
       'ru': 'Казахстан',
     },
 
+      AppStrings.january: {
+        'az': 'Yanvar',
+        'en': 'January',
+        'ru': 'Январь',
+      },
+      AppStrings.february: {
+        'az': 'Fevral',
+        'en': 'February',
+        'ru': 'Февраль',
+      },
+      AppStrings.march: {
+        'az': 'Mart',
+        'en': 'March',
+        'ru': 'Март',
+      },
+      AppStrings.april: {
+        'az': 'Aprel',
+        'en': 'April',
+        'ru': 'Апрель',
+      },
+      AppStrings.may: {
+        'az': 'May',
+        'en': 'May',
+        'ru': 'Май',
+      },
+      AppStrings.june: {
+        'az': 'İyun',
+        'en': 'June',
+        'ru': 'Июнь',
+      },
+      AppStrings.july: {
+        'az': 'İyul',
+        'en': 'July',
+        'ru': 'Июль',
+      },
+      AppStrings.august: {
+        'az': 'Avqust',
+        'en': 'August',
+        'ru': 'Август',
+      },
+      AppStrings.september: {
+        'az': 'Sentyabr',
+        'en': 'September',
+        'ru': 'Сентябрь',
+      },
+      AppStrings.october: {
+        'az': 'Oktyabr',
+        'en': 'October',
+        'ru': 'Октябрь',
+      },
+      AppStrings.november: {
+        'az': 'Noyabr',
+        'en': 'November',
+        'ru': 'Ноябрь',
+      },
+      AppStrings.december: {
+        'az': 'Dekabr',
+        'en': 'December',
+        'ru': 'Декабрь',
+      },
+
     // Common Buttons
     AppStrings.skipButtonText: {
       'az': 'Keç',
@@ -1049,7 +1110,7 @@ class Translations {
       'en': 'Crop Image',
       'ru': 'Обрезать изображение',
     },
-    AppStrings.imageCropOkButton: {
+    AppStrings.okButton: {
       'az': 'Tamam',
       'en': 'OK',
       'ru': 'ОК',

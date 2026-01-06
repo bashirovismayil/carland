@@ -9,6 +9,7 @@ import '../../../../core/constants/values/app_theme.dart';
 import '../../../../core/localization/app_translation.dart';
 import '../../../../cubit/services/edit_services/edit_service_details_cubit.dart';
 import '../../../../cubit/services/edit_services/edit_service_details_state.dart';
+import '../../../../widgets/custom_date_picker.dart';
 
 class EditServiceDetailsDialog extends StatefulWidget {
   final int carId;
@@ -87,23 +88,11 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
   Future<void> _selectLastServiceDate() async {
     if (!mounted) return;
 
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await IOSDatePickerBottomSheet.show(
       context: context,
       initialDate: _lastServiceDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primaryBlack,
-              onPrimary: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (!mounted) return;
@@ -118,23 +107,11 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
   Future<void> _selectNextServiceDate() async {
     if (!mounted) return;
 
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await IOSDatePickerBottomSheet.show(
       context: context,
       initialDate: _nextServiceDate ?? DateTime.now().add(const Duration(days: 30)),
       firstDate: _lastServiceDate ?? DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 20)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primaryBlack,
-              onPrimary: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (!mounted) return;
@@ -425,7 +402,6 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
                   height: 20,
                 ),
               ),
-
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: AppTheme.spacingLg,

@@ -619,7 +619,7 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
             TextButton(
               onPressed: _image != null ? _cropImage : null,
               child: Text(
-                AppTranslation.translate(AppStrings.imageCropOkButton),
+                AppTranslation.translate(AppStrings.okButton),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,

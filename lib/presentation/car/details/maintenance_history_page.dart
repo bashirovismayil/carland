@@ -18,6 +18,7 @@ import '../../../cubit/records/update/update_car_record_state.dart';
 import '../../../cubit/services/execute/execute_car_service_cubit.dart';
 import '../../../cubit/services/execute/execute_car_service_state.dart';
 import '../../../data/remote/models/remote/GetCarRecordsResponse.dart';
+import '../../../widgets/custom_date_picker.dart';
 import '../../success/success_page.dart';
 
 class MaintenanceHistoryPage extends HookWidget {
@@ -365,6 +366,7 @@ class MaintenanceHistoryPage extends HookWidget {
                       Divider(height: 1, color: Colors.grey.shade200),
                       const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
+                        context: context,
                         label: AppTranslation.translate(
                             AppStrings.lastServiceDate),
                         controller: dateController,
@@ -377,6 +379,7 @@ class MaintenanceHistoryPage extends HookWidget {
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
+                        context: context,
                         label: AppTranslation.translate(
                             AppStrings.lastServiceMileage),
                         controller: mileageController,
@@ -400,6 +403,7 @@ class MaintenanceHistoryPage extends HookWidget {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required String label,
     required TextEditingController controller,
     required String hint,
@@ -498,23 +502,11 @@ class MaintenanceHistoryPage extends HookWidget {
       BuildContext context,
       TextEditingController controller,
       ) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await IOSDatePickerBottomSheet.show(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primaryBlack,
-              onPrimary: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (picked != null) {

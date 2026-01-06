@@ -108,7 +108,11 @@ class NameField extends StatelessWidget {
   final bool enabled;
   final TextInputAction textInputAction;
 
-  static final RegExp namePattern = RegExp(r'[a-zA-ZığüşöçİĞÜŞÖÇəƏ\s]');
+  static final RegExp namePattern = RegExp(
+      r'[a-zA-ZığüşöçİĞÜŞÖÇəƏ'
+      r'а-яА-ЯёЁ'
+      r'\s]'
+  );
 
   @override
   Widget build(BuildContext context) {

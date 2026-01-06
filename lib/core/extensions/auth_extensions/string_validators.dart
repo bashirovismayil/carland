@@ -11,7 +11,7 @@ extension StringValidators on String {
           hasRegExp(RegExp(r'[!@#\$&*~]'));
 
   bool get isAlphabetic =>
-      RegExp(r'^[a-zA-ZığüşöçİĞÜŞÖÇəƏ\s]+$').hasMatch(this);
+      RegExp(r'^[a-zA-ZığüşöçİĞÜŞÖÇəƏа-яА-ЯёЁ\s]+$').hasMatch(this);
 
   bool hasRegExp(RegExp exp) => exp.hasMatch(this);
 }

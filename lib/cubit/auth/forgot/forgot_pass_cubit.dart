@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'package:carcat/core/constants/texts/app_strings.dart';
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/remote/contractor/forgot_pass_contractor.dart';
 import '../../../../data/remote/services/local/register_local_service.dart';
@@ -41,7 +43,7 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
         registerToken: resp.registerToken,
       ));
     } catch (e) {
-      emit(ForgotPasswordError("No account is registered with the number you entered"));
+      emit(ForgotPasswordError(AppTranslation.translate(AppStrings.noAccountRegisteredNumber)));
       log("Forgot Password Error: $e");
     }
   }

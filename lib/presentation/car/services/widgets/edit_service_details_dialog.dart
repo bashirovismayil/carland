@@ -281,7 +281,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
 
   Widget _buildHeader() {
     return SizedBox(
-      height: 55,
+      height: 80,
       child: Stack(
         children: [
           Align(
@@ -294,12 +294,15 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Text(
-              AppTranslation.translate(AppStrings.editServiceDetails),
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: Text(
+                AppTranslation.translate(AppStrings.editServiceDetails),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ),
           ),

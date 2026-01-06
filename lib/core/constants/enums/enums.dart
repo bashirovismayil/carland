@@ -131,8 +131,8 @@ enum UserRole {
 }
 enum AppLanguage {
   azerbaijani('az', 'Azərbaycan dili', Locale('az', 'AZ')),
-  english('en', 'English', Locale('en', 'US')),
-  russian('ru', 'Русский', Locale('ru', 'RU'));
+  english('en', 'English', Locale('en', 'US'));
+ // russian('ru', 'Русский', Locale('ru', 'RU'));
 
   final String code;
   final String displayName;
@@ -156,11 +156,11 @@ enum AppLanguage {
 }
 
 enum CountryCode {
-  azerbaijan('+994', '🇦🇿', AppStrings.countryAzerbaijan),
-  turkey('+90', '🇹🇷', AppStrings.countryTurkey),
-  russia('+7', '🇷🇺', AppStrings.countryRussia),
-  georgia('+995', '🇬🇪', AppStrings.countryGeorgia),
-  kazakhstan('+7', '🇰🇿', AppStrings.countryKazakhstan);
+  azerbaijan('+994', '🇦🇿', AppStrings.countryAzerbaijan);
+  // turkey('+90', '🇹🇷', AppStrings.countryTurkey),
+  // russia('+7', '🇷🇺', AppStrings.countryRussia),
+  // georgia('+995', '🇬🇪', AppStrings.countryGeorgia),
+  // kazakhstan('+7', '🇰🇿', AppStrings.countryKazakhstan);
 
   const CountryCode(this.code, this.flag, this.displayNameKey);
 

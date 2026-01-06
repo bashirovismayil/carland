@@ -1043,15 +1043,15 @@ class CarDetailsPage extends HookWidget {
           listener: (context, state) {
             if (state is UpdateCarMileageSuccess) {
               isSubmitting.value = false;
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(AppTranslation.translate(
-                      AppStrings.carAddedSuccessfully)),
-                  backgroundColor: AppColors.successColor,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+              //
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text(AppTranslation.translate(
+              //         AppStrings.carAddedSuccessfully)),
+              //     backgroundColor: AppColors.successColor,
+              //     behavior: SnackBarBehavior.floating,
+              //   ),
+              // );
             } else if (state is UpdateCarMileageError) {
               isSubmitting.value = false;
 
@@ -1114,7 +1114,7 @@ class CarDetailsPage extends HookWidget {
                   const Icon(Icons.check_circle_outline, size: 20),
                   const SizedBox(width: AppTheme.spacingSm),
                   Text(
-                    AppTranslation.translate(AppStrings.submit),
+                    AppTranslation.translate(AppStrings.continueButton),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

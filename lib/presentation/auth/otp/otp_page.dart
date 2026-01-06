@@ -43,7 +43,6 @@ class OtpPage extends HookWidget {
     final otpVerifyCubit = context.read<OtpVerifyCubit>();
     final otpSendCubit = context.read<OtpSendCubit>();
 
-    // Timer management - only depend on isTimerActive to avoid re-triggering
     useEffect(() {
       Timer? timer;
       if (isTimerActive.value && secondsRemaining.value > 0) {
@@ -64,14 +63,9 @@ class OtpPage extends HookWidget {
       return '$minutes:$secs';
     }
 
-    // Safe phone number extraction for resend
     String extractRawPhoneNumber(String fullNumber) {
-      // Remove all non-digit characters
       final digitsOnly = fullNumber.replaceAll(RegExp(r'\D'), '');
-
-      // If we have a country code, try to extract using it
       if (countryCode != null) {
-        // Get dial code from country code (e.g., +994 -> 994)
         final dialCode = countryCode!.replaceAll(RegExp(r'\D'), '');
 
         if (digitsOnly.startsWith(dialCode)) {
@@ -79,14 +73,9 @@ class OtpPage extends HookWidget {
         }
       }
 
-      // If the number is very long, assume it includes country code
-      // Most country codes are 1-3 digits, local numbers are typically 7-10 digits
       if (digitsOnly.length > 10) {
-        // Try to extract last 9-10 digits as the local number
         return digitsOnly.substring(digitsOnly.length - 9);
       }
-
-      // Otherwise return as is
       return digitsOnly;
     }
 
@@ -128,7 +117,6 @@ class OtpPage extends HookWidget {
       }
 
       try {
-        // For resend, we need to extract the raw phone number
         final rawPhone = extractRawPhoneNumber(phoneNumber);
 
         if (rawPhone.isEmpty) {
@@ -137,8 +125,6 @@ class OtpPage extends HookWidget {
           );
           return;
         }
-
-        // Send with full phone number (including country code)
         otpSendCubit.sendOtp(phoneNumber);
 
         secondsRemaining.value = 120;
@@ -245,7 +231,6 @@ class OtpPage extends HookWidget {
       },
       child: WillPopScope(
         onWillPop: () async {
-          // Cancel any pending operations on back press
           if (isLoading.value) {
             isLoading.value = false;
             return false;
@@ -480,7 +465,7 @@ class OtpPage extends HookWidget {
           ),
         )
             : Text(
-          context.currentLanguage(AppStrings.nextButton),
+          context.currentLanguage(AppStrings.continueButton),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,

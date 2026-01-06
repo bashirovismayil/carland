@@ -1,5 +1,6 @@
 import 'package:carcat/core/localization/app_translation.dart';
 import 'package:carcat/presentation/auth/register/register_page.dart';
+import 'package:carcat/presentation/auth/widgets/welcome_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/constants/texts/app_strings.dart';
@@ -16,7 +17,7 @@ class AuthPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
             children: [
               const Spacer(flex: 12),
@@ -24,19 +25,9 @@ class AuthPage extends StatelessWidget {
                 'assets/svg/carcat_full_logo.svg',
                 height: 70,
               ),
-
               const Spacer(flex: 7),
-              Text(
-                context.currentLanguage(AppStrings.welcomeToCarCat),
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
-              ),
-
+              const WelcomeTitle(),
               const SizedBox(height: 16),
-
               // Subtitle
               Text(
                 context.currentLanguage(AppStrings.welcomeSubtitle),

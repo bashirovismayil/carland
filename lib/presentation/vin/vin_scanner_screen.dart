@@ -3,7 +3,9 @@ import 'package:carcat/core/constants/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../core/constants/texts/app_strings.dart';
 import '../../core/constants/values/app_theme.dart';
+import '../../core/localization/app_translation.dart';
 import '../../data/remote/services/local/vin_scanner_service.dart';
 
 class VinScannerScreen extends StatefulWidget {
@@ -392,8 +394,8 @@ class _VinScannerScreenState extends State<VinScannerScreen>
             ),
           ),
           const SizedBox(width: AppTheme.spacingMd),
-          const Text(
-            'Add your Car VIN',
+            Text(
+            AppTranslation.translate(AppStrings.addYourCarVin),
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
@@ -410,8 +412,8 @@ class _VinScannerScreenState extends State<VinScannerScreen>
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
       child: Column(
         children: [
-          const Text(
-            'Scan Car VIN Number',
+            Text(
+            AppTranslation.translate(AppStrings.scanCarVinNumber),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
@@ -420,7 +422,7 @@ class _VinScannerScreenState extends State<VinScannerScreen>
           ),
           const SizedBox(height: AppTheme.spacingSm),
           Text(
-            'Use your car\'s Vehicle Identification Number (VIN) to fetch accurate details. You can type it in or scan via camera.',
+            AppTranslation.translate(AppStrings.scannerPageSubtitle),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,

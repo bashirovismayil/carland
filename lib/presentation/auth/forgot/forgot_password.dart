@@ -10,7 +10,9 @@ import '../../../../core/extensions/auth_extensions/phone_number_formatter.dart'
 import '../../../../cubit/auth/forgot/forgot_pass_cubit.dart';
 import '../../../../cubit/auth/forgot/forgot_pass_state.dart';
 import '../../../../widgets/custom_button.dart';
+import '../../../core/extensions/auth_extensions/string_validators.dart';
 import '../../../core/localization/app_translation.dart';
+import '../login/widgets/login_validators.dart';
 import '../otp/otp_page.dart';
 import '../pass/setup_pass_content.dart';
 
@@ -210,7 +212,7 @@ class _ForgotPasswordForm extends StatelessWidget {
                   LengthLimitingTextInputFormatter(9),
                   PhoneNumberFormatter.phoneFormatter,
                 ],
-                validator: _PhoneValidator.validate,
+                validator: (value) => PhoneValidator.validate(value, context),
                 decoration: InputDecoration(
                   hintText: '50 123 45 67',
                   hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -344,18 +346,14 @@ class _ForgotPasswordButton extends StatelessWidget {
 class _PhoneValidator {
   static String? validate(String? phoneNumber) {
     if (phoneNumber == null || phoneNumber.isEmpty) {
-      return AppTranslation.translate(AppStrings.enterNineDigitsText);
+      return AppTranslation.translate(AppStrings.invalidPhoneNumber);
     }
     final digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
-    if (!_isValidLength(digits) || !_isValidPhone(digits)) {
+    if (!digits.isValidMobileOperatorCode) {
       return AppTranslation.translate(AppStrings.enterNineDigitsText);
     }
     return null;
   }
-
-  static bool _isValidLength(String digits) => digits.length == 9;
-
-  static bool _isValidPhone(String digits) => digits.isValidPhone;
 }
 
 class _ForgotPasswordNavigationHandler {

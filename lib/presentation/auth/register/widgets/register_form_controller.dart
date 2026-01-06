@@ -6,7 +6,6 @@ import 'package:carcat/cubit/auth/register/register_cubit.dart';
 import 'package:carcat/cubit/auth/otp/otp_send_cubit.dart';
 import 'package:carcat/utils/helper/go.dart';
 import '../../otp/otp_page.dart';
-import '../../otp/widget/otp_confirmation_dialog.dart';
 
 class RegisterFormController {
   RegisterFormController({
@@ -73,8 +72,8 @@ class RegisterFormController {
     }
 
     if (state is RegisterSuccess) {
-      setLoading(false);
       await _handleRegisterSuccess();
+      setLoading(false);
     }
   }
 
@@ -93,13 +92,12 @@ class RegisterFormController {
 
     final phoneData = _preparePhoneData();
 
-    final confirmed = await _showOtpConfirmation(phoneData);
+    await otpSendCubit.sendOtp(phoneData.forBackend);
 
-    if (confirmed == true && context.mounted) {
+    if (context.mounted) {
       _navigateToOtpPage(phoneData);
     }
   }
-
 
   ({String formatted, String forBackend}) _preparePhoneData() {
     final rawPhone = registerCubit.phoneController.text;
@@ -111,17 +109,18 @@ class RegisterFormController {
     );
   }
 
-  Future<bool?> _showOtpConfirmation(
-      ({String formatted, String forBackend}) phoneData,
-      ) {
-    return OtpSendConfirmationDialog.show(
-      context: context,
-      phoneNumber: phoneData.formatted,
-      onConfirm: () async {
-        await otpSendCubit.sendOtp(phoneData.forBackend);
-      },
-    );
-  }
+  // Commented out - no longer needed as per product owner request
+  // Future<bool?> _showOtpConfirmation(
+  //     ({String formatted, String forBackend}) phoneData,
+  //     ) {
+  //   return OtpSendConfirmationDialog.show(
+  //     context: context,
+  //     phoneNumber: phoneData.formatted,
+  //     onConfirm: () async {
+  //       await otpSendCubit.sendOtp(phoneData.forBackend);
+  //     },
+  //   );
+  // }
 
   void _navigateToOtpPage(({String formatted, String forBackend}) phoneData) {
     Go.to(
@@ -137,7 +136,7 @@ class RegisterFormController {
   void navigateToLogin() {
     Navigator.pop(context);
   }
-  
+
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(

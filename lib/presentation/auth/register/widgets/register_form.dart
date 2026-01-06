@@ -85,7 +85,7 @@ class RegisterForm extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           PrimaryButton(
-            text: context.currentLanguage(AppStrings.nextButton),
+            text: context.currentLanguage(AppStrings.continueButtonText),
             onPressed: onSubmit,
             isLoading: isLoading,
           ),

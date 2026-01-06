@@ -66,7 +66,7 @@ class Translations {
       'ru': 'Продолжить',
     },
     AppStrings.gotIt: {
-      'az': 'Aydındır',
+      'az': 'Başladıq',
       'en': 'Got It',
       'ru': 'Понятно',
     },
@@ -137,14 +137,19 @@ class Translations {
     },
 
     // Welcome Page
-    AppStrings.welcomeToCarCat: {
-      'az': 'CarCat\'a xoş gəlmisiniz',
-      'en': 'Welcome to CarCat',
-      'ru': 'Добро пожаловать в CarCat',
+    AppStrings.carcat: {
+      'az': 'CarCat',
+      'en': 'CarCat',
+      'ru': 'CarCat',
+    },
+    AppStrings.welcomeTo: {
+      'az': 'dünyasına xoş gəldin',
+      'en': 'Welcome to',
+      'ru': 'Добро пожаловать в',
     },
     AppStrings.welcomeSubtitle: {
       'az':
-          'Problemsiz avtomobil texniki baxımı üçün ağıllı köməkçiniz. İzləyin, planlaşdırın və xidmətləri bir tətbiqdən sifariş edin.',
+          'Avtomobillərini əlavə etməklə, texniki\nbaxım tarixlərini izlə və təhlükəsiz sür.',
       'en':
           'Your smart companion for hassle-free car maintenance. Track, schedule, and book services all in one place.',
       'ru':
@@ -173,7 +178,7 @@ class Translations {
 
     // Login Page
     AppStrings.loginIntoYourAccount: {
-      'az': 'Hesabınıza daxil olun',
+      'az': 'Hesaba giriş et',
       'en': 'Login into your account',
       'ru': 'Войдите в аккаунт',
     },
@@ -188,12 +193,12 @@ class Translations {
       'ru': 'Пароль',
     },
     AppStrings.forgotPassword: {
-      'az': 'Şifrəni unutdunuz?',
+      'az': 'Şifrəni unutmusan?',
       'en': 'Forgot Password?',
       'ru': 'Забыли пароль?',
     },
     AppStrings.forgotPasswordPageHeader: {
-      'az': 'Şifrəni unutmusunuz',
+      'az': 'Şifrəni unutmuşam',
       'en': 'Forgot Password',
       'ru': 'Забыли пароль',
     },
@@ -203,7 +208,7 @@ class Translations {
       'ru': 'Запомнить меня',
     },
     AppStrings.dontHaveAccount: {
-      'az': 'Hesabınız yoxdur?',
+      'az': 'Hesabın yoxdur?',
       'en': "Don't have an account?",
       'ru': 'Нет аккаунта?',
     },
@@ -269,7 +274,7 @@ class Translations {
 
     // Register Page
     AppStrings.createAnAccount: {
-      'az': 'Hesab yaradın',
+      'az': 'Hesabın yaradılması',
       'en': 'Create An Account',
       'ru': 'Создать аккаунт',
     },
@@ -279,7 +284,7 @@ class Translations {
       'ru': 'Имя',
     },
     AppStrings.nameHint: {
-      'az': 'Adınızı daxil edin',
+      'az': 'Adını daxil et',
       'en': 'Enter your name',
       'ru': 'Введите ваше имя',
     },
@@ -289,7 +294,7 @@ class Translations {
       'ru': 'Фамилия',
     },
     AppStrings.surnameHint: {
-      'az': 'Soyadınızı daxil edin',
+      'az': 'Soyadını daxil et',
       'en': 'Enter your surname',
       'ru': 'Введите вашу фамилию',
     },
@@ -299,7 +304,7 @@ class Translations {
       'ru': 'Код страны',
     },
     AppStrings.phoneNumberLabel: {
-      'az': 'Telefon nömrəsi',
+      'az': 'Mobil nömrə',
       'en': 'Phone Number',
       'ru': 'Номер телефона',
     },
@@ -309,24 +314,24 @@ class Translations {
       'ru': 'Выберите код страны',
     },
     AppStrings.alreadyHaveAccount: {
-      'az': 'Artıq hesabınız var?',
+      'az': 'Artıq hesabın mövcuddur?',
       'en': 'Already have an account?',
       'ru': 'Уже есть аккаунт?',
     },
     AppStrings.signInButton: {
-      'az': 'Daxil ol',
+      'az': 'Giriş et',
       'en': 'Sign in',
       'ru': 'Войти',
     },
 
     // Terms & Privacy
     AppStrings.iAgreeToThe: {
-      'az': 'Razıyam: ',
+      'az': 'ilə razıyam',
       'en': 'I agree to ',
       'ru': 'Я принимаю ',
     },
     AppStrings.termsOfService: {
-      'az': 'Xidmət şərtləri',
+      'az': 'İstifadəçi şərtləri',
       'en': 'Terms of Service',
       'ru': 'Условия использования',
     },
@@ -406,27 +411,27 @@ class Translations {
 
     // OTP Page
     AppStrings.otpVerification: {
-      'az': 'OTP Doğrulama',
+      'az': 'Birdəfəlik kod ilə təsdiqləmə',
       'en': 'OTP Verification',
       'ru': 'OTP Верификация',
     },
     AppStrings.otpSubtitle: {
-      'az': 'Təqdim etdiyiniz telefon nömrəsinə doğrulama kodu göndərildi',
+      'az': 'Təqdim etdiyiniz telefon nömrəsinə təsdiq (avtorizasiya) kodu göndərildi',
       'en': 'An authorization code has been sent to your provided Phone Number',
       'ru': 'Код подтверждения был отправлен на указанный номер телефона',
     },
     AppStrings.secLeft: {
-      'az': 'san qaldı',
+      'az': 'saniyə qaldı',
       'en': 'sec left',
       'ru': 'сек осталось',
     },
     AppStrings.didntReceiveCode: {
-      'az': 'Kod almadınız?',
+      'az': 'Kod gəlmədi?',
       'en': "I don't receive code",
       'ru': 'Не получили код?',
     },
     AppStrings.resendCode: {
-      'az': 'Yenidən göndər',
+      'az': 'Yenidən kod göndər',
       'en': 'Resend Code',
       'ru': 'Отправить повторно',
     },
@@ -453,17 +458,17 @@ class Translations {
 
     // Setup Password Page
     AppStrings.createPassword: {
-      'az': 'Şifrə Yarat',
+      'az': 'Şifrənin yaradılması',
       'en': 'Create Password',
       'ru': 'Создать Пароль',
     },
     AppStrings.enterNewPassword: {
-      'az': 'Yeni Şifrə Daxil Edin',
+      'az': 'Yeni şifrəni daxil edin',
       'en': 'Enter New Password',
       'ru': 'Введите Новый Пароль',
     },
     AppStrings.confirmNewPassword: {
-      'az': 'Yeni Şifrəni Təsdiq Edin',
+      'az': 'Yeni şifrəni təkrar daxil edin',
       'en': 'Confirm New Password',
       'ru': 'Подтвердите Новый Пароль',
     },
@@ -500,22 +505,22 @@ class Translations {
 
     // Password Requirements
     AppStrings.capitalLetterRequired: {
-      'az': 'Böyük hərf əlavə edilməlidir',
+      'az': 'Ən azı bir böyük hərf',
       'en': 'The capital letter is not added yet',
       'ru': 'Заглавная буква еще не добавлена',
     },
     AppStrings.lowercaseLetterRequired: {
-      'az': 'Kiçik hərf əlavə edilməlidir',
+      'az': 'Ən azı bir kiçik hərf',
       'en': 'The lowercase letter is not added yet',
       'ru': 'Строчная буква еще не добавлена',
     },
     AppStrings.numberRequired: {
-      'az': 'Rəqəm əlavə edilməlidir',
+      'az': 'Ən azı bir rəqəm',
       'en': 'The number is not added yet',
       'ru': 'Цифра еще не добавлена',
     },
     AppStrings.specialCharRequired: {
-      'az': 'Xüsusi simvol əlavə edilməlidir',
+      'az': 'Ən azı bir xüsusi simvol',
       'en': 'The special character is not added yet',
       'ru': 'Спецсимвол еще не добавлен',
     },
@@ -602,10 +607,15 @@ class Translations {
       'en': 'Login failed',
       'ru': 'Вход не выполнен',
     },
+    AppStrings.noAccountRegisteredNumber: {
+      'az': 'Daxil etdiyiniz nömrə ilə qeydiyyat olunmuş hesab yoxdur',
+      'en': 'No account is registered with the number you entered',
+      'ru': 'С введённым номером не зарегистрирован аккаунт',
+    },
 
     // Success Messages
     AppStrings.registrationSuccessful: {
-      'az': 'Qeydiyyat Uğurludur',
+      'az': 'Qeydiyyat uğurla\ntamamlandı',
       'en': 'Registration Successful',
       'ru': 'Регистрация Успешна',
     },
@@ -621,7 +631,7 @@ class Translations {
     },
     AppStrings.registrationSuccessSubtext: {
       'az':
-          'Hesabınız uğurla yaradıldı. İndi daxil olaraq avtomobilinizin texniki xidmətini asanlıqla idarə edə bilərsiniz.',
+          'Hesabın uğurla yaradıldı. İndi avtomobilinin texniki xidmətini asanlıqla idarə etməyə başlaya bilərsən.',
       'en':
           'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
       'ru':
@@ -641,7 +651,7 @@ class Translations {
       'ru': 'Новая Карта Добавлена BMW M4 Sports 2024',
     },
     AppStrings.checkMyCars: {
-      'az': 'Avtomobillərimə Bax',
+      'az': 'Avtomobillərə keçid et',
       'en': 'Check My Cars',
       'ru': 'Проверить Мои Автомобили',
     },
@@ -679,17 +689,17 @@ class Translations {
       'ru': 'Привет, ',
     },
     AppStrings.bookYourCarServices: {
-      'az': 'Avtomobil xidmətləri sifariş edin',
+      'az': 'Avtomobilini idarə et',
       'en': 'Book your Car Services',
       'ru': 'Забронируйте автосервис',
     },
     AppStrings.noCarsAddedYet: {
-      'az': 'Hələ heç bir avtomobil əlavə edilməyib',
+      'az': 'Avtomobil əlavə edilməyib',
       'en': 'No Cars Added Yet',
       'ru': 'Автомобили еще не добавлены',
     },
     AppStrings.noCarsAddedDescription: {
-      'az': 'Hələ heç bir avtomobil əlavə etməmisiniz. Texniki baxış cədvəllərini, servis tarixçəsini və rezervasiyaları izləməyə başlamaq üçün ilk avtomobilinizi əlavə edin.',
+      'az': 'Hələ heç bir avtomobil əlavə etməmisiniz. Texniki xidmət cədvəllərini izləməyə başlamaq üçün ilk avtomobilinizi əlavə edin.',
       'en': 'You haven\'t added any cars yet. Add your first car to start tracking maintenance schedules, service history, and bookings.',
       'ru': 'Вы еще не добавили автомобили. Добавьте свой первый автомобиль, чтобы начать отслеживать график обслуживания, историю сервиса и бронирования.',
     },
@@ -775,25 +785,25 @@ class Translations {
       'ru': 'Версия HTTP не поддерживается',
     },
     AppStrings.addYourCarVin: {
-      'az': 'Avtomobilinizin VIN-ini əlavə edin',
+      'az': 'Avtomobil əlavə etmə',
       'en': 'Add your Car VIN',
       'ru': 'Добавьте VIN вашего автомобиля',
     },
 
     AppStrings.enterOrScanVin: {
-      'az': 'VIN daxil edin və ya Skan edin',
+      'az': 'BAN nömrəni əlavə etmə',
       'en': 'Enter or Scan VIN',
       'ru': 'Введите или отсканируйте VIN',
     },
 
     AppStrings.vinScanDescription: {
-      'az': 'Maşının ön panelində və ya sürücü qapısının kənarında yerləşən VIN kodu kameraya göstərərək skan edin',
+      'az': 'BAN nömrə avtomobilə məxsus 17 simvolluq unikal identifikasiya nömrəsidir, avtomobilin ön şüşəsində, sürücü qapısının kənarında və texniki pasportda göstərilir.',
       'en': 'Point your camera at the VIN code located on the dashboard or driver-side door to scan it',
       'ru': 'Наведите камеру на VIN-код, расположенный на приборной панели или на стойке водительской двери, чтобы сканировать',
     },
 
     AppStrings.enterCarVin: {
-      'az': 'Avtomobil VIN daxil edin',
+      'az': 'BAN nömrəni daxil edin',
       'en': 'Enter Car Vin',
       'ru': 'Введите VIN автомобиля',
     },
@@ -811,9 +821,19 @@ class Translations {
     },
 
     AppStrings.scanCarVin: {
-      'az': 'Avtomobil VIN-ini Skan et',
+      'az': 'BAN nömrə skan et',
       'en': 'Scan Car Vin',
       'ru': 'Сканировать VIN автомобиля',
+    },
+    AppStrings.scanCarVinNumber: {
+      'az': 'BAN nömrə skan et',
+      'en': 'Scan Car VIN number',
+      'ru': 'Сканировать VIN автомобиля',
+    },
+    AppStrings.scannerPageSubtitle: {
+      'az':  'Avtomobilinizin ön şüşəsinin sağ aşağı küncündən, qapı kənarından və ya texniki pasportdan BAN nömrəsini skan edin.',
+      'en': 'Use your car\'s Vehicle Identification Number (VIN) to fetch accurate details. You can type it in or scan via camera.',
+      'ru': 'Используйте идентификационный номер вашего автомобиля (VIN) для получения точных данных. Вы можете ввести его вручную или отсканировать с помощью камеры.',
     },
 
     AppStrings.continueButton: {
@@ -839,7 +859,7 @@ class Translations {
       'ru': 'Добавить детали автомобиля',
     },
     AppStrings.plateNumber: {
-      'az': 'Qeydiyyat Nişanı',
+      'az': 'Dövlət Qeydiyyat Nişanı',
       'en': 'Plate Number',
       'ru': 'Номерной знак',
     },
@@ -889,7 +909,7 @@ class Translations {
       'ru': '2800',
     },
     AppStrings.bodyType: {
-      'az': 'Kuzov Tipi',
+      'az': 'BAN növü',
       'en': 'Body Type',
       'ru': 'Тип кузова',
     },
@@ -899,7 +919,7 @@ class Translations {
       'ru': 'Выберите тип кузова',
     },
     AppStrings.transmission: {
-      'az': 'Transmissiya',
+      'az': 'Sürətlər qutusu',
       'en': 'Transmission',
       'ru': 'Трансмиссия',
     },
@@ -909,12 +929,12 @@ class Translations {
       'ru': 'Выберите тип',
     },
     AppStrings.engineType: {
-      'az': 'Mühərrik Tipi',
+      'az': 'Yanacaq növü',
       'en': 'Engine Type',
       'ru': 'Тип двигателя',
     },
     AppStrings.year: {
-      'az': 'İl',
+      'az': 'İstehsal ili',
       'en': 'Year',
       'ru': 'Год',
     },
@@ -949,12 +969,12 @@ class Translations {
       'ru': 'Пробег обязателен',
     },
     AppStrings.uploadPhoto: {
-      'az': 'Şəkil Yüklə',
+      'az': 'Avtomobilin şəklini yüklə',
       'en': 'Upload Photo',
       'ru': 'Загрузить фото',
     },
     AppStrings.addOrDrop: {
-      'az': 'Əlavə et və ya sürüşdür-burax',
+      'az': 'Çək və ya əlavə et',
       'en': 'Add or Drop',
       'ru': 'Добавить или перетащить',
     },
@@ -1105,7 +1125,7 @@ class Translations {
       'ru': 'Сохранено',
     },
     AppStrings.saveChanges: {
-      'az': 'Saxla',
+      'az': 'Dəyişiklikləri Saxla',
       'en': 'Save Changes',
       'ru': 'Сохранить изменения',
     },
@@ -1115,9 +1135,9 @@ class Translations {
       'ru': 'Дата последнего обслуживания',
     },
     AppStrings.lastServiceDateHint: {
-      'az': '26/06/2025 - 10:00',
-      'en': '26/06/2025 - 10:00pm',
-      'ru': '26/06/2025 - 10:00',
+      'az': '26/06/2025',
+      'en': '26/06/2025',
+      'ru': '26/06/2025',
     },
     AppStrings.lastServiceMileage: {
       'az': 'Son servis yürüşü',
@@ -1155,7 +1175,7 @@ class Translations {
       'ru': 'Услуги не найдены',
     },
     AppStrings.schedule: {
-      'az': 'Qrafik',
+      'az': 'Cədvəl',
       'en': 'Schedule',
       'ru': 'График',
     },
@@ -1175,17 +1195,17 @@ class Translations {
       'ru': 'Следующее техническое обслуживание',
     },
     AppStrings.vinNotFound: {
-      'az': 'VIN tapılmadı. Yenidən cəhd edin.',
+      'az': 'BAN tapılmadı. Yenidən cəhd edin.',
       'en': 'VIN not found. Please try again.',
       'ru': 'VIN не найден. Пожалуйста, попробуйте еще раз.',
     },
     AppStrings.editServiceDetails: {
-      'az': 'Detalları redaktə et',
+      'az': 'Servis cədvəlini redaktə et',
       'en': 'Edit service details',
       'ru': 'Редактировать детали услуги',
     },
     AppStrings.enterMileage: {
-      'az': 'Yürüşü Daxil Edin',
+      'az': 'Yürüşü yenilə',
       'en': 'Enter Mileage',
       'ru': 'Введите пробег',
     },
@@ -1205,12 +1225,12 @@ class Translations {
       'ru': 'Пробег успешно обновлен',
     },
     AppStrings.saveMileage: {
-      'az': 'Saxla',
+      'az': 'Yürüşü yenilə',
       'en': 'Save Mileage',
       'ru': 'Сохранить пробег',
     },
     AppStrings.mileageAtLastService: {
-      'az': 'Son servisdəki yürüş',
+      'az': 'Son servis yürüşü',
       'en': 'Mileage at Last Service',
       'ru': 'Пробег при Последнем Обслуживании',
     },
@@ -1248,7 +1268,6 @@ class Translations {
       'az': 'Zəhmət olmasa düzgün yürüş daxil edin',
       'en': 'Please enter a valid mileage',
       'ru': 'Пожалуйста, введите корректный пробег',
-      'tr': 'Lütfen geçerli bir kilometre girin',
     },
     AppStrings.selectDate: {
       'az': 'Tarixi seçin',

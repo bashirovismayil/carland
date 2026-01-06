@@ -1,6 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../data/remote/services/local/language_local_service.dart';
+import '../../../../utils/di/locator.dart';
+
 class TermsCheckbox extends StatelessWidget {
   const TermsCheckbox({
     super.key,
@@ -14,21 +17,18 @@ class TermsCheckbox extends StatelessWidget {
   });
 
   final bool value;
-
   final ValueChanged<bool> onChanged;
-
   final String agreementText;
-
   final String termsText;
-
   final String privacyText;
-
   final VoidCallback onTermsTap;
-
   final VoidCallback onPrivacyTap;
 
   @override
   Widget build(BuildContext context) {
+    final currentLang = locator<LanguageLocalService>().currentLanguage;
+    final isAzerbaijani = currentLang == 'az';
+
     return GestureDetector(
       onTap: () => onChanged(!value),
       behavior: HitTestBehavior.opaque,
@@ -57,43 +57,66 @@ class TermsCheckbox extends StatelessWidget {
                   fontSize: 14,
                   color: Colors.grey.shade600,
                 ),
-                children: [
-                  // "I agree to the "
-                  TextSpan(text: agreementText),
-
-                  // "Terms of Service"
-                  TextSpan(
-                    text: termsText,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()..onTap = onTermsTap,
-                  ),
-
-                  // ", "
-                  const TextSpan(text: ', '),
-
-                  // "Privacy Policy"
-                  TextSpan(
-                    text: privacyText,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()..onTap = onPrivacyTap,
-                  ),
-
-                  // "."
-                  const TextSpan(text: '.'),
-                ],
+                children: isAzerbaijani
+                    ? _buildAzerbaijaniText()
+                    : _buildEnglishText(),
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  List<InlineSpan> _buildAzerbaijaniText() {
+    return [
+      TextSpan(
+        text: termsText,
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w700,
+          decoration: TextDecoration.underline,
+        ),
+        recognizer: TapGestureRecognizer()..onTap = onTermsTap,
+      ),
+      const TextSpan(text: ' və '),
+      TextSpan(
+        text: privacyText,
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w700,
+          decoration: TextDecoration.underline,
+        ),
+        recognizer: TapGestureRecognizer()..onTap = onPrivacyTap,
+      ),
+
+      TextSpan(text: ' $agreementText'),
+    ];
+  }
+
+  List<InlineSpan> _buildEnglishText() {
+    return [
+      TextSpan(text: agreementText),
+      TextSpan(
+        text: termsText,
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w700,
+          decoration: TextDecoration.underline,
+        ),
+        recognizer: TapGestureRecognizer()..onTap = onTermsTap,
+      ),
+      const TextSpan(text: ', '),
+      TextSpan(
+        text: privacyText,
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w700,
+          decoration: TextDecoration.underline,
+        ),
+        recognizer: TapGestureRecognizer()..onTap = onPrivacyTap,
+      ),
+      const TextSpan(text: '.'),
+    ];
   }
 }

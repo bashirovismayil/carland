@@ -44,18 +44,18 @@ class LanguageSettingsWidget extends HookWidget {
           ),
           const SizedBox(height: 20),
           ...AppLanguage.values.map((language) {
-            final isSelected = state.currentLanguage == language;
+            final isSelected = state.hasLanguageBeenSelected && state.currentLanguage == language;
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: GestureDetector(
                 onTap: state.isLoading
                     ? null
                     : () =>
-                        context.read<LanguageCubit>().changeLanguage(language),
+                    context.read<LanguageCubit>().changeLanguage(language),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   decoration: BoxDecoration(
                     color: isSelected ? Colors.black : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(12),
@@ -252,8 +252,8 @@ class LanguageSettingsWidget extends HookWidget {
         return '🇦🇿';
       case AppLanguage.english:
         return '🇬🇧';
-      case AppLanguage.russian:
-        return '🇷🇺';
+      // case AppLanguage.russian:
+      //   return '🇷🇺';
     }
   }
 
@@ -263,8 +263,8 @@ class LanguageSettingsWidget extends HookWidget {
         return 'AZ';
       case AppLanguage.english:
         return 'EN';
-      case AppLanguage.russian:
-        return 'RU';
+      // case AppLanguage.russian:
+      //   return 'RU';
     }
   }
 

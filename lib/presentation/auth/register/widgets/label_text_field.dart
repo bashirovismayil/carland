@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'app_input_decoration.dart';
+
+class UpperCaseFirstLetterFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isEmpty) return newValue;
+    String text = newValue.text;
+    String newText = text[0].toUpperCase() + text.substring(1);
+    return newValue.copyWith(
+      text: newText,
+      selection: newValue.selection,
+    );
+  }
+}
+
 class LabeledTextField extends StatelessWidget {
   const LabeledTextField({
     super.key,
@@ -13,39 +27,27 @@ class LabeledTextField extends StatelessWidget {
     this.enabled = true,
     this.keyboardType = TextInputType.text,
     this.textInputAction = TextInputAction.next,
-    this.textCapitalization = TextCapitalization.none,
+    this.textCapitalization = TextCapitalization.words,
     this.inputFormatters,
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.maxLength,
     this.onChanged,
     this.focusNode,
   });
+
   final String label;
-
   final String hintText;
-
   final TextEditingController controller;
-
   final IconData? prefixIcon;
-
   final String? Function(String?)? validator;
-
   final bool enabled;
-
   final TextInputType keyboardType;
-
   final TextInputAction textInputAction;
-
   final TextCapitalization textCapitalization;
-
   final List<TextInputFormatter>? inputFormatters;
-
   final AutovalidateMode autovalidateMode;
-
   final int? maxLength;
-
   final ValueChanged<String>? onChanged;
-
   final FocusNode? focusNode;
 
   @override
@@ -117,12 +119,13 @@ class NameField extends StatelessWidget {
       prefixIcon: Icons.person_outline,
       validator: validator,
       enabled: enabled,
-      keyboardType: TextInputType.name,
+      keyboardType: TextInputType.text,
       textInputAction: textInputAction,
       textCapitalization: TextCapitalization.words,
       maxLength: 50,
       inputFormatters: [
         FilteringTextInputFormatter.allow(namePattern),
+        UpperCaseFirstLetterFormatter(),
       ],
     );
   }

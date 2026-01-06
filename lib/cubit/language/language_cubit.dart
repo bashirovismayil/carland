@@ -30,6 +30,7 @@ class LanguageCubit extends Cubit<LanguageState> {
         currentLanguage: language,
         locale: language.locale,
         isLoading: false,
+        hasLanguageBeenSelected: true,
       ));
     } catch (e) {
       emit(state.copyWith(

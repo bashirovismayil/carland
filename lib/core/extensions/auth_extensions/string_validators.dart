@@ -24,7 +24,7 @@ extension MobileOperatorValidator on String {
   bool get isValidMobileOperatorCode {
     if (length < 2) return false;
     final operatorPrefix = substring(0, 2);
-    const validCodes = {'50', '51', '10', '55', '99', '70', '77', '60'};
+    const validCodes = {'50', '51', '52', '53', '54', '10', '55', '99', '70', '77'};
     return validCodes.contains(operatorPrefix);
   }
 
@@ -34,6 +34,10 @@ extension MobileOperatorValidator on String {
     switch (prefix) {
       case '50':
       case '51':
+      case '52':
+      case '53':
+      case '54':
+      case '10':
         return 'Azercell';
       case '55':
       case '99':
@@ -41,9 +45,6 @@ extension MobileOperatorValidator on String {
       case '70':
       case '77':
         return 'Nar';
-      case '10':
-      case '60':
-        return 'Naxtel';
       default:
         return null;
     }

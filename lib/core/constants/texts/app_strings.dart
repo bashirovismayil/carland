@@ -64,7 +64,8 @@ class AppStrings {
   static const String letsGetStartedText = "letsGetStartedText";
 
   // Welcome - Auth Page
-  static const String welcomeToCarCat = 'welcomeToCarCat';
+  static const String welcomeTo = 'welcomeToCarCat';
+  static const String carcat = 'carcat';
   static const String welcomeSubtitle = 'welcomeSubtitle';
   static const String loginButton = 'loginButton';
   static const String logout = 'logout';
@@ -85,9 +86,9 @@ class AppStrings {
 
   static const String signInText = "Daxil ol";
   static const String guestModeSelectionSubtext =
-      "Qeydiyyatsız olaraq xəstəxana haqqında əsas məlumatlara baxa, şöbələri görə, həkimləri tapa və ümumi tibbi məlumat əldə edə bilərsiniz.";
+      "Qonaq rejimində tətbiqin əsas funksiyalarını kəşf et. Qeydiyyat tələb olunmur.";
   static const String signInSelectionSubtext =
-      "Hesabınıza daxil olaraq tibbi qeydlərinizə, qəbul tarixçənizə və fərdi məlumatlarınıza tam çıxış əldə edin.";
+      "Hesabına daxil olaraq bütün xüsusiyyətlərə və fərdi məlumatlarınıza tam giriş əldə et.";
 
   // Register Page
   static const String createAnAccount = 'createAnAccount';
@@ -183,6 +184,7 @@ class AppStrings {
   static const String badCertificate = 'badCertificate';
   static const String networkError = 'networkError';
   static const String loginFailed = 'loginFailed';
+  static const String noAccountRegisteredNumber = 'No account is registered with the number you entered';
 
   static const String registrationSuccessful = "registrationSuccessful";
   static const String passwordResetSuccessful = "passwordResetSuccessful";
@@ -222,6 +224,8 @@ class AppStrings {
   static const String vinPlaceholder = "vinPlaceholder";
   static const String or = "or";
   static const String scanCarVin = "scanCarVin";
+  static const String scanCarVinNumber = "scanCarVinNumber";
+  static const String scannerPageSubtitle = "scannerPageSubtitle";
   static const String continueButton = "continueButton";
   static const String vinVerified = "vinVerified";
 

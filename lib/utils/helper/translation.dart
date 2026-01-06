@@ -477,6 +477,11 @@ class Translations {
       'en': 'Register',
       'ru': 'Регистрация',
     },
+    AppStrings.registerFinish: {
+      'az': 'Qeydiyyatı bitir',
+      'en': 'Register',
+      'ru': 'Регистрация',
+    },
     AppStrings.setupPasswordText: {
       'az': 'Şifrə qurulması',
       'en': 'Set Up Password',

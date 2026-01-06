@@ -148,6 +148,7 @@ class AppStrings {
   static const String enterNewPassword = 'enterNewPassword';
   static const String confirmNewPassword = 'confirmNewPassword';
   static const String registerButton = 'registerButton';
+  static const String registerFinish = 'registerFinish';
 
   // Password Requirements
   static const String capitalLetterRequired = 'capitalLetterRequired';

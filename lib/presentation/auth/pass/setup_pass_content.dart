@@ -76,11 +76,16 @@ class _SetupPassContentState extends State<SetupPassContent> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: AppColors.primaryWhite,
-        body: MultiBlocListener(
-          listeners: _buildBlocListeners(context),
+    return Scaffold(
+      backgroundColor: AppColors.primaryWhite,
+      extendBodyBehindAppBar: true,
+      body: MultiBlocListener(
+        listeners: _buildBlocListeners(context),
+        child: Container(
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top,
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
           child: _buildForm(context),
         ),
       ),
@@ -422,7 +427,7 @@ class _SetupPassContentState extends State<SetupPassContent> {
     }
 
     return Text(
-      context.currentLanguage(AppStrings.registerButton),
+      context.currentLanguage(AppStrings.registerFinish),
       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
     );
   }

@@ -8,8 +8,7 @@ class ApiConstants {
       '$baseUrl/hospital/server/api/v1/device-tokens/post';
 
   // Delete account
-  static const deleteAccount =
-      '$baseUrl/auth/server/api/v1/users/delete';
+  static const deleteAccount = '$baseUrl/auth/server/api/v1/users/delete';
 
   // auth - SignUp
   static const register =
@@ -59,7 +58,8 @@ class ApiConstants {
       '$baseUrl/hospital/server-hospital/api/v1/super-admin/update/profile';
 
   // User add details
-  static const userAddDetails = '$baseUrl/carland/server-carland/api/v1/user/add-details';
+  static const userAddDetails =
+      '$baseUrl/carland/server-carland/api/v1/user/add-details';
 
   // Profile photo
   static const uploadProfilePhoto =
@@ -97,8 +97,7 @@ class ApiConstants {
   static const uploadCarPhoto =
       '$baseUrl/carland/server-carland/api/v1/photo/for/car/upload?carId=';
 
-  static const addCar =
-      '$baseUrl/carland/server-carland/api/v1/car/add';
+  static const addCar = '$baseUrl/carland/server-carland/api/v1/car/add';
 
   static const getCarRecords =
       '$baseUrl/carland/server-carland/api/v1/car/get/service/records?carId=';
@@ -121,6 +120,10 @@ class ApiConstants {
   static const executeCarService =
       '$baseUrl/carland/server-carland/api/v1/car/service/execute/percentages?carId=';
 
-  static const deleteCar =
-      '$baseUrl/carland/server-carland/api/v1/car/remove';
+  static const deleteCar = '$baseUrl/carland/server-carland/api/v1/car/remove';
+
+  static const privacyPolicy =
+      '$baseUrl/carland/legal/legal/privacy/policy?lang=';
+  static const termsConditions =
+      '$baseUrl/carland/legal/legal/terms-and-conditions?lang=';
 }

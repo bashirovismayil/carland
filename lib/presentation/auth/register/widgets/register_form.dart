@@ -103,7 +103,7 @@ class RegisterForm extends StatelessWidget {
   void _navigateToTerms(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const TermsAndConditionsPage(),
+        builder: (context) => const TermsConditionsPage(),
       ),
     );
   }

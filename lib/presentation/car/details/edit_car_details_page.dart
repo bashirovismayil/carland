@@ -50,6 +50,7 @@ class EditCarDetailsPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vinController = useTextEditingController(text: vin ?? '');
     final plateController = useTextEditingController(text: initialPlateNumber ?? '');
     final engineController = useTextEditingController(
       text: initialEngineVolume != null ? '$initialEngineVolume' : '',
@@ -115,7 +116,15 @@ class EditCarDetailsPage extends HookWidget {
                       const SizedBox(height: AppTheme.spacingSm),
                       _buildSectionTitle(),
                       const SizedBox(height: AppTheme.spacingLg),
-
+                      _buildTextField(
+                        controller: vinController,
+                        label: AppTranslation.translate(AppStrings.vinText),
+                        hint: AppTranslation.translate(AppStrings.vinPlaceholder),
+                        svgIcon: 'assets/svg/barcode_transparent.svg',
+                        enabled: false,
+                        isRequired: false,
+                      ),
+                      const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
                         controller: plateController,
                         label: AppTranslation.translate(AppStrings.plateNumber),

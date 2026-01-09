@@ -178,6 +178,7 @@ class CarDetailsPage extends HookWidget {
                       const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
                         controller: engineController,
+                        maxLength: 4,
                         label:
                         AppTranslation.translate(AppStrings.engineVolume),
                         hint: AppTranslation.translate(

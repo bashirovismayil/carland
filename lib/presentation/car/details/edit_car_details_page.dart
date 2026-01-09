@@ -147,6 +147,7 @@ class EditCarDetailsPage extends HookWidget {
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         isRequired: true,
+                        maxLength: 4,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return AppTranslation.translate(AppStrings.required);

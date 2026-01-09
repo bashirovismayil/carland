@@ -594,7 +594,7 @@ class _VinScannerScreenState extends State<VinScannerScreen>
         ),
         const SizedBox(width: 8),
         Text(
-          'VIN aranıyor...',
+         AppTranslation.translate(AppStrings.vinSearch),
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
@@ -630,8 +630,8 @@ class _VinScannerScreenState extends State<VinScannerScreen>
                       ),
                     ),
                     const SizedBox(height: AppTheme.spacingLg),
-                    const Text(
-                      'VIN Scanned Successfully',
+                     Text(
+                      AppTranslation.translate(AppStrings.vinSuccess),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -673,7 +673,7 @@ class _VinScannerScreenState extends State<VinScannerScreen>
                     TextButton.icon(
                       onPressed: _resetScan,
                       icon: const Icon(Icons.refresh, size: 20),
-                      label: const Text('Scan Again'),
+                      label:  Text( AppTranslation.translate(AppStrings.retry),),
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.textSecondary,
                       ),

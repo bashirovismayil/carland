@@ -884,6 +884,16 @@ class Translations {
       'en': 'N° 19XZE4F54NE012640',
       'ru': 'N° 19XZE4F54NE012640',
     },
+    AppStrings.vinSearch: {
+      'az': 'BAN axtarılır...',
+      'en': 'Searching VIN...',
+      'ru': 'Поиск VIN...',
+    },
+    AppStrings.vinSuccess: {
+      'az': 'BAN uğurla skan edildi',
+      'en': 'VIN Scanned Successfully',
+      'ru': 'VIN успешно отсканирован',
+    },
 
     AppStrings.or: {
       'az': 'VƏ YA',

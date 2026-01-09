@@ -237,12 +237,14 @@ class AppStrings {
   static const String vinScanDescription = "vinAuthorizationDescription";
   static const String enterCarVin = "enterCarVin";
   static const String vinPlaceholder = "vinPlaceholder";
+  static const String vinSearch = "vinSearch";
   static const String or = "or";
   static const String scanCarVin = "scanCarVin";
   static const String scanCarVinNumber = "scanCarVinNumber";
   static const String scannerPageSubtitle = "scannerPageSubtitle";
   static const String continueButton = "continueButton";
   static const String vinVerified = "vinVerified";
+  static const String vinSuccess = " 'VIN Scanned Successfully',";
 
   // Car Details Page
   static const String carDetails = 'carDetails';

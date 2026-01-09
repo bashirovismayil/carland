@@ -464,6 +464,7 @@ class MaintenanceHistoryPage extends HookWidget {
                 keyboardType: keyboardType,
                 inputFormatters: inputFormatters,
                 maxLength: maxLength,
+                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,

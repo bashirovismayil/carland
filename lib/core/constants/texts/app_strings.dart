@@ -296,6 +296,7 @@ class AppStrings {
   static const String aspectRatio9_16 = 'aspectRatio9_16';
   static const String aspectRatioFree = 'aspectRatioFree';
   static const String cropGestureHint = 'cropGestureHint';
+  static const String noImage = 'noImage';
 
   static const String errorLoadingRecords = 'errorLoadingRecords';
   static const String retry = 'retry';

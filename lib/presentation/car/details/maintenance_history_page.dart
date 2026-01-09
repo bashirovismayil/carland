@@ -387,6 +387,7 @@ class MaintenanceHistoryPage extends HookWidget {
                             AppStrings.lastServiceMileageHint),
                         svgIconPath: 'assets/svg/odometer_icon.svg',
                         isRequired: true,
+                        maxLength: 6,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -413,6 +414,7 @@ class MaintenanceHistoryPage extends HookWidget {
     VoidCallback? onTap,
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
+    int? maxLength,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -461,6 +463,7 @@ class MaintenanceHistoryPage extends HookWidget {
                 readOnly: readOnly,
                 keyboardType: keyboardType,
                 inputFormatters: inputFormatters,
+                maxLength: maxLength,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,

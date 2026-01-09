@@ -1,5 +1,6 @@
+import 'package:carcat/core/constants/texts/app_strings.dart';
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import '../../../core/constants/colors/app_colors.dart';
 
 class NoImagePlaceholder extends StatelessWidget {
@@ -12,16 +13,17 @@ class NoImagePlaceholder extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            width: 150,
-            height: 150,
-            child: Lottie.asset(
-              'assets/lottie/no_photo.json',
-              fit: BoxFit.contain,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Image.asset(
+                'assets/png/placeholder_car_photo.png',
+                fit: BoxFit.contain,
+              ),
             ),
           ),
           Text(
-            'No Image',
+            AppTranslation.translate(AppStrings.noImage),
             style: TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary.withOpacity(0.7),

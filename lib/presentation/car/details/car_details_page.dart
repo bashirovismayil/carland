@@ -319,7 +319,6 @@ class CarDetailsPage extends HookWidget {
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
-                      // Current Mileage (Required)
                       _buildTextField(
                         controller: mileageController,
                         label:
@@ -331,6 +330,7 @@ class CarDetailsPage extends HookWidget {
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly
                         ],
+                        maxLength: 6,
                         isRequired: fieldRequirements['mileage'] ?? false,
                         validator: (value) {
                           if ((fieldRequirements['mileage'] ?? false) &&

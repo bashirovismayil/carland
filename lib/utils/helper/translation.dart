@@ -1130,6 +1130,11 @@ class Translations {
       'en': 'Crop error: ',
       'ru': 'Ошибка обрезания: ',
     },
+    AppStrings.noImage: {
+      'az': 'Foto yoxdur',
+      'en': 'No Image',
+      'ru': 'Нет изображения',
+    },
     'aspectRatio1_1': {
       'az': '1:1',
       'en': '1:1',

@@ -272,16 +272,14 @@ class _VinScannerScreenState extends State<VinScannerScreen>
         else
           Container(color: Colors.black, child: _buildLoadingView()),
 
-        // Layer 2: Tap to focus gesture (full screen)
+        // Layer 2: Flash button
         if (_isInitialized && _hasPermission)
           Positioned(
-            top: MediaQuery.of(context).size.height / 2 -
-                (MediaQuery.of(context).size.width * 0.7 / 2) -
-                MediaQuery.of(context).padding.top - 20,
-            right: MediaQuery.of(context).size.width * 0.15 - 20,
+            top: MediaQuery.of(context).padding.top + 60,
+            right: 20,
             child: Container(
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.5),
                 shape: BoxShape.circle,
@@ -290,7 +288,7 @@ class _VinScannerScreenState extends State<VinScannerScreen>
                 icon: Icon(
                   _isFlashOn ? Icons.flash_on : Icons.flash_off,
                   color: _isFlashOn ? Colors.yellow : Colors.white,
-                  size: 20,
+                  size: 22,
                 ),
                 onPressed: _toggleFlash,
                 padding: EdgeInsets.zero,
@@ -298,21 +296,23 @@ class _VinScannerScreenState extends State<VinScannerScreen>
             ),
           ),
 
-        // Layer 3: White overlay with scan window cutout
+        // Layer 3: White overlay with horizontal scan window cutout
         if (_hasPermission)
           Positioned.fill(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final scanAreaSize = constraints.maxWidth * 0.5;
+                // VIN için yatay dikdörtgen alan
+                final scanAreaWidth = constraints.maxWidth * 0.85;
+                final scanAreaHeight = scanAreaWidth * 0.25; // İnce uzun
 
                 return CustomPaint(
                   painter: VinScannerOverlayPainter(
-                    scanAreaWidth: scanAreaSize,
-                    scanAreaHeight: scanAreaSize,
+                    scanAreaWidth: scanAreaWidth,
+                    scanAreaHeight: scanAreaHeight,
                     overlayColor: Colors.white.withOpacity(0.92),
                     frameColor: const Color(0xFF2A2A2A),
-                    cornerLength: 28,
-                    cornerRadius: 12,
+                    cornerLength: 24,
+                    cornerRadius: 10,
                     strokeWidth: 3.5,
                   ),
                   child: const SizedBox.expand(),
@@ -337,8 +337,10 @@ class _VinScannerScreenState extends State<VinScannerScreen>
               const SizedBox(height: AppTheme.spacingXl),
               _buildTitleSection(),
               const Spacer(),
-              if (_errorMessage != null) _buildErrorMessage(),
+              // Scanning indicator - basit text
               if (_isScanning && _isContinuousMode) _buildScanningIndicator(),
+              const SizedBox(height: AppTheme.spacingLg),
+              if (_errorMessage != null) _buildErrorMessage(),
               _buildBottomSection(),
             ],
           ),
@@ -353,14 +355,24 @@ class _VinScannerScreenState extends State<VinScannerScreen>
       return Container(color: Colors.black);
     }
 
-    return SizedBox.expand(
-      child: FittedBox(
-        fit: BoxFit.cover,
-        child: SizedBox(
-          width: controller.value.previewSize?.height ?? 1,
-          height: controller.value.previewSize?.width ?? 1,
-          child: CameraPreview(controller),
-        ),
+    // 1. Ekran boyutunu al
+    final size = MediaQuery.of(context).size;
+    final deviceRatio = size.aspectRatio;
+
+    // 2. Kameranın Aspect Ratio'sunu al
+    final cameraRatio = controller.value.aspectRatio;
+
+    // 3. Ölçekleme katsayısını hesapla
+    // Bu matematik, kameranın dikey/yatay duruşuna göre görüntüyü ekrana tam oturtur.
+    var scale = deviceRatio * cameraRatio;
+
+    // Eğer hesaplama sonucu 1'den küçükse, tam tersini alarak görüntüyü büyüt.
+    if (scale < 1) scale = 1 / scale;
+
+    return Transform.scale(
+      scale: scale,
+      child: Center(
+        child: CameraPreview(controller),
       ),
     );
   }
@@ -394,7 +406,7 @@ class _VinScannerScreenState extends State<VinScannerScreen>
             ),
           ),
           const SizedBox(width: AppTheme.spacingMd),
-            Text(
+          Text(
             AppTranslation.translate(AppStrings.addYourCarVin),
             style: TextStyle(
               fontSize: 22,
@@ -412,7 +424,7 @@ class _VinScannerScreenState extends State<VinScannerScreen>
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
       child: Column(
         children: [
-            Text(
+          Text(
             AppTranslation.translate(AppStrings.scanCarVinNumber),
             style: TextStyle(
               fontSize: 20,
@@ -431,28 +443,6 @@ class _VinScannerScreenState extends State<VinScannerScreen>
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFlashButtonRow() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppTheme.spacingLg),
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
-          shape: BoxShape.circle,
-        ),
-        child: IconButton(
-          icon: Icon(
-            _isFlashOn ? Icons.flash_on : Icons.flash_off,
-            color: _isFlashOn ? Colors.yellow : Colors.white,
-            size: 24,
-          ),
-          onPressed: _toggleFlash,
-        ),
       ),
     );
   }
@@ -591,29 +581,26 @@ class _VinScannerScreenState extends State<VinScannerScreen>
   }
 
   Widget _buildScanningIndicator() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSm),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: AppColors.textSecondary,
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: AppColors.textSecondary,
           ),
-          const SizedBox(width: 8),
-          Text(
-            'Scanning for VIN...',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-            ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          'VIN aranıyor...',
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

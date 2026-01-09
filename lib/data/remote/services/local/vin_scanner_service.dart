@@ -59,17 +59,53 @@ class VinScannerService {
   void Function(String)? onDebugText;
 
   final Map<String, int> _detectionCounts = {};
-  static const int _requiredDetections = 3;
+
+  // ============ OPTİMİZASYON AYARLARI ============
+  static const int _requiredDetectionsForNonChecksum = 3;
   static const int _maxBufferSize = 20;
 
   DateTime? _lastProcessTime;
-  static const _processInterval = Duration(milliseconds: 300);
+
+  // ============ YENİ: SÜREKLİ ODAKLAMA İÇİN ============
+  DateTime _lastFocusTriggerTime = DateTime.now();
+  // Odaklamalar arası minimum bekleme süresi (çok sık odaklama yapıp kamerayı sersemletmemek için)
+  static const _focusDebounceInterval = Duration(milliseconds: 2000);
+
+  static const _processInterval = Duration(milliseconds: 150);
+
+  // ROI (Region of Interest)
+  static const double _roiTopRatio = 0.30;
+  static const double _roiBottomRatio = 0.70;
+  static const double _roiLeftRatio = 0.05;
+  static const double _roiRightRatio = 0.95;
+
+  // Zoom bilgileri
+  double _minZoomLevel = 1.0;
+  double _maxZoomLevel = 1.0;
+  double _currentZoomLevel = 1.0;
+
+  static const double _targetInitialZoom = 2.0;
+
+  String? _foundVin;
+  double? _foundConfidence;
+
+  // Getter'lar
+  double get minZoomLevel => _minZoomLevel;
+  double get maxZoomLevel => _maxZoomLevel;
+  double get currentZoomLevel => _currentZoomLevel;
 
   CameraController? get cameraController => _cameraController;
-
   bool get isProcessing => _isProcessing;
-
   bool get isInitialized => _cameraController?.value.isInitialized ?? false;
+
+  Rect getRoiBounds(Size screenSize) {
+    return Rect.fromLTRB(
+      screenSize.width * _roiLeftRatio,
+      screenSize.height * _roiTopRatio,
+      screenSize.width * _roiRightRatio,
+      screenSize.height * _roiBottomRatio,
+    );
+  }
 
   Future<VinScanResult?> initialize() async {
     if (_isDisposed) return null;
@@ -87,7 +123,7 @@ class VinScannerService {
       }
 
       final backCamera = _cameras!.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
+            (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => _cameras!.first,
       );
 
@@ -101,6 +137,8 @@ class VinScannerService {
       );
 
       await _cameraController!.initialize();
+
+      await _initializeZoomLevels();
       await _setupCameraSettings();
 
       return null;
@@ -127,6 +165,35 @@ class VinScannerService {
     }
   }
 
+  Future<void> _initializeZoomLevels() async {
+    if (_cameraController == null) return;
+
+    try {
+      _minZoomLevel = await _cameraController!.getMinZoomLevel();
+      _maxZoomLevel = await _cameraController!.getMaxZoomLevel();
+
+      debugPrint('Zoom levels - Min: $_minZoomLevel, Max: $_maxZoomLevel');
+
+      double targetZoom = _targetInitialZoom;
+
+      if (targetZoom < _minZoomLevel) {
+        targetZoom = _minZoomLevel;
+      } else if (targetZoom > _maxZoomLevel) {
+        targetZoom = _maxZoomLevel;
+      }
+
+      await _cameraController!.setZoomLevel(targetZoom);
+      _currentZoomLevel = targetZoom;
+
+      debugPrint('Initial zoom set to: $_currentZoomLevel (target was $_targetInitialZoom)');
+    } catch (e) {
+      debugPrint('Zoom initialization error: $e');
+      _minZoomLevel = 1.0;
+      _maxZoomLevel = 1.0;
+      _currentZoomLevel = 1.0;
+    }
+  }
+
   Future<void> _setupCameraSettings() async {
     if (_cameraController == null) return;
 
@@ -140,6 +207,34 @@ class VinScannerService {
       await _cameraController!.setExposureMode(ExposureMode.auto);
     } catch (e) {
       debugPrint('Exposure mode not supported: $e');
+    }
+
+    await _triggerCenterFocus();
+  }
+
+  /// YENİ: Geliştirilmiş odaklama fonksiyonu
+  Future<void> _triggerCenterFocus() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    try {
+      // Önce Auto modunda olduğumuzdan emin olalım
+      if (_cameraController!.value.focusMode != FocusMode.auto) {
+        await _cameraController!.setFocusMode(FocusMode.auto);
+      }
+
+      // Tam ortaya (0.5, 0.5) odaklanmasını söyle.
+      // Bu komut genellikle lensi hareket ettirip yeniden netlemeyi başlatır.
+      const centerPoint = Offset(0.5, 0.5);
+      await _cameraController!.setFocusPoint(centerPoint);
+
+      // Exposure'u da güncellemek iyidir, bazen parlama VIN okumayı bozar
+      await _cameraController!.setExposurePoint(centerPoint);
+
+      debugPrint('Center focus triggered');
+    } catch (e) {
+      debugPrint('Center focus trigger error: $e');
     }
   }
 
@@ -171,6 +266,9 @@ class VinScannerService {
     _isStreaming = true;
     _detectionCounts.clear();
     _lastProcessTime = null;
+    _lastFocusTriggerTime = DateTime.now(); // YENİ: Zamanlayıcıyı başlat
+    _foundVin = null;
+    _foundConfidence = null;
 
     try {
       await _cameraController!.startImageStream(_processImageStream);
@@ -186,16 +284,34 @@ class VinScannerService {
     _isStreaming = false;
     onVinDetected = null;
     _detectionCounts.clear();
+    _foundVin = null;
+    _foundConfidence = null;
 
     try {
-      await _cameraController?.stopImageStream();
+      if (_cameraController != null &&
+          _cameraController!.value.isStreamingImages) {
+        await _cameraController!.stopImageStream();
+      }
     } catch (e) {
       debugPrint('Stop stream error: $e');
     }
   }
 
-  void _processImageStream(CameraImage image) async {
+  void _processImageStream(CameraImage image) {
+    if (_isDisposed) return;
     if (_isProcessing || !_isStreaming || _textRecognizer == null) return;
+
+    if (_foundVin != null) {
+      final vin = _foundVin!;
+      final confidence = _foundConfidence ?? 1.0;
+      _foundVin = null;
+      _foundConfidence = null;
+
+      onVinDetected?.call(VinScanResult.success(vin, confidence: confidence));
+
+      _isStreaming = false;
+      return;
+    }
 
     final now = DateTime.now();
     if (_lastProcessTime != null &&
@@ -205,72 +321,102 @@ class VinScannerService {
     _lastProcessTime = now;
 
     _isProcessing = true;
+    _processFrame(image);
+  }
 
+  /// YENİ: Geliştirilmiş frame işleme - Simulated Continuous Focus
+  Future<void> _processFrame(CameraImage image) async {
     try {
+      if (_isDisposed) return;
+
       final inputImage = _convertCameraImage(image);
-      if (inputImage == null) {
-        _isProcessing = false;
-        return;
-      }
+      if (inputImage == null) return;
+
+      if (_isDisposed || _textRecognizer == null) return;
 
       final recognizedText = await _textRecognizer!.processImage(inputImage);
 
-      if (recognizedText.text.isNotEmpty) {
-        onDebugText?.call(recognizedText.text);
-        final candidates = _findAllCandidates(recognizedText);
-        for (final candidate in candidates) {
-          _addToBuffer(candidate);
-          final stableResult = _getStableDetection();
-          if (stableResult != null) {
-            onVinDetected?.call(VinScanResult.success(
-              stableResult,
-              confidence: _detectionCounts[stableResult]! / _maxBufferSize,
-            ));
-            _detectionCounts.clear();
-            break;
-          }
+      if (_isDisposed || !_isStreaming) return;
+
+      // ============================================================
+      // YENİ: DÜZELTİLEN ODAKLAMA MANTIĞI (Simulated Continuous Focus)
+      // ============================================================
+      final now = DateTime.now();
+
+      // Eğer VIN henüz bulunamadıysa (buffer doluyor olsa bile)
+      if (_foundVin == null) {
+        // Ve son odaklamadan beri 2 saniye geçtiyse
+        if (now.difference(_lastFocusTriggerTime) > _focusDebounceInterval) {
+
+          // Debug için yazdıralım
+          debugPrint('Refocusing triggered explicitly to clear blur...');
+
+          // Yeniden odaklamayı tetikle
+          _triggerCenterFocus();
+
+          // Zamanlayıcıyı güncelle
+          _lastFocusTriggerTime = now;
         }
+      }
+      // ============================================================
+
+      // Metin işleme kısmı aynen devam eder...
+      onDebugText?.call(recognizedText.text);
+
+      final candidates = _findAllCandidates(
+        recognizedText,
+        imageWidth: image.width.toDouble(),
+        imageHeight: image.height.toDouble(),
+      );
+
+      for (final candidate in candidates) {
+        _addToBuffer(candidate);
+
+        if (_foundVin != null) break;
       }
     } catch (e) {
       debugPrint('Stream process error: $e');
+    } finally {
+      _isProcessing = false;
     }
-
-    _isProcessing = false;
   }
 
   InputImage? _convertCameraImage(CameraImage image) {
     try {
       final camera = _cameras?.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
+            (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => _cameras!.first,
       );
 
       if (camera == null) return null;
 
-      final sensorOrientation = camera.sensorOrientation;
-
-      InputImageRotation? rotation;
-      if (Platform.isAndroid) {
-        rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
-      } else if (Platform.isIOS) {
-        rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
+      final rotation =
+      InputImageRotationValue.fromRawValue(camera.sensorOrientation);
+      if (rotation == null) {
+        debugPrint('Warning: Could not determine image rotation');
+        return null;
       }
 
-      rotation ??= InputImageRotation.rotation0deg;
+      final format = InputImageFormatValue.fromRawValue(image.format.raw);
 
-      final format = Platform.isAndroid
-          ? InputImageFormat.nv21
-          : InputImageFormat.bgra8888;
+      if (image.planes.isEmpty) {
+        debugPrint('Warning: No image planes available');
+        return null;
+      }
 
-      final plane = image.planes.first;
+      final WriteBuffer allBytesBuffer = WriteBuffer();
+      for (final Plane plane in image.planes) {
+        allBytesBuffer.putUint8List(plane.bytes);
+      }
+      final Uint8List allBytes = allBytesBuffer.done().buffer.asUint8List();
 
       return InputImage.fromBytes(
-        bytes: plane.bytes,
+        bytes: allBytes,
         metadata: InputImageMetadata(
           size: Size(image.width.toDouble(), image.height.toDouble()),
           rotation: rotation,
-          format: format,
-          bytesPerRow: plane.bytesPerRow,
+          format: format ?? InputImageFormat.nv21,
+          bytesPerRow: image.planes.first.bytesPerRow,
         ),
       );
     } catch (e) {
@@ -279,16 +425,37 @@ class VinScannerService {
     }
   }
 
-  List<String> _findAllCandidates(RecognizedText recognizedText) {
+  List<String> _findAllCandidates(
+      RecognizedText recognizedText, {
+        required double imageWidth,
+        required double imageHeight,
+      }) {
     final candidates = <String>{};
+
+    final roiTop = imageHeight * _roiTopRatio;
+    final roiBottom = imageHeight * _roiBottomRatio;
+    final roiLeft = imageWidth * _roiLeftRatio;
+    final roiRight = imageWidth * _roiRightRatio;
+
     for (final block in recognizedText.blocks) {
+      final boundingBox = block.boundingBox;
+
+      if (boundingBox.bottom < roiTop || boundingBox.top > roiBottom) {
+        continue;
+      }
+      if (boundingBox.right < roiLeft || boundingBox.left > roiRight) {
+        continue;
+      }
+
       for (final line in block.lines) {
         final lineText = line.text;
         final cleaned = _cleanForSearch(lineText);
-        if (cleaned.length == 17 && _isValidCandidate(cleaned)) {
-          candidates.add(cleaned);
-        }
-        if (cleaned.length > 17) {
+
+        if (cleaned.length == 17) {
+          if (_isValidCandidate(cleaned)) {
+            candidates.add(cleaned);
+          }
+        } else if (cleaned.length > 17) {
           final extracted = _extract17CharPatterns(cleaned);
           for (final e in extracted) {
             if (_isValidCandidate(e)) {
@@ -296,6 +463,7 @@ class VinScannerService {
             }
           }
         }
+
         for (final element in line.elements) {
           final elemCleaned = _cleanForSearch(element.text);
           if (elemCleaned.length == 17 && _isValidCandidate(elemCleaned)) {
@@ -342,16 +510,23 @@ class VinScannerService {
 
   bool _isValidCandidate(String text) {
     if (text.length != 17) return false;
-    if (!RegExp(r'^[A-Z0-9]+$').hasMatch(text)) {
+
+    if (text.contains('I') || text.contains('O') || text.contains('Q')) {
       return false;
     }
+
+    if (!RegExp(r'^[A-HJ-NPR-Z0-9]{17}$').hasMatch(text)) {
+      return false;
+    }
+
     final letterCount = text.replaceAll(RegExp(r'[0-9]'), '').length;
-    final digitCount = text.replaceAll(RegExp(r'[A-Z]'), '').length;
+    final digitCount = 17 - letterCount;
 
     if (letterCount < 2 || digitCount < 2) {
       return false;
     }
-    for (int i = 0; i < text.length - 4; i++) {
+
+    for (int i = 0; i < 13; i++) {
       if (text[i] == text[i + 1] &&
           text[i] == text[i + 2] &&
           text[i] == text[i + 3] &&
@@ -363,8 +538,54 @@ class VinScannerService {
     return true;
   }
 
+  bool _validateVinChecksum(String vin) {
+    const transliterationMap = <int, int>{
+      65: 1, 66: 2, 67: 3, 68: 4, 69: 5, 70: 6, 71: 7, 72: 8,
+      74: 1, 75: 2, 76: 3, 77: 4, 78: 5, 80: 7, 82: 9,
+      83: 2, 84: 3, 85: 4, 86: 5, 87: 6, 88: 7, 89: 8, 90: 9,
+    };
+
+    const weights = <int>[8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2];
+
+    int sum = 0;
+
+    for (int i = 0; i < 17; i++) {
+      final charCode = vin.codeUnitAt(i);
+      int value;
+
+      if (charCode >= 48 && charCode <= 57) {
+        value = charCode - 48;
+      } else {
+        final mapped = transliterationMap[charCode];
+        if (mapped == null) return false;
+        value = mapped;
+      }
+
+      sum += value * weights[i];
+    }
+
+    final remainder = sum % 11;
+    final checkDigit = vin.codeUnitAt(8);
+
+    if (remainder == 10) {
+      return checkDigit == 88;
+    } else {
+      return checkDigit == (remainder + 48);
+    }
+  }
+
   void _addToBuffer(String candidate) {
+    if (_validateVinChecksum(candidate)) {
+      debugPrint('✓ Checksum valid! Instant accept: $candidate');
+      _foundVin = candidate;
+      _foundConfidence = 1.0;
+      return;
+    }
+
     _detectionCounts[candidate] = (_detectionCounts[candidate] ?? 0) + 1;
+
+    debugPrint('Buffer (no checksum): $candidate = ${_detectionCounts[candidate]}');
+
     if (_detectionCounts.length > _maxBufferSize) {
       final sorted = _detectionCounts.entries.toList()
         ..sort((a, b) => a.value.compareTo(b.value));
@@ -373,14 +594,17 @@ class VinScannerService {
       }
     }
 
-    debugPrint('Detection buffer: $_detectionCounts');
+    final stableResult = _getStableDetection();
+    if (stableResult != null) {
+      debugPrint('✓ Stable detection (no checksum): $stableResult');
+      _foundVin = stableResult;
+      _foundConfidence = _detectionCounts[stableResult]! / _requiredDetectionsForNonChecksum;
+    }
   }
 
   String? _getStableDetection() {
     for (final entry in _detectionCounts.entries) {
-      if (entry.value >= _requiredDetections) {
-        debugPrint(
-            'Stable detection found: ${entry.key} (${entry.value} times)');
+      if (entry.value >= _requiredDetectionsForNonChecksum) {
         return entry.key;
       }
     }
@@ -388,6 +612,13 @@ class VinScannerService {
   }
 
   Future<VinScanResult> captureAndScan() async {
+    if (_isDisposed) {
+      return VinScanResult.failure(
+        ScannerError.cameraInitFailed,
+        'Scanner has been disposed',
+      );
+    }
+
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return VinScanResult.failure(
         ScannerError.cameraInitFailed,
@@ -414,6 +645,14 @@ class VinScannerService {
         await Future.delayed(const Duration(milliseconds: 500));
       } catch (_) {}
 
+      if (_isDisposed) {
+        _isProcessing = false;
+        return VinScanResult.failure(
+          ScannerError.cameraInitFailed,
+          'Scanner has been disposed',
+        );
+      }
+
       final XFile imageFile = await _cameraController!.takePicture();
       final result = await _processImageFile(File(imageFile.path));
 
@@ -438,6 +677,13 @@ class VinScannerService {
   }
 
   Future<VinScanResult> _processImageFile(File imageFile) async {
+    if (_isDisposed) {
+      return VinScanResult.failure(
+        ScannerError.processingFailed,
+        'Scanner has been disposed',
+      );
+    }
+
     if (_textRecognizer == null) {
       return VinScanResult.failure(
         ScannerError.processingFailed,
@@ -459,12 +705,17 @@ class VinScannerService {
         );
       }
 
-      final candidates = _findAllCandidates(recognizedText);
+      final candidates = _findAllCandidatesWithoutRoi(recognizedText);
 
       debugPrint('Candidates found: $candidates');
 
       if (candidates.isNotEmpty) {
-        return VinScanResult.success(candidates.first);
+        for (final candidate in candidates) {
+          if (_validateVinChecksum(candidate)) {
+            return VinScanResult.success(candidate, confidence: 1.0);
+          }
+        }
+        return VinScanResult.success(candidates.first, confidence: 0.8);
       }
 
       return VinScanResult.failure(
@@ -480,7 +731,40 @@ class VinScannerService {
     }
   }
 
+  List<String> _findAllCandidatesWithoutRoi(RecognizedText recognizedText) {
+    final candidates = <String>{};
+
+    for (final block in recognizedText.blocks) {
+      for (final line in block.lines) {
+        final lineText = line.text;
+        final cleaned = _cleanForSearch(lineText);
+
+        if (cleaned.length == 17 && _isValidCandidate(cleaned)) {
+          candidates.add(cleaned);
+        } else if (cleaned.length > 17) {
+          final extracted = _extract17CharPatterns(cleaned);
+          for (final e in extracted) {
+            if (_isValidCandidate(e)) {
+              candidates.add(e);
+            }
+          }
+        }
+
+        for (final element in line.elements) {
+          final elemCleaned = _cleanForSearch(element.text);
+          if (elemCleaned.length == 17 && _isValidCandidate(elemCleaned)) {
+            candidates.add(elemCleaned);
+          }
+        }
+      }
+    }
+
+    return candidates.toList();
+  }
+
   Future<bool> toggleFlash() async {
+    if (_isDisposed) return false;
+
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return false;
     }
@@ -488,7 +772,7 @@ class VinScannerService {
     try {
       final currentMode = _cameraController!.value.flashMode;
       final newMode =
-          currentMode == FlashMode.torch ? FlashMode.off : FlashMode.torch;
+      currentMode == FlashMode.torch ? FlashMode.off : FlashMode.torch;
 
       await _cameraController!.setFlashMode(newMode);
       return newMode == FlashMode.torch;
@@ -498,18 +782,36 @@ class VinScannerService {
     }
   }
 
-  Future<void> setZoom(double level) async {
+  Future<void> setZoom(double normalizedLevel) async {
+    if (_isDisposed) return;
+
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
     }
 
     try {
-      final minZoom = await _cameraController!.getMinZoomLevel();
-      final maxZoom = await _cameraController!.getMaxZoomLevel();
-      final zoom = minZoom + (maxZoom - minZoom) * level.clamp(0.0, 1.0);
+      final level = normalizedLevel.clamp(0.0, 1.0);
+      final zoom = _minZoomLevel + (_maxZoomLevel - _minZoomLevel) * level;
       await _cameraController!.setZoomLevel(zoom);
+      _currentZoomLevel = zoom;
     } catch (e) {
       debugPrint('Zoom error: $e');
+    }
+  }
+
+  Future<void> setZoomLevel(double absoluteLevel) async {
+    if (_isDisposed) return;
+
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    try {
+      final zoom = absoluteLevel.clamp(_minZoomLevel, _maxZoomLevel);
+      await _cameraController!.setZoomLevel(zoom);
+      _currentZoomLevel = zoom;
+    } catch (e) {
+      debugPrint('Zoom level error: $e');
     }
   }
 
@@ -520,5 +822,8 @@ class VinScannerService {
     _cameraController = null;
     await _textRecognizer?.close();
     _textRecognizer = null;
+    _detectionCounts.clear();
+    _foundVin = null;
+    _foundConfidence = null;
   }
 }

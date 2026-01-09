@@ -130,7 +130,15 @@ class CarDetailsPage extends HookWidget {
                       _buildSectionTitle(),
                       const SizedBox(height: AppTheme.spacingLg),
 
-                      // Plate Number (Required) - with Azerbaijan formatter
+                      _buildTextField(
+                        controller: vinController,
+                        label: AppTranslation.translate(AppStrings.vinText),
+                        hint: AppTranslation.translate(AppStrings.vinPlaceholder),
+                        svgIcon: 'assets/svg/barcode_transparent.svg',
+                        enabled: false,
+                        isRequired: false,
+                      ),
+                      const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
                         controller: plateController,
                         label: AppTranslation.translate(AppStrings.plateNumber),

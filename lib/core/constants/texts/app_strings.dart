@@ -210,6 +210,7 @@ class AppStrings {
 
   static const String gotIt = "gotIt";
   static const String checkMyCars = "checkMyCars";
+  static const String vinText = "vinText";
 
   static const String newCarAdded = "newCarAdded";
 

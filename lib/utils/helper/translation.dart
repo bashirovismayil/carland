@@ -726,6 +726,11 @@ class Translations {
       'en': 'New Card Added',
       'ru': 'Новая Карта Добавлена',
     },
+    AppStrings.vinText: {
+      'az': 'BAN nömrəsi',
+      'en': 'VIN Number',
+      'ru': 'VIN Номер',
+    },
 
     // Navigation Pages
     AppStrings.homePage: {

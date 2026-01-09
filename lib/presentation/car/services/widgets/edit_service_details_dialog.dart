@@ -379,6 +379,8 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
             focusNode: _lastKmFocusNode,
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
+            maxLength: 6,
+            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(7),
@@ -508,6 +510,8 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
             focusNode: _nextKmFocusNode,
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.done,
+            maxLength: 6,
+            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
             onEditingComplete: () {
               _nextKmFocusNode.unfocus();
             },

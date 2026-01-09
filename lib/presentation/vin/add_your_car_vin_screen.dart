@@ -9,6 +9,7 @@ import '../../core/constants/texts/app_strings.dart';
 import '../../core/localization/app_translation.dart';
 import '../../cubit/vin/check/check_vin_cubit.dart';
 import '../../cubit/vin/check/check_vin_state.dart';
+import '../../utils/helper/vin_input_formatter.dart';
 import '../car/details/car_details_page.dart';
 
 class AddYourCarVinPage extends HookWidget {
@@ -174,6 +175,9 @@ class AddYourCarVinPage extends HookWidget {
             controller: controller,
             textCapitalization: TextCapitalization.characters,
             maxLength: 17,
+            inputFormatters: [
+              VinInputFormatter(),
+            ],
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,

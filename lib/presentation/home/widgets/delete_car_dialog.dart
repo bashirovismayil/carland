@@ -61,7 +61,6 @@ class DeleteCarDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Listeyi Özelleştir butonu
           _buildOptionButton(
             context: context,
             icon: Icons.swap_vert_rounded,
@@ -74,7 +73,6 @@ class DeleteCarDialog extends StatelessWidget {
             },
           ),
           const SizedBox(height: 12),
-          // Otomobili Sil butonu
           _buildOptionButton(
             context: context,
             icon: Icons.delete_outline_rounded,
@@ -82,7 +80,10 @@ class DeleteCarDialog extends StatelessWidget {
             isDestructive: true,
             onTap: isLoading
                 ? null
-                : () => _showDeleteConfirmation(context),
+                : () {
+              Navigator.of(context).pop();
+              _showDeleteConfirmation(context);
+            },
           ),
         ],
       ),

@@ -250,29 +250,29 @@ class CarDetailsPage extends HookWidget {
                       const SizedBox(height: AppTheme.spacingMd),
 
                       // Transmission (was in Row, now Column)
-                      _buildDropdownField(
-                        context: context,
-                        controller: transmissionController,
-                        label:
-                        AppTranslation.translate(AppStrings.transmission),
-                        hint: AppTranslation.translate(AppStrings.selectType),
-                        svgIcon: 'assets/svg/car_transmission_icon.svg',
-                        cubitBuilder: () =>
-                            context.read<GetTransmissionListCubit>(),
-                        stateBuilder: (context) =>
-                        context.watch<GetTransmissionListCubit>().state,
-                        itemsExtractor: (state) {
-                          if (state is GetTransmissionListSuccess) {
-                            return state.transmissions
-                                .map((e) => e.transmissionType)
-                                .toList();
-                          }
-                          return [];
-                        },
-                        isRequired: true,
-                        dropdownKey: transmissionKey,
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
+                      // _buildDropdownField(
+                      //   context: context,
+                      //   controller: transmissionController,
+                      //   label:
+                      //   AppTranslation.translate(AppStrings.transmission),
+                      //   hint: AppTranslation.translate(AppStrings.selectType),
+                      //   svgIcon: 'assets/svg/car_transmission_icon.svg',
+                      //   cubitBuilder: () =>
+                      //       context.read<GetTransmissionListCubit>(),
+                      //   stateBuilder: (context) =>
+                      //   context.watch<GetTransmissionListCubit>().state,
+                      //   itemsExtractor: (state) {
+                      //     if (state is GetTransmissionListSuccess) {
+                      //       return state.transmissions
+                      //           .map((e) => e.transmissionType)
+                      //           .toList();
+                      //     }
+                      //     return [];
+                      //   },
+                      //   isRequired: true,
+                      //   dropdownKey: transmissionKey,
+                      // ),
+                      // const SizedBox(height: AppTheme.spacingMd),
 
                       // Engine Type (was in Row, now Column)
                       _buildDropdownField(

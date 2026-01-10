@@ -505,6 +505,37 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   }
 
   Widget _buildServicesSection() {
+    if (_currentCarIndex >= widget.carList.length) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+               "assets/svg/barcode_transparent.svg",
+                width: 50,
+                height: 50,
+                colorFilter: ColorFilter.mode(
+                  AppColors.textSecondary,
+                  BlendMode.srcIn,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                AppTranslation.translate(AppStrings.serviceInfoWillAppear),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return BlocBuilder<GetCarServicesCubit, GetCarServicesState>(
       builder: (context, state) {
         // Show loading indicator only on first load

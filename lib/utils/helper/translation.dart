@@ -1375,6 +1375,11 @@ class Translations {
       'en': 'Next service km must be greater than last service km',
       'ru': 'Км следующего обслуживания должен быть больше км последнего обслуживания',
     },
+    AppStrings.serviceInfoWillAppear : {
+      'az': 'Avtomobil əlavə etdikdən sonra avtomobilinin servis məlumatları burada görünəcək',
+      'en': 'After adding a car, your car\'s service information will appear here',
+      'ru': 'После добавления автомобиля информация о сервисе вашего автомобиля появится здесь',
+    },
     AppStrings.editCarDetails: {
       'az': 'Avtomobil Detallarını Redaktə Et',
       'en': 'Edit Car Details',

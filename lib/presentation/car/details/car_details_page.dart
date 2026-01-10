@@ -29,6 +29,7 @@ import '../../../cubit/transmission/type/transmission_type_cubit.dart';
 import '../../../cubit/year/list/get_year_list_cubit.dart';
 import '../../../cubit/year/list/get_year_list_state.dart';
 import '../../../data/remote/models/remote/check_vin_response.dart';
+import '../../../utils/helper/capital_case_formatter.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/image_crop_widget.dart';
 import 'maintenance_history_page.dart';
@@ -175,6 +176,7 @@ class CarDetailsPage extends HookWidget {
                         svgIcon: 'assets/svg/car_make_icon.svg',
                         enabled: true,
                         isRequired: true,
+                        inputFormatters: [CapitalCaseFormatter()],
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return AppTranslation.translate(
@@ -191,6 +193,7 @@ class CarDetailsPage extends HookWidget {
                         svgIcon: 'assets/svg/car_model_icon.svg',
                         enabled: true,
                         isRequired: true,
+                        inputFormatters: [CapitalCaseFormatter()],
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return AppTranslation.translate(

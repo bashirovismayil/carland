@@ -997,11 +997,13 @@ class CarDetailsPage extends HookWidget {
                 return;
               }
               final carIdString = carId.toString();
+              final carModelYear = int.tryParse(yearController.text.trim());
 
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => MaintenanceHistoryPage(
                     carId: carIdString,
+                    carModelYear: carModelYear,
                   ),
                 ),
               );

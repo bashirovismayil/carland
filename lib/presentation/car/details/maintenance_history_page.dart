@@ -23,10 +23,12 @@ import '../../success/success_page.dart';
 
 class MaintenanceHistoryPage extends HookWidget {
   final String carId;
+  final int? carModelYear; // Arabanın üretim yılı
 
   const MaintenanceHistoryPage({
     super.key,
     required this.carId,
+    this.carModelYear,
   });
 
   @override
@@ -209,13 +211,8 @@ class MaintenanceHistoryPage extends HookWidget {
             _buildBottomSection(
               context,
               completedSections,
-                  () {
-                final state = context.read<GetCarRecordsCubit>().state;
-                if (state is GetCarRecordsSuccess) {
-                  return state.records.length;
-                }
-                return 0;
-              }(),
+              dateControllers,
+              mileageControllers,
             ),
           ],
         ),
@@ -557,10 +554,43 @@ class MaintenanceHistoryPage extends HookWidget {
     completedSections.value = {...completedSections.value, previousRecordId};
   }
 
+  /// Boş bırakılan recordlar için default değerler atayarak update eder
+  void _updateEmptyRecordsWithDefaults({
+    required BuildContext context,
+    required Map<int, TextEditingController> dateControllers,
+    required Map<int, TextEditingController> mileageControllers,
+    required Set<int> completedSections,
+  }) {
+    // Default tarih: arabanın üretim yılının 31 Aralık'ı veya 2020 default
+    final defaultYear = carModelYear ?? 2020;
+    final defaultDate = '$defaultYear-12-31';
+
+    for (final entry in dateControllers.entries) {
+      final recordId = entry.key;
+
+      // Zaten completed olan recordları skip et
+      if (completedSections.contains(recordId)) continue;
+
+      final dateController = entry.value;
+      final mileageController = mileageControllers[recordId];
+
+      if (mileageController == null) continue;
+
+      // Default değerlerle update et
+      context.read<UpdateCarRecordCubit>().updateCarRecord(
+        carId: int.parse(carId),
+        recordId: recordId,
+        doneDate: defaultDate,
+        doneKm: 0,
+      );
+    }
+  }
+
   Widget _buildBottomSection(
       BuildContext context,
       ValueNotifier<Set<int>> completedSections,
-      int totalRecords,
+      ValueNotifier<Map<int, TextEditingController>> dateControllers,
+      ValueNotifier<Map<int, TextEditingController>> mileageControllers,
       ) {
     return MultiBlocListener(
       listeners: [
@@ -613,29 +643,32 @@ class MaintenanceHistoryPage extends HookWidget {
         child: BlocBuilder<ExecuteCarServiceCubit, ExecuteCarServiceState>(
           builder: (context, executeState) {
             final isExecuting = executeState is ExecuteCarServiceLoading;
+            final hasAnyCompleted = completedSections.value.isNotEmpty;
 
             return SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: completedSections.value.length == totalRecords &&
-                    !isExecuting
-                    ? () {
+                onPressed: isExecuting
+                    ? null
+                    : () {
                   log('[MaintenanceHistory] Submit pressed, executing car service for carId: $carId');
+
+                  // Boş bırakılan recordlar için default değerler ata
+                  _updateEmptyRecordsWithDefaults(
+                    context: context,
+                    dateControllers: dateControllers.value,
+                    mileageControllers: mileageControllers.value,
+                    completedSections: completedSections.value,
+                  );
+
                   context
                       .read<ExecuteCarServiceCubit>()
                       .executeCarService(int.parse(carId));
-                }
-                    : null,
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                  completedSections.value.length == totalRecords
-                      ? AppColors.primaryBlack
-                      : AppColors.lightGrey,
-                  foregroundColor:
-                  completedSections.value.length == totalRecords
-                      ? Colors.white
-                      : AppColors.textSecondary,
+                  backgroundColor: AppColors.primaryBlack,
+                  foregroundColor: Colors.white,
                   elevation: 0,
                   disabledBackgroundColor: AppColors.lightGrey,
                   disabledForegroundColor: AppColors.textSecondary,
@@ -658,7 +691,9 @@ class MaintenanceHistoryPage extends HookWidget {
                     const Icon(Icons.check_circle_outline, size: 20),
                     const SizedBox(width: AppTheme.spacingSm),
                     Text(
-                      '${AppTranslation.translate(AppStrings.submit)} (${completedSections.value.length}/$totalRecords)',
+                      hasAnyCompleted
+                          ? AppTranslation.translate(AppStrings.submit)
+                          : AppTranslation.translate(AppStrings.skipButtonText),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

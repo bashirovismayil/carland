@@ -1258,7 +1258,6 @@ class CarDetailsPage extends HookWidget {
     }
 
     if (bodyTypeController.text.isEmpty ||
-        transmissionController.text.isEmpty ||
         engineTypeController.text.isEmpty ||
         yearController.text.isEmpty) {
       isSubmitting.value = false;

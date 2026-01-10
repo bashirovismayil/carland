@@ -797,7 +797,7 @@ class _ServiceCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgPicture.asset(
-                    'assets/svg/service_key_ico.svg',
+                    'assets/svg/service_key_icon.svg',
                     width: 22,
                     height: 22,
                   ),

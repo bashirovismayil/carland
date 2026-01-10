@@ -32,25 +32,25 @@ class CarMenuButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         offset: const Offset(0, 40),
-        itemBuilder: (_) => [_buildDeleteMenuItem()],
+        itemBuilder: (_) => [_buildOptionsMenuItem()],
         onSelected: (value) {
-          if (value == 'delete') onDelete();
+          if (value == 'options') onDelete();
         },
       ),
     );
   }
 
-  PopupMenuItem<String> _buildDeleteMenuItem() {
+  PopupMenuItem<String> _buildOptionsMenuItem() {
     return PopupMenuItem<String>(
-      value: 'delete',
+      value: 'options',
       child: Row(
         children: [
-          const Icon(Icons.delete_outline, color: AppColors.errorColor, size: 18),
+          const Icon(Icons.settings_outlined, color: AppColors.textPrimary, size: 18),
           const SizedBox(width: 12),
           Text(
-            AppTranslation.translate(AppStrings.deleteCar),
+            AppTranslation.translate(AppStrings.carOptions),
             style: const TextStyle(
-              color: AppColors.errorColor,
+              color: AppColors.textPrimary,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),

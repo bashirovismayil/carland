@@ -29,66 +29,66 @@ class Translations {
       'ru': 'Казахстан',
     },
 
-      AppStrings.january: {
-        'az': 'Yanvar',
-        'en': 'January',
-        'ru': 'Январь',
-      },
-      AppStrings.february: {
-        'az': 'Fevral',
-        'en': 'February',
-        'ru': 'Февраль',
-      },
-      AppStrings.march: {
-        'az': 'Mart',
-        'en': 'March',
-        'ru': 'Март',
-      },
-      AppStrings.april: {
-        'az': 'Aprel',
-        'en': 'April',
-        'ru': 'Апрель',
-      },
-      AppStrings.may: {
-        'az': 'May',
-        'en': 'May',
-        'ru': 'Май',
-      },
-      AppStrings.june: {
-        'az': 'İyun',
-        'en': 'June',
-        'ru': 'Июнь',
-      },
-      AppStrings.july: {
-        'az': 'İyul',
-        'en': 'July',
-        'ru': 'Июль',
-      },
-      AppStrings.august: {
-        'az': 'Avqust',
-        'en': 'August',
-        'ru': 'Август',
-      },
-      AppStrings.september: {
-        'az': 'Sentyabr',
-        'en': 'September',
-        'ru': 'Сентябрь',
-      },
-      AppStrings.october: {
-        'az': 'Oktyabr',
-        'en': 'October',
-        'ru': 'Октябрь',
-      },
-      AppStrings.november: {
-        'az': 'Noyabr',
-        'en': 'November',
-        'ru': 'Ноябрь',
-      },
-      AppStrings.december: {
-        'az': 'Dekabr',
-        'en': 'December',
-        'ru': 'Декабрь',
-      },
+    AppStrings.january: {
+      'az': 'Yanvar',
+      'en': 'January',
+      'ru': 'Январь',
+    },
+    AppStrings.february: {
+      'az': 'Fevral',
+      'en': 'February',
+      'ru': 'Февраль',
+    },
+    AppStrings.march: {
+      'az': 'Mart',
+      'en': 'March',
+      'ru': 'Март',
+    },
+    AppStrings.april: {
+      'az': 'Aprel',
+      'en': 'April',
+      'ru': 'Апрель',
+    },
+    AppStrings.may: {
+      'az': 'May',
+      'en': 'May',
+      'ru': 'Май',
+    },
+    AppStrings.june: {
+      'az': 'İyun',
+      'en': 'June',
+      'ru': 'Июнь',
+    },
+    AppStrings.july: {
+      'az': 'İyul',
+      'en': 'July',
+      'ru': 'Июль',
+    },
+    AppStrings.august: {
+      'az': 'Avqust',
+      'en': 'August',
+      'ru': 'Август',
+    },
+    AppStrings.september: {
+      'az': 'Sentyabr',
+      'en': 'September',
+      'ru': 'Сентябрь',
+    },
+    AppStrings.october: {
+      'az': 'Oktyabr',
+      'en': 'October',
+      'ru': 'Октябрь',
+    },
+    AppStrings.november: {
+      'az': 'Noyabr',
+      'en': 'November',
+      'ru': 'Ноябрь',
+    },
+    AppStrings.december: {
+      'az': 'Dekabr',
+      'en': 'December',
+      'ru': 'Декабрь',
+    },
 
     // Common Buttons
     AppStrings.skipButtonText: {
@@ -226,7 +226,7 @@ class Translations {
       'en': 'Log Out',
       'ru': 'Выйти',
     },
-    AppStrings.areYouSureYouWantToLogOut : {
+    AppStrings.areYouSureYouWantToLogOut: {
       'az': 'Hesabdan çıxmaq istədiyinizə əminsiniz?',
       'en': 'Are you sure you want to log out?',
       'ru': 'Вы уверены, что хотите выйти из аккаунта?',
@@ -477,7 +477,8 @@ class Translations {
       'ru': 'OTP Верификация',
     },
     AppStrings.otpSubtitle: {
-      'az': 'Təqdim etdiyiniz telefon nömrəsinə təsdiq (avtorizasiya) kodu göndərildi',
+      'az':
+          'Təqdim etdiyiniz telefon nömrəsinə təsdiq (avtorizasiya) kodu göndərildi',
       'en': 'An authorization code has been sent to your provided Phone Number',
       'ru': 'Код подтверждения был отправлен на указанный номер телефона',
     },
@@ -770,9 +771,12 @@ class Translations {
       'ru': 'Автомобили еще не добавлены',
     },
     AppStrings.noCarsAddedDescription: {
-      'az': 'Hələ heç bir avtomobil əlavə etməmisiniz. Texniki xidmət cədvəllərini izləməyə başlamaq üçün ilk avtomobilinizi əlavə edin.',
-      'en': 'You haven\'t added any cars yet. Add your first car to start tracking maintenance schedules, service history, and bookings.',
-      'ru': 'Вы еще не добавили автомобили. Добавьте свой первый автомобиль, чтобы начать отслеживать график обслуживания, историю сервиса и бронирования.',
+      'az':
+          'Hələ heç bir avtomobil əlavə etməmisiniz. Texniki xidmət cədvəllərini izləməyə başlamaq üçün ilk avtomobilinizi əlavə edin.',
+      'en':
+          'You haven\'t added any cars yet. Add your first car to start tracking maintenance schedules, service history, and bookings.',
+      'ru':
+          'Вы еще не добавили автомобили. Добавьте свой первый автомобиль, чтобы начать отслеживать график обслуживания, историю сервиса и бронирования.',
     },
     AppStrings.addCarButton: {
       'az': 'Avtomobil Əlavə Et',
@@ -868,9 +872,12 @@ class Translations {
     },
 
     AppStrings.vinScanDescription: {
-      'az': 'BAN nömrə avtomobilə məxsus 17 simvolluq unikal identifikasiya nömrəsidir, avtomobilin ön şüşəsində, sürücü qapısının kənarında və texniki pasportda göstərilir.',
-      'en': 'Point your camera at the VIN code located on the dashboard or driver-side door to scan it',
-      'ru': 'Наведите камеру на VIN-код, расположенный на приборной панели или на стойке водительской двери, чтобы сканировать',
+      'az':
+          'BAN nömrə avtomobilə məxsus 17 simvolluq unikal identifikasiya nömrəsidir, avtomobilin ön şüşəsində, sürücü qapısının kənarında və texniki pasportda göstərilir.',
+      'en':
+          'Point your camera at the VIN code located on the dashboard or driver-side door to scan it',
+      'ru':
+          'Наведите камеру на VIN-код, расположенный на приборной панели или на стойке водительской двери, чтобы сканировать',
     },
 
     AppStrings.enterCarVin: {
@@ -912,9 +919,12 @@ class Translations {
       'ru': 'Сканировать VIN автомобиля',
     },
     AppStrings.scannerPageSubtitle: {
-      'az':  'Avtomobilinizin ön şüşəsinin sağ aşağı küncündən, qapı kənarından və ya texniki pasportdan BAN nömrəsini skan edin.',
-      'en': 'Use your car\'s Vehicle Identification Number (VIN) to fetch accurate details. You can type it in or scan via camera.',
-      'ru': 'Используйте идентификационный номер вашего автомобиля (VIN) для получения точных данных. Вы можете ввести его вручную или отсканировать с помощью камеры.',
+      'az':
+          'Avtomobilinizin ön şüşəsinin sağ aşağı küncündən, qapı kənarından və ya texniki pasportdan BAN nömrəsini skan edin.',
+      'en':
+          'Use your car\'s Vehicle Identification Number (VIN) to fetch accurate details. You can type it in or scan via camera.',
+      'ru':
+          'Используйте идентификационный номер вашего автомобиля (VIN) для получения точных данных. Вы можете ввести его вручную или отсканировать с помощью камеры.',
     },
 
     AppStrings.continueButton: {
@@ -1114,7 +1124,7 @@ class Translations {
       'en': 'Please fill all required fields',
       'ru': 'Пожалуйста, заполните все обязательные поля',
     },
-    AppStrings.invalidNumberFormat : {
+    AppStrings.invalidNumberFormat: {
       'az': 'Yanlış nömrə formatı',
       'en': 'Invalid number format',
       'ru': 'Неверный формат номера',
@@ -1368,17 +1378,22 @@ class Translations {
     AppStrings.nextServiceDateMustBeAfterLastService: {
       'az': 'Növbəti servis tarixi son servis tarixindən sonra olmalıdır',
       'en': 'Next service date must be after last service date',
-      'ru': 'Дата следующего обслуживания должна быть после даты последнего обслуживания',
+      'ru':
+          'Дата следующего обслуживания должна быть после даты последнего обслуживания',
     },
-    AppStrings.nextServiceKmMustBeGreaterThanLastService : {
+    AppStrings.nextServiceKmMustBeGreaterThanLastService: {
       'az': 'Növbəti servis km son servis km-dən böyük olmalıdır',
       'en': 'Next service km must be greater than last service km',
-      'ru': 'Км следующего обслуживания должен быть больше км последнего обслуживания',
+      'ru':
+          'Км следующего обслуживания должен быть больше км последнего обслуживания',
     },
-    AppStrings.serviceInfoWillAppear : {
-      'az': 'Avtomobil əlavə etdikdən sonra avtomobilinin servis məlumatları burada görünəcək',
-      'en': 'After adding a car, your car\'s service information will appear here',
-      'ru': 'После добавления автомобиля информация о сервисе вашего автомобиля появится здесь',
+    AppStrings.serviceInfoWillAppear: {
+      'az':
+          'Avtomobil əlavə etdikdən sonra avtomobilinin servis məlumatları burada görünəcək',
+      'en':
+          'After adding a car, your car\'s service information will appear here',
+      'ru':
+          'После добавления автомобиля информация о сервисе вашего автомобиля появится здесь',
     },
     AppStrings.editCarDetails: {
       'az': 'Avtomobil Detallarını Redaktə Et',
@@ -1403,27 +1418,27 @@ class Translations {
       'en': 'Car data not found',
       'ru': 'Данные автомобиля не найдены',
     },
-    AppStrings.carDeletedSuccessfully : {
+    AppStrings.carDeletedSuccessfully: {
       'az': 'Avtomobil uğurla silindi',
       'en': 'Car deleted successfully',
       'ru': 'Автомобиль успешно удалён',
     },
-    AppStrings.deleteCar : {
+    AppStrings.deleteCar: {
       'az': 'Avtomobili Sil',
       'en': 'Delete Car',
       'ru': 'Удалить автомобиль',
     },
-    AppStrings.deleteCarConfirmation : {
+    AppStrings.deleteCarConfirmation: {
       'az': 'Bu avtomobili silmək istədiyinizə əminsiniz?',
       'en': 'Are you sure you want to delete this car?',
       'ru': 'Вы уверены, что хотите удалить этот автомобиль?',
     },
-    AppStrings.delete : {
+    AppStrings.delete: {
       'az': 'Sil',
       'en': 'Delete',
       'ru': 'Удалить',
     },
-    AppStrings.termsAndConditions : {
+    AppStrings.termsAndConditions: {
       'az': 'İstifadə Şərtləri',
       'en': 'Terms and Conditions',
       'ru': 'Условия использования',
@@ -1432,6 +1447,37 @@ class Translations {
       'az': 'Parametrlər',
       'en': 'Settings',
       'ru': 'Настройки',
+    },
+    AppStrings.carOptions: {
+      'az': 'Avtomobil Seçimləri',
+      'en': 'Car Options',
+      'ru': 'Опции автомобиля',
+    },
+    AppStrings.customizeList: {
+      'az': 'Siyahını Fərdiləşdir',
+      'en': 'Customize List',
+      'ru': 'Настроить список',
+    },
+    AppStrings.reorderHint: {
+      'az':
+          'Avtomobil fotosuna uzun basıb saxlayın və siyahını sürükləyərək yenidən sıralayın',
+      'en': 'Reorder the list by drag and drop',
+      'ru': 'Переставьте список с помощью перетаскивания',
+    },
+    AppStrings.done: {
+      'az': 'Təsdiqlə',
+      'en': 'Done',
+      'ru': 'Готово',
+    },
+    AppStrings.autoCloseIn: {
+      'az': 'Avtomatik bağlanma:',
+      'en': 'Auto close in:',
+      'ru': 'Автоматическое закрытие через:',
+    },
+    AppStrings.seconds: {
+      'az': 'saniyə',
+      'en': 'seconds',
+      'ru': 'секунд',
     },
 
     // Section Headers
@@ -1511,7 +1557,8 @@ class Translations {
       'ru': 'Удалить аккаунт',
     },
     AppStrings.deleteAccountWarning: {
-      'az': 'Hesabınızı silmək istədiyinizə əminsiniz? Bütün məlumatlarınız silinəcək və bu əməliyyat geri qaytarılmayacaq.',
+      'az':
+          'Hesabınızı silmək istədiyinizə əminsiniz? Bütün məlumatlarınız silinəcək və bu əməliyyat geri qaytarılmayacaq.',
       'en':
           'Are you sure you want to delete your account? All your data will be lost and this action cannot be undone.',
       'ru':

@@ -353,6 +353,18 @@ class AppStrings {
 
   static const String settings = 'settings';
 
+  static const String carOptions = 'carOptions';
+
+  static const String customizeList = 'customizeList';
+
+  static const String reorderHint = 'reorderHint';
+
+  static const String done = 'done';
+
+  static const String autoCloseIn = 'autoCloseIn';
+
+  static const String seconds = 'seconds';
+
   // Section Headers
   static const String general = 'general';
   static const String feedback = 'feedback';

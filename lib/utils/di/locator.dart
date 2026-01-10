@@ -87,6 +87,7 @@ import '../../data/remote/repository/update_car_records_repository.dart';
 import '../../data/remote/repository/update_car_repository.dart';
 import '../../data/remote/repository/upload_car_photo_repository.dart';
 import '../../data/remote/repository/user_add_details_repository.dart';
+import '../../data/remote/services/local/car_list_local_service.dart';
 import '../../data/remote/services/local/language_local_service.dart';
 import '../../data/remote/services/local/login_local_services.dart';
 import '../../data/remote/services/local/onboard_local_services.dart';
@@ -134,6 +135,7 @@ Future<void> setupLocator() async {
   final Box<bool> onboardBox = await Hive.openBox<bool>('onboardBox');
   final Box<int> userBox = await Hive.openBox<int>('userBox');
   final Box<String> languageBox = await Hive.openBox<String>('languageBox');
+  final Box<String> carOrderBox = await Hive.openBox<String>('carOrderBox');
 
   locator.registerLazySingleton<Dio>(() => authDio);
   locator.registerLazySingleton<RegisterLocalService>(
@@ -154,6 +156,9 @@ Future<void> setupLocator() async {
   );
   locator.registerLazySingleton<LanguageLocalService>(
     () => LanguageLocalService(languageBox),
+  );
+  locator.registerLazySingleton<CarOrderLocalService>(
+        () => CarOrderLocalService(carOrderBox),
   );
   locator.registerLazySingleton(() => RegisterService());
   locator.registerLazySingleton<LoginService>(() => LoginService(locator()));

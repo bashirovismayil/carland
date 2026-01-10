@@ -76,6 +76,8 @@ class CarDetailsPage extends HookWidget {
 
     final fieldRequirements = useMemoized(() {
       return {
+        'make': true,
+        'model': true,
         'plateNumber': true,
         'color': true,
         'mileage': true,
@@ -172,7 +174,14 @@ class CarDetailsPage extends HookWidget {
                         hint: AppTranslation.translate(AppStrings.makeHint),
                         svgIcon: 'assets/svg/car_make_icon.svg',
                         enabled: true,
-                        isRequired: false,
+                        isRequired: true,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return AppTranslation.translate(
+                                AppStrings.required);
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
@@ -181,7 +190,14 @@ class CarDetailsPage extends HookWidget {
                         hint: AppTranslation.translate(AppStrings.modelHint),
                         svgIcon: 'assets/svg/car_model_icon.svg',
                         enabled: true,
-                        isRequired: false,
+                        isRequired: true,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return AppTranslation.translate(
+                                AppStrings.required);
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(

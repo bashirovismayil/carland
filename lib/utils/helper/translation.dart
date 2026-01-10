@@ -1245,6 +1245,11 @@ class Translations {
       'en': 'My Cars',
       'ru': 'Мои автомобили',
     },
+    AppStrings.addNewCar: {
+      'az': 'Yeni avtomobil əlavə et',
+      'en': 'Add New Car',
+      'ru': 'Добавить новый автомобиль',
+    },
     AppStrings.updateMileage: {
       'az': 'Yürüşü Yenilə',
       'en': 'Update Mileage',

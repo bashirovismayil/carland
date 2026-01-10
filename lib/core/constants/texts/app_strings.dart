@@ -314,6 +314,7 @@ class AppStrings {
   static const String failedToUpdateRecord = 'failedToUpdateRecord';
 
   static const String myCars = 'myCars';
+  static const String addNewCar = 'addNewCar';
   static const String updateMileage = 'updateMileage';
   static const String updateDetails = 'updateDetails';
   static const String noServicesFound = 'noServicesFound';

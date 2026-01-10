@@ -15,6 +15,7 @@ import '../../../cubit/services/get_services/get_car_services_state.dart';
 import '../../../data/remote/models/remote/get_car_list_response.dart';
 import '../../../data/remote/models/remote/get_car_services_response.dart';
 import '../../../widgets/circular_progress_chart.dart';
+import '../../vin/add_your_car_vin_screen.dart';
 import '../details/edit_car_details_page.dart';
 
 class CarServicesDetailPage extends StatefulWidget {
@@ -84,13 +85,13 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     setState(() {
       _currentCarIndex = index;
     });
-
+    if (index >= widget.carList.length) {
+      return;
+    }
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-
     _debounce = Timer(const Duration(milliseconds: 350), () {
       _loadCarServices(widget.carList[index].carId);
     });
-
     _preloadPhotos();
   }
 
@@ -173,8 +174,17 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         controller: _pageController,
         onPageChanged: _onPageChanged,
         padEnds: true,
-        itemCount: widget.carList.length,
+        itemCount: widget.carList.length + 1, // +1 for add new car card
         itemBuilder: (context, index) {
+          // Son kart "Add new car" kartı
+          if (index == widget.carList.length) {
+            final isActive = index == _currentCarIndex;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 15, top: 2),
+              child: _buildAddNewCarCard(isActive),
+            );
+          }
+
           final car = widget.carList[index];
           final isActive = index == _currentCarIndex;
           return Padding(
@@ -182,6 +192,63 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             child: _buildCarCard(car, isActive),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildAddNewCarCard(bool isActive) {
+    return AnimatedScale(
+      scale: isActive ? 1.0 : 0.9,
+      duration: const Duration(milliseconds: 300),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddYourCarVinPage(),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryBlack,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 25,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                AppTranslation.translate(AppStrings.addNewCar),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -420,7 +487,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
-        widget.carList.length,
+        widget.carList.length + 1,
             (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           width: _currentCarIndex == index ? 32 : 8,

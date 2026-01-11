@@ -315,21 +315,27 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          car.model,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                '${car.brand ?? 'Unknown'} ${car.model}',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          car.brand ?? 'Unknown',
+                          car.modelYear.toString(),
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -579,6 +585,10 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     if (currentState is GetCarServicesSuccess) {
       currentCarId = currentState.servicesData.carId;
     }
+
+    final sortedServices = List<ResponseList>.from(services)
+      ..sort((a, b) => a.kmPercentage.compareTo(b.kmPercentage));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -612,7 +622,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                   ),
                 ],
               ),
-              // Loading indicator
               if (isLoading)
                 const LinearProgressIndicator(
                   backgroundColor: Colors.transparent,
@@ -629,10 +638,10 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             duration: const Duration(milliseconds: 300),
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
-              itemCount: services.length,
+              itemCount: sortedServices.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
-                final service = services[index];
+                final service = sortedServices[index];
                 return _ServiceCard(
                   service: service,
                   carId: currentCarId ?? 0,
@@ -851,8 +860,8 @@ class _ServiceCard extends StatelessWidget {
             Flexible(
               flex: 1,
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgPicture.asset(
                     'assets/svg/odometer_icon.svg',
@@ -860,7 +869,7 @@ class _ServiceCard extends StatelessWidget {
                     height: 22,
                   ),
                   const SizedBox(width: 6),
-                  Flexible(
+                  Expanded(
                     child: Text(
                       '$km km',
                       style: TextStyle(
@@ -869,6 +878,7 @@ class _ServiceCard extends StatelessWidget {
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
+                      textAlign: TextAlign.start,
                     ),
                   ),
                 ],

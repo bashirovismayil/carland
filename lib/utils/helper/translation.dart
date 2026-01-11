@@ -30,23 +30,23 @@ class Translations {
     },
 
     AppStrings.january: {
-      'az': 'Yanvar',
-      'en': 'January',
+      'az': 'Yan',
+      'en': 'Jan',
       'ru': 'Январь',
     },
     AppStrings.february: {
-      'az': 'Fevral',
-      'en': 'February',
+      'az': 'Fev',
+      'en': 'Feb',
       'ru': 'Февраль',
     },
     AppStrings.march: {
-      'az': 'Mart',
-      'en': 'March',
+      'az': 'Mar',
+      'en': 'Mar',
       'ru': 'Март',
     },
     AppStrings.april: {
-      'az': 'Aprel',
-      'en': 'April',
+      'az': 'Apr',
+      'en': 'Apr',
       'ru': 'Апрель',
     },
     AppStrings.may: {
@@ -56,37 +56,37 @@ class Translations {
     },
     AppStrings.june: {
       'az': 'İyun',
-      'en': 'June',
+      'en': 'Jun',
       'ru': 'Июнь',
     },
     AppStrings.july: {
       'az': 'İyul',
-      'en': 'July',
+      'en': 'Jul',
       'ru': 'Июль',
     },
     AppStrings.august: {
-      'az': 'Avqust',
-      'en': 'August',
+      'az': 'Avq',
+      'en': 'Aug',
       'ru': 'Август',
     },
     AppStrings.september: {
-      'az': 'Sentyabr',
-      'en': 'September',
+      'az': 'Sen',
+      'en': 'Sep',
       'ru': 'Сентябрь',
     },
     AppStrings.october: {
-      'az': 'Oktyabr',
-      'en': 'October',
+      'az': 'Okt',
+      'en': 'Oct',
       'ru': 'Октябрь',
     },
     AppStrings.november: {
-      'az': 'Noyabr',
-      'en': 'November',
+      'az': 'Noy',
+      'en': 'Nov',
       'ru': 'Ноябрь',
     },
     AppStrings.december: {
-      'az': 'Dekabr',
-      'en': 'December',
+      'az': 'Dek',
+      'en': 'Dec',
       'ru': 'Декабрь',
     },
 

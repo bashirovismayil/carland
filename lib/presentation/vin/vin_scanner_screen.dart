@@ -9,12 +9,10 @@ import '../../core/localization/app_translation.dart';
 import '../../data/remote/services/local/vin_scanner_service.dart';
 
 class VinScannerScreen extends StatefulWidget {
-  final void Function(String vin)? onVinScanned;
   final bool showManualEntry;
 
   const VinScannerScreen({
     super.key,
-    this.onVinScanned,
     this.showManualEntry = true,
   });
 
@@ -33,7 +31,6 @@ class _VinScannerScreenState extends State<VinScannerScreen>
   bool _hasPermission = false;
   bool _permissionDenied = false;
 
-  String? _scannedVin;
   String? _errorMessage;
   Offset? _focusPoint;
   bool _showFocusIndicator = false;
@@ -119,7 +116,7 @@ class _VinScannerScreenState extends State<VinScannerScreen>
   }
 
   void _startContinuousScanning() {
-    if (!_isInitialized || _scannedVin != null) return;
+    if (!_isInitialized) return;
 
     setState(() {
       _isScanning = true;
@@ -130,17 +127,10 @@ class _VinScannerScreenState extends State<VinScannerScreen>
 
       if (result.isSuccess && result.vin != null) {
         HapticFeedback.heavyImpact();
-
-        setState(() {
-          _scannedVin = result.vin;
-          _isScanning = false;
-        });
-
         _scannerService.stopContinuousScanning();
 
-        if (widget.onVinScanned != null) {
-          widget.onVinScanned!(result.vin!);
-        }
+        // VIN bulundu, direkt geri dön
+        Navigator.of(context).pop(result.vin);
       }
     });
   }
@@ -187,14 +177,8 @@ class _VinScannerScreenState extends State<VinScannerScreen>
     if (result.isSuccess && result.vin != null) {
       HapticFeedback.heavyImpact();
 
-      setState(() {
-        _scannedVin = result.vin;
-        _isScanning = false;
-      });
-
-      if (widget.onVinScanned != null) {
-        widget.onVinScanned!(result.vin!);
-      }
+      // VIN bulundu, direkt geri dön
+      Navigator.of(context).pop(result.vin);
     } else {
       setState(() {
         _isScanning = false;
@@ -222,41 +206,11 @@ class _VinScannerScreenState extends State<VinScannerScreen>
     });
   }
 
-  void _resetScan() {
-    setState(() {
-      _scannedVin = null;
-      _errorMessage = null;
-    });
-
-    if (_isContinuousMode) {
-      _startContinuousScanning();
-    }
-  }
-
-  void _confirmVin() {
-    if (_scannedVin != null) {
-      Navigator.of(context).pop(_scannedVin);
-    }
-  }
-
-  void _copyVin() {
-    if (_scannedVin != null) {
-      Clipboard.setData(ClipboardData(text: _scannedVin!));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('VIN copied to clipboard'),
-          duration: Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryWhite,
-      body: _scannedVin != null ? _buildSuccessScreen() : _buildScannerScreen(),
+      body: _buildScannerScreen(),
     );
   }
 
@@ -301,9 +255,8 @@ class _VinScannerScreenState extends State<VinScannerScreen>
           Positioned.fill(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                // VIN için yatay dikdörtgen alan
                 final scanAreaWidth = constraints.maxWidth * 0.85;
-                final scanAreaHeight = scanAreaWidth * 0.25; // İnce uzun
+                final scanAreaHeight = scanAreaWidth * 0.25;
 
                 return CustomPaint(
                   painter: VinScannerOverlayPainter(
@@ -337,7 +290,6 @@ class _VinScannerScreenState extends State<VinScannerScreen>
               const SizedBox(height: AppTheme.spacingXl),
               _buildTitleSection(),
               const Spacer(),
-              // Scanning indicator - basit text
               if (_isScanning && _isContinuousMode) _buildScanningIndicator(),
               const SizedBox(height: AppTheme.spacingLg),
               if (_errorMessage != null) _buildErrorMessage(),
@@ -355,18 +307,11 @@ class _VinScannerScreenState extends State<VinScannerScreen>
       return Container(color: Colors.black);
     }
 
-    // 1. Ekran boyutunu al
     final size = MediaQuery.of(context).size;
     final deviceRatio = size.aspectRatio;
-
-    // 2. Kameranın Aspect Ratio'sunu al
     final cameraRatio = controller.value.aspectRatio;
 
-    // 3. Ölçekleme katsayısını hesapla
-    // Bu matematik, kameranın dikey/yatay duruşuna göre görüntüyü ekrana tam oturtur.
     var scale = deviceRatio * cameraRatio;
-
-    // Eğer hesaplama sonucu 1'den küçükse, tam tersini alarak görüntüyü büyüt.
     if (scale < 1) scale = 1 / scale;
 
     return Transform.scale(
@@ -594,122 +539,13 @@ class _VinScannerScreenState extends State<VinScannerScreen>
         ),
         const SizedBox(width: 8),
         Text(
-         AppTranslation.translate(AppStrings.vinSearch),
+          AppTranslation.translate(AppStrings.vinSearch),
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSuccessScreen() {
-    return SafeArea(
-      child: Column(
-        children: [
-          _buildHeader(),
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingLg),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: AppColors.successColor.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.check_circle,
-                        color: AppColors.successColor,
-                        size: 48,
-                      ),
-                    ),
-                    const SizedBox(height: AppTheme.spacingLg),
-                     Text(
-                      AppTranslation.translate(AppStrings.vinSuccess),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: AppTheme.spacingMd),
-                    Container(
-                      padding: const EdgeInsets.all(AppTheme.spacingMd),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceColor,
-                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            _scannedVin!,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'monospace',
-                              letterSpacing: 2,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          IconButton(
-                            icon: const Icon(Icons.copy, size: 20),
-                            onPressed: _copyVin,
-                            color: AppColors.textSecondary,
-                            tooltip: 'Copy VIN',
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: AppTheme.spacingXl),
-                    TextButton.icon(
-                      onPressed: _resetScan,
-                      icon: const Icon(Icons.refresh, size: 20),
-                      label:  Text( AppTranslation.translate(AppStrings.retry),),
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingMd),
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _confirmVin,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlack,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-                  ),
-                ),
-                child: const Text(
-                  'Use This VIN',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -781,7 +617,6 @@ class VinScannerOverlayPainter extends CustomPainter {
       height: scanAreaHeight,
     );
 
-    // Draw overlay with cutout for scan area
     final overlayPath = Path()
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
       ..addRRect(
@@ -790,7 +625,6 @@ class VinScannerOverlayPainter extends CustomPainter {
 
     canvas.drawPath(overlayPath, Paint()..color = overlayColor);
 
-    // Draw corner brackets
     final cornerPaint = Paint()
       ..color = frameColor
       ..strokeWidth = strokeWidth

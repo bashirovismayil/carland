@@ -256,7 +256,7 @@ class AddYourCarVinPage extends HookWidget {
               width: 20,
               height: 20,
               colorFilter:
-                  const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+              const ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
             const SizedBox(width: AppTheme.spacingSm),
             Text(
@@ -277,7 +277,6 @@ class AddYourCarVinPage extends HookWidget {
     return BlocConsumer<CheckVinCubit, CheckVinState>(
       listener: (context, state) {
         if (state is CheckVinSuccess) {
-          // Navigate to Car Details page with response data
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => CarDetailsPage(
@@ -312,9 +311,9 @@ class AddYourCarVinPage extends HookWidget {
                   : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    isEnabled ? AppColors.primaryBlack : AppColors.surfaceColor,
+                isEnabled ? AppColors.primaryBlack : AppColors.surfaceColor,
                 foregroundColor:
-                    isEnabled ? Colors.white : AppColors.textSecondary,
+                isEnabled ? Colors.white : AppColors.textSecondary,
                 elevation: 0,
                 disabledBackgroundColor: AppColors.lightGrey,
                 disabledForegroundColor: AppColors.textSecondary,
@@ -324,27 +323,27 @@ class AddYourCarVinPage extends HookWidget {
               ),
               child: isLoading
                   ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
                   : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          AppTranslation.translate(AppStrings.continueButton),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: AppTheme.spacingSm),
-                        const Icon(Icons.arrow_forward, size: 20),
-                      ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    AppTranslation.translate(AppStrings.continueButton),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
+                  ),
+                  const SizedBox(width: AppTheme.spacingSm),
+                  const Icon(Icons.arrow_forward, size: 20),
+                ],
+              ),
             ),
           ),
         );
@@ -356,72 +355,13 @@ class AddYourCarVinPage extends HookWidget {
       BuildContext context, TextEditingController controller) async {
     final scannedVin = await Navigator.of(context).push<String>(
       MaterialPageRoute(
-        builder: (context) => VinScannerScreen(
-          onVinScanned: (vin) async {
-            // Show loading dialog
-            if (context.mounted) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                ),
-              );
-            }
-
-            try {
-              // Call API
-              final cubit = context.read<CheckVinCubit>();
-              await cubit.checkVin(vin);
-
-              if (context.mounted) {
-                Navigator.of(context).pop();
-
-                final state = cubit.state;
-                if (state is CheckVinSuccess) {
-                  // Close VinScanner screen
-                  Navigator.of(context).pop();
-
-                  // Navigate to Car Details
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CarDetailsPage(
-                        carData: state.carData,
-                      ),
-                    ),
-                  );
-                } else if (state is CheckVinError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message),
-                      backgroundColor: AppColors.errorColor,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                }
-              }
-            } catch (e) {
-              if (context.mounted) {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Error: $e'),
-                    backgroundColor: AppColors.errorColor,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            }
-          },
-        ),
+        builder: (context) => const VinScannerScreen(),
       ),
     );
 
-    if (scannedVin != null && scannedVin.isNotEmpty) {
+    if (scannedVin != null && scannedVin.isNotEmpty && context.mounted) {
       controller.text = scannedVin;
-      if (context.mounted) {
-        _checkVin(context, scannedVin);
-      }
+      _checkVin(context, scannedVin);
     }
   }
 

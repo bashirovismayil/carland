@@ -137,25 +137,54 @@ class DeleteCarDialog extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
+    final deleteCarCubit = context.read<DeleteCarCubit>();
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          AppTranslation.translate(AppStrings.deleteCar),
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        content: Text(
-          AppTranslation.translate(AppStrings.deleteCarConfirmation)
-              .replaceAll('{brand}', car.brand ?? '')
-              .replaceAll('{model}', car.model),
-          style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
-        ),
-        actions: [
-          CancelButton(isLoading: false),
-          DeleteButton(isLoading: false, carId: car.carId),
-        ],
-      ),
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return BlocProvider.value(
+          value: deleteCarCubit,
+          child: BlocConsumer<DeleteCarCubit, DeleteCarState>(
+            listener: (context, state) {
+              if (state is DeleteCarSuccess) {
+                Navigator.of(context).pop();
+                _showSnackBar(context, AppStrings.carDeletedSuccessfully, true);
+                onDeleted();
+              } else if (state is DeleteCarError) {
+                Navigator.of(context).pop();
+                _showSnackBar(context, state.message, false);
+              }
+            },
+            builder: (context, state) {
+              final bool isLoading = state is DeleteCarLoading;
+
+              return AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                title: Text(
+                  AppTranslation.translate(AppStrings.deleteCar),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                content: Text(
+                  AppTranslation.translate(AppStrings.deleteCarConfirmation)
+                      .replaceAll('{brand}', car.brand ?? '')
+                      .replaceAll('{model}', car.model),
+                  style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                ),
+                actions: [
+                  IgnorePointer(
+                    ignoring: isLoading,
+                    child: CancelButton(isLoading: isLoading),
+                  ),
+                  DeleteButton(
+                    isLoading: isLoading,
+                    carId: car.carId,
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

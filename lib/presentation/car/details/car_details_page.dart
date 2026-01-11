@@ -61,6 +61,13 @@ class CarDetailsPage extends HookWidget {
     );
     final bodyTypeController = useTextEditingController();
 
+    // FocusNodes for TextFields
+    final plateFocusNode = useFocusNode();
+    final makeFocusNode = useFocusNode();
+    final modelFocusNode = useFocusNode();
+    final engineFocusNode = useFocusNode();
+    final mileageFocusNode = useFocusNode();
+
     // States
     final selectedImage = useState<File?>(null);
     final formKey = useMemoized(() => GlobalKey<FormState>());
@@ -85,6 +92,11 @@ class CarDetailsPage extends HookWidget {
         'photo': false,
       };
     });
+
+    // Helper function to unfocus all fields
+    void unfocusAll() {
+      FocusScope.of(context).unfocus();
+    }
 
     useEffect(() {
       final engineTypeCubit = context.read<GetEngineTypeListCubit>();
@@ -115,291 +127,291 @@ class CarDetailsPage extends HookWidget {
       return null;
     }, []);
 
-    return Scaffold(
-      backgroundColor: AppColors.primaryWhite,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(
-              child: Form(
-                key: formKey,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(AppTheme.spacingLg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: AppTheme.spacingSm),
-                      _buildSectionTitle(),
-                      const SizedBox(height: AppTheme.spacingLg),
+    return GestureDetector(
+      onTap: unfocusAll,
+      child: Scaffold(
+        backgroundColor: AppColors.primaryWhite,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              Expanded(
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppTheme.spacingLg),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: AppTheme.spacingSm),
+                        _buildSectionTitle(),
+                        const SizedBox(height: AppTheme.spacingLg),
 
-                      _buildTextField(
-                        controller: vinController,
-                        label: AppTranslation.translate(AppStrings.vinText),
-                        hint: AppTranslation.translate(AppStrings.vinPlaceholder),
-                        svgIcon: 'assets/svg/barcode_transparent.svg',
-                        enabled: false,
-                        isRequired: false,
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
-                      _buildTextField(
-                        controller: plateController,
-                        label: AppTranslation.translate(AppStrings.plateNumber),
-                        hint: plateFormatter.hint,
-                        svgIcon: 'assets/svg/plate_number_icon.svg',
-                        enabled: true,
-                        textCapitalization: TextCapitalization.characters,
-                        isRequired: fieldRequirements['plateNumber'] ?? false,
-                        inputFormatters: [plateFormatter],
-                        maxLength: AzerbaijanPlateNumberFormatter.maxLength,
-                        validator: (value) {
-                          if ((fieldRequirements['plateNumber'] ?? false) &&
-                              (value == null || value.trim().isEmpty)) {
-                            return AppTranslation.translate(
-                                AppStrings.plateNumberRequired);
-                          }
-                          if (value != null &&
-                              value.isNotEmpty &&
-                              !AzerbaijanPlateNumberFormatter.isValid(value)) {
-                            return AppTranslation.translate(
-                                AppStrings.invalidPlateNumberFormat);
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
+                        _buildTextField(
+                          controller: vinController,
+                          label: AppTranslation.translate(AppStrings.vinText),
+                          hint: AppTranslation.translate(
+                              AppStrings.vinPlaceholder),
+                          svgIcon: 'assets/svg/barcode_transparent.svg',
+                          enabled: false,
+                          isRequired: false,
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
+                        _buildTextField(
+                          controller: plateController,
+                          focusNode: plateFocusNode,
+                          label:
+                          AppTranslation.translate(AppStrings.plateNumber),
+                          hint: plateFormatter.hint,
+                          svgIcon: 'assets/svg/plate_number_icon.svg',
+                          enabled: true,
+                          textCapitalization: TextCapitalization.characters,
+                          isRequired:
+                          fieldRequirements['plateNumber'] ?? false,
+                          inputFormatters: [plateFormatter],
+                          maxLength: AzerbaijanPlateNumberFormatter.maxLength,
+                          validator: (value) {
+                            if ((fieldRequirements['plateNumber'] ?? false) &&
+                                (value == null || value.trim().isEmpty)) {
+                              return AppTranslation.translate(
+                                  AppStrings.plateNumberRequired);
+                            }
+                            if (value != null &&
+                                value.isNotEmpty &&
+                                !AzerbaijanPlateNumberFormatter.isValid(
+                                    value)) {
+                              return AppTranslation.translate(
+                                  AppStrings.invalidPlateNumberFormat);
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
 
-                      _buildTextField(
-                        controller: makeController,
-                        label: AppTranslation.translate(AppStrings.make),
-                        hint: AppTranslation.translate(AppStrings.makeHint),
-                        svgIcon: 'assets/svg/car_make_icon.svg',
-                        enabled: true,
-                        isRequired: true,
-                        inputFormatters: [CapitalCaseFormatter()],
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return AppTranslation.translate(
-                                AppStrings.required);
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
-                      _buildTextField(
-                        controller: modelController,
-                        label: AppTranslation.translate(AppStrings.model),
-                        hint: AppTranslation.translate(AppStrings.modelHint),
-                        svgIcon: 'assets/svg/car_model_icon.svg',
-                        enabled: true,
-                        isRequired: true,
-                        inputFormatters: [CapitalCaseFormatter()],
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return AppTranslation.translate(
-                                AppStrings.required);
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
-                      _buildTextField(
-                        controller: engineController,
-                        maxLength: 4,
-                        label:
-                        AppTranslation.translate(AppStrings.engineVolume),
-                        hint: AppTranslation.translate(
-                            AppStrings.engineVolumeHint),
-                        svgIcon: 'assets/svg/car_engine_icon.svg',
-                        enabled: true,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        isRequired: true,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return AppTranslation.translate(
-                                AppStrings.required);
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
+                        _buildTextField(
+                          controller: makeController,
+                          focusNode: makeFocusNode,
+                          label: AppTranslation.translate(AppStrings.make),
+                          hint: AppTranslation.translate(AppStrings.makeHint),
+                          svgIcon: 'assets/svg/car_make_icon.svg',
+                          enabled: true,
+                          isRequired: true,
+                          inputFormatters: [CapitalCaseFormatter()],
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return AppTranslation.translate(
+                                  AppStrings.required);
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
+                        _buildTextField(
+                          controller: modelController,
+                          focusNode: modelFocusNode,
+                          label: AppTranslation.translate(AppStrings.model),
+                          hint: AppTranslation.translate(AppStrings.modelHint),
+                          svgIcon: 'assets/svg/car_model_icon.svg',
+                          enabled: true,
+                          isRequired: true,
+                          inputFormatters: [CapitalCaseFormatter()],
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return AppTranslation.translate(
+                                  AppStrings.required);
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
+                        _buildTextField(
+                          controller: engineController,
+                          focusNode: engineFocusNode,
+                          maxLength: 4,
+                          label: AppTranslation.translate(
+                              AppStrings.engineVolume),
+                          hint: AppTranslation.translate(
+                              AppStrings.engineVolumeHint),
+                          svgIcon: 'assets/svg/car_engine_icon.svg',
+                          enabled: true,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          isRequired: true,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return AppTranslation.translate(
+                                  AppStrings.required);
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
 
-                      // Body Type (was in Row, now Column)
-                      _buildDropdownField(
-                        context: context,
-                        controller: bodyTypeController,
-                        label: AppTranslation.translate(AppStrings.bodyType),
-                        hint:
-                        AppTranslation.translate(AppStrings.selectBodyType),
-                        svgIcon: 'assets/svg/car_body_type_icon.svg',
-                        cubitBuilder: () =>
-                            context.read<GetBodyTypeListCubit>(),
-                        stateBuilder: (context) =>
-                        context.watch<GetBodyTypeListCubit>().state,
-                        itemsExtractor: (state) {
-                          if (state is GetBodyTypeListSuccess) {
-                            return state.bodyTypes
-                                .map((e) => e.bodyType)
-                                .toList();
-                          }
-                          return [];
-                        },
-                        isRequired: true,
-                        dropdownKey: bodyTypeKey,
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
+                        // Body Type
+                        _buildDropdownField(
+                          context: context,
+                          controller: bodyTypeController,
+                          label:
+                          AppTranslation.translate(AppStrings.bodyType),
+                          hint: AppTranslation.translate(
+                              AppStrings.selectBodyType),
+                          svgIcon: 'assets/svg/car_body_type_icon.svg',
+                          cubitBuilder: () =>
+                              context.read<GetBodyTypeListCubit>(),
+                          stateBuilder: (context) =>
+                          context.watch<GetBodyTypeListCubit>().state,
+                          itemsExtractor: (state) {
+                            if (state is GetBodyTypeListSuccess) {
+                              return state.bodyTypes
+                                  .map((e) => e.bodyType)
+                                  .toList();
+                            }
+                            return [];
+                          },
+                          isRequired: true,
+                          dropdownKey: bodyTypeKey,
+                          onTap: unfocusAll,
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
 
-                      // Transmission (was in Row, now Column)
-                      // _buildDropdownField(
-                      //   context: context,
-                      //   controller: transmissionController,
-                      //   label:
-                      //   AppTranslation.translate(AppStrings.transmission),
-                      //   hint: AppTranslation.translate(AppStrings.selectType),
-                      //   svgIcon: 'assets/svg/car_transmission_icon.svg',
-                      //   cubitBuilder: () =>
-                      //       context.read<GetTransmissionListCubit>(),
-                      //   stateBuilder: (context) =>
-                      //   context.watch<GetTransmissionListCubit>().state,
-                      //   itemsExtractor: (state) {
-                      //     if (state is GetTransmissionListSuccess) {
-                      //       return state.transmissions
-                      //           .map((e) => e.transmissionType)
-                      //           .toList();
-                      //     }
-                      //     return [];
-                      //   },
-                      //   isRequired: true,
-                      //   dropdownKey: transmissionKey,
-                      // ),
-                      // const SizedBox(height: AppTheme.spacingMd),
+                        // Engine Type
+                        _buildDropdownField(
+                          context: context,
+                          controller: engineTypeController,
+                          label:
+                          AppTranslation.translate(AppStrings.engineType),
+                          hint:
+                          AppTranslation.translate(AppStrings.selectType),
+                          svgIcon: 'assets/svg/car_engine_type_icon.svg',
+                          cubitBuilder: () =>
+                              context.read<GetEngineTypeListCubit>(),
+                          stateBuilder: (context) =>
+                          context.watch<GetEngineTypeListCubit>().state,
+                          itemsExtractor: (state) {
+                            if (state is GetEngineTypeListSuccess) {
+                              return state.engineTypes
+                                  .map((e) => e.engineType)
+                                  .toList();
+                            }
+                            return [];
+                          },
+                          isRequired: true,
+                          dropdownKey: engineTypeKey,
+                          onTap: unfocusAll,
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
 
-                      // Engine Type (was in Row, now Column)
-                      _buildDropdownField(
-                        context: context,
-                        controller: engineTypeController,
-                        label: AppTranslation.translate(AppStrings.engineType),
-                        hint: AppTranslation.translate(AppStrings.selectType),
-                        svgIcon: 'assets/svg/car_engine_type_icon.svg',
-                        cubitBuilder: () =>
-                            context.read<GetEngineTypeListCubit>(),
-                        stateBuilder: (context) =>
-                        context.watch<GetEngineTypeListCubit>().state,
-                        itemsExtractor: (state) {
-                          if (state is GetEngineTypeListSuccess) {
-                            return state.engineTypes
-                                .map((e) => e.engineType)
-                                .toList();
-                          }
-                          return [];
-                        },
-                        isRequired: true,
-                        dropdownKey: engineTypeKey,
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
+                        // Year
+                        _buildDropdownField(
+                          context: context,
+                          controller: yearController,
+                          label: AppTranslation.translate(AppStrings.year),
+                          hint:
+                          AppTranslation.translate(AppStrings.selectYear),
+                          svgIcon: 'assets/svg/calendar_nav_icon.svg',
+                          cubitBuilder: () =>
+                              context.read<GetYearListCubit>(),
+                          stateBuilder: (context) =>
+                          context.watch<GetYearListCubit>().state,
+                          itemsExtractor: (state) {
+                            if (state is GetYearListSuccess) {
+                              return state.years
+                                  .map((e) => e.modelYear.toString())
+                                  .toList();
+                            }
+                            return [];
+                          },
+                          isRequired: true,
+                          dropdownKey: yearKey,
+                          onTap: unfocusAll,
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
 
-                      // Year (was in Row, now Column)
-                      _buildDropdownField(
-                        context: context,
-                        controller: yearController,
-                        label: AppTranslation.translate(AppStrings.year),
-                        hint: AppTranslation.translate(AppStrings.selectYear),
-                        svgIcon: 'assets/svg/calendar_nav_icon.svg',
-                        cubitBuilder: () => context.read<GetYearListCubit>(),
-                        stateBuilder: (context) =>
-                        context.watch<GetYearListCubit>().state,
-                        itemsExtractor: (state) {
-                          if (state is GetYearListSuccess) {
-                            return state.years
-                                .map((e) => e.modelYear.toString())
-                                .toList();
-                          }
-                          return [];
-                        },
-                        isRequired: true,
-                        dropdownKey: yearKey,
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
+                        // Color
+                        _buildDropdownField(
+                          controller: colorController,
+                          label: AppTranslation.translate(AppStrings.color),
+                          hint:
+                          AppTranslation.translate(AppStrings.colorHint),
+                          svgIcon: 'assets/svg/car_color_icon.svg',
+                          isRequired: fieldRequirements['color'] ?? false,
+                          context: context,
+                          cubitBuilder: () =>
+                              context.read<GetColorListCubit>(),
+                          stateBuilder: (context) =>
+                          context.watch<GetColorListCubit>().state,
+                          itemsExtractor: (state) {
+                            if (state is GetColorListSuccess) {
+                              return state.colors
+                                  .map((e) => e.color.toString())
+                                  .toList();
+                            }
+                            return [];
+                          },
+                          dropdownKey: colorKey,
+                          onTap: unfocusAll,
+                        ),
+                        const SizedBox(height: AppTheme.spacingMd),
 
-                      // Color (was in Row, now Column)
-                      _buildDropdownField(
-                        controller: colorController,
-                        label: AppTranslation.translate(AppStrings.color),
-                        hint: AppTranslation.translate(AppStrings.colorHint),
-                        svgIcon: 'assets/svg/car_color_icon.svg',
-                        isRequired: fieldRequirements['color'] ?? false,
-                        context: context,
-                        cubitBuilder: () => context.read<GetColorListCubit>(),
-                        stateBuilder: (context) =>
-                        context.watch<GetColorListCubit>().state,
-                        itemsExtractor: (state) {
-                          if (state is GetColorListSuccess) {
-                            return state.colors
-                                .map((e) => e.color.toString())
-                                .toList();
-                          }
-                          return [];
-                        },
-                        dropdownKey: colorKey,
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
+                        _buildTextField(
+                          controller: mileageController,
+                          focusNode: mileageFocusNode,
+                          label: AppTranslation.translate(
+                              AppStrings.currentMileage),
+                          hint:
+                          AppTranslation.translate(AppStrings.mileageHint),
+                          svgIcon: 'assets/svg/odometer_icon.svg',
+                          enabled: true,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          maxLength: 6,
+                          isRequired: fieldRequirements['mileage'] ?? false,
+                          validator: (value) {
+                            if ((fieldRequirements['mileage'] ?? false) &&
+                                (value == null || value.trim().isEmpty)) {
+                              return AppTranslation.translate(
+                                  AppStrings.mileageRequired);
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppTheme.spacingLg),
 
-                      _buildTextField(
-                        controller: mileageController,
-                        label:
-                        AppTranslation.translate(AppStrings.currentMileage),
-                        hint: AppTranslation.translate(AppStrings.mileageHint),
-                        svgIcon: 'assets/svg/odometer_icon.svg',
-                        enabled: true,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        maxLength: 6,
-                        isRequired: fieldRequirements['mileage'] ?? false,
-                        validator: (value) {
-                          if ((fieldRequirements['mileage'] ?? false) &&
-                              (value == null || value.trim().isEmpty)) {
-                            return AppTranslation.translate(
-                                AppStrings.mileageRequired);
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppTheme.spacingLg),
-
-                      // Upload Photo Section (Optional)
-                      _buildUploadPhotoSection(
-                        selectedImage,
-                        context: context,
-                        isRequired: fieldRequirements['photo'] ?? false,
-                      ),
-                    ],
+                        // Upload Photo Section (Optional)
+                        _buildUploadPhotoSection(
+                          selectedImage,
+                          context: context,
+                          isRequired: fieldRequirements['photo'] ?? false,
+                          onTap: unfocusAll,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            _buildBottomSection(
-              context,
-              formKey,
-              isSubmitting,
-              selectedImage,
-              vinController,
-              plateController,
-              makeController,
-              modelController,
-              engineController,
-              bodyTypeController,
-              transmissionController,
-              engineTypeController,
-              yearController,
-              colorController,
-              mileageController,
-            ),
-          ],
+              _buildBottomSection(
+                context,
+                formKey,
+                isSubmitting,
+                selectedImage,
+                vinController,
+                plateController,
+                makeController,
+                modelController,
+                engineController,
+                bodyTypeController,
+                transmissionController,
+                engineTypeController,
+                yearController,
+                colorController,
+                mileageController,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -483,6 +495,7 @@ class CarDetailsPage extends HookWidget {
     TextCapitalization textCapitalization = TextCapitalization.none,
     String? Function(String?)? validator,
     int? maxLength,
+    FocusNode? focusNode,
   }) {
     return FormField<String>(
       initialValue: controller.text,
@@ -520,7 +533,9 @@ class CarDetailsPage extends HookWidget {
                 border: Border.all(
                   color: state.hasError
                       ? AppColors.errorColor
-                      : (enabled ? Colors.grey.shade300 : Colors.grey.shade200),
+                      : (enabled
+                      ? Colors.grey.shade300
+                      : Colors.grey.shade200),
                 ),
                 boxShadow: enabled
                     ? [
@@ -534,6 +549,7 @@ class CarDetailsPage extends HookWidget {
               ),
               child: TextField(
                 controller: controller,
+                focusNode: focusNode,
                 enabled: enabled,
                 keyboardType: keyboardType,
                 inputFormatters: inputFormatters,
@@ -543,8 +559,9 @@ class CarDetailsPage extends HookWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color:
-                  enabled ? AppColors.textPrimary : AppColors.textSecondary,
+                  color: enabled
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
                   overflow: TextOverflow.ellipsis,
                 ),
                 maxLines: 1,
@@ -572,7 +589,7 @@ class CarDetailsPage extends HookWidget {
                     horizontal: AppTheme.spacingMd,
                     vertical: AppTheme.spacingMd,
                   ),
-                  counterText: '', // Hide the character counter
+                  counterText: '',
                 ),
               ),
             ),
@@ -605,6 +622,7 @@ class CarDetailsPage extends HookWidget {
     bool isRequired = false,
     String? Function(String?)? validator,
     required GlobalKey dropdownKey,
+    VoidCallback? onTap,
   }) {
     return FormField<String>(
       initialValue: controller.text,
@@ -658,14 +676,18 @@ class CarDetailsPage extends HookWidget {
             GestureDetector(
               onTap: isLoading || items.isEmpty
                   ? null
-                  : () => _showDropdownMenu(
-                context,
-                label,
-                items,
-                controller,
-                fieldState,
-                dropdownKey,
-              ),
+                  : () {
+                // Unfocus any active TextField first
+                onTap?.call();
+                _showDropdownMenu(
+                  context,
+                  label,
+                  items,
+                  controller,
+                  fieldState,
+                  dropdownKey,
+                );
+              },
               child: Container(
                 key: dropdownKey,
                 decoration: BoxDecoration(
@@ -714,7 +736,9 @@ class CarDetailsPage extends HookWidget {
                         ),
                       )
                           : Text(
-                        controller.text.isEmpty ? hint : controller.text,
+                        controller.text.isEmpty
+                            ? hint
+                            : controller.text,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -760,6 +784,7 @@ class CarDetailsPage extends HookWidget {
       FormFieldState<String> fieldState,
       GlobalKey key,
       ) {
+    FocusManager.instance.primaryFocus?.unfocus();
     final RenderBox renderBox =
     key.currentContext!.findRenderObject() as RenderBox;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
@@ -826,6 +851,9 @@ class CarDetailsPage extends HookWidget {
         controller.text = value;
         fieldState.didChange(value);
       }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      });
     });
   }
 
@@ -833,6 +861,7 @@ class CarDetailsPage extends HookWidget {
       ValueNotifier<File?> selectedImage, {
         required bool isRequired,
         required BuildContext context,
+        VoidCallback? onTap,
       }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -860,7 +889,10 @@ class CarDetailsPage extends HookWidget {
         ),
         const SizedBox(height: AppTheme.spacingMd),
         GestureDetector(
-          onTap: () => _pickImage(selectedImage, context),
+          onTap: () {
+            onTap?.call();
+            _pickImage(selectedImage, context);
+          },
           child: DottedBorder(
             options: RoundedRectDottedBorderOptions(
               radius: Radius.circular(AppTheme.radiusXl),
@@ -978,7 +1010,6 @@ class CarDetailsPage extends HookWidget {
       ) {
     return MultiBlocListener(
       listeners: [
-        // Step 1: AddCar API Response
         BlocListener<AddCarCubit, AddCarState>(
           listener: (context, state) {
             if (state is AddCarSuccess) {
@@ -1036,12 +1067,12 @@ class CarDetailsPage extends HookWidget {
             }
           },
         ),
-
         BlocListener<UploadCarPhotoCubit, UploadCarPhotoState>(
           listener: (context, state) {
             if (state is UploadCarPhotoSuccess) {
               final vin = vinController.text.trim();
-              final mileage = int.tryParse(mileageController.text.trim()) ?? 0;
+              final mileage =
+                  int.tryParse(mileageController.text.trim()) ?? 0;
               context.read<UpdateCarMileageCubit>().updateCarMileage(
                 vin: vin,
                 mileage: mileage,
@@ -1059,7 +1090,8 @@ class CarDetailsPage extends HookWidget {
               );
 
               final vin = vinController.text.trim();
-              final mileage = int.tryParse(mileageController.text.trim()) ?? 0;
+              final mileage =
+                  int.tryParse(mileageController.text.trim()) ?? 0;
 
               context.read<UpdateCarMileageCubit>().updateCarMileage(
                 vin: vin,
@@ -1068,20 +1100,10 @@ class CarDetailsPage extends HookWidget {
             }
           },
         ),
-
         BlocListener<UpdateCarMileageCubit, UpdateCarMileageState>(
           listener: (context, state) {
             if (state is UpdateCarMileageSuccess) {
               isSubmitting.value = false;
-              //
-              // ScaffoldMessenger.of(context).showSnackBar(
-              //   SnackBar(
-              //     content: Text(AppTranslation.translate(
-              //         AppStrings.carAddedSuccessfully)),
-              //     backgroundColor: AppColors.successColor,
-              //     behavior: SnackBarBehavior.floating,
-              //   ),
-              // );
             } else if (state is UpdateCarMileageError) {
               isSubmitting.value = false;
 
@@ -1246,6 +1268,8 @@ class CarDetailsPage extends HookWidget {
       TextEditingController colorController,
       TextEditingController mileageController,
       ) {
+    FocusScope.of(context).unfocus();
+
     if (isSubmitting.value) return;
     isSubmitting.value = true;
 
@@ -1253,8 +1277,8 @@ class CarDetailsPage extends HookWidget {
       isSubmitting.value = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-              AppTranslation.translate(AppStrings.pleaseFillAllRequiredFields)),
+          content: Text(AppTranslation.translate(
+              AppStrings.pleaseFillAllRequiredFields)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -1268,8 +1292,8 @@ class CarDetailsPage extends HookWidget {
       isSubmitting.value = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-              AppTranslation.translate(AppStrings.pleaseFillAllRequiredFields)),
+          content: Text(AppTranslation.translate(
+              AppStrings.pleaseFillAllRequiredFields)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -1294,7 +1318,6 @@ class CarDetailsPage extends HookWidget {
       return;
     }
 
-    // Step 1: Call AddCar API (without photo)
     context.read<AddCarCubit>().addCar(
       vin: vinController.text.trim(),
       plateNumber: plateController.text.trim(),

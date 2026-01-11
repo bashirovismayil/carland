@@ -11,6 +11,8 @@ import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/constants/values/app_theme.dart';
 import '../../../core/localization/app_translation.dart';
+import '../../../cubit/delete/delete_car_cubit.dart';
+import '../../../cubit/delete/delete_car_state.dart';
 import '../../../cubit/records/get_records/get_car_records_cubit.dart';
 import '../../../cubit/records/get_records/get_car_records_state.dart';
 import '../../../cubit/records/update/update_car_record_cubit.dart';
@@ -39,12 +41,10 @@ class MaintenanceHistoryPage extends HookWidget {
     final mileageControllers = useState<Map<int, TextEditingController>>({});
     final isSubmitting = useState<bool>(false);
 
-    // FIX #2: Memory Leak - Controller'ları dispose et
     useEffect(() {
       context.read<GetCarRecordsCubit>().getCarRecords(carId);
 
       return () {
-        // Widget dispose olduğunda tüm controller'ları temizle
         for (final controller in dateControllers.value.values) {
           controller.dispose();
         }
@@ -54,200 +54,232 @@ class MaintenanceHistoryPage extends HookWidget {
       };
     }, []);
 
-    return Scaffold(
-      backgroundColor: AppColors.primaryWhite,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(
-              child: BlocConsumer<GetCarRecordsCubit, GetCarRecordsState>(
-                listener: (context, state) {
-                  if (state is GetCarRecordsSuccess) {
-                    // FIX #3: Map'i yeni referansla güncelle (rebuild tetiklemek için)
-                    final newDateControllers =
-                    Map<int, TextEditingController>.from(
-                        dateControllers.value);
-                    final newMileageControllers =
-                    Map<int, TextEditingController>.from(
-                        mileageControllers.value);
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
 
-                    for (var record in state.records) {
-                      if (!newDateControllers.containsKey(record.id)) {
-                        newDateControllers[record.id] = TextEditingController(
-                          text: record.doneDate != null
-                              ? DateFormat('dd/MM/yyyy').format(record.doneDate!)
-                              : '',
-                        );
-                      }
-                      if (!newMileageControllers.containsKey(record.id)) {
-                        newMileageControllers[record.id] = TextEditingController(
-                          text: record.doneKm != null ? '${record.doneKm}' : '',
-                        );
-                      }
-                    }
+        if (isSubmitting.value) return;
 
-                    // Yeni referans atayarak rebuild tetikle
-                    dateControllers.value = newDateControllers;
-                    mileageControllers.value = newMileageControllers;
-                  }
-                },
-                builder: (context, state) {
-                  if (state is GetCarRecordsLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primaryBlack,
-                      ),
-                    );
-                  } else if (state is GetCarRecordsError) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppTheme.spacingLg),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              size: 64,
-                              color: AppColors.errorColor,
+        log('[MaintenanceHistory] Back pressed, deleting car: $carId');
+        context.read<DeleteCarCubit>().deleteCar(carId: int.parse(carId));
+
+        Navigator.of(context).pop();
+      },
+      child: BlocListener<DeleteCarCubit, DeleteCarState>(
+        listener: (context, state) {
+          if (state is DeleteCarSuccess) {
+            log('[MaintenanceHistory] Car deleted successfully');
+          } else if (state is DeleteCarError) {
+            log('[MaintenanceHistory] Delete car error: ${state.message}');
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.primaryWhite,
+          body: SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(context, isSubmitting),
+                Expanded(
+                  child: BlocConsumer<GetCarRecordsCubit, GetCarRecordsState>(
+                    listener: (context, state) {
+                      if (state is GetCarRecordsSuccess) {
+                        final newDateControllers =
+                        Map<int, TextEditingController>.from(
+                            dateControllers.value);
+                        final newMileageControllers =
+                        Map<int, TextEditingController>.from(
+                            mileageControllers.value);
+
+                        for (var record in state.records) {
+                          if (!newDateControllers.containsKey(record.id)) {
+                            newDateControllers[record.id] =
+                                TextEditingController(
+                                  text: record.doneDate != null
+                                      ? DateFormat('dd/MM/yyyy')
+                                      .format(record.doneDate!)
+                                      : '',
+                                );
+                          }
+                          if (!newMileageControllers.containsKey(record.id)) {
+                            newMileageControllers[record.id] =
+                                TextEditingController(
+                                  text: record.doneKm != null
+                                      ? '${record.doneKm}'
+                                      : '',
+                                );
+                          }
+                        }
+
+                        dateControllers.value = newDateControllers;
+                        mileageControllers.value = newMileageControllers;
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is GetCarRecordsLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primaryBlack,
+                          ),
+                        );
+                      } else if (state is GetCarRecordsError) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(AppTheme.spacingLg),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 64,
+                                  color: AppColors.errorColor,
+                                ),
+                                const SizedBox(height: AppTheme.spacingMd),
+                                Text(
+                                  AppTranslation.translate(
+                                      AppStrings.errorLoadingRecords),
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: AppTheme.spacingSm),
+                                Text(
+                                  state.message,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                const SizedBox(height: AppTheme.spacingLg),
+                                ElevatedButton(
+                                  onPressed: () => context
+                                      .read<GetCarRecordsCubit>()
+                                      .getCarRecords(carId),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primaryBlack,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: Text(AppTranslation.translate(
+                                      AppStrings.retry)),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: AppTheme.spacingMd),
-                            Text(
-                              AppTranslation.translate(
-                                  AppStrings.errorLoadingRecords),
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                          ),
+                        );
+                      } else if (state is GetCarRecordsSuccess) {
+                        if (state.records.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.all(AppTheme.spacingLg),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.description_outlined,
+                                    size: 64,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  const SizedBox(height: AppTheme.spacingMd),
+                                  Text(
+                                    AppTranslation.translate(
+                                        AppStrings.noMaintenanceRecordsFound),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: AppTheme.spacingSm),
-                            Text(
-                              state.message,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            const SizedBox(height: AppTheme.spacingLg),
-                            ElevatedButton(
-                              onPressed: () => context
-                                  .read<GetCarRecordsCubit>()
-                                  .getCarRecords(carId),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryBlack,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: Text(
-                                  AppTranslation.translate(AppStrings.retry)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else if (state is GetCarRecordsSuccess) {
-                    if (state.records.isEmpty) {
-                      return Center(
-                        child: Padding(
+                          );
+                        }
+
+                        return SingleChildScrollView(
                           padding: const EdgeInsets.all(AppTheme.spacingLg),
                           child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.description_outlined,
-                                size: 64,
-                                color: AppColors.textSecondary,
-                              ),
-                              const SizedBox(height: AppTheme.spacingMd),
-                              Text(
-                                AppTranslation.translate(
-                                    AppStrings.noMaintenanceRecordsFound),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ],
+                            children: state.records.map((record) {
+                              if (!dateControllers.value
+                                  .containsKey(record.id) ||
+                                  !mileageControllers.value
+                                      .containsKey(record.id)) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return _buildServiceSection(
+                                context: context,
+                                record: record,
+                                isExpanded:
+                                expandedSectionId.value == record.id,
+                                isCompleted: completedSections.value
+                                    .contains(record.id),
+                                onExpand: () {
+                                  final previousExpandedId =
+                                      expandedSectionId.value;
+
+                                  if (previousExpandedId != null &&
+                                      previousExpandedId != record.id) {
+                                    _handleSectionChange(
+                                      context: context,
+                                      previousRecordId: previousExpandedId,
+                                      carId: carId,
+                                      dateControllers: dateControllers.value,
+                                      mileageControllers:
+                                      mileageControllers.value,
+                                      completedSections: completedSections,
+                                    );
+                                  }
+
+                                  if (expandedSectionId.value == record.id) {
+                                    _handleSectionChange(
+                                      context: context,
+                                      previousRecordId: record.id,
+                                      carId: carId,
+                                      dateControllers: dateControllers.value,
+                                      mileageControllers:
+                                      mileageControllers.value,
+                                      completedSections: completedSections,
+                                    );
+                                    expandedSectionId.value = null;
+                                  } else {
+                                    expandedSectionId.value = record.id;
+                                  }
+                                },
+                                dateController:
+                                dateControllers.value[record.id]!,
+                                mileageController:
+                                mileageControllers.value[record.id]!,
+                              );
+                            }).toList(),
                           ),
-                        ),
-                      );
-                    }
+                        );
+                      }
 
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.all(AppTheme.spacingLg),
-                      child: Column(
-                        children: state.records.map((record) {
-                          // Controller'lar henüz oluşturulmadıysa boş widget döndür
-                          if (!dateControllers.value.containsKey(record.id) ||
-                              !mileageControllers.value.containsKey(record.id)) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return _buildServiceSection(
-                            context: context,
-                            record: record,
-                            isExpanded: expandedSectionId.value == record.id,
-                            isCompleted:
-                            completedSections.value.contains(record.id),
-                            onExpand: () {
-                              final previousExpandedId = expandedSectionId.value;
-
-                              if (previousExpandedId != null &&
-                                  previousExpandedId != record.id) {
-                                _handleSectionChange(
-                                  context: context,
-                                  previousRecordId: previousExpandedId,
-                                  carId: carId,
-                                  dateControllers: dateControllers.value,
-                                  mileageControllers: mileageControllers.value,
-                                  completedSections: completedSections,
-                                );
-                              }
-
-                              if (expandedSectionId.value == record.id) {
-                                _handleSectionChange(
-                                  context: context,
-                                  previousRecordId: record.id,
-                                  carId: carId,
-                                  dateControllers: dateControllers.value,
-                                  mileageControllers: mileageControllers.value,
-                                  completedSections: completedSections,
-                                );
-                                expandedSectionId.value = null;
-                              } else {
-                                expandedSectionId.value = record.id;
-                              }
-                            },
-                            dateController: dateControllers.value[record.id]!,
-                            mileageController:
-                            mileageControllers.value[record.id]!,
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  }
-
-                  return const SizedBox.shrink();
-                },
-              ),
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ),
+                _buildBottomSection(
+                  context,
+                  completedSections,
+                  dateControllers,
+                  mileageControllers,
+                  expandedSectionId,
+                  isSubmitting,
+                ),
+              ],
             ),
-            _buildBottomSection(
-              context,
-              completedSections,
-              dateControllers,
-              mileageControllers,
-              expandedSectionId,
-              isSubmitting,
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, ValueNotifier<bool> isSubmitting) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.spacingMd,
@@ -271,7 +303,13 @@ class MaintenanceHistoryPage extends HookWidget {
             ),
             child: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: isSubmitting.value
+                  ? null
+                  : () {
+                log('[MaintenanceHistory] Back button pressed, deleting car: $carId');
+                context.read<DeleteCarCubit>().deleteCar(carId: int.parse(carId));
+                Navigator.of(context).pop();
+              },
               color: AppColors.textPrimary,
             ),
           ),
@@ -562,7 +600,6 @@ class MaintenanceHistoryPage extends HookWidget {
     final dateText = dateController.text.trim();
     final mileageText = mileageController.text.trim();
 
-    // Kullanıcının girdiği değerleri kullan, boş olanlar için default ata
     final formattedDate = _parseDateOrDefault(dateText);
     final mileage = _parseMileageOrDefault(mileageText);
 
@@ -578,7 +615,6 @@ class MaintenanceHistoryPage extends HookWidget {
     completedSections.value = {...completedSections.value, previousRecordId};
   }
 
-  // FIX #1: Açık olan section'ı kaydet (kısmi veri de dahil)
   Future<bool> _saveExpandedSectionIfNeeded({
     required BuildContext context,
     required int? expandedRecordId,
@@ -588,7 +624,6 @@ class MaintenanceHistoryPage extends HookWidget {
   }) async {
     if (expandedRecordId == null) return false;
 
-    // Context kontrolü
     if (!context.mounted) {
       log('[MaintenanceHistory] Context no longer mounted, skipping expanded section save');
       return false;
@@ -602,7 +637,6 @@ class MaintenanceHistoryPage extends HookWidget {
     final dateText = dateController.text.trim();
     final mileageText = mileageController.text.trim();
 
-    // Kullanıcının girdiği değerleri kullan, boş olanlar için default ata
     final formattedDate = _parseDateOrDefault(dateText);
     final mileage = _parseMileageOrDefault(mileageText);
 
@@ -615,20 +649,13 @@ class MaintenanceHistoryPage extends HookWidget {
       doneKm: mileage,
     );
 
-    completedSections.value = {
-      ...completedSections.value,
-      expandedRecordId
-    };
+    completedSections.value = {...completedSections.value, expandedRecordId};
 
-    // API'nin işlemesi için kısa bir bekleme
     await Future.delayed(const Duration(milliseconds: 300));
 
-    // Async gap sonrası tekrar kontrol
     return context.mounted;
   }
 
-  /// Tarih metnini API formatına çevirir (dd/MM/yyyy -> yyyy-MM-dd)
-  /// Boşsa default tarih döner
   String _parseDateOrDefault(String dateText) {
     final defaultYear = carModelYear ?? 2020;
     final defaultDate = '$defaultYear-12-31';
@@ -641,14 +668,11 @@ class MaintenanceHistoryPage extends HookWidget {
     return '${dateParts[2]}-${dateParts[1].padLeft(2, '0')}-${dateParts[0].padLeft(2, '0')}';
   }
 
-  /// Kilometre metnini int'e çevirir, boşsa 0 döner
   int _parseMileageOrDefault(String mileageText) {
     if (mileageText.isEmpty) return 0;
     return int.tryParse(mileageText) ?? 0;
   }
 
-  // FIX #4: Sıralı API çağrısı ile tüm recordları güncelle
-  // Kullanıcının girdiği kısmi veriler korunur, boş alanlar default alır
   Future<void> _updateAllRecordsSequentially({
     required BuildContext context,
     required Map<int, TextEditingController> dateControllers,
@@ -656,7 +680,6 @@ class MaintenanceHistoryPage extends HookWidget {
     required Set<int> alreadySavedRecords,
   }) async {
     for (final entry in dateControllers.entries) {
-      // Async gap sonrası context kontrolü - sayfa kapatıldıysa işlemi durdur
       if (!context.mounted) {
         log('[MaintenanceHistory] Context no longer mounted, stopping updates');
         return;
@@ -664,7 +687,6 @@ class MaintenanceHistoryPage extends HookWidget {
 
       final recordId = entry.key;
 
-      // Zaten kaydedilmiş recordları atla (accordion kapatılınca veya expanded section kaydedilince)
       if (alreadySavedRecords.contains(recordId)) {
         log('[MaintenanceHistory] Record $recordId already saved, skipping');
         continue;
@@ -678,7 +700,6 @@ class MaintenanceHistoryPage extends HookWidget {
       final dateText = dateController.text.trim();
       final mileageText = mileageController.text.trim();
 
-      // Kullanıcının girdiği değerleri kullan, boş olanlar için default ata
       final formattedDate = _parseDateOrDefault(dateText);
       final mileage = _parseMileageOrDefault(mileageText);
 
@@ -691,7 +712,6 @@ class MaintenanceHistoryPage extends HookWidget {
         doneKm: mileage,
       );
 
-      // API'yi boğmamak için sıralı çağrı - her istek arasında bekle
       await Future.delayed(const Duration(milliseconds: 300));
     }
   }
@@ -770,11 +790,11 @@ class MaintenanceHistoryPage extends HookWidget {
                   isSubmitting.value = true;
 
                   try {
-                    // Kaydedilmiş recordları takip et
-                    final savedRecords = Set<int>.from(completedSections.value);
+                    final savedRecords =
+                    Set<int>.from(completedSections.value);
 
-                    // FIX #1: Önce açık olan section'ı kaydet
-                    final expandedSaved = await _saveExpandedSectionIfNeeded(
+                    final expandedSaved =
+                    await _saveExpandedSectionIfNeeded(
                       context: context,
                       expandedRecordId: expandedSectionId.value,
                       dateControllers: dateControllers.value,
@@ -782,18 +802,16 @@ class MaintenanceHistoryPage extends HookWidget {
                       completedSections: completedSections,
                     );
 
-                    // Async gap sonrası context kontrolü
                     if (!context.mounted) {
                       log('[MaintenanceHistory] Context no longer mounted after saving expanded section');
                       return;
                     }
 
-                    if (expandedSaved && expandedSectionId.value != null) {
+                    if (expandedSaved &&
+                        expandedSectionId.value != null) {
                       savedRecords.add(expandedSectionId.value!);
                     }
 
-                    // FIX #4: Kalan tüm recordları sıralı şekilde güncelle
-                    // Kısmi veri korunur, boş alanlar default alır
                     await _updateAllRecordsSequentially(
                       context: context,
                       dateControllers: dateControllers.value,
@@ -801,13 +819,11 @@ class MaintenanceHistoryPage extends HookWidget {
                       alreadySavedRecords: savedRecords,
                     );
 
-                    // Async gap sonrası context kontrolü
                     if (!context.mounted) {
                       log('[MaintenanceHistory] Context no longer mounted after updating records');
                       return;
                     }
 
-                    // Tüm update'ler bittikten sonra execute et
                     log('[MaintenanceHistory] All updates complete, executing car service');
                     context
                         .read<ExecuteCarServiceCubit>()

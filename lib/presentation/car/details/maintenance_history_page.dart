@@ -23,7 +23,7 @@ import '../../success/success_page.dart';
 
 class MaintenanceHistoryPage extends HookWidget {
   final String carId;
-  final int? carModelYear; // Arabanın üretim yılı
+  final int? carModelYear;
 
   const MaintenanceHistoryPage({
     super.key,
@@ -37,10 +37,21 @@ class MaintenanceHistoryPage extends HookWidget {
     final completedSections = useState<Set<int>>({});
     final dateControllers = useState<Map<int, TextEditingController>>({});
     final mileageControllers = useState<Map<int, TextEditingController>>({});
+    final isSubmitting = useState<bool>(false);
 
+    // FIX #2: Memory Leak - Controller'ları dispose et
     useEffect(() {
       context.read<GetCarRecordsCubit>().getCarRecords(carId);
-      return null;
+
+      return () {
+        // Widget dispose olduğunda tüm controller'ları temizle
+        for (final controller in dateControllers.value.values) {
+          controller.dispose();
+        }
+        for (final controller in mileageControllers.value.values) {
+          controller.dispose();
+        }
+      };
     }, []);
 
     return Scaffold(
@@ -53,23 +64,32 @@ class MaintenanceHistoryPage extends HookWidget {
               child: BlocConsumer<GetCarRecordsCubit, GetCarRecordsState>(
                 listener: (context, state) {
                   if (state is GetCarRecordsSuccess) {
+                    // FIX #3: Map'i yeni referansla güncelle (rebuild tetiklemek için)
+                    final newDateControllers =
+                    Map<int, TextEditingController>.from(
+                        dateControllers.value);
+                    final newMileageControllers =
+                    Map<int, TextEditingController>.from(
+                        mileageControllers.value);
+
                     for (var record in state.records) {
-                      if (!dateControllers.value.containsKey(record.id)) {
-                        dateControllers.value[record.id] =
-                            TextEditingController(
-                              text: record.doneDate != null
-                                  ? DateFormat('dd/MM/yyyy')
-                                  .format(record.doneDate!)
-                                  : '',
-                            );
+                      if (!newDateControllers.containsKey(record.id)) {
+                        newDateControllers[record.id] = TextEditingController(
+                          text: record.doneDate != null
+                              ? DateFormat('dd/MM/yyyy').format(record.doneDate!)
+                              : '',
+                        );
                       }
-                      if (!mileageControllers.value.containsKey(record.id)) {
-                        mileageControllers.value[record.id] =
-                            TextEditingController(
-                              text: record.doneKm != null ? '${record.doneKm}' : '',
-                            );
+                      if (!newMileageControllers.containsKey(record.id)) {
+                        newMileageControllers[record.id] = TextEditingController(
+                          text: record.doneKm != null ? '${record.doneKm}' : '',
+                        );
                       }
                     }
+
+                    // Yeni referans atayarak rebuild tetikle
+                    dateControllers.value = newDateControllers;
+                    mileageControllers.value = newMileageControllers;
                   }
                 },
                 builder: (context, state) {
@@ -159,6 +179,12 @@ class MaintenanceHistoryPage extends HookWidget {
                       padding: const EdgeInsets.all(AppTheme.spacingLg),
                       child: Column(
                         children: state.records.map((record) {
+                          // Controller'lar henüz oluşturulmadıysa boş widget döndür
+                          if (!dateControllers.value.containsKey(record.id) ||
+                              !mileageControllers.value.containsKey(record.id)) {
+                            return const SizedBox.shrink();
+                          }
+
                           return _buildServiceSection(
                             context: context,
                             record: record,
@@ -166,8 +192,7 @@ class MaintenanceHistoryPage extends HookWidget {
                             isCompleted:
                             completedSections.value.contains(record.id),
                             onExpand: () {
-                              final previousExpandedId =
-                                  expandedSectionId.value;
+                              final previousExpandedId = expandedSectionId.value;
 
                               if (previousExpandedId != null &&
                                   previousExpandedId != record.id) {
@@ -213,6 +238,8 @@ class MaintenanceHistoryPage extends HookWidget {
               completedSections,
               dateControllers,
               mileageControllers,
+              expandedSectionId,
+              isSubmitting,
             ),
           ],
         ),
@@ -461,7 +488,11 @@ class MaintenanceHistoryPage extends HookWidget {
                 keyboardType: keyboardType,
                 inputFormatters: inputFormatters,
                 maxLength: maxLength,
-                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                buildCounter: (context,
+                    {required currentLength,
+                      required isFocused,
+                      maxLength}) =>
+                null,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
@@ -531,18 +562,11 @@ class MaintenanceHistoryPage extends HookWidget {
     final dateText = dateController.text.trim();
     final mileageText = mileageController.text.trim();
 
-    if (dateText.isEmpty || mileageText.isEmpty) {
-      return;
-    }
+    // Kullanıcının girdiği değerleri kullan, boş olanlar için default ata
+    final formattedDate = _parseDateOrDefault(dateText);
+    final mileage = _parseMileageOrDefault(mileageText);
 
-    final dateParts = dateText.split('/');
-    if (dateParts.length != 3) return;
-
-    final formattedDate =
-        '${dateParts[2]}-${dateParts[1].padLeft(2, '0')}-${dateParts[0].padLeft(2, '0')}';
-    final mileage = int.tryParse(mileageText);
-
-    if (mileage == null) return;
+    log('[MaintenanceHistory] Section change - Record $previousRecordId - date: "$dateText" -> "$formattedDate", mileage: "$mileageText" -> $mileage');
 
     context.read<UpdateCarRecordCubit>().updateCarRecord(
       carId: int.parse(carId),
@@ -554,35 +578,121 @@ class MaintenanceHistoryPage extends HookWidget {
     completedSections.value = {...completedSections.value, previousRecordId};
   }
 
-  /// Boş bırakılan recordlar için default değerler atayarak update eder
-  void _updateEmptyRecordsWithDefaults({
+  // FIX #1: Açık olan section'ı kaydet (kısmi veri de dahil)
+  Future<bool> _saveExpandedSectionIfNeeded({
     required BuildContext context,
+    required int? expandedRecordId,
     required Map<int, TextEditingController> dateControllers,
     required Map<int, TextEditingController> mileageControllers,
-    required Set<int> completedSections,
-  }) {
-    // Default tarih: arabanın üretim yılının 31 Aralık'ı veya 2020 default
+    required ValueNotifier<Set<int>> completedSections,
+  }) async {
+    if (expandedRecordId == null) return false;
+
+    // Context kontrolü
+    if (!context.mounted) {
+      log('[MaintenanceHistory] Context no longer mounted, skipping expanded section save');
+      return false;
+    }
+
+    final dateController = dateControllers[expandedRecordId];
+    final mileageController = mileageControllers[expandedRecordId];
+
+    if (dateController == null || mileageController == null) return false;
+
+    final dateText = dateController.text.trim();
+    final mileageText = mileageController.text.trim();
+
+    // Kullanıcının girdiği değerleri kullan, boş olanlar için default ata
+    final formattedDate = _parseDateOrDefault(dateText);
+    final mileage = _parseMileageOrDefault(mileageText);
+
+    log('[MaintenanceHistory] Saving expanded section $expandedRecordId - date: "$dateText" -> "$formattedDate", mileage: "$mileageText" -> $mileage');
+
+    context.read<UpdateCarRecordCubit>().updateCarRecord(
+      carId: int.parse(carId),
+      recordId: expandedRecordId,
+      doneDate: formattedDate,
+      doneKm: mileage,
+    );
+
+    completedSections.value = {
+      ...completedSections.value,
+      expandedRecordId
+    };
+
+    // API'nin işlemesi için kısa bir bekleme
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    // Async gap sonrası tekrar kontrol
+    return context.mounted;
+  }
+
+  /// Tarih metnini API formatına çevirir (dd/MM/yyyy -> yyyy-MM-dd)
+  /// Boşsa default tarih döner
+  String _parseDateOrDefault(String dateText) {
     final defaultYear = carModelYear ?? 2020;
     final defaultDate = '$defaultYear-12-31';
 
+    if (dateText.isEmpty) return defaultDate;
+
+    final dateParts = dateText.split('/');
+    if (dateParts.length != 3) return defaultDate;
+
+    return '${dateParts[2]}-${dateParts[1].padLeft(2, '0')}-${dateParts[0].padLeft(2, '0')}';
+  }
+
+  /// Kilometre metnini int'e çevirir, boşsa 0 döner
+  int _parseMileageOrDefault(String mileageText) {
+    if (mileageText.isEmpty) return 0;
+    return int.tryParse(mileageText) ?? 0;
+  }
+
+  // FIX #4: Sıralı API çağrısı ile tüm recordları güncelle
+  // Kullanıcının girdiği kısmi veriler korunur, boş alanlar default alır
+  Future<void> _updateAllRecordsSequentially({
+    required BuildContext context,
+    required Map<int, TextEditingController> dateControllers,
+    required Map<int, TextEditingController> mileageControllers,
+    required Set<int> alreadySavedRecords,
+  }) async {
     for (final entry in dateControllers.entries) {
+      // Async gap sonrası context kontrolü - sayfa kapatıldıysa işlemi durdur
+      if (!context.mounted) {
+        log('[MaintenanceHistory] Context no longer mounted, stopping updates');
+        return;
+      }
+
       final recordId = entry.key;
 
-      // Zaten completed olan recordları skip et
-      if (completedSections.contains(recordId)) continue;
+      // Zaten kaydedilmiş recordları atla (accordion kapatılınca veya expanded section kaydedilince)
+      if (alreadySavedRecords.contains(recordId)) {
+        log('[MaintenanceHistory] Record $recordId already saved, skipping');
+        continue;
+      }
 
       final dateController = entry.value;
       final mileageController = mileageControllers[recordId];
 
       if (mileageController == null) continue;
 
-      // Default değerlerle update et
+      final dateText = dateController.text.trim();
+      final mileageText = mileageController.text.trim();
+
+      // Kullanıcının girdiği değerleri kullan, boş olanlar için default ata
+      final formattedDate = _parseDateOrDefault(dateText);
+      final mileage = _parseMileageOrDefault(mileageText);
+
+      log('[MaintenanceHistory] Record $recordId - date: "$dateText" -> "$formattedDate", mileage: "$mileageText" -> $mileage');
+
       context.read<UpdateCarRecordCubit>().updateCarRecord(
         carId: int.parse(carId),
         recordId: recordId,
-        doneDate: defaultDate,
-        doneKm: 0,
+        doneDate: formattedDate,
+        doneKm: mileage,
       );
+
+      // API'yi boğmamak için sıralı çağrı - her istek arasında bekle
+      await Future.delayed(const Duration(milliseconds: 300));
     }
   }
 
@@ -591,6 +701,8 @@ class MaintenanceHistoryPage extends HookWidget {
       ValueNotifier<Set<int>> completedSections,
       ValueNotifier<Map<int, TextEditingController>> dateControllers,
       ValueNotifier<Map<int, TextEditingController>> mileageControllers,
+      ValueNotifier<int?> expandedSectionId,
+      ValueNotifier<bool> isSubmitting,
       ) {
     return MultiBlocListener(
       listeners: [
@@ -608,11 +720,11 @@ class MaintenanceHistoryPage extends HookWidget {
             }
           },
         ),
-        // Execute Car Service Listener
         BlocListener<ExecuteCarServiceCubit, ExecuteCarServiceState>(
           listener: (context, state) {
             if (state is ExecuteCarServiceSuccess) {
               log('[MaintenanceHistory] Execute Car Service Success: ${state.message}');
+              isSubmitting.value = false;
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -626,6 +738,7 @@ class MaintenanceHistoryPage extends HookWidget {
               );
             } else if (state is ExecuteCarServiceError) {
               log('[MaintenanceHistory] Execute Car Service Error: ${state.message}');
+              isSubmitting.value = false;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -642,7 +755,8 @@ class MaintenanceHistoryPage extends HookWidget {
         padding: const EdgeInsets.all(AppTheme.spacingMd),
         child: BlocBuilder<ExecuteCarServiceCubit, ExecuteCarServiceState>(
           builder: (context, executeState) {
-            final isExecuting = executeState is ExecuteCarServiceLoading;
+            final isExecuting =
+                executeState is ExecuteCarServiceLoading || isSubmitting.value;
             final hasAnyCompleted = completedSections.value.isNotEmpty;
 
             return SizedBox(
@@ -651,20 +765,67 @@ class MaintenanceHistoryPage extends HookWidget {
               child: ElevatedButton(
                 onPressed: isExecuting
                     ? null
-                    : () {
-                  log('[MaintenanceHistory] Submit pressed, executing car service for carId: $carId');
+                    : () async {
+                  log('[MaintenanceHistory] Submit pressed, starting save process for carId: $carId');
+                  isSubmitting.value = true;
 
-                  // Boş bırakılan recordlar için default değerler ata
-                  _updateEmptyRecordsWithDefaults(
-                    context: context,
-                    dateControllers: dateControllers.value,
-                    mileageControllers: mileageControllers.value,
-                    completedSections: completedSections.value,
-                  );
+                  try {
+                    // Kaydedilmiş recordları takip et
+                    final savedRecords = Set<int>.from(completedSections.value);
 
-                  context
-                      .read<ExecuteCarServiceCubit>()
-                      .executeCarService(int.parse(carId));
+                    // FIX #1: Önce açık olan section'ı kaydet
+                    final expandedSaved = await _saveExpandedSectionIfNeeded(
+                      context: context,
+                      expandedRecordId: expandedSectionId.value,
+                      dateControllers: dateControllers.value,
+                      mileageControllers: mileageControllers.value,
+                      completedSections: completedSections,
+                    );
+
+                    // Async gap sonrası context kontrolü
+                    if (!context.mounted) {
+                      log('[MaintenanceHistory] Context no longer mounted after saving expanded section');
+                      return;
+                    }
+
+                    if (expandedSaved && expandedSectionId.value != null) {
+                      savedRecords.add(expandedSectionId.value!);
+                    }
+
+                    // FIX #4: Kalan tüm recordları sıralı şekilde güncelle
+                    // Kısmi veri korunur, boş alanlar default alır
+                    await _updateAllRecordsSequentially(
+                      context: context,
+                      dateControllers: dateControllers.value,
+                      mileageControllers: mileageControllers.value,
+                      alreadySavedRecords: savedRecords,
+                    );
+
+                    // Async gap sonrası context kontrolü
+                    if (!context.mounted) {
+                      log('[MaintenanceHistory] Context no longer mounted after updating records');
+                      return;
+                    }
+
+                    // Tüm update'ler bittikten sonra execute et
+                    log('[MaintenanceHistory] All updates complete, executing car service');
+                    context
+                        .read<ExecuteCarServiceCubit>()
+                        .executeCarService(int.parse(carId));
+                  } catch (e) {
+                    log('[MaintenanceHistory] Error during submit: $e');
+                    if (context.mounted) {
+                      isSubmitting.value = false;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              '${AppTranslation.translate(AppStrings.errorOccurred)}: $e'),
+                          backgroundColor: AppColors.errorColor,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryBlack,
@@ -693,7 +854,8 @@ class MaintenanceHistoryPage extends HookWidget {
                     Text(
                       hasAnyCompleted
                           ? AppTranslation.translate(AppStrings.submit)
-                          : AppTranslation.translate(AppStrings.skipButtonText),
+                          : AppTranslation.translate(
+                          AppStrings.skipButtonText),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

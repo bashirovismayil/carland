@@ -54,12 +54,14 @@ class CarDetailsPage extends HookWidget {
     );
     final transmissionController = useTextEditingController();
     final engineTypeController = useTextEditingController();
-    final yearController = useTextEditingController();
+    final yearController = useTextEditingController(
+      text: carData.modelYear != null ? '${carData.modelYear}' : '',
+    );
     final colorController = useTextEditingController(text: carData.color ?? '');
     final mileageController = useTextEditingController(
       text: carData.mileage != null ? '${carData.mileage}' : '',
     );
-    final bodyTypeController = useTextEditingController();
+    final bodyTypeController = useTextEditingController(text: carData.bodyType ?? '');
 
     // FocusNodes for TextFields
     final plateFocusNode = useFocusNode();
@@ -93,7 +95,6 @@ class CarDetailsPage extends HookWidget {
       };
     });
 
-    // Helper function to unfocus all fields
     void unfocusAll() {
       FocusScope.of(context).unfocus();
     }
@@ -233,7 +234,7 @@ class CarDetailsPage extends HookWidget {
                           hint: AppTranslation.translate(
                               AppStrings.engineVolumeHint),
                           svgIcon: 'assets/svg/car_engine_icon.svg',
-                          enabled: true,
+                          enabled: false,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
@@ -270,6 +271,7 @@ class CarDetailsPage extends HookWidget {
                             }
                             return [];
                           },
+                          enabled: false,
                           isRequired: true,
                           dropdownKey: bodyTypeKey,
                           onTap: unfocusAll,
@@ -619,6 +621,7 @@ class CarDetailsPage extends HookWidget {
     required dynamic Function() cubitBuilder,
     required dynamic Function(BuildContext) stateBuilder,
     required List<String> Function(dynamic) itemsExtractor,
+    bool enabled = true, // Yeni parametre, varsayılan olarak true
     bool isRequired = false,
     String? Function(String?)? validator,
     required GlobalKey dropdownKey,
@@ -674,10 +677,9 @@ class CarDetailsPage extends HookWidget {
             ),
             const SizedBox(height: AppTheme.spacingSm),
             GestureDetector(
-              onTap: isLoading || items.isEmpty
+              onTap: (!enabled || isLoading || items.isEmpty)
                   ? null
                   : () {
-                // Unfocus any active TextField first
                 onTap?.call();
                 _showDropdownMenu(
                   context,
@@ -691,20 +693,24 @@ class CarDetailsPage extends HookWidget {
               child: Container(
                 key: dropdownKey,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: enabled ? Colors.white : AppColors.lightGrey,
                   borderRadius: BorderRadius.circular(AppTheme.radiusXl),
                   border: Border.all(
                     color: fieldState.hasError
                         ? AppColors.errorColor
-                        : Colors.grey.shade300,
+                        : (enabled
+                        ? Colors.grey.shade300
+                        : Colors.grey.shade200),
                   ),
-                  boxShadow: [
+                  boxShadow: enabled
+                      ? [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.03),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
-                  ],
+                  ]
+                      : null,
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppTheme.spacingMd,
@@ -717,8 +723,10 @@ class CarDetailsPage extends HookWidget {
                         padding: const EdgeInsets.only(right: 8),
                         child: SvgPicture.asset(
                           svgIcon,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.textSecondary,
+                          colorFilter: ColorFilter.mode(
+                            enabled
+                                ? AppColors.textSecondary
+                                : Colors.grey.shade400,
                             BlendMode.srcIn,
                           ),
                           width: 20,
@@ -742,17 +750,21 @@ class CarDetailsPage extends HookWidget {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: controller.text.isEmpty
+                          color: !enabled
+                              ? AppColors.textSecondary
+                              : (controller.text.isEmpty
                               ? AppColors.textSecondary.withOpacity(0.5)
-                              : AppColors.textPrimary,
+                              : AppColors.textPrimary),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.textSecondary,
+                      color: enabled
+                          ? AppColors.textSecondary
+                          : Colors.grey.shade400,
                       size: 20,
                     ),
                   ],

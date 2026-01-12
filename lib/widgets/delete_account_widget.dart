@@ -112,7 +112,7 @@ class DeleteAccountWidget extends StatelessWidget {
           BlocConsumer<DeleteAccountCubit, DeleteAccountState>(
             listener: (context, state) {
               if (state is DeleteAccountSuccess) {
-                Navigator.of(dialogContext).pop(); // Close dialog
+                Navigator.of(dialogContext).pop();
 
                 locator<LoginLocalService>().clear();
 

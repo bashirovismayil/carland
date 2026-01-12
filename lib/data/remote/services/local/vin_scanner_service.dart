@@ -66,9 +66,8 @@ class VinScannerService {
 
   DateTime? _lastProcessTime;
 
-  // ============ YENİ: SÜREKLİ ODAKLAMA İÇİN ============
+  // ============ SÜREKLİ ODAKLAMA İÇİN ============
   DateTime _lastFocusTriggerTime = DateTime.now();
-  // Odaklamalar arası minimum bekleme süresi (çok sık odaklama yapıp kamerayı sersemletmemek için)
   static const _focusDebounceInterval = Duration(milliseconds: 2000);
 
   static const _processInterval = Duration(milliseconds: 150);
@@ -88,6 +87,14 @@ class VinScannerService {
 
   String? _foundVin;
   double? _foundConfidence;
+
+  // ============ YENİ: VIN BOUNDARY REGEX ============
+  // VIN kodunun önünde ve sonunda alfanumerik olmayan karakter olmasını zorunlu kılar
+  // Bu sayede "1.X96GAZ3110123456" gibi metinlerde yanlış kayma önlenir
+  static final RegExp _vinBoundaryRegex = RegExp(
+    r'(?:^|[^A-HJ-NPR-Z0-9])([A-HJ-NPR-Z0-9]{17})(?:$|[^A-HJ-NPR-Z0-9])',
+    caseSensitive: false,
+  );
 
   // Getter'lar
   double get minZoomLevel => _minZoomLevel;
@@ -185,7 +192,8 @@ class VinScannerService {
       await _cameraController!.setZoomLevel(targetZoom);
       _currentZoomLevel = targetZoom;
 
-      debugPrint('Initial zoom set to: $_currentZoomLevel (target was $_targetInitialZoom)');
+      debugPrint(
+          'Initial zoom set to: $_currentZoomLevel (target was $_targetInitialZoom)');
     } catch (e) {
       debugPrint('Zoom initialization error: $e');
       _minZoomLevel = 1.0;
@@ -212,24 +220,18 @@ class VinScannerService {
     await _triggerCenterFocus();
   }
 
-  /// YENİ: Geliştirilmiş odaklama fonksiyonu
   Future<void> _triggerCenterFocus() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
     }
 
     try {
-      // Önce Auto modunda olduğumuzdan emin olalım
       if (_cameraController!.value.focusMode != FocusMode.auto) {
         await _cameraController!.setFocusMode(FocusMode.auto);
       }
 
-      // Tam ortaya (0.5, 0.5) odaklanmasını söyle.
-      // Bu komut genellikle lensi hareket ettirip yeniden netlemeyi başlatır.
       const centerPoint = Offset(0.5, 0.5);
       await _cameraController!.setFocusPoint(centerPoint);
-
-      // Exposure'u da güncellemek iyidir, bazen parlama VIN okumayı bozar
       await _cameraController!.setExposurePoint(centerPoint);
 
       debugPrint('Center focus triggered');
@@ -266,7 +268,7 @@ class VinScannerService {
     _isStreaming = true;
     _detectionCounts.clear();
     _lastProcessTime = null;
-    _lastFocusTriggerTime = DateTime.now(); // YENİ: Zamanlayıcıyı başlat
+    _lastFocusTriggerTime = DateTime.now();
     _foundVin = null;
     _foundConfidence = null;
 
@@ -324,7 +326,6 @@ class VinScannerService {
     _processFrame(image);
   }
 
-  /// YENİ: Geliştirilmiş frame işleme - Simulated Continuous Focus
   Future<void> _processFrame(CameraImage image) async {
     try {
       if (_isDisposed) return;
@@ -338,29 +339,16 @@ class VinScannerService {
 
       if (_isDisposed || !_isStreaming) return;
 
-      // ============================================================
-      // YENİ: DÜZELTİLEN ODAKLAMA MANTIĞI (Simulated Continuous Focus)
-      // ============================================================
       final now = DateTime.now();
 
-      // Eğer VIN henüz bulunamadıysa (buffer doluyor olsa bile)
       if (_foundVin == null) {
-        // Ve son odaklamadan beri 2 saniye geçtiyse
         if (now.difference(_lastFocusTriggerTime) > _focusDebounceInterval) {
-
-          // Debug için yazdıralım
           debugPrint('Refocusing triggered explicitly to clear blur...');
-
-          // Yeniden odaklamayı tetikle
           _triggerCenterFocus();
-
-          // Zamanlayıcıyı güncelle
           _lastFocusTriggerTime = now;
         }
       }
-      // ============================================================
 
-      // Metin işleme kısmı aynen devam eder...
       onDebugText?.call(recognizedText.text);
 
       final candidates = _findAllCandidates(
@@ -425,6 +413,10 @@ class VinScannerService {
     }
   }
 
+  /// YENİ: Geliştirilmiş aday bulma algoritması
+  /// İki aşamalı strateji kullanır:
+  /// 1. Ham metinde boundary regex ile arama (ayraçları koruyarak)
+  /// 2. Temizlenmiş metinde tam 17 karakter kontrolü
   List<String> _findAllCandidates(
       RecognizedText recognizedText, {
         required double imageWidth,
@@ -448,24 +440,40 @@ class VinScannerService {
       }
 
       for (final line in block.lines) {
-        final lineText = line.text;
-        final cleaned = _cleanForSearch(lineText);
+        final rawLineText = line.text.toUpperCase();
 
-        if (cleaned.length == 17) {
-          if (_isValidCandidate(cleaned)) {
-            candidates.add(cleaned);
-          }
-        } else if (cleaned.length > 17) {
-          final extracted = _extract17CharPatterns(cleaned);
-          for (final e in extracted) {
-            if (_isValidCandidate(e)) {
-              candidates.add(e);
-            }
+        // ============ STRATEJİ 1: Boundary regex ile arama ============
+        // Ham metni kullanarak sınır kontrolü yapar
+        // "1.X96GAZ3110123456" gibi metinlerde noktayı sınır olarak görür
+        final boundaryExtracted = _extract17CharPatternsWithBoundary(rawLineText);
+        for (final candidate in boundaryExtracted) {
+          if (_isValidCandidate(candidate)) {
+            candidates.add(candidate);
           }
         }
 
+        // ============ STRATEJİ 2: Temizlenmiş metin kontrolü ============
+        // OCR kaynaklı boşluklar olduğunda devreye girer
+        // Sadece tam 17 karakter ise kabul eder
+        final cleaned = _cleanForSearch(rawLineText);
+        if (cleaned.length == 17 && _isValidCandidate(cleaned)) {
+          candidates.add(cleaned);
+        }
+
+        // Element bazlı kontrol
         for (final element in line.elements) {
-          final elemCleaned = _cleanForSearch(element.text);
+          final elemRaw = element.text.toUpperCase();
+
+          // Element üzerinde de boundary kontrolü
+          final elemBoundaryExtracted =
+          _extract17CharPatternsWithBoundary(elemRaw);
+          for (final candidate in elemBoundaryExtracted) {
+            if (_isValidCandidate(candidate)) {
+              candidates.add(candidate);
+            }
+          }
+
+          final elemCleaned = _cleanForSearch(elemRaw);
           if (elemCleaned.length == 17 && _isValidCandidate(elemCleaned)) {
             candidates.add(elemCleaned);
           }
@@ -476,9 +484,16 @@ class VinScannerService {
     return candidates.toList();
   }
 
+  /// YENİ: OCR hata düzeltmesi ile temizleme
+  /// O -> 0, Q -> 0 dönüşümü yapar (OCR sık karıştırır)
   String _cleanForSearch(String text) {
     return text
         .toUpperCase()
+    // OCR Auto-Correction: VIN'de I, O, Q kullanılmaz
+    // OCR bunları sıklıkla yanlış okur
+        .replaceAll('O', '0') // O harfini 0 rakamına çevir
+        .replaceAll('Q', '0') // Q harfini 0 rakamına çevir
+        .replaceAll('I', '1') // I harfini 1 rakamına çevir
         .replaceAll(' ', '')
         .replaceAll('-', '')
         .replaceAll('.', '')
@@ -495,6 +510,43 @@ class VinScannerService {
         .trim();
   }
 
+  /// YENİ: Boundary-aware pattern extraction
+  /// Sadece tam olarak 17 karakterden oluşan ve sınırları belirli VIN'leri bulur
+  /// Önünde veya sonunda alfanumerik karakter olan 18+ karakterli yapıları reddeder
+  List<String> _extract17CharPatternsWithBoundary(String text) {
+    final results = <String>[];
+
+    // OCR düzeltmesi uygula (boundary kontrolü öncesi)
+    final correctedText = _applyOcrCorrections(text);
+
+    final matches = _vinBoundaryRegex.allMatches(correctedText);
+    for (final match in matches) {
+      // 1. grup sadece 17 karakterlik VIN kısmını yakalar
+      final candidate = match.group(1);
+      if (candidate != null) {
+        results.add(candidate.toUpperCase());
+      }
+    }
+
+    return results;
+  }
+
+  /// YENİ: OCR düzeltmelerini uygular (boundary kontrolü için)
+  /// Sınırları bozmadan sadece karakter dönüşümü yapar
+  String _applyOcrCorrections(String text) {
+    // Sadece VIN için geçersiz olan karakterleri dönüştür
+    // Sınır karakterlerini (nokta, boşluk vs.) koru
+    return text
+        .toUpperCase()
+        .replaceAll('O', '0')
+        .replaceAll('Q', '0')
+        .replaceAll('I', '1');
+  }
+
+  /// ESKİ: Fallback olarak tutulan eski extraction metodu
+  /// Boundary regex başarısız olursa ve metin tam 17 karakter değilse
+  /// bu metod devreye girmez (güvenlik için devre dışı)
+  @Deprecated('Use _extract17CharPatternsWithBoundary instead')
   List<String> _extract17CharPatterns(String text) {
     final results = <String>[];
     if (text.length >= 17) {
@@ -508,24 +560,38 @@ class VinScannerService {
     return results;
   }
 
+  /// YENİ: Geliştirilmiş VIN aday doğrulama
+  /// Ek kontroller: Sıfır ile başlama yasağı, karakter dağılımı
   bool _isValidCandidate(String text) {
     if (text.length != 17) return false;
 
+    // YENİ: VIN asla 0 ile başlamaz (dünya standardı)
+    if (text.startsWith('0')) {
+      return false;
+    }
+
+    // VIN'de I, O, Q karakterleri kullanılmaz
+    // (OCR düzeltmesi sonrası bu kontrol teorik olarak gereksiz
+    // ama güvenlik için tutuluyor)
     if (text.contains('I') || text.contains('O') || text.contains('Q')) {
       return false;
     }
 
+    // Sadece geçerli VIN karakterleri: A-H, J-N, P-R, S-Z, 0-9
     if (!RegExp(r'^[A-HJ-NPR-Z0-9]{17}$').hasMatch(text)) {
       return false;
     }
 
+    // Harf ve rakam dengesi kontrolü
     final letterCount = text.replaceAll(RegExp(r'[0-9]'), '').length;
     final digitCount = 17 - letterCount;
 
+    // En az 2 harf ve 2 rakam olmalı
     if (letterCount < 2 || digitCount < 2) {
       return false;
     }
 
+    // 5 ardışık aynı karakter kontrolü (false positive önleme)
     for (int i = 0; i < 13; i++) {
       if (text[i] == text[i + 1] &&
           text[i] == text[i + 2] &&
@@ -540,9 +606,9 @@ class VinScannerService {
 
   bool _validateVinChecksum(String vin) {
     const transliterationMap = <int, int>{
-      65: 1, 66: 2, 67: 3, 68: 4, 69: 5, 70: 6, 71: 7, 72: 8,
-      74: 1, 75: 2, 76: 3, 77: 4, 78: 5, 80: 7, 82: 9,
-      83: 2, 84: 3, 85: 4, 86: 5, 87: 6, 88: 7, 89: 8, 90: 9,
+      65: 1, 66: 2, 67: 3, 68: 4, 69: 5, 70: 6, 71: 7, 72: 8, // A-H
+      74: 1, 75: 2, 76: 3, 77: 4, 78: 5, 80: 7, 82: 9, // J-N, P, R
+      83: 2, 84: 3, 85: 4, 86: 5, 87: 6, 88: 7, 89: 8, 90: 9, // S-Z
     };
 
     const weights = <int>[8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2];
@@ -568,7 +634,7 @@ class VinScannerService {
     final checkDigit = vin.codeUnitAt(8);
 
     if (remainder == 10) {
-      return checkDigit == 88;
+      return checkDigit == 88; // 'X'
     } else {
       return checkDigit == (remainder + 48);
     }
@@ -584,7 +650,8 @@ class VinScannerService {
 
     _detectionCounts[candidate] = (_detectionCounts[candidate] ?? 0) + 1;
 
-    debugPrint('Buffer (no checksum): $candidate = ${_detectionCounts[candidate]}');
+    debugPrint(
+        'Buffer (no checksum): $candidate = ${_detectionCounts[candidate]}');
 
     if (_detectionCounts.length > _maxBufferSize) {
       final sorted = _detectionCounts.entries.toList()
@@ -598,7 +665,8 @@ class VinScannerService {
     if (stableResult != null) {
       debugPrint('✓ Stable detection (no checksum): $stableResult');
       _foundVin = stableResult;
-      _foundConfidence = _detectionCounts[stableResult]! / _requiredDetectionsForNonChecksum;
+      _foundConfidence =
+          _detectionCounts[stableResult]! / _requiredDetectionsForNonChecksum;
     }
   }
 
@@ -731,27 +799,42 @@ class VinScannerService {
     }
   }
 
+  /// YENİ: ROI olmadan aday bulma (manuel çekim için)
+  /// Aynı iki aşamalı stratejiyi kullanır
   List<String> _findAllCandidatesWithoutRoi(RecognizedText recognizedText) {
     final candidates = <String>{};
 
     for (final block in recognizedText.blocks) {
       for (final line in block.lines) {
-        final lineText = line.text;
-        final cleaned = _cleanForSearch(lineText);
+        final rawLineText = line.text.toUpperCase();
 
-        if (cleaned.length == 17 && _isValidCandidate(cleaned)) {
-          candidates.add(cleaned);
-        } else if (cleaned.length > 17) {
-          final extracted = _extract17CharPatterns(cleaned);
-          for (final e in extracted) {
-            if (_isValidCandidate(e)) {
-              candidates.add(e);
-            }
+        // Strateji 1: Boundary regex
+        final boundaryExtracted =
+        _extract17CharPatternsWithBoundary(rawLineText);
+        for (final candidate in boundaryExtracted) {
+          if (_isValidCandidate(candidate)) {
+            candidates.add(candidate);
           }
         }
 
+        // Strateji 2: Temizlenmiş metin (sadece tam 17 karakter)
+        final cleaned = _cleanForSearch(rawLineText);
+        if (cleaned.length == 17 && _isValidCandidate(cleaned)) {
+          candidates.add(cleaned);
+        }
+
         for (final element in line.elements) {
-          final elemCleaned = _cleanForSearch(element.text);
+          final elemRaw = element.text.toUpperCase();
+
+          final elemBoundaryExtracted =
+          _extract17CharPatternsWithBoundary(elemRaw);
+          for (final candidate in elemBoundaryExtracted) {
+            if (_isValidCandidate(candidate)) {
+              candidates.add(candidate);
+            }
+          }
+
+          final elemCleaned = _cleanForSearch(elemRaw);
           if (elemCleaned.length == 17 && _isValidCandidate(elemCleaned)) {
             candidates.add(elemCleaned);
           }

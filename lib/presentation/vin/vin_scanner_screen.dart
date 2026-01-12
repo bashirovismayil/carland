@@ -6,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../core/constants/texts/app_strings.dart';
 import '../../core/constants/values/app_theme.dart';
 import '../../core/localization/app_translation.dart';
-import '../../data/remote/services/local/vin_scanner_service.dart';
+import '../../utils/helper/vin/vin_scanner_service.dart';
 
 class VinScannerScreen extends StatefulWidget {
   final bool showManualEntry;
@@ -129,7 +129,6 @@ class _VinScannerScreenState extends State<VinScannerScreen>
         HapticFeedback.heavyImpact();
         _scannerService.stopContinuousScanning();
 
-        // VIN bulundu, direkt geri dön
         Navigator.of(context).pop(result.vin);
       }
     });

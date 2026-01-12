@@ -519,7 +519,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
-               "assets/svg/barcode_transparent.svg",
+                "assets/svg/barcode_transparent.svg",
                 width: 50,
                 height: 50,
                 colorFilter: ColorFilter.mode(
@@ -568,8 +568,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         } else if (state is GetCarServicesError) {
           return _buildErrorState(state.message);
         }
-
-        // Show previous data while loading new data
         if (state is GetCarServicesLoading && _previousServices != null) {
           return _buildServicesList(_previousServices!, isLoading: true);
         }
@@ -585,9 +583,14 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     if (currentState is GetCarServicesSuccess) {
       currentCarId = currentState.servicesData.carId;
     }
+    int getEffectivePercentage(ResponseList service) {
+      return service.monthPercentage < service.kmPercentage
+          ? service.monthPercentage
+          : service.kmPercentage;
+    }
 
     final sortedServices = List<ResponseList>.from(services)
-      ..sort((a, b) => a.kmPercentage.compareTo(b.kmPercentage));
+      ..sort((a, b) => getEffectivePercentage(a).compareTo(getEffectivePercentage(b)));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -685,11 +688,17 @@ class _ServiceCard extends StatelessWidget {
   final int carId;
   final VoidCallback onRefresh;
 
+  // Sabit genişlik değeri - km bölümü için
+  static const double _kmSectionWidth = 110.0;
+
   const _ServiceCard({
     required this.service,
     required this.carId,
     required this.onRefresh,
   });
+
+  bool get isTimeBased => service.monthPercentage < service.kmPercentage;
+  int get effectivePercentage => isTimeBased ? service.monthPercentage : service.kmPercentage;
 
   Color _getChartColor(int percentage) {
     if (percentage >= 25) {
@@ -745,8 +754,9 @@ class _ServiceCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
+              // Use effectivePercentage instead of kmPercentage
               CircularPercentageChart(
-                percentage: service.kmPercentage,
+                percentage: effectivePercentage,
                 size: 70,
                 strokeWidth: 7,
                 getColor: _getChartColor,
@@ -798,13 +808,14 @@ class _ServiceCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          _buildServiceInfo(
+          _buildLastServiceInfo(
             AppTranslation.translate(AppStrings.lastService),
             service.lastServiceKm,
             service.lastServiceDate,
           ),
           const SizedBox(height: 12),
-          _buildServiceInfo(
+          _buildNextServiceInfo(
+            context,
             AppTranslation.translate(AppStrings.nextService),
             service.nextServiceKm,
             service.nextServiceDate,
@@ -815,7 +826,7 @@ class _ServiceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceInfo(String title, dynamic km, dynamic dateOrMonths) {
+  Widget _buildLastServiceInfo(String title, dynamic km, dynamic date) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -829,10 +840,8 @@ class _ServiceCard extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Flexible(
-              flex: 2,
+            Expanded(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -844,7 +853,7 @@ class _ServiceCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
-                      '$dateOrMonths',
+                      '$date',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
@@ -856,12 +865,10 @@ class _ServiceCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 5),
-            Flexible(
-              flex: 1,
+            // Km - sabit genişlik ile hizalama
+            SizedBox(
+              width: _kmSectionWidth,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgPicture.asset(
                     'assets/svg/odometer_icon.svg',
@@ -878,7 +885,6 @@ class _ServiceCard extends StatelessWidget {
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
-                      textAlign: TextAlign.start,
                     ),
                   ),
                 ],
@@ -887,6 +893,169 @@ class _ServiceCard extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildNextServiceInfo(BuildContext context, String title, dynamic km, dynamic date) {
+    final bool hasIntervalKm = service.intervalKm > 0;
+    final bool hasIntervalMonth = service.intervalMonth > 0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.primaryBlack,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            // Show date if intervalMonth exists, otherwise show info placeholder
+            Expanded(
+              child: hasIntervalMonth
+                  ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    'assets/svg/service_key_icon.svg',
+                    width: 22,
+                    height: 22,
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      '$date',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
+              )
+                  : _buildNotApplicablePlaceholder(
+                context,
+                isForDate: true,
+              ),
+            ),
+            // Km - sabit genişlik ile hizalama
+            SizedBox(
+              width: _kmSectionWidth,
+              child: hasIntervalKm
+                  ? Row(
+                children: [
+                  SvgPicture.asset(
+                    'assets/svg/odometer_icon.svg',
+                    width: 22,
+                    height: 22,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '$km km',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
+              )
+                  : _buildNotApplicablePlaceholder(
+                context,
+                isForDate: false,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNotApplicablePlaceholder(BuildContext context, {required bool isForDate}) {
+    return GestureDetector(
+      onTap: () => _showNotApplicableDialog(context, isForDate: isForDate),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 22,
+            color: AppColors.primaryBlack.withOpacity(0.7),
+          ),
+          SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              AppTranslation.translate(AppStrings.information),
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary.withOpacity(0.7),
+                fontStyle: FontStyle.italic,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+          SizedBox(width: 12),
+        ],
+      ),
+    );
+  }
+
+  void _showNotApplicableDialog(BuildContext context, {required bool isForDate}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.info_outline,
+              color: AppColors.primaryBlack,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              AppTranslation.translate(AppStrings.information),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          isForDate
+              ? AppTranslation.translate(AppStrings.serviceInfoKmSet)
+              : AppTranslation.translate(AppStrings.serviceInfoDateSet),
+          style: TextStyle(
+            fontSize: 15,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              AppTranslation.translate(AppStrings.close),
+              style: TextStyle(
+                color: AppColors.primaryBlack,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

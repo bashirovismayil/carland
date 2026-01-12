@@ -390,4 +390,10 @@ class AppStrings {
   static const deleteAccountPermanent = 'delete_account_permanent';
   static const deleteMyAccount = 'delete_my_account';
   static const accountDeletedSuccessfully = 'account_deleted_successfully';
+
+  static const String notApplicable = 'notApplicable';
+  static const String information = 'information';
+  static const String close = 'close';
+  static const String serviceInfoDateSet = 'serviceInfoDateSet';
+  static const String serviceInfoKmSet = 'serviceInfoKmSet';
 }

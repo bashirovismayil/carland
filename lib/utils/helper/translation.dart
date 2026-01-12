@@ -1579,6 +1579,31 @@ class Translations {
       'en': 'Account deleted successfully',
       'ru': 'Аккаунт успешно удалён',
     },
+    AppStrings.notApplicable: {
+      'az': 'Nəzərdə tutulmayıb',
+      'en': 'Not applicable',
+      'ru': 'Не предусмотрено',
+    },
+    AppStrings.information: {
+      'az': 'Məlumat',
+      'en': 'Information',
+      'ru': 'Информация',
+    },
+    AppStrings.close: {
+      'az': 'Bağla',
+      'en': 'Close',
+      'ru': 'Закрыть',
+    },
+    AppStrings.serviceInfoDateSet: {
+      'az': 'Bu servis üzrə növbəti texniki xidmət yalnız "müddət" üzrə planlanır.',
+      'en': 'The service type specified by the service has a date set.',
+      'ru': 'Для указанного сервисом типа услуги установлена дата.',
+    },
+    AppStrings.serviceInfoKmSet: {
+      'az': 'Bu servis üzrə növbəti texniki xidmət yalnız "yürüş" üzrə planlanır.',
+      'en': 'The service type specified by the service has a mileage set.',
+      'ru': 'Для указанного сервисом типа услуги установлен километраж.',
+    },
   };
 
   static String translate(String key, String languageCode) {

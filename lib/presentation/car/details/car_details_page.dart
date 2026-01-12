@@ -21,6 +21,7 @@ import '../../../cubit/body/type/get_body_type_cubit.dart';
 import '../../../cubit/body/type/get_body_type_state.dart';
 import '../../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../../cubit/engine/type/get_engine_type_state.dart';
+import '../../../cubit/language/language_cubit.dart';
 import '../../../cubit/mileage/update/update_car_mileage_cubit.dart';
 import '../../../cubit/mileage/update/update_milage_state.dart';
 import '../../../cubit/photo/car/upload_car_photo_cubit.dart';
@@ -63,21 +64,18 @@ class CarDetailsPage extends HookWidget {
     );
     final bodyTypeController = useTextEditingController(text: carData.bodyType ?? '');
 
-    // FocusNodes for TextFields
     final plateFocusNode = useFocusNode();
     final makeFocusNode = useFocusNode();
     final modelFocusNode = useFocusNode();
     final engineFocusNode = useFocusNode();
     final mileageFocusNode = useFocusNode();
 
-    // States
     final selectedImage = useState<File?>(null);
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final isSubmitting = useState(false);
 
     final plateFormatter = useMemoized(() => AzerbaijanPlateNumberFormatter());
 
-    // GlobalKeys for dropdown positioning
     final bodyTypeKey = useMemoized(() => GlobalKey());
     final transmissionKey = useMemoized(() => GlobalKey());
     final engineTypeKey = useMemoized(() => GlobalKey());
@@ -99,34 +97,17 @@ class CarDetailsPage extends HookWidget {
       FocusScope.of(context).unfocus();
     }
 
+    final locale = context.watch<LanguageCubit>().state.locale;
+
     useEffect(() {
-      final engineTypeCubit = context.read<GetEngineTypeListCubit>();
-      if (engineTypeCubit.state is! GetEngineTypeListSuccess) {
-        engineTypeCubit.getEngineTypeList();
-      }
-
-      final bodyTypeCubit = context.read<GetBodyTypeListCubit>();
-      if (bodyTypeCubit.state is! GetBodyTypeListSuccess) {
-        bodyTypeCubit.getBodyTypeList();
-      }
-
-      final transmissionCubit = context.read<GetTransmissionListCubit>();
-      if (transmissionCubit.state is! GetTransmissionListSuccess) {
-        transmissionCubit.getTransmissionList();
-      }
-
-      final yearCubit = context.read<GetYearListCubit>();
-      if (yearCubit.state is! GetYearListSuccess) {
-        yearCubit.getYearList();
-      }
-
-      final colorCubit = context.read<GetColorListCubit>();
-      if (colorCubit.state is! GetColorListSuccess) {
-        colorCubit.getColorList();
-      }
+      context.read<GetEngineTypeListCubit>().getEngineTypeList();
+      context.read<GetBodyTypeListCubit>().getBodyTypeList();
+      context.read<GetTransmissionListCubit>().getTransmissionList();
+      context.read<GetYearListCubit>().getYearList();
+      context.read<GetColorListCubit>().getColorList();
 
       return null;
-    }, []);
+    }, [locale.languageCode]);
 
     return GestureDetector(
       onTap: unfocusAll,

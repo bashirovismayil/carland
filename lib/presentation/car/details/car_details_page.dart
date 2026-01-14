@@ -93,6 +93,13 @@ class CarDetailsPage extends HookWidget {
       };
     });
 
+    // Data availability kontrolü
+    final hasBrandData = carData.brand != null && carData.brand!.isNotEmpty;
+    final hasModelData = carData.model != null && carData.model!.isNotEmpty;
+    final hasEngineVolumeData = carData.engineVolume != null;
+    final hasModelYearData = carData.modelYear != null;
+    final hasBodyTypeData = carData.bodyType != null && carData.bodyType!.isNotEmpty;
+
     void unfocusAll() {
       FocusScope.of(context).unfocus();
     }
@@ -170,13 +177,14 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
+                        // Brand/Make - Enabled only if no data
                         _buildTextField(
                           controller: makeController,
                           focusNode: makeFocusNode,
                           label: AppTranslation.translate(AppStrings.make),
                           hint: AppTranslation.translate(AppStrings.makeHint),
                           svgIcon: 'assets/svg/car_make_icon.svg',
-                          enabled: true,
+                          enabled: !hasBrandData,
                           isRequired: true,
                           inputFormatters: [CapitalCaseFormatter()],
                           validator: (value) {
@@ -188,13 +196,15 @@ class CarDetailsPage extends HookWidget {
                           },
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
+
+                        // Model - Enabled only if no data
                         _buildTextField(
                           controller: modelController,
                           focusNode: modelFocusNode,
                           label: AppTranslation.translate(AppStrings.model),
                           hint: AppTranslation.translate(AppStrings.modelHint),
                           svgIcon: 'assets/svg/car_model_icon.svg',
-                          enabled: true,
+                          enabled: !hasModelData,
                           isRequired: true,
                           inputFormatters: [CapitalCaseFormatter()],
                           validator: (value) {
@@ -206,6 +216,8 @@ class CarDetailsPage extends HookWidget {
                           },
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
+
+                        // Engine Volume - Enabled only if no data
                         _buildTextField(
                           controller: engineController,
                           focusNode: engineFocusNode,
@@ -215,7 +227,7 @@ class CarDetailsPage extends HookWidget {
                           hint: AppTranslation.translate(
                               AppStrings.engineVolumeHint),
                           svgIcon: 'assets/svg/car_engine_icon.svg',
-                          enabled: false,
+                          enabled: !hasEngineVolumeData,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
@@ -231,7 +243,7 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Body Type
+                        // Body Type - Enabled only if no data
                         _buildDropdownField(
                           context: context,
                           controller: bodyTypeController,
@@ -252,7 +264,7 @@ class CarDetailsPage extends HookWidget {
                             }
                             return [];
                           },
-                          enabled: false,
+                          enabled: !hasBodyTypeData,
                           isRequired: true,
                           dropdownKey: bodyTypeKey,
                           onTap: unfocusAll,
@@ -286,7 +298,7 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Year
+                        // Year - Enabled only if no data
                         _buildDropdownField(
                           context: context,
                           controller: yearController,
@@ -306,6 +318,7 @@ class CarDetailsPage extends HookWidget {
                             }
                             return [];
                           },
+                          enabled: !hasModelYearData,
                           isRequired: true,
                           dropdownKey: yearKey,
                           onTap: unfocusAll,
@@ -602,7 +615,7 @@ class CarDetailsPage extends HookWidget {
     required dynamic Function() cubitBuilder,
     required dynamic Function(BuildContext) stateBuilder,
     required List<String> Function(dynamic) itemsExtractor,
-    bool enabled = true, // Yeni parametre, varsayılan olarak true
+    bool enabled = true,
     bool isRequired = false,
     String? Function(String?)? validator,
     required GlobalKey dropdownKey,

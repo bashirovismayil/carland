@@ -6,7 +6,7 @@ class AddCarResponse {
   final String? brand;
   final String? model;
   final int? modelYear;
-  final String? color;
+  final int? colorId;
   final String? engineType;
   final int? engineVolume;
   final String? transmissionType;
@@ -23,7 +23,7 @@ class AddCarResponse {
     this.brand,
     this.model,
     this.modelYear,
-    this.color,
+    this.colorId,
     this.engineType,
     this.engineVolume,
     this.transmissionType,
@@ -41,7 +41,7 @@ class AddCarResponse {
     brand: json['brand'] as String?,
     model: json['model'] as String?,
     modelYear: json['modelYear'] as int?,
-    color: json['color'] as String?,
+    colorId: json['colorId'] as int?,
     engineType: json['engineType'] as String?,
     engineVolume: json['engineVolume'] as int?,
     transmissionType: json['transmissionType'] as String?,
@@ -59,7 +59,7 @@ class AddCarResponse {
     'brand': brand,
     'model': model,
     'modelYear': modelYear,
-    'color': color,
+    'colorId': colorId,
     'engineType': engineType,
     'engineVolume': engineVolume,
     'transmissionType': transmissionType,

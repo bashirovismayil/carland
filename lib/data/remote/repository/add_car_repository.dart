@@ -18,7 +18,7 @@ class AddCarRepository implements AddCarContractor {
     required int engineVolume,
     required String transmissionType,
     required String bodyType,
-    required String color,
+    required int colorId,
     required int mileage,
   }) {
     return _service.addCar(
@@ -31,7 +31,7 @@ class AddCarRepository implements AddCarContractor {
       engineVolume: engineVolume,
       transmissionType: transmissionType,
       bodyType: bodyType,
-      color: color,
+      colorId: colorId,
       mileage: mileage,
     );
   }

@@ -22,7 +22,7 @@ class AddCarCubit extends Cubit<AddCarState> {
     required int engineVolume,
     required String transmissionType,
     required String bodyType,
-    required String color,
+    required int colorId,
     required int mileage,
   }) async {
     try {
@@ -38,7 +38,7 @@ class AddCarCubit extends Cubit<AddCarState> {
         engineVolume: engineVolume,
         transmissionType: transmissionType,
         bodyType: bodyType,
-        color: color,
+        colorId: colorId,
         mileage: mileage,
       );
 

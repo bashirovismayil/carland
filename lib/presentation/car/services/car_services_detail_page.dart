@@ -174,7 +174,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         controller: _pageController,
         onPageChanged: _onPageChanged,
         padEnds: true,
-        itemCount: widget.carList.length + 1, // +1 for add new car card
+        itemCount: widget.carList.length + 1,
+        // +1 for add new car card
         itemBuilder: (context, index) {
           // Son kart "Add new car" kartı
           if (index == widget.carList.length) {
@@ -355,16 +356,16 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
               children: [
                 Expanded(
                   child: _buildActionButton(
-                    AppTranslation.translate(AppStrings.updateMileage),
-                        () => _showUpdateMileageDialog(car),
+                    AppTranslation.translate(AppStrings.updateDetails),
+                    () => _showEditCarDetailsPage(car),
+                    outlined: true,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildActionButton(
-                    AppTranslation.translate(AppStrings.updateDetails),
-                        () => _showEditCarDetailsPage(car),
-                    outlined: true,
+                    AppTranslation.translate(AppStrings.updateMileage),
+                    () => _showUpdateMileageDialog(car),
                   ),
                 ),
               ],
@@ -375,6 +376,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       ),
     );
   }
+
   void _showEditCarDetailsPage(GetCarListResponse car) async {
     final currentState = context.read<GetCarServicesCubit>().state;
     String? vin;
@@ -422,7 +424,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   Widget _buildCarPhoto(int carId) {
     final photoFuture = _photoCache.putIfAbsent(
       carId,
-          () => context.read<GetCarListCubit>().getCarPhoto(carId),
+      () => context.read<GetCarListCubit>().getCarPhoto(carId),
     );
 
     return ClipRRect(
@@ -462,7 +464,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
-  Widget _buildActionButton(String label, VoidCallback onTap, {bool outlined = false}) {
+  Widget _buildActionButton(String label, VoidCallback onTap,
+      {bool outlined = false}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -494,7 +497,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         widget.carList.length + 1,
-            (index) => AnimatedContainer(
+        (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           width: _currentCarIndex == index ? 32 : 8,
           height: 6,
@@ -564,7 +567,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
               ),
             );
           }
-          return _buildServicesList(state.servicesData.responseList, isLoading: false);
+          return _buildServicesList(state.servicesData.responseList,
+              isLoading: false);
         } else if (state is GetCarServicesError) {
           return _buildErrorState(state.message);
         }
@@ -577,7 +581,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
-  Widget _buildServicesList(List<ResponseList> services, {bool isLoading = false}) {
+  Widget _buildServicesList(List<ResponseList> services,
+      {bool isLoading = false}) {
     final currentState = context.read<GetCarServicesCubit>().state;
     int? currentCarId;
     if (currentState is GetCarServicesSuccess) {
@@ -590,7 +595,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     }
 
     final sortedServices = List<ResponseList>.from(services)
-      ..sort((a, b) => getEffectivePercentage(a).compareTo(getEffectivePercentage(b)));
+      ..sort((a, b) =>
+          getEffectivePercentage(a).compareTo(getEffectivePercentage(b)));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -640,7 +646,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             opacity: isLoading ? 0.5 : 1.0,
             duration: const Duration(milliseconds: 300),
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
               itemCount: sortedServices.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
@@ -698,7 +705,9 @@ class _ServiceCard extends StatelessWidget {
   });
 
   bool get isTimeBased => service.monthPercentage < service.kmPercentage;
-  int get effectivePercentage => isTimeBased ? service.monthPercentage : service.kmPercentage;
+
+  int get effectivePercentage =>
+      isTimeBased ? service.monthPercentage : service.kmPercentage;
 
   Color _getChartColor(int percentage) {
     if (percentage >= 25) {
@@ -735,7 +744,8 @@ class _ServiceCard extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(8),
@@ -798,7 +808,8 @@ class _ServiceCard extends StatelessWidget {
                         children: [
                           const Icon(Icons.edit_outlined, size: 18),
                           const SizedBox(width: 8),
-                          Text(AppTranslation.translate(AppStrings.editServiceDetails)),
+                          Text(AppTranslation.translate(
+                              AppStrings.editServiceDetails)),
                         ],
                       ),
                     ),
@@ -896,7 +907,8 @@ class _ServiceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildNextServiceInfo(BuildContext context, String title, dynamic km, dynamic date) {
+  Widget _buildNextServiceInfo(
+      BuildContext context, String title, dynamic km, dynamic date) {
     final bool hasIntervalKm = service.intervalKm > 0;
     final bool hasIntervalMonth = service.intervalMonth > 0;
 
@@ -918,61 +930,61 @@ class _ServiceCard extends StatelessWidget {
             Expanded(
               child: hasIntervalMonth
                   ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset(
-                    'assets/svg/service_key_icon.svg',
-                    width: 22,
-                    height: 22,
-                  ),
-                  const SizedBox(width: 6),
-                  Flexible(
-                    child: Text(
-                      '$date',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              )
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/svg/service_key_icon.svg',
+                          width: 22,
+                          height: 22,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            '$date',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    )
                   : _buildNotApplicablePlaceholder(
-                context,
-                isForDate: true,
-              ),
+                      context,
+                      isForDate: true,
+                    ),
             ),
             // Km - sabit genişlik ile hizalama
             SizedBox(
               width: _kmSectionWidth,
               child: hasIntervalKm
                   ? Row(
-                children: [
-                  SvgPicture.asset(
-                    'assets/svg/odometer_icon.svg',
-                    width: 22,
-                    height: 22,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      '$km km',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              )
+                      children: [
+                        SvgPicture.asset(
+                          'assets/svg/odometer_icon.svg',
+                          width: 22,
+                          height: 22,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            '$km km',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    )
                   : _buildNotApplicablePlaceholder(
-                context,
-                isForDate: false,
-              ),
+                      context,
+                      isForDate: false,
+                    ),
             ),
           ],
         ),
@@ -980,7 +992,8 @@ class _ServiceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildNotApplicablePlaceholder(BuildContext context, {required bool isForDate}) {
+  Widget _buildNotApplicablePlaceholder(BuildContext context,
+      {required bool isForDate}) {
     return GestureDetector(
       onTap: () => _showNotApplicableDialog(context, isForDate: isForDate),
       child: Row(
@@ -1010,7 +1023,8 @@ class _ServiceCard extends StatelessWidget {
     );
   }
 
-  void _showNotApplicableDialog(BuildContext context, {required bool isForDate}) {
+  void _showNotApplicableDialog(BuildContext context,
+      {required bool isForDate}) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

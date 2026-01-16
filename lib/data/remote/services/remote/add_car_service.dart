@@ -23,7 +23,7 @@ class AddCarService {
     required int engineVolume,
     required String transmissionType,
     required String bodyType,
-    required int colorId,
+    int? colorId,
     required int mileage,
   }) async {
     final token = _local.accessToken;

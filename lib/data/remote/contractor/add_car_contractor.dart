@@ -11,7 +11,7 @@ abstract class AddCarContractor {
     required int engineVolume,
     required String transmissionType,
     required String bodyType,
-    required int colorId,
+    int? colorId,
     required int mileage,
   });
 }

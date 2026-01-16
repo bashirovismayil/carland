@@ -59,7 +59,8 @@ class CarDetailsPage extends HookWidget {
     final yearController = useTextEditingController(
       text: carData.modelYear != null ? '${carData.modelYear}' : '',
     );
-    final colorController = useTextEditingController(text: carData.color ?? '');
+    // Temporarily disabled - Color
+    // final colorController = useTextEditingController(text: carData.color ?? '');
     final mileageController = useTextEditingController(
       text: carData.mileage != null ? '${carData.mileage}' : '',
     );
@@ -81,14 +82,16 @@ class CarDetailsPage extends HookWidget {
     final transmissionKey = useMemoized(() => GlobalKey());
     final engineTypeKey = useMemoized(() => GlobalKey());
     final yearKey = useMemoized(() => GlobalKey());
-    final colorKey = useMemoized(() => GlobalKey());
+    // Temporarily disabled - Color
+    // final colorKey = useMemoized(() => GlobalKey());
 
     final fieldRequirements = useMemoized(() {
       return {
         'make': true,
         'model': true,
         'plateNumber': true,
-        'color': true,
+        // Temporarily disabled - Color
+        // 'color': true,
         'mileage': true,
         'photo': false,
       };
@@ -112,7 +115,8 @@ class CarDetailsPage extends HookWidget {
       context.read<GetBodyTypeListCubit>().getBodyTypeList();
       context.read<GetTransmissionListCubit>().getTransmissionList();
       context.read<GetYearListCubit>().getYearList();
-      context.read<GetColorListCubit>().getColorList();
+      // Temporarily disabled - Color
+      // context.read<GetColorListCubit>().getColorList();
 
       return null;
     }, [locale.languageCode]);
@@ -326,31 +330,31 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Color
-                        _buildDropdownField(
-                          controller: colorController,
-                          label: AppTranslation.translate(AppStrings.color),
-                          hint:
-                          AppTranslation.translate(AppStrings.colorHint),
-                          svgIcon: 'assets/svg/car_color_icon.svg',
-                          isRequired: fieldRequirements['color'] ?? false,
-                          context: context,
-                          cubitBuilder: () =>
-                              context.read<GetColorListCubit>(),
-                          stateBuilder: (context) =>
-                          context.watch<GetColorListCubit>().state,
-                          itemsExtractor: (state) {
-                            if (state is GetColorListSuccess) {
-                              return state.colors
-                                  .map((e) => e.color.toString())
-                                  .toList();
-                            }
-                            return [];
-                          },
-                          dropdownKey: colorKey,
-                          onTap: unfocusAll,
-                        ),
-                        const SizedBox(height: AppTheme.spacingMd),
+                        // Temporarily disabled - Color dropdown
+                        // _buildDropdownField(
+                        //   controller: colorController,
+                        //   label: AppTranslation.translate(AppStrings.color),
+                        //   hint:
+                        //   AppTranslation.translate(AppStrings.colorHint),
+                        //   svgIcon: 'assets/svg/car_color_icon.svg',
+                        //   isRequired: fieldRequirements['color'] ?? false,
+                        //   context: context,
+                        //   cubitBuilder: () =>
+                        //       context.read<GetColorListCubit>(),
+                        //   stateBuilder: (context) =>
+                        //   context.watch<GetColorListCubit>().state,
+                        //   itemsExtractor: (state) {
+                        //     if (state is GetColorListSuccess) {
+                        //       return state.colors
+                        //           .map((e) => e.color.toString())
+                        //           .toList();
+                        //     }
+                        //     return [];
+                        //   },
+                        //   dropdownKey: colorKey,
+                        //   onTap: unfocusAll,
+                        // ),
+                        // const SizedBox(height: AppTheme.spacingMd),
 
                         _buildTextField(
                           controller: mileageController,
@@ -402,7 +406,8 @@ class CarDetailsPage extends HookWidget {
                 transmissionController,
                 engineTypeController,
                 yearController,
-                colorController,
+                // Temporarily disabled - Color
+                // colorController,
                 mileageController,
               ),
             ],
@@ -876,7 +881,8 @@ class CarDetailsPage extends HookWidget {
       TextEditingController transmissionController,
       TextEditingController engineTypeController,
       TextEditingController yearController,
-      TextEditingController colorController,
+      // Temporarily disabled - Color
+      // TextEditingController colorController,
       TextEditingController mileageController,
       ) {
     return MultiBlocListener(
@@ -1015,7 +1021,8 @@ class CarDetailsPage extends HookWidget {
                 transmissionController,
                 engineTypeController,
                 yearController,
-                colorController,
+                // Temporarily disabled - Color
+                // colorController,
                 mileageController,
               ),
               backgroundColor: AppColors.primaryBlack,
@@ -1093,7 +1100,8 @@ class CarDetailsPage extends HookWidget {
       TextEditingController transmissionController,
       TextEditingController engineTypeController,
       TextEditingController yearController,
-      TextEditingController colorController,
+      // Temporarily disabled - Color
+      // TextEditingController colorController,
       TextEditingController mileageController,
       ) {
     FocusScope.of(context).unfocus();
@@ -1146,31 +1154,31 @@ class CarDetailsPage extends HookWidget {
       return;
     }
 
-    // Get colorId from the selected color
-    final selectedColor = colorController.text.trim();
-    int? colorId;
-
-    final colorState = context.read<GetColorListCubit>().state;
-    if (colorState is GetColorListSuccess) {
-      final color = colorState.colors.firstWhere(
-            (c) => c.color.toString() == selectedColor,
-        orElse: () => colorState.colors.first,
-      );
-      colorId = color.colorId;
-    }
-
-    if (colorId == null) {
-      isSubmitting.value = false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppTranslation.translate(
-              AppStrings.pleaseFillAllRequiredFields)),
-          backgroundColor: AppColors.errorColor,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
+    // Temporarily disabled - Color validation and colorId extraction
+    // final selectedColor = colorController.text.trim();
+    // int? colorId;
+    //
+    // final colorState = context.read<GetColorListCubit>().state;
+    // if (colorState is GetColorListSuccess) {
+    //   final color = colorState.colors.firstWhere(
+    //         (c) => c.color.toString() == selectedColor,
+    //     orElse: () => colorState.colors.first,
+    //   );
+    //   colorId = color.colorId;
+    // }
+    //
+    // if (colorId == null) {
+    //   isSubmitting.value = false;
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(AppTranslation.translate(
+    //           AppStrings.pleaseFillAllRequiredFields)),
+    //       backgroundColor: AppColors.errorColor,
+    //       behavior: SnackBarBehavior.floating,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     context.read<AddCarCubit>().addCar(
       vin: vinController.text.trim(),
@@ -1182,7 +1190,7 @@ class CarDetailsPage extends HookWidget {
       engineVolume: engineVol,
       transmissionType: transmissionController.text.trim(),
       bodyType: bodyTypeController.text.trim(),
-      colorId: colorId,
+      colorId: null,
       mileage: mileage,
     );
   }

@@ -315,9 +315,11 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   void _showUpdateMileageDialog(GetCarListResponse car) async {
     final currentState = context.read<GetCarServicesCubit>().state;
     String? vin;
+    int? carId;
 
     if (currentState is GetCarServicesSuccess) {
       vin = currentState.servicesData.vin;
+      carId = currentState.servicesData.carId;
     }
 
     if (vin == null || vin.isEmpty) {
@@ -331,7 +333,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       return;
     }
 
-    final result = await showDialog<bool>(
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
       barrierDismissible: false,
       builder: (context) => UpdateMileageDialog(
@@ -339,10 +341,15 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         currentMileage: car.mileage,
       ),
     );
-
-    // Refresh services if mileage was updated
-    if (result == true && mounted) {
+    if (result != null && mounted) {
+      if (carId != null && result['mileage'] != null) {
+        _updateCarInList(
+          carId,
+          mileage: result['mileage'] as int,
+        );
+      }
       _refreshCurrentCarServices();
+      context.read<GetCarListCubit>().getCarList();
     }
   }
 

@@ -106,7 +106,13 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
         if (state is UpdateCarMileageSuccess) {
           _focusNode.unfocus();
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-          Navigator.of(context).pop(true); // Return true on success
+
+          // Return updated mileage value instead of just true
+          final updatedMileage = int.tryParse(_mileageController.text.replaceAll(' ', ''));
+          Navigator.of(context).pop<Map<String, dynamic>>({
+            'mileage': updatedMileage,
+          });
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppTranslation.translate(AppStrings.mileageUpdatedSuccess)),

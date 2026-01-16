@@ -18,12 +18,12 @@ class EditCarDetailsService {
     required int carId,
     required String vin,
     required String plateNumber,
-    required String color,
-    required int mileage,
+    String? color,
+    int? mileage,
     required int modelYear,
     required String engineType,
     required int engineVolume,
-    required String transmissionType,
+    String? transmissionType,
     required String bodyType,
   }) async {
     final token = _local.accessToken;
@@ -45,10 +45,10 @@ class EditCarDetailsService {
       'modelYear': modelYear,
       'engineType': engineType,
       'engineVolume': engineVolume,
-      'transmissionType': transmissionType,
       'bodyType': bodyType,
-      'color': color,
-      'mileage': mileage,
+      if (transmissionType != null) 'transmissionType': transmissionType,
+      if (color != null) 'color': color,
+      if (mileage != null) 'mileage': mileage,
     };
 
     try {
@@ -111,3 +111,4 @@ class EditCarDetailsService {
     }
   }
 }
+

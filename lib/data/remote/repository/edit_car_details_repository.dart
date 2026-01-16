@@ -1,4 +1,3 @@
-
 import '../contractor/edit_car_details_contractor.dart';
 import '../models/remote/edit_car_details_response.dart';
 import '../services/remote/edit_car_details_service.dart';
@@ -13,12 +12,12 @@ class EditCarDetailsRepository implements EditCarDetailsContractor {
     required int carId,
     required String vin,
     required String plateNumber,
-    required String color,
-    required int mileage,
+    String? color,
+    int? mileage,
     required int modelYear,
     required String engineType,
     required int engineVolume,
-    required String transmissionType,
+    String? transmissionType,
     required String bodyType,
   }) {
     return _service.editCarDetails(

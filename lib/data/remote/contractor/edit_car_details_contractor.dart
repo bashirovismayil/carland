@@ -5,12 +5,12 @@ abstract class EditCarDetailsContractor {
     required int carId,
     required String vin,
     required String plateNumber,
-    required String color,
-    required int mileage,
+    String? color,
+    int? mileage,
     required int modelYear,
     required String engineType,
     required int engineVolume,
-    required String transmissionType,
+    String? transmissionType,
     required String bodyType,
   });
 }

@@ -987,12 +987,12 @@ class EditCarDetailsPage extends HookWidget {
       carId: carId,
       vin: vin,
       plateNumber: plateController.text.trim(),
-      color: null, // Temporarily disabled
-      mileage: null, // Temporarily disabled
+      color: null,
+      mileage: null,
       modelYear: year,
       engineType: engineTypeController.text.trim(),
       engineVolume: engineVol,
-      transmissionType: null, // Temporarily disabled
+      transmissionType: null,
       bodyType: bodyTypeController.text.trim(),
     );
   }

@@ -41,17 +41,25 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 
   List<ResponseList>? _previousServices;
 
+  // Local car list - güncellenebilir
+  late List<GetCarListResponse> _carList;
+
+  // Photo cache version - force rebuild when photo changes
+  final Map<int, int> _photoCacheVersion = {};
+
   @override
   void initState() {
     super.initState();
     _currentCarIndex = widget.initialCarIndex;
+    // Widget'tan gelen listeyi local'e kopyala
+    _carList = List.from(widget.carList);
     _pageController = PageController(
       initialPage: _currentCarIndex,
       viewportFraction: 0.85,
     );
 
     _preloadPhotos();
-    _loadCarServices(widget.carList[_currentCarIndex].carId);
+    _loadCarServices(_carList[_currentCarIndex].carId);
   }
 
   @override
@@ -63,8 +71,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 
   void _preloadPhotos() {
     for (int i = _currentCarIndex - 1; i <= _currentCarIndex + 1; i++) {
-      if (i >= 0 && i < widget.carList.length) {
-        final carId = widget.carList[i].carId;
+      if (i >= 0 && i < _carList.length) {
+        final carId = _carList[i].carId;
         if (!_photoCache.containsKey(carId)) {
           _photoCache[carId] =
               context.read<GetCarListCubit>().getCarPhoto(carId);
@@ -78,19 +86,69 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   }
 
   void _refreshCurrentCarServices() {
-    _loadCarServices(widget.carList[_currentCarIndex].carId);
+    _loadCarServices(_carList[_currentCarIndex].carId);
+  }
+
+  // Belirli bir arabanın fotoğraf cache'ini temizle ve yeniden yükle
+  void _invalidatePhotoCache(int carId) {
+    // 1. Cubit'deki cache'i temizle (ÖNEMLİ!)
+    context.read<GetCarListCubit>().invalidatePhotoCache(carId);
+
+    // 2. Local cache'i temizle
+    _photoCache.remove(carId);
+
+    // 3. Version'ı artır ki FutureBuilder yeni key ile rebuild olsun
+    _photoCacheVersion[carId] = (_photoCacheVersion[carId] ?? 0) + 1;
+
+    if (mounted) {
+      setState(() {
+        // 4. Yeni fotoğrafı API'den çek
+        _photoCache[carId] = context.read<GetCarListCubit>().getCarPhoto(carId);
+      });
+    }
+  }
+
+  // Local car list'i güncelle (edit sonrası)
+  void _updateCarInList(int carId, {
+    String? plateNumber,
+    String? color,
+    int? mileage,
+    int? modelYear,
+    String? engineType,
+    int? engineVolume,
+    String? transmissionType,
+    String? bodyType,
+  }) {
+    final index = _carList.indexWhere((car) => car.carId == carId);
+    if (index != -1) {
+      _carList[index] = _carList[index].copyWith(
+        plateNumber: plateNumber,
+        color: color,
+        mileage: mileage,
+        modelYear: modelYear,
+        engineType: engineType,
+        engineVolume: engineVolume,
+        transmissionType: transmissionType,
+        bodyType: bodyType,
+        updatedAt: DateTime.now(),
+      );
+
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   void _onPageChanged(int index) {
     setState(() {
       _currentCarIndex = index;
     });
-    if (index >= widget.carList.length) {
+    if (index >= _carList.length) {
       return;
     }
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 350), () {
-      _loadCarServices(widget.carList[index].carId);
+      _loadCarServices(_carList[index].carId);
     });
     _preloadPhotos();
   }
@@ -174,11 +232,11 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         controller: _pageController,
         onPageChanged: _onPageChanged,
         padEnds: true,
-        itemCount: widget.carList.length + 1,
+        itemCount: _carList.length + 1,
         // +1 for add new car card
         itemBuilder: (context, index) {
           // Son kart "Add new car" kartı
-          if (index == widget.carList.length) {
+          if (index == _carList.length) {
             final isActive = index == _currentCarIndex;
             return Padding(
               padding: const EdgeInsets.only(bottom: 15, top: 2),
@@ -186,7 +244,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             );
           }
 
-          final car = widget.carList[index];
+          final car = _carList[index];
           final isActive = index == _currentCarIndex;
           return Padding(
             padding: const EdgeInsets.only(bottom: 15, top: 2),
@@ -357,7 +415,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 Expanded(
                   child: _buildActionButton(
                     AppTranslation.translate(AppStrings.updateDetails),
-                    () => _showEditCarDetailsPage(car),
+                        () => _showEditCarDetailsPage(car),
                     outlined: true,
                   ),
                 ),
@@ -365,7 +423,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 Expanded(
                   child: _buildActionButton(
                     AppTranslation.translate(AppStrings.updateMileage),
-                    () => _showUpdateMileageDialog(car),
+                        () => _showUpdateMileageDialog(car),
                   ),
                 ),
               ],
@@ -398,40 +456,71 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       return;
     }
 
-    final result = await Navigator.of(context).push<bool>(
+    // Güncel car bilgilerini local list'ten al
+    final currentCar = _carList.firstWhere(
+          (c) => c.carId == carId,
+      orElse: () => car,
+    );
+
+    final result = await Navigator.of(context).push<Map<String, dynamic>?>(
       MaterialPageRoute(
         builder: (context) => EditCarDetailsPage(
           carId: carId!,
           vin: vin!,
-          initialPlateNumber: car.plateNumber,
-          initialColor: car.color,
-          initialMileage: car.mileage,
-          initialModelYear: car.modelYear,
-          initialEngineType: car.engineType,
-          initialEngineVolume: car.engineVolume,
-          initialTransmissionType: car.transmissionType,
-          initialBodyType: car.bodyType,
+          initialPlateNumber: currentCar.plateNumber,
+          initialColor: currentCar.color,
+          initialMileage: currentCar.mileage,
+          initialModelYear: currentCar.modelYear,
+          initialEngineType: currentCar.engineType,
+          initialEngineVolume: currentCar.engineVolume,
+          initialTransmissionType: currentCar.transmissionType,
+          initialBodyType: currentCar.bodyType,
         ),
       ),
     );
 
     // Refresh if updated
-    if (result == true && mounted) {
+    if (result != null && mounted) {
+      // Local car list'i güncelle (hemen UI'da göster)
+      _updateCarInList(
+        carId,
+        plateNumber: result['plateNumber'] as String?,
+        modelYear: result['modelYear'] as int?,
+        engineType: result['engineType'] as String?,
+        engineVolume: result['engineVolume'] as int?,
+        bodyType: result['bodyType'] as String?,
+      );
+
+      // Fotoğraf yüklendiyse cache'i temizle
+      if (result['photoUpdated'] == true) {
+        _invalidatePhotoCache(carId);
+      }
+
+      // Servisleri yenile
       _refreshCurrentCarServices();
+
+      // Ayrıca car list'i API'den yenile (background'da)
+      context.read<GetCarListCubit>().getCarList();
     }
   }
 
   Widget _buildCarPhoto(int carId) {
+    // Her seferinde yeni future oluştur (cache'den veya yeni)
     final photoFuture = _photoCache.putIfAbsent(
       carId,
-      () => context.read<GetCarListCubit>().getCarPhoto(carId),
+          () => context.read<GetCarListCubit>().getCarPhoto(carId),
     );
+
+    // Cache version'ı key'e ekle - photo değişince widget rebuild olsun
+    final cacheVersion = _photoCacheVersion[carId] ?? 0;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: AspectRatio(
         aspectRatio: 4 / 3,
         child: FutureBuilder<Uint8List?>(
+          // Key'e version ekle - cache değiştiğinde rebuild olsun
+          key: ValueKey('photo_${carId}_v$cacheVersion'),
           future: photoFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -457,6 +546,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             return Image.memory(
               snapshot.data!,
               fit: BoxFit.cover,
+              // Gapless playback ile smooth geçiş
+              gaplessPlayback: true,
             );
           },
         ),
@@ -496,8 +587,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
-        widget.carList.length + 1,
-        (index) => AnimatedContainer(
+        _carList.length + 1,
+            (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           width: _currentCarIndex == index ? 32 : 8,
           height: 6,
@@ -514,7 +605,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   }
 
   Widget _buildServicesSection() {
-    if (_currentCarIndex >= widget.carList.length) {
+    if (_currentCarIndex >= _carList.length) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
@@ -647,7 +738,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             duration: const Duration(milliseconds: 300),
             child: ListView.separated(
               padding:
-                  const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+              const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
               itemCount: sortedServices.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
@@ -745,7 +836,7 @@ class _ServiceCard extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(8),
@@ -930,61 +1021,61 @@ class _ServiceCard extends StatelessWidget {
             Expanded(
               child: hasIntervalMonth
                   ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/svg/service_key_icon.svg',
-                          width: 22,
-                          height: 22,
-                        ),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            '$date',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ],
-                    )
-                  : _buildNotApplicablePlaceholder(
-                      context,
-                      isForDate: true,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    'assets/svg/service_key_icon.svg',
+                    width: 22,
+                    height: 22,
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      '$date',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
+                  ),
+                ],
+              )
+                  : _buildNotApplicablePlaceholder(
+                context,
+                isForDate: true,
+              ),
             ),
             // Km - sabit genişlik ile hizalama
             SizedBox(
               width: _kmSectionWidth,
               child: hasIntervalKm
                   ? Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/svg/odometer_icon.svg',
-                          width: 22,
-                          height: 22,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            '$km km',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ],
-                    )
-                  : _buildNotApplicablePlaceholder(
-                      context,
-                      isForDate: false,
+                children: [
+                  SvgPicture.asset(
+                    'assets/svg/odometer_icon.svg',
+                    width: 22,
+                    height: 22,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '$km km',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
+                  ),
+                ],
+              )
+                  : _buildNotApplicablePlaceholder(
+                context,
+                isForDate: false,
+              ),
             ),
           ],
         ),

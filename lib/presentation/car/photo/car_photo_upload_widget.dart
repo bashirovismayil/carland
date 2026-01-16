@@ -3,7 +3,6 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_svg/svg.dart';
-
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/constants/values/app_theme.dart';

@@ -33,7 +33,6 @@ class GetCarListCubit extends Cubit<GetCarListState> {
 
   Future<Uint8List?> getCarPhoto(int carId) async {
     try {
-      // Check cache first
       if (_carPhotosCache.containsKey(carId)) {
         log("Get Car Photo: Using cached photo for carId: $carId");
         return _carPhotosCache[carId];
@@ -42,7 +41,6 @@ class GetCarListCubit extends Cubit<GetCarListState> {
       log("Get Car Photo: Fetching photo for carId: $carId");
       final Uint8List photoBytes = await _carPhotoRepo.getCarPhoto(carId);
 
-      // Store in cache
       _carPhotosCache[carId] = photoBytes;
 
       log("Get Car Photo Success: Photo received for carId: $carId");
@@ -53,7 +51,15 @@ class GetCarListCubit extends Cubit<GetCarListState> {
     }
   }
 
+  void invalidatePhotoCache(int carId) {
+    if (_carPhotosCache.containsKey(carId)) {
+      _carPhotosCache.remove(carId);
+      log("Photo cache invalidated for carId: $carId");
+    }
+  }
+
   void clearCache() {
     _carPhotosCache.clear();
+    log("All photo cache cleared");
   }
 }

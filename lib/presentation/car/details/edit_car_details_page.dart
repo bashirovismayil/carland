@@ -793,19 +793,32 @@ class EditCarDetailsPage extends HookWidget {
       TextEditingController engineTypeController,
       TextEditingController yearController,
       ) {
+    // Track if photo was updated for returning result
+    final photoWasUpdated = useState(false);
+
     return MultiBlocListener(
       listeners: [
         BlocListener<EditCarDetailsCubit, EditCarDetailsState>(
           listener: (context, state) {
             if (state is EditCarDetailsSuccess) {
               if (selectedImage.value != null) {
+                // Mark that photo will be updated
+                photoWasUpdated.value = true;
                 context.read<UploadCarPhotoCubit>().uploadCarPhoto(
                   carId: carId.toString(),
                   imageFile: selectedImage.value!,
                 );
               } else {
                 isSubmitting.value = false;
-                Navigator.of(context).pop(true);
+                // Return updated data map instead of just true
+                Navigator.of(context).pop<Map<String, dynamic>>({
+                  'plateNumber': plateController.text.trim(),
+                  'modelYear': int.tryParse(yearController.text.trim()),
+                  'engineType': engineTypeController.text.trim(),
+                  'engineVolume': int.tryParse(engineController.text.trim()),
+                  'bodyType': bodyTypeController.text.trim(),
+                  'photoUpdated': false,
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(AppTranslation.translate(AppStrings.carDetailsUpdated)),
@@ -830,7 +843,15 @@ class EditCarDetailsPage extends HookWidget {
           listener: (context, state) {
             if (state is UploadCarPhotoSuccess) {
               isSubmitting.value = false;
-              Navigator.of(context).pop(true);
+              // Return updated data map with photoUpdated = true
+              Navigator.of(context).pop<Map<String, dynamic>>({
+                'plateNumber': plateController.text.trim(),
+                'modelYear': int.tryParse(yearController.text.trim()),
+                'engineType': engineTypeController.text.trim(),
+                'engineVolume': int.tryParse(engineController.text.trim()),
+                'bodyType': bodyTypeController.text.trim(),
+                'photoUpdated': true,
+              });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(AppTranslation.translate(AppStrings.carDetailsUpdated)),
@@ -847,7 +868,15 @@ class EditCarDetailsPage extends HookWidget {
                   behavior: SnackBarBehavior.floating,
                 ),
               );
-              Navigator.of(context).pop(true);
+              // Still return data even if photo upload failed (car details were saved)
+              Navigator.of(context).pop<Map<String, dynamic>>({
+                'plateNumber': plateController.text.trim(),
+                'modelYear': int.tryParse(yearController.text.trim()),
+                'engineType': engineTypeController.text.trim(),
+                'engineVolume': int.tryParse(engineController.text.trim()),
+                'bodyType': bodyTypeController.text.trim(),
+                'photoUpdated': false, // Photo failed but details were saved
+              });
             }
           },
         ),

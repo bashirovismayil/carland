@@ -6,11 +6,11 @@ class EditCarDetailsResponse {
   final String brand;
   final String model;
   final int modelYear;
-  final String color;
+  final String? color;
   final String engineType;
   final int engineVolume;
-  final String transmissionType;
-  final int mileage;
+  final String? transmissionType;
+  final int? mileage;
   final DateTime updatedAt;
   final String bodyType;
   final String message;
@@ -23,11 +23,11 @@ class EditCarDetailsResponse {
     required this.brand,
     required this.model,
     required this.modelYear,
-    required this.color,
+    this.color,
     required this.engineType,
     required this.engineVolume,
-    required this.transmissionType,
-    required this.mileage,
+    this.transmissionType,
+    this.mileage,
     required this.updatedAt,
     required this.bodyType,
     required this.message,
@@ -77,11 +77,11 @@ class EditCarDetailsResponse {
         brand: json['brand'] as String,
         model: json['model'] as String,
         modelYear: json['modelYear'] as int,
-        color: json['color'] as String,
+        color: json['color'] as String?, // Nullable
         engineType: json['engineType'] as String,
         engineVolume: json['engineVolume'] as int,
-        transmissionType: json['transmissionType'] as String,
-        mileage: json['mileage'] as int,
+        transmissionType: json['transmissionType'] as String?, // Nullable
+        mileage: json['mileage'] as int?, // Nullable
         updatedAt: DateTime.parse(json['updatedAt'] as String),
         bodyType: json['bodyType'] as String,
         message: json['message'] as String,
@@ -95,11 +95,11 @@ class EditCarDetailsResponse {
     'brand': brand,
     'model': model,
     'modelYear': modelYear,
-    'color': color,
+    if (color != null) 'color': color,
     'engineType': engineType,
     'engineVolume': engineVolume,
-    'transmissionType': transmissionType,
-    'mileage': mileage,
+    if (transmissionType != null) 'transmissionType': transmissionType,
+    if (mileage != null) 'mileage': mileage,
     'updatedAt': updatedAt.toIso8601String(),
     'bodyType': bodyType,
     'message': message,

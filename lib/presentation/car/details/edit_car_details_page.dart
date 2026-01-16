@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,11 +18,14 @@ import '../../../cubit/edit/edit_car_details_cubit.dart';
 import '../../../cubit/edit/edit_car_details_state.dart';
 import '../../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../../cubit/engine/type/get_engine_type_state.dart';
+import '../../../cubit/photo/car/upload_car_photo_cubit.dart';
+import '../../../cubit/photo/car/upload_car_photo_state.dart';
 import '../../../cubit/transmission/type/tranmission_type_state.dart';
 import '../../../cubit/transmission/type/transmission_type_cubit.dart';
 import '../../../cubit/year/list/get_year_list_cubit.dart';
 import '../../../cubit/year/list/get_year_list_state.dart';
 import '../../../widgets/custom_button.dart';
+import '../photo/car_photo_upload_widget.dart';
 
 class EditCarDetailsPage extends HookWidget {
   final int carId;
@@ -33,6 +38,7 @@ class EditCarDetailsPage extends HookWidget {
   final int? initialEngineVolume;
   final String? initialTransmissionType;
   final String? initialBodyType;
+  final String? existingPhotoUrl;
 
   const EditCarDetailsPage({
     super.key,
@@ -46,6 +52,7 @@ class EditCarDetailsPage extends HookWidget {
     this.initialEngineVolume,
     this.initialTransmissionType,
     this.initialBodyType,
+    this.existingPhotoUrl,
   });
 
   @override
@@ -55,20 +62,23 @@ class EditCarDetailsPage extends HookWidget {
     final engineController = useTextEditingController(
       text: initialEngineVolume != null ? '$initialEngineVolume' : '',
     );
-    final transmissionController = useTextEditingController(text: initialTransmissionType ?? '');
+    // Temporarily disabled
+    // final transmissionController = useTextEditingController(text: initialTransmissionType ?? '');
     final engineTypeController = useTextEditingController(text: initialEngineType ?? '');
     final yearController = useTextEditingController(
       text: initialModelYear != null ? '$initialModelYear' : '',
     );
-    final colorController = useTextEditingController(text: initialColor ?? '');
-    final mileageController = useTextEditingController(
-      text: initialMileage != null ? '$initialMileage' : '',
-    );
+    // Temporarily disabled
+    // final colorController = useTextEditingController(text: initialColor ?? '');
+    // final mileageController = useTextEditingController(
+    //   text: initialMileage != null ? '$initialMileage' : '',
+    // );
     final bodyTypeController = useTextEditingController(text: initialBodyType ?? '');
 
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final isSubmitting = useState(false);
     final plateFormatter = useMemoized(() => AzerbaijanPlateNumberFormatter());
+    final selectedImage = useState<File?>(null);
 
     useEffect(() {
       final engineTypeCubit = context.read<GetEngineTypeListCubit>();
@@ -81,20 +91,22 @@ class EditCarDetailsPage extends HookWidget {
         bodyTypeCubit.getBodyTypeList();
       }
 
-      final transmissionCubit = context.read<GetTransmissionListCubit>();
-      if (transmissionCubit.state is! GetTransmissionListSuccess) {
-        transmissionCubit.getTransmissionList();
-      }
+      // Temporarily disabled
+      // final transmissionCubit = context.read<GetTransmissionListCubit>();
+      // if (transmissionCubit.state is! GetTransmissionListSuccess) {
+      //   transmissionCubit.getTransmissionList();
+      // }
 
       final yearCubit = context.read<GetYearListCubit>();
       if (yearCubit.state is! GetYearListSuccess) {
         yearCubit.getYearList();
       }
 
-      final colorCubit = context.read<GetColorListCubit>();
-      if (colorCubit.state is! GetColorListSuccess) {
-        colorCubit.getColorList();
-      }
+      // Temporarily disabled
+      // final colorCubit = context.read<GetColorListCubit>();
+      // if (colorCubit.state is! GetColorListSuccess) {
+      //   colorCubit.getColorList();
+      // }
 
       return null;
     }, []);
@@ -184,6 +196,7 @@ class EditCarDetailsPage extends HookWidget {
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
+                      // Temporarily disabled - Transmission
                       // _buildDropdownField(
                       //   context: context,
                       //   controller: transmissionController,
@@ -238,42 +251,51 @@ class EditCarDetailsPage extends HookWidget {
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
 
-                      _buildDropdownField(
-                        controller: colorController,
-                        label: AppTranslation.translate(AppStrings.color),
-                        hint: AppTranslation.translate(AppStrings.colorHint),
-                        svgIcon: 'assets/svg/car_color_icon.svg',
-                        isRequired: true,
-                        context: context,
-                        cubitBuilder: () => context.read<GetColorListCubit>(),
-                        stateBuilder: (context) => context.watch<GetColorListCubit>().state,
-                        itemsExtractor: (state) {
-                          if (state is GetColorListSuccess) {
-                            return state.colors.map((e) => e.color.toString()).toList();
-                          }
-                          return [];
-                        },
-                      ),
-                      const SizedBox(height: AppTheme.spacingMd),
+                      // Temporarily disabled - Color
+                      // _buildDropdownField(
+                      //   controller: colorController,
+                      //   label: AppTranslation.translate(AppStrings.color),
+                      //   hint: AppTranslation.translate(AppStrings.colorHint),
+                      //   svgIcon: 'assets/svg/car_color_icon.svg',
+                      //   isRequired: true,
+                      //   context: context,
+                      //   cubitBuilder: () => context.read<GetColorListCubit>(),
+                      //   stateBuilder: (context) => context.watch<GetColorListCubit>().state,
+                      //   itemsExtractor: (state) {
+                      //     if (state is GetColorListSuccess) {
+                      //       return state.colors.map((e) => e.color.toString()).toList();
+                      //     }
+                      //     return [];
+                      //   },
+                      // ),
+                      // const SizedBox(height: AppTheme.spacingMd),
 
-                      _buildTextField(
-                        controller: mileageController,
-                        label: AppTranslation.translate(AppStrings.currentMileage),
-                        hint: AppTranslation.translate(AppStrings.mileageHint),
-                        svgIcon: 'assets/svg/odometer_icon.svg',
-                        enabled: true,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        isRequired: true,
-                        maxLength: 6,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return AppTranslation.translate(AppStrings.mileageRequired);
-                          }
-                          return null;
-                        },
+                      // Temporarily disabled - Mileage
+                      // _buildTextField(
+                      //   controller: mileageController,
+                      //   label: AppTranslation.translate(AppStrings.currentMileage),
+                      //   hint: AppTranslation.translate(AppStrings.mileageHint),
+                      //   svgIcon: 'assets/svg/odometer_icon.svg',
+                      //   enabled: true,
+                      //   keyboardType: TextInputType.number,
+                      //   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      //   isRequired: true,
+                      //   maxLength: 6,
+                      //   validator: (value) {
+                      //     if (value == null || value.trim().isEmpty) {
+                      //       return AppTranslation.translate(AppStrings.mileageRequired);
+                      //     }
+                      //     return null;
+                      //   },
+                      // ),
+                      // const SizedBox(height: AppTheme.spacingLg),
+
+                      CarPhotoUploadWidget(
+                        selectedImage: selectedImage.value,
+                        onImageChanged: (file) => selectedImage.value = file,
+                        isRequired: false,
+                        onTap: () => FocusScope.of(context).unfocus(),
                       ),
-                      const SizedBox(height: AppTheme.spacingLg),
                     ],
                   ),
                 ),
@@ -283,14 +305,12 @@ class EditCarDetailsPage extends HookWidget {
               context,
               formKey,
               isSubmitting,
+              selectedImage,
               plateController,
               engineController,
               bodyTypeController,
-              transmissionController,
               engineTypeController,
               yearController,
-              colorController,
-              mileageController,
             ),
           ],
         ),
@@ -519,8 +539,6 @@ class EditCarDetailsPage extends HookWidget {
         final items = itemsExtractor(state);
         final isLoading = state is GetEngineTypeListLoading ||
             state is GetBodyTypeListLoading ||
-            state is GetTransmissionListLoading ||
-            state is GetColorListLoading ||
             state is GetYearListLoading;
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -768,38 +786,72 @@ class EditCarDetailsPage extends HookWidget {
       BuildContext context,
       GlobalKey<FormState> formKey,
       ValueNotifier<bool> isSubmitting,
+      ValueNotifier<File?> selectedImage,
       TextEditingController plateController,
       TextEditingController engineController,
       TextEditingController bodyTypeController,
-      TextEditingController transmissionController,
       TextEditingController engineTypeController,
       TextEditingController yearController,
-      TextEditingController colorController,
-      TextEditingController mileageController,
       ) {
-    return BlocListener<EditCarDetailsCubit, EditCarDetailsState>(
-      listener: (context, state) {
-        if (state is EditCarDetailsSuccess) {
-          isSubmitting.value = false;
-          Navigator.of(context).pop(true); // Return true to refresh
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppTranslation.translate(AppStrings.carDetailsUpdated)),
-              backgroundColor: AppColors.successColor,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        } else if (state is EditCarDetailsError) {
-          isSubmitting.value = false;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${AppTranslation.translate(AppStrings.errorOccurred)}: ${state.message}'),
-              backgroundColor: AppColors.errorColor,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<EditCarDetailsCubit, EditCarDetailsState>(
+          listener: (context, state) {
+            if (state is EditCarDetailsSuccess) {
+              if (selectedImage.value != null) {
+                context.read<UploadCarPhotoCubit>().uploadCarPhoto(
+                  carId: carId.toString(),
+                  imageFile: selectedImage.value!,
+                );
+              } else {
+                isSubmitting.value = false;
+                Navigator.of(context).pop(true);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppTranslation.translate(AppStrings.carDetailsUpdated)),
+                    backgroundColor: AppColors.successColor,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            } else if (state is EditCarDetailsError) {
+              isSubmitting.value = false;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${AppTranslation.translate(AppStrings.errorOccurred)}: ${state.message}'),
+                  backgroundColor: AppColors.errorColor,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
+        ),
+        BlocListener<UploadCarPhotoCubit, UploadCarPhotoState>(
+          listener: (context, state) {
+            if (state is UploadCarPhotoSuccess) {
+              isSubmitting.value = false;
+              Navigator.of(context).pop(true);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(AppTranslation.translate(AppStrings.carDetailsUpdated)),
+                  backgroundColor: AppColors.successColor,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            } else if (state is UploadCarPhotoError) {
+              isSubmitting.value = false;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${AppTranslation.translate(AppStrings.errorOccurred)}: ${state.message}'),
+                  backgroundColor: AppColors.errorColor,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+              Navigator.of(context).pop(true);
+            }
+          },
+        ),
+      ],
       child: Container(
         padding: const EdgeInsets.all(AppTheme.spacingMd),
         decoration: const BoxDecoration(
@@ -818,11 +870,8 @@ class EditCarDetailsPage extends HookWidget {
                 plateController,
                 engineController,
                 bodyTypeController,
-                transmissionController,
                 engineTypeController,
                 yearController,
-                colorController,
-                mileageController,
               ),
               backgroundColor: AppColors.primaryBlack,
               foregroundColor: Colors.white,
@@ -887,11 +936,8 @@ class EditCarDetailsPage extends HookWidget {
       TextEditingController plateController,
       TextEditingController engineController,
       TextEditingController bodyTypeController,
-      TextEditingController transmissionController,
       TextEditingController engineTypeController,
       TextEditingController yearController,
-      TextEditingController colorController,
-      TextEditingController mileageController,
       ) {
     if (isSubmitting.value) return;
     isSubmitting.value = true;
@@ -924,9 +970,8 @@ class EditCarDetailsPage extends HookWidget {
 
     final year = int.tryParse(yearController.text.trim());
     final engineVol = int.tryParse(engineController.text.trim());
-    final mileage = int.tryParse(mileageController.text.trim());
 
-    if (year == null || engineVol == null || mileage == null) {
+    if (year == null || engineVol == null) {
       isSubmitting.value = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -942,12 +987,12 @@ class EditCarDetailsPage extends HookWidget {
       carId: carId,
       vin: vin,
       plateNumber: plateController.text.trim(),
-      color: colorController.text.trim(),
-      mileage: mileage,
+      color: null, // Temporarily disabled
+      mileage: null, // Temporarily disabled
       modelYear: year,
       engineType: engineTypeController.text.trim(),
       engineVolume: engineVol,
-      transmissionType: transmissionController.text.trim(),
+      transmissionType: null, // Temporarily disabled
       bodyType: bodyTypeController.text.trim(),
     );
   }

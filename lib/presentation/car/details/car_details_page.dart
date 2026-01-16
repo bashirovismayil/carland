@@ -33,6 +33,7 @@ import '../../../data/remote/models/remote/check_vin_response.dart';
 import '../../../utils/helper/capital_case_formatter.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/image_crop_widget.dart';
+import '../photo/car_photo_upload_widget.dart';
 import 'maintenance_history_page.dart';
 
 class CarDetailsPage extends HookWidget {
@@ -376,11 +377,9 @@ class CarDetailsPage extends HookWidget {
                           },
                         ),
                         const SizedBox(height: AppTheme.spacingLg),
-
-                        // Upload Photo Section (Optional)
-                        _buildUploadPhotoSection(
-                          selectedImage,
-                          context: context,
+                        CarPhotoUploadWidget(
+                          selectedImage: selectedImage.value,
+                          onImageChanged: (file) => selectedImage.value = file,
                           isRequired: fieldRequirements['photo'] ?? false,
                           onTap: unfocusAll,
                         ),
@@ -863,140 +862,6 @@ class CarDetailsPage extends HookWidget {
     });
   }
 
-  Widget _buildUploadPhotoSection(
-      ValueNotifier<File?> selectedImage, {
-        required bool isRequired,
-        required BuildContext context,
-        VoidCallback? onTap,
-      }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              AppTranslation.translate(AppStrings.uploadPhoto),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            if (isRequired)
-              Text(
-                ' *',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.errorColor,
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: AppTheme.spacingMd),
-        GestureDetector(
-          onTap: () {
-            onTap?.call();
-            _pickImage(selectedImage, context);
-          },
-          child: DottedBorder(
-            options: RoundedRectDottedBorderOptions(
-              radius: Radius.circular(AppTheme.radiusXl),
-              strokeWidth: 2,
-              dashPattern: const [8, 6],
-              color: AppColors.borderGrey,
-            ),
-            child: Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: AppColors.lightGrey,
-                borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-              ),
-              child: selectedImage.value != null
-                  ? ClipRRect(
-                borderRadius:
-                BorderRadius.circular(AppTheme.radiusMd - 2),
-                child: Stack(
-                  children: [
-                    Image.file(
-                      selectedImage.value!,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: GestureDetector(
-                        onTap: () => selectedImage.value = null,
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-                  : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 64,
-                    height: 64,
-                    child: Center(
-                      child: SvgPicture.asset(
-                        'assets/svg/add_or_drop.svg',
-                        width: 50,
-                        height: 50,
-                        color: AppColors.primaryBlack,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingMd),
-                  Text(
-                    AppTranslation.translate(AppStrings.addOrDrop),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingSm),
-                  Text(
-                    AppTranslation.translate(AppStrings.supportedFiles),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    AppTranslation.translate(AppStrings.maxFileSize),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary.withOpacity(0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildBottomSection(
       BuildContext context,
       GlobalKey<FormState> formKey,
@@ -1212,49 +1077,6 @@ class CarDetailsPage extends HookWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _pickImage(
-      ValueNotifier<File?> selectedImage, BuildContext context) async {
-    final ImagePicker picker = ImagePicker();
-
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-
-    if (image != null) {
-      final File imageFile = File(image.path);
-
-      if (context.mounted) {
-        final croppedFile = await Navigator.of(context).push<File>(
-          MaterialPageRoute(
-            builder: (context) => ImageCropWidget(
-              imageFile: imageFile,
-            ),
-          ),
-        );
-
-        if (croppedFile != null) {
-          final fileSize = await croppedFile.length();
-          if (fileSize > 5242880) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                      AppTranslation.translate(AppStrings.fileSizeTooLarge)),
-                  backgroundColor: AppColors.errorColor,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-            return;
-          }
-
-          selectedImage.value = croppedFile;
-        }
-      }
-    }
   }
 
   void _submitForm(

@@ -14,6 +14,7 @@ class GetCarListResponse {
   final DateTime updatedAt;
   final String bodyType;
   final String message;
+  final List<String>? vinProvidedFields;
 
   GetCarListResponse({
     required this.carId,
@@ -31,6 +32,7 @@ class GetCarListResponse {
     required this.updatedAt,
     required this.bodyType,
     required this.message,
+    this.vinProvidedFields,
   });
 
   GetCarListResponse copyWith({
@@ -49,6 +51,7 @@ class GetCarListResponse {
     DateTime? updatedAt,
     String? bodyType,
     String? message,
+    List<String>? vinProvidedFields,
   }) =>
       GetCarListResponse(
         carId: carId ?? this.carId,
@@ -66,6 +69,7 @@ class GetCarListResponse {
         updatedAt: updatedAt ?? this.updatedAt,
         bodyType: bodyType ?? this.bodyType,
         message: message ?? this.message,
+        vinProvidedFields: vinProvidedFields ?? this.vinProvidedFields,
       );
 
   factory GetCarListResponse.fromJson(Map<String, dynamic> json) =>
@@ -85,6 +89,9 @@ class GetCarListResponse {
         updatedAt: DateTime.parse(json['updatedAt'] as String),
         bodyType: json['bodyType'] as String,
         message: json['message'] as String,
+        vinProvidedFields: (json['vinProvidedFields'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -103,5 +110,6 @@ class GetCarListResponse {
     'updatedAt': updatedAt.toIso8601String(),
     'bodyType': bodyType,
     'message': message,
+    'vinProvidedFields': vinProvidedFields,
   };
 }

@@ -53,32 +53,6 @@ class _SettingsPageState extends State<SettingsPage> {
             scrolledUnderElevation: 0,
             backgroundColor: AppColors.backgroundGrey,
             elevation: 0,
-            leading: GestureDetector(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Container(
-                      width: 41,
-                      height: 41,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF1F1F1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 4),
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          size: 15,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             title: Text(
               AppTranslation.translate(AppStrings.settings),
               style: const TextStyle(

@@ -68,7 +68,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
     } catch (_) {}
 
     try {
-      // Küçük harfle tut (parse için)
+
       final azMonths = {
         'yan': 1, 'fev': 2, 'mar': 3, 'apr': 4, 'may': 5, 'iyn': 6,
         'iyl': 7, 'avq': 8, 'sen': 9, 'okt': 10, 'noy': 11, 'dek': 12,
@@ -82,7 +82,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
       final parts = dateString.split(' ');
       if (parts.length >= 3) {
         final day = int.parse(parts[0]);
-        final monthStr = parts[1].replaceAll(',', '').toLowerCase(); // lowercase ile karşılaştır
+        final monthStr = parts[1].replaceAll(',', '').toLowerCase();
         final year = int.parse(parts[2]);
 
         final month = azMonths[monthStr] ?? enMonths[monthStr];

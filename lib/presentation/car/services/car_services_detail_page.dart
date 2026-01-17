@@ -36,22 +36,15 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   late PageController _pageController;
   late int _currentCarIndex;
   Timer? _debounce;
-
   final Map<int, Future<Uint8List?>> _photoCache = {};
-
   List<ResponseList>? _previousServices;
-
-  // Local car list - güncellenebilir
   late List<GetCarListResponse> _carList;
-
-  // Photo cache version - force rebuild when photo changes
   final Map<int, int> _photoCacheVersion = {};
 
   @override
   void initState() {
     super.initState();
     _currentCarIndex = widget.initialCarIndex;
-    // Widget'tan gelen listeyi local'e kopyala
     _carList = List.from(widget.carList);
     _pageController = PageController(
       initialPage: _currentCarIndex,
@@ -88,27 +81,17 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
   void _refreshCurrentCarServices() {
     _loadCarServices(_carList[_currentCarIndex].carId);
   }
-
-  // Belirli bir arabanın fotoğraf cache'ini temizle ve yeniden yükle
   void _invalidatePhotoCache(int carId) {
-    // 1. Cubit'deki cache'i temizle (ÖNEMLİ!)
     context.read<GetCarListCubit>().invalidatePhotoCache(carId);
-
-    // 2. Local cache'i temizle
     _photoCache.remove(carId);
-
-    // 3. Version'ı artır ki FutureBuilder yeni key ile rebuild olsun
     _photoCacheVersion[carId] = (_photoCacheVersion[carId] ?? 0) + 1;
-
     if (mounted) {
       setState(() {
-        // 4. Yeni fotoğrafı API'den çek
         _photoCache[carId] = context.read<GetCarListCubit>().getCarPhoto(carId);
       });
     }
   }
 
-  // Local car list'i güncelle (edit sonrası)
   void _updateCarInList(int carId, {
     String? plateNumber,
     String? color,
@@ -233,9 +216,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         onPageChanged: _onPageChanged,
         padEnds: true,
         itemCount: _carList.length + 1,
-        // +1 for add new car card
         itemBuilder: (context, index) {
-          // Son kart "Add new car" kartı
           if (index == _carList.length) {
             final isActive = index == _currentCarIndex;
             return Padding(
@@ -790,7 +771,6 @@ class _ServiceCard extends StatelessWidget {
   final int carId;
   final VoidCallback onRefresh;
 
-  // Sabit genişlik değeri - km bölümü için
   static const double _kmSectionWidth = 110.0;
 
   const _ServiceCard({
@@ -1021,7 +1001,6 @@ class _ServiceCard extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            // Show date if intervalMonth exists, otherwise show info placeholder
             Expanded(
               child: hasIntervalMonth
                   ? Row(

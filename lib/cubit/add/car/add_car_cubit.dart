@@ -24,6 +24,7 @@ class AddCarCubit extends Cubit<AddCarState> {
     required String bodyType,
     int? colorId,
     required int mileage,
+    List<String>? vinProvidedFields,
   }) async {
     try {
       emit(AddCarLoading());
@@ -40,6 +41,7 @@ class AddCarCubit extends Cubit<AddCarState> {
         bodyType: bodyType,
         colorId: colorId,
         mileage: mileage,
+        vinProvidedFields: vinProvidedFields, 
       );
 
       log("Add Car Success: ${response.toJson()}");

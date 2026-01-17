@@ -1100,8 +1100,6 @@ class CarDetailsPage extends HookWidget {
       TextEditingController transmissionController,
       TextEditingController engineTypeController,
       TextEditingController yearController,
-      // Temporarily disabled - Color
-      // TextEditingController colorController,
       TextEditingController mileageController,
       ) {
     FocusScope.of(context).unfocus();
@@ -1154,32 +1152,6 @@ class CarDetailsPage extends HookWidget {
       return;
     }
 
-    // Temporarily disabled - Color validation and colorId extraction
-    // final selectedColor = colorController.text.trim();
-    // int? colorId;
-    //
-    // final colorState = context.read<GetColorListCubit>().state;
-    // if (colorState is GetColorListSuccess) {
-    //   final color = colorState.colors.firstWhere(
-    //         (c) => c.color.toString() == selectedColor,
-    //     orElse: () => colorState.colors.first,
-    //   );
-    //   colorId = color.colorId;
-    // }
-    //
-    // if (colorId == null) {
-    //   isSubmitting.value = false;
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text(AppTranslation.translate(
-    //           AppStrings.pleaseFillAllRequiredFields)),
-    //       backgroundColor: AppColors.errorColor,
-    //       behavior: SnackBarBehavior.floating,
-    //     ),
-    //   );
-    //   return;
-    // }
-
     context.read<AddCarCubit>().addCar(
       vin: vinController.text.trim(),
       plateNumber: plateController.text.trim(),
@@ -1192,6 +1164,7 @@ class CarDetailsPage extends HookWidget {
       bodyType: bodyTypeController.text.trim(),
       colorId: null,
       mileage: mileage,
+      vinProvidedFields: carData.vinProvidedFields,
     );
   }
 }

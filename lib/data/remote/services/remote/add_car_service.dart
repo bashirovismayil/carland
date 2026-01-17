@@ -25,6 +25,7 @@ class AddCarService {
     required String bodyType,
     int? colorId,
     required int mileage,
+    List<String>? vinProvidedFields,
   }) async {
     final token = _local.accessToken;
     final currentLanguage = _languageService.currentLanguage;
@@ -48,6 +49,7 @@ class AddCarService {
       'bodyType': bodyType,
       'colorId': colorId,
       'mileage': mileage,
+      'vinProvidedFields': vinProvidedFields, // 🆕
     };
 
     try {

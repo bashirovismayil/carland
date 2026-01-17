@@ -55,22 +55,46 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
       text: widget.initialNextServiceKm?.toString() ?? '',
     );
 
-    // Parse initial dates if available
-    if (widget.initialLastServiceDate != null) {
-      try {
-        _lastServiceDate = DateTime.parse(widget.initialLastServiceDate!);
-      } catch (e) {
-        _lastServiceDate = null;
+    // Parse initial dates
+    _lastServiceDate = _parseBackendDate(widget.initialLastServiceDate);
+    _nextServiceDate = _parseBackendDate(widget.initialNextServiceDate);
+  }
+
+  DateTime? _parseBackendDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return null;
+
+    try {
+      return DateTime.parse(dateString);
+    } catch (_) {}
+
+    try {
+      // Küçük harfle tut (parse için)
+      final azMonths = {
+        'yan': 1, 'fev': 2, 'mar': 3, 'apr': 4, 'may': 5, 'iyn': 6,
+        'iyl': 7, 'avq': 8, 'sen': 9, 'okt': 10, 'noy': 11, 'dek': 12,
+      };
+
+      final enMonths = {
+        'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+        'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12,
+      };
+
+      final parts = dateString.split(' ');
+      if (parts.length >= 3) {
+        final day = int.parse(parts[0]);
+        final monthStr = parts[1].replaceAll(',', '').toLowerCase(); // lowercase ile karşılaştır
+        final year = int.parse(parts[2]);
+
+        final month = azMonths[monthStr] ?? enMonths[monthStr];
+        if (month != null) {
+          return DateTime(year, month, day);
+        }
       }
+    } catch (e) {
+      debugPrint('Manual parse error: $e');
     }
 
-    if (widget.initialNextServiceDate != null) {
-      try {
-        _nextServiceDate = DateTime.parse(widget.initialNextServiceDate!);
-      } catch (e) {
-        _nextServiceDate = null;
-      }
-    }
+    return null;
   }
 
   @override
@@ -100,6 +124,10 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
     if (picked != null && picked != _lastServiceDate) {
       setState(() {
         _lastServiceDate = picked;
+
+        if (_nextServiceDate != null && picked.isAfter(_nextServiceDate!)) {
+          _nextServiceDate = null;
+        }
       });
     }
   }
@@ -107,11 +135,24 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
   Future<void> _selectNextServiceDate() async {
     if (!mounted) return;
 
+    final DateTime minDate = _lastServiceDate ?? DateTime.now();
+    final DateTime maxDate = DateTime.now().add(const Duration(days: 365 * 20));
+
+    DateTime tempInitialDate = _nextServiceDate ?? minDate.add(const Duration(days: 30));
+
+    if (tempInitialDate.isBefore(minDate)) {
+      tempInitialDate = minDate;
+    }
+
+    if (tempInitialDate.isAfter(maxDate)) {
+      tempInitialDate = maxDate;
+    }
+
     final DateTime? picked = await IOSDatePickerBottomSheet.show(
       context: context,
-      initialDate: _nextServiceDate ?? DateTime.now().add(const Duration(days: 30)),
-      firstDate: _lastServiceDate ?? DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 20)),
+      initialDate: tempInitialDate,
+      firstDate: minDate,
+      lastDate: maxDate,
     );
 
     if (!mounted) return;
@@ -123,9 +164,33 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
     }
   }
 
-  String _formatDate(DateTime? date) {
+  String _formatDate(DateTime? date, BuildContext context) {
     if (date == null) return '';
-    return DateFormat('MMM dd, yyyy').format(date);
+
+    final locale = Localizations.localeOf(context).languageCode;
+
+    String formatted;
+    if (locale == 'az') {
+      formatted = DateFormat('dd MMM, yyyy', 'az').format(date);
+    } else {
+      formatted = DateFormat('MMM dd, yyyy', 'en').format(date);
+    }
+    return _capitalizeMonth(formatted);
+  }
+
+  String _capitalizeMonth(String dateStr) {
+    if (dateStr.isEmpty) return dateStr;
+    final parts = dateStr.split(' ');
+
+    for (int i = 0; i < parts.length; i++) {
+      final clean = parts[i].replaceAll(',', '');
+      if (int.tryParse(clean) == null && clean.isNotEmpty) {
+        parts[i] = parts[i][0].toUpperCase() + parts[i].substring(1);
+        break;
+      }
+    }
+
+    return parts.join(' ');
   }
 
   String _formatDateForApi(DateTime date) {
@@ -147,14 +212,13 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
       return;
     }
 
-    // Validate that next date is after last date
     if (_nextServiceDate!.isBefore(_lastServiceDate!)) {
       _showError(AppTranslation.translate(AppStrings.nextServiceDateMustBeAfterLastService));
       return;
     }
 
-    final lastServiceKm = int.tryParse(_lastServiceKmController.text);
-    final nextServiceKm = int.tryParse(_nextServiceKmController.text);
+    final lastServiceKm = int.tryParse(_lastServiceKmController.text.replaceAll(' ', ''));
+    final nextServiceKm = int.tryParse(_nextServiceKmController.text.replaceAll(' ', ''));
 
     if (lastServiceKm == null || nextServiceKm == null) {
       _showError(AppTranslation.translate(AppStrings.pleaseEnterValidMileage));
@@ -329,7 +393,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
                   const SizedBox(width: 12),
                   Text(
                     _lastServiceDate != null
-                        ? _formatDate(_lastServiceDate)
+                        ? _formatDate(_lastServiceDate, context)
                         : AppTranslation.translate(AppStrings.selectDate),
                     style: TextStyle(
                       fontSize: 16,
@@ -379,11 +443,10 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
             focusNode: _lastKmFocusNode,
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
-            maxLength: 6,
             buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(7),
+              LengthLimitingTextInputFormatter(6),
             ],
             style: const TextStyle(
               fontSize: 18,
@@ -461,7 +524,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
                 const SizedBox(width: 12),
                 Text(
                   _nextServiceDate != null
-                      ? _formatDate(_nextServiceDate)
+                      ? _formatDate(_nextServiceDate, context)
                       : AppTranslation.translate(AppStrings.selectDate),
                   style: TextStyle(
                     fontSize: 16,
@@ -517,7 +580,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
             },
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(7),
+              LengthLimitingTextInputFormatter(6),
             ],
             style: const TextStyle(
               fontSize: 18,

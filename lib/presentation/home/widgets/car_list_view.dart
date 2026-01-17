@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
@@ -8,6 +8,7 @@ import '../../../data/remote/models/remote/get_car_list_response.dart';
 import '../../../data/remote/services/local/car_list_local_service.dart';
 import '../../../presentation/car/services/car_services_detail_page.dart';
 import '../../../utils/di/locator.dart';
+import '../../../widgets/speedometer_loader.dart';
 import 'car_card.dart';
 import 'delete_car_dialog.dart';
 
@@ -31,6 +32,11 @@ class _CarListViewState extends State<CarListView> {
   bool _isReorderMode = false;
   Timer? _autoDisableTimer;
 
+  // Refresh için yeni değişkenler
+  bool _isRefreshing = false;
+  double _dragOffset = 0.0;
+  static const double _refreshTriggerOffset = 100.0;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +55,8 @@ class _CarListViewState extends State<CarListView> {
     if (oldWidget.carList != widget.carList) {
       setState(() {
         _orderedList = _getOrderedList(widget.carList);
+        _isRefreshing = false;
+        _dragOffset = 0.0;
       });
     }
   }
@@ -142,6 +150,13 @@ class _CarListViewState extends State<CarListView> {
     await _carOrderService.saveOrder(orderIds);
   }
 
+  // Custom refresh metodları
+  Future<void> _handleRefresh() async {
+    setState(() => _isRefreshing = true);
+    widget.onRefresh();
+    // onRefresh callback olduğu için didUpdateWidget'ta _isRefreshing false olacak
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -151,9 +166,78 @@ class _CarListViewState extends State<CarListView> {
           _disableReorderMode();
         }
       },
-      child: RefreshIndicator(
-        onRefresh: () async => widget.onRefresh(),
-        child: _isReorderMode ? _buildReorderableList() : _buildNormalList(),
+      child: _isReorderMode
+          ? _buildReorderableList()
+          : _buildCustomRefreshableList(),
+    );
+  }
+
+  Widget _buildCustomRefreshableList() {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (_isRefreshing) return false;
+
+        if (notification is ScrollUpdateNotification) {
+          if (notification.metrics.pixels < 0) {
+            setState(() {
+              _dragOffset = -notification.metrics.pixels;
+            });
+          }
+        }
+
+        if (notification is ScrollEndNotification) {
+          if (_dragOffset >= _refreshTriggerOffset) {
+            _handleRefresh();
+          } else {
+            setState(() => _dragOffset = 0.0);
+          }
+        }
+
+        return false;
+      },
+      child: Stack(
+        children: [
+          // Refresh indicator (üstte)
+          if (_dragOffset > 0 || _isRefreshing)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: _isRefreshing ? 80 : _dragOffset.clamp(0, 120),
+                alignment: Alignment.center,
+                child: _isRefreshing
+                    ? const SpeedometerLoader(size: 50)
+                    : Opacity(
+                  opacity: (_dragOffset / _refreshTriggerOffset).clamp(0, 1),
+                  child: Transform.scale(
+                    scale: (_dragOffset / _refreshTriggerOffset).clamp(0.5, 1),
+                    child: SpeedometerLoader(
+                      size: 50,
+                      color: _dragOffset >= _refreshTriggerOffset
+                          ? AppColors.primaryBlack
+                          : AppColors.primaryBlack.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // Liste
+          Padding(
+            padding: EdgeInsets.only(
+              top: _isRefreshing ? 80 : 0,
+            ),
+            child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              itemCount: _orderedList.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) => _buildCarItem(context, index),
+            ),
+          ),
+        ],
       ),
     );
   }

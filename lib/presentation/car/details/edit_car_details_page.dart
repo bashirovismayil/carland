@@ -39,6 +39,7 @@ class EditCarDetailsPage extends HookWidget {
   final String? initialTransmissionType;
   final String? initialBodyType;
   final String? existingPhotoUrl;
+  final List<String>? vinProvidedFields;
 
   const EditCarDetailsPage({
     super.key,
@@ -53,7 +54,12 @@ class EditCarDetailsPage extends HookWidget {
     this.initialTransmissionType,
     this.initialBodyType,
     this.existingPhotoUrl,
+    this.vinProvidedFields,
   });
+
+  bool _isFieldFromVin(String fieldName) {
+    return vinProvidedFields?.contains(fieldName) ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +170,7 @@ class EditCarDetailsPage extends HookWidget {
                         label: AppTranslation.translate(AppStrings.engineVolume),
                         hint: AppTranslation.translate(AppStrings.engineVolumeHint),
                         svgIcon: 'assets/svg/car_engine_icon.svg',
-                        enabled: true,
+                        enabled: !_isFieldFromVin('engineVolume'),
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         isRequired: true,
@@ -183,6 +189,7 @@ class EditCarDetailsPage extends HookWidget {
                         controller: bodyTypeController,
                         label: AppTranslation.translate(AppStrings.bodyType),
                         hint: AppTranslation.translate(AppStrings.selectBodyType),
+                        enabled: !_isFieldFromVin('bodyType'),
                         svgIcon: 'assets/svg/car_body_type_icon.svg',
                         cubitBuilder: () => context.read<GetBodyTypeListCubit>(),
                         stateBuilder: (context) => context.watch<GetBodyTypeListCubit>().state,
@@ -220,6 +227,7 @@ class EditCarDetailsPage extends HookWidget {
                         controller: engineTypeController,
                         label: AppTranslation.translate(AppStrings.engineType),
                         hint: AppTranslation.translate(AppStrings.selectType),
+                        enabled: !_isFieldFromVin('engineType'),
                         svgIcon: 'assets/svg/car_engine_type_icon.svg',
                         cubitBuilder: () => context.read<GetEngineTypeListCubit>(),
                         stateBuilder: (context) => context.watch<GetEngineTypeListCubit>().state,
@@ -238,6 +246,7 @@ class EditCarDetailsPage extends HookWidget {
                         controller: yearController,
                         label: AppTranslation.translate(AppStrings.year),
                         hint: AppTranslation.translate(AppStrings.selectYear),
+                        enabled: !_isFieldFromVin('modelYear'),
                         svgIcon: 'assets/svg/calendar_nav_icon.svg',
                         cubitBuilder: () => context.read<GetYearListCubit>(),
                         stateBuilder: (context) => context.watch<GetYearListCubit>().state,
@@ -522,6 +531,7 @@ class EditCarDetailsPage extends HookWidget {
     required dynamic Function() cubitBuilder,
     required dynamic Function(BuildContext) stateBuilder,
     required List<String> Function(dynamic) itemsExtractor,
+    bool enabled = true,  // 🆕 Ekle
     bool isRequired = false,
     String? Function(String?)? validator,
   }) {
@@ -573,7 +583,8 @@ class EditCarDetailsPage extends HookWidget {
             ),
             const SizedBox(height: AppTheme.spacingSm),
             GestureDetector(
-              onTap: isLoading || items.isEmpty
+              // 🆕 enabled kontrolü ekle
+              onTap: (!enabled || isLoading || items.isEmpty)
                   ? null
                   : () => _showDropdownModal(
                 context,
@@ -584,18 +595,24 @@ class EditCarDetailsPage extends HookWidget {
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  // 🆕 enabled'a göre renk
+                  color: enabled ? Colors.white : AppColors.lightGrey,
                   borderRadius: BorderRadius.circular(AppTheme.radiusXl),
                   border: Border.all(
-                    color: fieldState.hasError ? AppColors.errorColor : Colors.grey.shade300,
+                    color: fieldState.hasError
+                        ? AppColors.errorColor
+                    // 🆕 enabled'a göre border rengi
+                        : (enabled ? Colors.grey.shade300 : Colors.grey.shade200),
                   ),
-                  boxShadow: [
+                  boxShadow: enabled  // 🆕 enabled'a göre shadow
+                      ? [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.03),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
-                  ],
+                  ]
+                      : null,
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppTheme.spacingMd,
@@ -608,8 +625,9 @@ class EditCarDetailsPage extends HookWidget {
                         padding: const EdgeInsets.only(right: 8),
                         child: SvgPicture.asset(
                           svgIcon,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.textSecondary,
+                          colorFilter: ColorFilter.mode(
+                            // 🆕 enabled'a göre icon rengi
+                            enabled ? AppColors.textSecondary : Colors.grey.shade400,
                             BlendMode.srcIn,
                           ),
                           width: 20,
@@ -631,17 +649,21 @@ class EditCarDetailsPage extends HookWidget {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: controller.text.isEmpty
+                          // 🆕 enabled'a göre text rengi
+                          color: !enabled
+                              ? AppColors.textSecondary
+                              : (controller.text.isEmpty
                               ? AppColors.textSecondary.withOpacity(0.5)
-                              : AppColors.textPrimary,
+                              : AppColors.textPrimary),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.textSecondary,
+                      // 🆕 enabled'a göre icon rengi
+                      color: enabled ? AppColors.textSecondary : Colors.grey.shade400,
                       size: 20,
                     ),
                   ],

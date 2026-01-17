@@ -14,6 +14,7 @@ class CheckVinResponse {
   final String? updatedAt;
   final String? bodyType;
   final String? message;
+  final List<String>? vinProvidedFields;
 
   CheckVinResponse({
     this.carId,
@@ -31,6 +32,7 @@ class CheckVinResponse {
     this.updatedAt,
     this.bodyType,
     this.message,
+    this.vinProvidedFields,
   });
 
   CheckVinResponse copyWith({
@@ -49,6 +51,7 @@ class CheckVinResponse {
     String? updatedAt,
     String? bodyType,
     String? message,
+    List<String>? vinProvidedFields,
   }) {
     return CheckVinResponse(
       carId: carId ?? this.carId,
@@ -66,6 +69,7 @@ class CheckVinResponse {
       updatedAt: updatedAt ?? this.updatedAt,
       bodyType: bodyType ?? this.bodyType,
       message: message ?? this.message,
+      vinProvidedFields: vinProvidedFields ?? this.vinProvidedFields,
     );
   }
 
@@ -86,6 +90,9 @@ class CheckVinResponse {
         updatedAt: json['updatedAt'] as String?,
         bodyType: json['bodyType'] as String?,
         message: json['message'] as String?,
+        vinProvidedFields: (json['vinProvidedFields'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -104,5 +111,6 @@ class CheckVinResponse {
     'updatedAt': updatedAt,
     'bodyType': bodyType,
     'message': message,
+    'vinProvidedFields': vinProvidedFields,
   };
 }

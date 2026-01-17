@@ -20,6 +20,7 @@ class AddCarRepository implements AddCarContractor {
     required String bodyType,
     int? colorId,
     required int mileage,
+    List<String>? vinProvidedFields,
   }) {
     return _service.addCar(
       vin: vin,
@@ -33,6 +34,7 @@ class AddCarRepository implements AddCarContractor {
       bodyType: bodyType,
       colorId: colorId,
       mileage: mileage,
+      vinProvidedFields: vinProvidedFields,
     );
   }
 }

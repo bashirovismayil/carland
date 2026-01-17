@@ -13,5 +13,6 @@ abstract class AddCarContractor {
     required String bodyType,
     int? colorId,
     required int mileage,
+    List<String>? vinProvidedFields,
   });
 }

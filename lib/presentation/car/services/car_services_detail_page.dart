@@ -463,7 +463,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       return;
     }
 
-    // Güncel car bilgilerini local list'ten al
     final currentCar = _carList.firstWhere(
           (c) => c.carId == carId,
       orElse: () => car,
@@ -482,13 +481,12 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
           initialEngineVolume: currentCar.engineVolume,
           initialTransmissionType: currentCar.transmissionType,
           initialBodyType: currentCar.bodyType,
+         // vinProvidedFields: currentCar.vinProvidedFields,
         ),
       ),
     );
 
-    // Refresh if updated
     if (result != null && mounted) {
-      // Local car list'i güncelle (hemen UI'da göster)
       _updateCarInList(
         carId,
         plateNumber: result['plateNumber'] as String?,
@@ -498,7 +496,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
         bodyType: result['bodyType'] as String?,
       );
 
-      // Fotoğraf yüklendiyse cache'i temizle
       if (result['photoUpdated'] == true) {
         _invalidatePhotoCache(carId);
       }

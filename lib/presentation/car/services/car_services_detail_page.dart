@@ -480,23 +480,17 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       if (result['photoUpdated'] == true) {
         _invalidatePhotoCache(carId);
       }
-
-      // Servisleri yenile
       _refreshCurrentCarServices();
-
-      // Ayrıca car list'i API'den yenile (background'da)
       context.read<GetCarListCubit>().getCarList();
     }
   }
 
   Widget _buildCarPhoto(int carId) {
-    // Her seferinde yeni future oluştur (cache'den veya yeni)
     final photoFuture = _photoCache.putIfAbsent(
       carId,
           () => context.read<GetCarListCubit>().getCarPhoto(carId),
     );
 
-    // Cache version'ı key'e ekle - photo değişince widget rebuild olsun
     final cacheVersion = _photoCacheVersion[carId] ?? 0;
 
     return ClipRRect(
@@ -504,7 +498,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
       child: AspectRatio(
         aspectRatio: 4 / 3,
         child: FutureBuilder<Uint8List?>(
-          // Key'e version ekle - cache değiştiğinde rebuild olsun
           key: ValueKey('photo_${carId}_v$cacheVersion'),
           future: photoFuture,
           builder: (context, snapshot) {
@@ -951,7 +944,6 @@ class _ServiceCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Km - sabit genişlik ile hizalama
             SizedBox(
               width: _kmSectionWidth,
               child: Row(

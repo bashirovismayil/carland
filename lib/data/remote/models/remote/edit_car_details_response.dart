@@ -77,11 +77,11 @@ class EditCarDetailsResponse {
         brand: json['brand'] as String,
         model: json['model'] as String,
         modelYear: json['modelYear'] as int,
-        color: json['color'] as String?, // Nullable
+        color: json['color'] as String?,
         engineType: json['engineType'] as String,
         engineVolume: json['engineVolume'] as int,
-        transmissionType: json['transmissionType'] as String?, // Nullable
-        mileage: json['mileage'] as int?, // Nullable
+        transmissionType: json['transmissionType'] as String?,
+        mileage: json['mileage'] as int?,
         updatedAt: DateTime.parse(json['updatedAt'] as String),
         bodyType: json['bodyType'] as String,
         message: json['message'] as String,

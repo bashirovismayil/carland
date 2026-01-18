@@ -2,8 +2,8 @@ class EditCarServicesResponse {
   final int percentageId;
   final String serviceName;
   final String actionType;
-  final int intervalKm;
-  final int intervalMonth;
+  final int? intervalKm;
+  final int? intervalMonth;
   final int kmPercentage;
   final int monthPercentage;
   final int remainingKm;
@@ -17,8 +17,8 @@ class EditCarServicesResponse {
     required this.percentageId,
     required this.serviceName,
     required this.actionType,
-    required this.intervalKm,
-    required this.intervalMonth,
+    this.intervalKm,
+    this.intervalMonth,
     required this.kmPercentage,
     required this.monthPercentage,
     required this.remainingKm,
@@ -65,8 +65,8 @@ class EditCarServicesResponse {
         percentageId: json['percentageId'] as int,
         serviceName: json['serviceName'] as String,
         actionType: json['actionType'] as String,
-        intervalKm: json['intervalKm'] as int,
-        intervalMonth: json['intervalMonth'] as int,
+        intervalKm: json['intervalKm'] as int?,
+        intervalMonth: json['intervalMonth'] as int?,
         kmPercentage: json['kmPercentage'] as int,
         monthPercentage: json['monthPercentage'] as int,
         remainingKm: json['remainingKm'] as int,

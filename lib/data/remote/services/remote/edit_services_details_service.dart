@@ -19,8 +19,8 @@ class EditCarServicesService {
     required int percentageId,
     required String lastServiceDate,
     required int lastServiceKm,
-    required String nextServiceDate,
-    required int nextServiceKm,
+    String? nextServiceDate,
+    int? nextServiceKm,
   }) async {
     final token = _local.accessToken;
     final currentLanguage = _languageService.currentLanguage;
@@ -37,8 +37,8 @@ class EditCarServicesService {
       'percentageId': percentageId,
       'lastServiceDate': lastServiceDate,
       'lastServiceKm': lastServiceKm,
-      'nextServiceDate': nextServiceDate,
-      'nextServiceKm': nextServiceKm,
+      if (nextServiceDate != null) 'nextServiceDate': nextServiceDate,
+      if (nextServiceKm != null) 'nextServiceKm': nextServiceKm,
     };
 
     try {

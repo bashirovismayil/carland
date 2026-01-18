@@ -6,7 +6,7 @@ abstract class EditCarServicesContractor {
     required int percentageId,
     required String lastServiceDate,
     required int lastServiceKm,
-    required String nextServiceDate,
-    required int nextServiceKm,
+    String? nextServiceDate,
+    int? nextServiceKm,
   });
 }

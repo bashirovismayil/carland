@@ -13,8 +13,8 @@ class EditCarServicesRepository implements EditCarServicesContractor {
     required int percentageId,
     required String lastServiceDate,
     required int lastServiceKm,
-    required String nextServiceDate,
-    required int nextServiceKm,
+    String? nextServiceDate,
+    int? nextServiceKm,
   }) {
     return _service.editCarServices(
       carId: carId,

@@ -380,7 +380,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          car.modelYear.toString(),
+                          car.plateNumber.toString(),
                           style: TextStyle(
                             fontSize: 16,
                             color: AppColors.textSecondary,

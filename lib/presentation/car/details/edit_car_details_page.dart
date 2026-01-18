@@ -227,7 +227,7 @@ class EditCarDetailsPage extends HookWidget {
                         controller: engineTypeController,
                         label: AppTranslation.translate(AppStrings.engineType),
                         hint: AppTranslation.translate(AppStrings.selectType),
-                        enabled: !_isFieldFromVin('engineType'),
+                        enabled: true,
                         svgIcon: 'assets/svg/car_engine_type_icon.svg',
                         cubitBuilder: () => context.read<GetEngineTypeListCubit>(),
                         stateBuilder: (context) => context.watch<GetEngineTypeListCubit>().state,

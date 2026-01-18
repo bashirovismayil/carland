@@ -30,6 +30,8 @@ import '../photo/car_photo_upload_widget.dart';
 class EditCarDetailsPage extends HookWidget {
   final int carId;
   final String vin;
+  final String brand;
+  final String model;
   final String? initialPlateNumber;
   final String? initialColor;
   final int? initialMileage;
@@ -45,6 +47,8 @@ class EditCarDetailsPage extends HookWidget {
     super.key,
     required this.carId,
     required this.vin,
+    required this.brand,
+    required this.model,
     this.initialPlateNumber,
     this.initialColor,
     this.initialMileage,
@@ -64,6 +68,8 @@ class EditCarDetailsPage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final vinController = useTextEditingController(text: vin ?? '');
+    final brandController = useTextEditingController(text: brand ?? '');
+    final modelController = useTextEditingController(text: model ?? '');
     final plateController = useTextEditingController(text: initialPlateNumber ?? '');
     final engineController = useTextEditingController(
       text: initialEngineVolume != null ? '$initialEngineVolume' : '',
@@ -139,6 +145,24 @@ class EditCarDetailsPage extends HookWidget {
                         label: AppTranslation.translate(AppStrings.vinText),
                         hint: AppTranslation.translate(AppStrings.vinPlaceholder),
                         svgIcon: 'assets/svg/barcode_transparent.svg',
+                        enabled: false,
+                        isRequired: false,
+                      ),
+                      const SizedBox(height: AppTheme.spacingMd),
+                      _buildTextField(
+                        controller: brandController,
+                        label: AppTranslation.translate(AppStrings.make),
+                        hint: AppTranslation.translate(AppStrings.makeHint),
+                        svgIcon: 'assets/svg/car_make_icon.svg',
+                        enabled: false,
+                        isRequired: false,
+                      ),
+                      const SizedBox(height: AppTheme.spacingMd),
+                      _buildTextField(
+                        controller: modelController,
+                        label: AppTranslation.translate(AppStrings.model),
+                        hint: AppTranslation.translate(AppStrings.modelHint),
+                        svgIcon: 'assets/svg/car_model_icon.svg',
                         enabled: false,
                         isRequired: false,
                       ),

@@ -462,7 +462,9 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
           initialEngineVolume: currentCar.engineVolume,
           initialTransmissionType: currentCar.transmissionType,
           initialBodyType: currentCar.bodyType,
-         vinProvidedFields: currentCar.vinProvidedFields,
+          vinProvidedFields: currentCar.vinProvidedFields,
+          brand: currentCar.brand,
+          model: currentCar.model,
         ),
       ),
     );

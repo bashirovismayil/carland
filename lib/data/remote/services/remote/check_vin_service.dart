@@ -34,14 +34,14 @@ class CheckVinService {
         return CheckVinResponse.fromJson(resp.data as Map<String, dynamic>);
       } else {
         final message = _getErrorMessage(resp.statusCode ?? 0);
-        throw Exception('Check VIN failed: $message');
+        throw Exception('${AppTranslation.translate(AppStrings.checkVinFailed)} $message');
       }
     } on DioException catch (e) {
       if (e.response != null) {
         final message = _getErrorMessage(e.response?.statusCode ?? 0);
-        throw Exception('Check VIN failed: $message');
+        throw Exception('${AppTranslation.translate(AppStrings.checkVinFailed)} $message');
       } else {
-        throw Exception('Check VIN failed: Şəbəkə xətası');
+        throw Exception('${AppTranslation.translate(AppStrings.checkVinFailed)} Şəbəkə xətası');
       }
     }
   }

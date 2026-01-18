@@ -218,7 +218,7 @@ class AppStrings {
   static const String unauthorizedAlt = 'İcazəniz yoxdur. Yenidən giriş edin';
   static const String forbiddenAlt = 'Bu əməliyyatı yerinə yetirmək üçün səlahiyyətiniz yoxdur';
   static const String notFoundAlt = 'Məlumat tapılmadı';
-  static const String conflictAlt = 'Konflikt baş verdi';
+  static const String conflictAlt = 'Bu BAN nömrəsi artıq mövcuddur';
   static const String unsupportedMediaTypeAlt = 'Dəstəklənməyən məzmun növü';
   static const String fileSizeTooLarge = 'File size too large';
 
@@ -246,6 +246,7 @@ class AppStrings {
   static const String vinVerified = "vinVerified";
   static const String vinSuccess = " 'VIN Scanned Successfully',";
   static const String vinDetectInfo = " 'vinDetectInfo";
+  static const String checkVinFailed = "checkVinFailed";
 
   // Car Details Page
   static const String carDetails = 'carDetails';

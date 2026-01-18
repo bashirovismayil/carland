@@ -805,9 +805,9 @@ class Translations {
       'ru': 'Данные не найдены',
     },
     AppStrings.conflictAlt: {
-      'az': 'Konflikt baş verdi',
-      'en': 'A conflict occurred',
-      'ru': 'Произошёл конфликт',
+      'az': 'Bu BAN nömrəsi artıq mövcuddur',
+      'en': 'This VIN number already exists',
+      'ru': 'Этот номер VIN уже существует',
     },
     AppStrings.unsupportedMediaTypeAlt: {
       'az': 'Dəstəklənməyən məzmun növü',
@@ -905,6 +905,11 @@ class Translations {
       'az': 'BAN məlumatları analiz edilir...',
       'en': 'Analyzing VIN data...',
       'ru': 'Анализ данных VIN...',
+    },
+    AppStrings.checkVinFailed: {
+      'az': 'BAN yoxlanışı uğursuz oldu:',
+      'en': 'Check VIN failed:',
+      'ru': 'Проверка VIN не удалась:',
     },
 
     AppStrings.or: {

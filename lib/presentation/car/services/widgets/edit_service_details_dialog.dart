@@ -18,6 +18,8 @@ class EditServiceDetailsDialog extends StatefulWidget {
   final int? initialLastServiceKm;
   final String? initialNextServiceDate;
   final int? initialNextServiceKm;
+  final int intervalKm;
+  final int intervalMonth;
 
   const EditServiceDetailsDialog({
     super.key,
@@ -27,6 +29,8 @@ class EditServiceDetailsDialog extends StatefulWidget {
     this.initialLastServiceKm,
     this.initialNextServiceDate,
     this.initialNextServiceKm,
+    required this.intervalKm,
+    required this.intervalMonth,
   });
 
   @override
@@ -42,6 +46,10 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
   DateTime? _nextServiceDate;
 
   final _formKey = GlobalKey<FormState>();
+  OverlayEntry? _overlayEntry;
+
+  bool get hasIntervalKm => widget.intervalKm > 0;
+  bool get hasIntervalMonth => widget.intervalMonth > 0;
 
   @override
   void initState() {
@@ -55,7 +63,6 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
       text: widget.initialNextServiceKm?.toString() ?? '',
     );
 
-    // Parse initial dates
     _lastServiceDate = _parseBackendDate(widget.initialLastServiceDate);
     _nextServiceDate = _parseBackendDate(widget.initialNextServiceDate);
   }
@@ -68,7 +75,6 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
     } catch (_) {}
 
     try {
-
       final azMonths = {
         'yan': 1, 'fev': 2, 'mar': 3, 'apr': 4, 'may': 5, 'iyn': 6,
         'iyl': 7, 'avq': 8, 'sen': 9, 'okt': 10, 'noy': 11, 'dek': 12,
@@ -99,6 +105,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
 
   @override
   void dispose() {
+    _removeOverlay();
     _lastKmFocusNode.unfocus();
     _nextKmFocusNode.unfocus();
     _lastServiceKmController.dispose();
@@ -107,6 +114,132 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
     _nextKmFocusNode.dispose();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     super.dispose();
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  void _showError(String message) {
+    _removeOverlay();
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        bottom: 20,
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutBack,
+            builder: (context, value, child) {
+              final clampedValue = value.clamp(0.0, 1.0);
+              return Transform.translate(
+                offset: Offset(0, 50 * (1 - clampedValue)),
+                child: Opacity(
+                  opacity: clampedValue,
+                  child: child,
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.errorColor,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        _removeOverlay();
+      }
+    });
+  }
+
+  void _showNotApplicableDialog({required bool isForDate}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.info_outline,
+              color: AppColors.primaryBlack,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              AppTranslation.translate(AppStrings.information),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          isForDate
+              ? AppTranslation.translate(AppStrings.serviceInfoKmSet)
+              : AppTranslation.translate(AppStrings.serviceInfoDateSet),
+          style: TextStyle(
+            fontSize: 15,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              AppTranslation.translate(AppStrings.close),
+              style: TextStyle(
+                color: AppColors.primaryBlack,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _selectLastServiceDate() async {
@@ -133,7 +266,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
   }
 
   Future<void> _selectNextServiceDate() async {
-    if (!mounted) return;
+    if (!mounted || !hasIntervalMonth) return;
 
     final DateTime minDate = _lastServiceDate ?? DateTime.now();
     final DateTime maxDate = DateTime.now().add(const Duration(days: 365 * 20));
@@ -207,25 +340,25 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
       return;
     }
 
-    if (_nextServiceDate == null) {
+    if (hasIntervalMonth && _nextServiceDate == null) {
       _showError(AppTranslation.translate(AppStrings.pleaseSelectNextServiceDate));
       return;
     }
 
-    if (_nextServiceDate!.isBefore(_lastServiceDate!)) {
+    if (hasIntervalMonth && _nextServiceDate!.isBefore(_lastServiceDate!)) {
       _showError(AppTranslation.translate(AppStrings.nextServiceDateMustBeAfterLastService));
       return;
     }
 
     final lastServiceKm = int.tryParse(_lastServiceKmController.text.replaceAll(' ', ''));
-    final nextServiceKm = int.tryParse(_nextServiceKmController.text.replaceAll(' ', ''));
+    final nextServiceKm = hasIntervalKm ? int.tryParse(_nextServiceKmController.text.replaceAll(' ', '')) : null;
 
-    if (lastServiceKm == null || nextServiceKm == null) {
+    if (lastServiceKm == null || (hasIntervalKm && nextServiceKm == null)) {
       _showError(AppTranslation.translate(AppStrings.pleaseEnterValidMileage));
       return;
     }
 
-    if (nextServiceKm <= lastServiceKm) {
+    if (hasIntervalKm && nextServiceKm! <= lastServiceKm) {
       _showError(AppTranslation.translate(AppStrings.nextServiceKmMustBeGreaterThanLastService));
       return;
     }
@@ -235,22 +368,13 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
       percentageId: widget.percentageId,
       lastServiceDate: _formatDateForApi(_lastServiceDate!),
       lastServiceKm: lastServiceKm,
-      nextServiceDate: _formatDateForApi(_nextServiceDate!),
-      nextServiceKm: nextServiceKm,
-    );
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.errorColor,
-        behavior: SnackBarBehavior.floating,
-      ),
+      nextServiceDate: hasIntervalMonth ? _formatDateForApi(_nextServiceDate!) : '',
+      nextServiceKm: hasIntervalKm ? nextServiceKm! : 0,
     );
   }
 
   void _closeDialog() {
+    _removeOverlay();
     _lastKmFocusNode.unfocus();
     _nextKmFocusNode.unfocus();
     SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -262,6 +386,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
     return BlocListener<EditCarServicesCubit, EditCarServicesState>(
       listener: (context, state) {
         if (state is EditCarServicesSuccess) {
+          _removeOverlay();
           _lastKmFocusNode.unfocus();
           _nextKmFocusNode.unfocus();
           SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -274,13 +399,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
             ),
           );
         } else if (state is EditCarServicesError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.errorColor,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          _showError(state.message);
         }
       },
       child: Dialog(
@@ -499,11 +618,11 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
         ),
         const SizedBox(height: 12),
         GestureDetector(
-          onTap: _selectNextServiceDate,
+          onTap: hasIntervalMonth ? _selectNextServiceDate : () => _showNotApplicableDialog(isForDate: true),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: hasIntervalMonth ? Colors.white : Colors.grey.shade100,
               borderRadius: BorderRadius.circular(AppTheme.radiusXl),
               border: Border.all(color: Colors.grey.shade300),
               boxShadow: [
@@ -516,22 +635,27 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
             ),
             child: Row(
               children: [
-                SvgPicture.asset(
-                  'assets/svg/calendar_nav_icon_active.svg',
-                  width: 20,
-                  height: 20,
+                Icon(
+                  hasIntervalMonth ? Icons.calendar_today : Icons.info_outline,
+                  size: 20,
+                  color: hasIntervalMonth ? AppColors.primaryBlack : AppColors.primaryBlack.withOpacity(0.7),
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  _nextServiceDate != null
+                  hasIntervalMonth
+                      ? (_nextServiceDate != null
                       ? _formatDate(_nextServiceDate, context)
-                      : AppTranslation.translate(AppStrings.selectDate),
+                      : AppTranslation.translate(AppStrings.selectDate))
+                      : AppTranslation.translate(AppStrings.information),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: _nextServiceDate != null
+                    color: hasIntervalMonth
+                        ? (_nextServiceDate != null
                         ? AppColors.textPrimary
-                        : AppColors.textSecondary.withOpacity(0.5),
+                        : AppColors.textSecondary.withOpacity(0.5))
+                        : AppColors.textSecondary.withOpacity(0.7),
+                    fontStyle: hasIntervalMonth ? FontStyle.normal : FontStyle.italic,
                   ),
                 ),
               ],
@@ -555,64 +679,90 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
           ),
         ),
         const SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-            border: Border.all(color: Colors.grey.shade300),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextFormField(
-            controller: _nextServiceKmController,
-            focusNode: _nextKmFocusNode,
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            maxLength: 6,
-            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
-            onEditingComplete: () {
-              _nextKmFocusNode.unfocus();
-            },
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 1,
+        GestureDetector(
+          onTap: !hasIntervalKm ? () => _showNotApplicableDialog(isForDate: false) : null,
+          child: Container(
+            decoration: BoxDecoration(
+              color: hasIntervalKm ? Colors.white : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+              border: Border.all(color: Colors.grey.shade300),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            decoration: InputDecoration(
-              hintText: AppTranslation.translate(AppStrings.mileageHint),
-              hintStyle: TextStyle(
-                color: AppColors.textSecondary.withOpacity(0.5),
-                fontWeight: FontWeight.w400,
+            child: hasIntervalKm
+                ? TextFormField(
+              controller: _nextServiceKmController,
+              focusNode: _nextKmFocusNode,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              maxLength: 6,
+              buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+              onEditingComplete: () {
+                _nextKmFocusNode.unfocus();
+              },
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(6),
+              ],
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 1,
               ),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.fromLTRB(19, 12, 12, 12),
-                child: SvgPicture.asset(
-                  'assets/svg/odometer_icon.svg',
-                  width: 20,
-                  height: 20,
+              decoration: InputDecoration(
+                hintText: AppTranslation.translate(AppStrings.mileageHint),
+                hintStyle: TextStyle(
+                  color: AppColors.textSecondary.withOpacity(0.5),
+                  fontWeight: FontWeight.w400,
+                ),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.fromLTRB(19, 12, 12, 12),
+                  child: SvgPicture.asset(
+                    'assets/svg/odometer_icon.svg',
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacingLg,
+                  vertical: AppTheme.spacingMd,
                 ),
               ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: AppTheme.spacingLg,
-                vertical: AppTheme.spacingMd,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return AppTranslation.translate(AppStrings.thisFieldIsRequired);
+                }
+                return null;
+              },
+            )
+                : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 20,
+                    color: AppColors.primaryBlack.withOpacity(0.7),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    AppTranslation.translate(AppStrings.information),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary.withOpacity(0.7),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
               ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return AppTranslation.translate(AppStrings.thisFieldIsRequired);
-              }
-              return null;
-            },
           ),
         ),
       ],

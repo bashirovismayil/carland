@@ -863,6 +863,8 @@ class _ServiceCard extends StatelessWidget {
                         builder: (context) => EditServiceDetailsDialog(
                           carId: carId,
                           percentageId: service.percentageId,
+                          intervalKm: service.intervalKm,
+                          intervalMonth: service.intervalMonth,
                           initialLastServiceDate: service.lastServiceDate,
                           initialLastServiceKm: service.lastServiceKm,
                           initialNextServiceDate: service.nextServiceDate,

@@ -26,7 +26,6 @@ class VinLoadingPage extends StatelessWidget {
               fit: BoxFit.contain,
             ),
             const SizedBox(height: 24),
-            // Optional: VIN display
             if (detectedVin != null) ...[
               Text(
               AppTranslation.translate(AppStrings.vinDetectInfo),

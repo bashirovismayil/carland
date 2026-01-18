@@ -245,6 +245,7 @@ class AppStrings {
   static const String continueButton = "continueButton";
   static const String vinVerified = "vinVerified";
   static const String vinSuccess = " 'VIN Scanned Successfully',";
+  static const String vinDetectInfo = " 'vinDetectInfo";
 
   // Car Details Page
   static const String carDetails = 'carDetails';

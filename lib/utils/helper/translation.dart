@@ -901,6 +901,11 @@ class Translations {
       'en': 'VIN Scanned Successfully',
       'ru': 'VIN успешно отсканирован',
     },
+    AppStrings.vinDetectInfo: {
+      'az': 'BAN məlumatları analiz edilir...',
+      'en': 'Analyzing VIN data...',
+      'ru': 'Анализ данных VIN...',
+    },
 
     AppStrings.or: {
       'az': 'VƏ YA',

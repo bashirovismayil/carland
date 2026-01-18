@@ -7,6 +7,7 @@ import '../../core/constants/texts/app_strings.dart';
 import '../../core/constants/values/app_theme.dart';
 import '../../core/localization/app_translation.dart';
 import '../../utils/helper/vin/vin_scanner_service.dart';
+import 'vin_loading_page.dart';
 
 class VinScannerScreen extends StatefulWidget {
   final bool showManualEntry;
@@ -129,7 +130,32 @@ class _VinScannerScreenState extends State<VinScannerScreen>
         HapticFeedback.heavyImpact();
         _scannerService.stopContinuousScanning();
 
-        Navigator.of(context).pop(result.vin);
+        // Navigate to loading page, then return VIN
+        _navigateWithLoading(result.vin!);
+      }
+    });
+  }
+
+  /// Navigate to loading page for 1 second, then pop with VIN result
+  void _navigateWithLoading(String vin) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            VinLoadingPage(detectedVin: vin),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 200),
+      ),
+    );
+
+    // After 1 second, pop both loading page and scanner, return VIN
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        // Pop loading page
+        Navigator.of(context).pop();
+        // Pop scanner screen with VIN result
+        Navigator.of(context).pop(vin);
       }
     });
   }
@@ -176,8 +202,8 @@ class _VinScannerScreenState extends State<VinScannerScreen>
     if (result.isSuccess && result.vin != null) {
       HapticFeedback.heavyImpact();
 
-      // VIN bulundu, direkt geri dön
-      Navigator.of(context).pop(result.vin);
+      // Navigate to loading page, then return VIN
+      _navigateWithLoading(result.vin!);
     } else {
       setState(() {
         _isScanning = false;

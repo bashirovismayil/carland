@@ -20,7 +20,8 @@ class VinScannerService {
   void Function(VinScanResult)? onVinDetected;
   void Function(String)? onDebugText;
   final Map<String, int> _detectionCounts = {};
-  static const int _requiredDetectionsForNonChecksum = 2;
+  static const int _requiredDetectionsForNonChecksum = 4;
+  static const int _requiredDetectionsForChecksum = 2;
   static const int _maxBufferSize = 20;
   DateTime? _lastProcessTime;
   DateTime _lastFocusTriggerTime = DateTime.now();
@@ -32,6 +33,7 @@ class VinScannerService {
   static const double _roiRightRatio = 0.95;
   String? _foundVin;
   double? _foundConfidence;
+  final Map<String, int> _checksumValidCounts = {};
   double get minZoomLevel => _cameraManager.minZoomLevel;
   double get maxZoomLevel => _cameraManager.maxZoomLevel;
   double get currentZoomLevel => _cameraManager.currentZoomLevel;
@@ -114,6 +116,7 @@ class VinScannerService {
 
   void _resetScanState() {
     _detectionCounts.clear();
+    _checksumValidCounts.clear();
     _lastProcessTime = null;
     _lastFocusTriggerTime = DateTime.now();
     _foundVin = null;
@@ -255,7 +258,6 @@ class VinScannerService {
       }
     }
   }
-
   void _evaluateCandidate(String candidate) {
     final correctedCandidate = candidate.applyOcrCorrections();
 
@@ -263,29 +265,29 @@ class VinScannerService {
       debugPrint('✗ Candidate invalid after OCR correction: $correctedCandidate');
       return;
     }
-
     if (_vinValidator.validateChecksum(correctedCandidate)) {
-      debugPrint('✓ Checksum valid! Instant accept: $correctedCandidate');
-      _foundVin = correctedCandidate;
-      _foundConfidence = 1.0;
+      _addToChecksumValidBuffer(correctedCandidate);
       return;
     }
-
     final validVariant = _vinValidator.findValidVariant(correctedCandidate);
     if (validVariant != null) {
-      debugPrint('✓ Valid variant found! Instant accept: $validVariant');
-      _foundVin = validVariant;
-      _foundConfidence = 1.0;
+      _addToChecksumValidBuffer(validVariant);
       return;
     }
-
     _addToDetectionBuffer(correctedCandidate);
   }
-
+  void _addToChecksumValidBuffer(String candidate) {
+    _checksumValidCounts[candidate] = (_checksumValidCounts[candidate] ?? 0) + 1;
+    debugPrint('Buffer (checksum valid): $candidate = ${_checksumValidCounts[candidate]}');
+    if (_checksumValidCounts[candidate]! >= _requiredDetectionsForChecksum) {
+      debugPrint('✓ Checksum valid + stable: $candidate');
+      _foundVin = candidate;
+      _foundConfidence = 1.0;
+    }
+  }
   void _addToDetectionBuffer(String candidate) {
     _detectionCounts[candidate] = (_detectionCounts[candidate] ?? 0) + 1;
     debugPrint('Buffer (no checksum): $candidate = ${_detectionCounts[candidate]}');
-
     if (_detectionCounts.length > _maxBufferSize) {
       _pruneDetectionBuffer();
     }
@@ -294,8 +296,8 @@ class VinScannerService {
     if (stableResult != null) {
       debugPrint('✓ Stable detection (no checksum): $stableResult');
       _foundVin = stableResult;
-      _foundConfidence =
-          _detectionCounts[stableResult]! / _requiredDetectionsForNonChecksum;
+      final extraDetections = _detectionCounts[stableResult]! - _requiredDetectionsForNonChecksum;
+      _foundConfidence = (0.75 + (extraDetections * 0.05)).clamp(0.75, 0.95);
     }
   }
 

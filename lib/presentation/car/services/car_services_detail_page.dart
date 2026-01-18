@@ -514,19 +514,23 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
                 ),
               );
             } else if (snapshot.hasError || snapshot.data == null) {
-              return Container(
-                color: AppColors.surfaceColor,
-                child: Icon(
-                  Icons.directions_car,
-                  size: 48,
-                  color: AppColors.textSecondary.withOpacity(0.3),
+              return Padding(
+                padding: const EdgeInsets.only(right: 25.0),
+                child: Container(
+                  color: AppColors.surfaceColor,
+                  alignment: Alignment.center,
+                  child: Image.asset(
+                    'assets/png/placeholder_car_photo.png',
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               );
             }
             return Image.memory(
               snapshot.data!,
               fit: BoxFit.cover,
-              // Gapless playback ile smooth geçiş
               gaplessPlayback: true,
             );
           },

@@ -656,22 +656,34 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     );
   }
 
-  Widget _buildServicesList(List<ResponseList> services,
-      {bool isLoading = false}) {
+  Widget _buildServicesList(List<ResponseList> services, {bool isLoading = false}) {
     final currentState = context.read<GetCarServicesCubit>().state;
     int? currentCarId;
     if (currentState is GetCarServicesSuccess) {
       currentCarId = currentState.servicesData.carId;
     }
+
     int getEffectivePercentage(ResponseList service) {
-      return service.monthPercentage < service.kmPercentage
-          ? service.monthPercentage
-          : service.kmPercentage;
+      final hasKmInterval = (service.intervalKm ?? 0) > 0;
+      final hasMonthInterval = (service.intervalMonth ?? 0) > 0;
+
+      if (!hasKmInterval) return service.monthPercentageDigit ?? 100;
+      if (!hasMonthInterval) return service.kmPercentage ?? 100;
+
+      final isTimeBased = (service.monthPercentageDigit ?? 100) < (service.kmPercentage ?? 100);
+      return isTimeBased
+          ? (service.monthPercentageDigit ?? 100)
+          : (service.kmPercentage ?? 100);
     }
 
     final sortedServices = List<ResponseList>.from(services)
       ..sort((a, b) =>
           getEffectivePercentage(a).compareTo(getEffectivePercentage(b)));
+
+    // Debug
+    for (var s in sortedServices) {
+      print('----------------------------------------${s.serviceName}: ${getEffectivePercentage(s)}%');
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -721,8 +733,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
             opacity: isLoading ? 0.5 : 1.0,
             duration: const Duration(milliseconds: 300),
             child: ListView.separated(
-              padding:
-              const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
+              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
               itemCount: sortedServices.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
@@ -778,10 +789,24 @@ class _ServiceCard extends StatelessWidget {
     required this.onRefresh,
   });
 
-  bool get isTimeBased => service.monthPercentage < service.kmPercentage;
+  bool get isTimeBased {
+    final hasKmInterval = service.intervalKm > 0;
+    final hasMonthInterval = service.intervalMonth > 0;
 
-  int get effectivePercentage =>
-      isTimeBased ? service.monthPercentage : service.kmPercentage;
+    if (!hasKmInterval && hasMonthInterval) return true;
+    if (hasKmInterval && !hasMonthInterval) return false;
+    return service.monthPercentageDigit < service.kmPercentage;
+  }
+
+  int get effectivePercentage {
+    final hasKmInterval = service.intervalKm > 0;
+    final hasMonthInterval = service.intervalMonth > 0;
+
+    if (!hasKmInterval) return service.monthPercentageDigit;
+    if (!hasMonthInterval) return service.kmPercentage;
+
+    return isTimeBased ? service.monthPercentageDigit : service.kmPercentage;
+  }
 
   Color _getChartColor(int percentage) {
     if (percentage >= 25) {

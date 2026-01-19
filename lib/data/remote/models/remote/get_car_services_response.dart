@@ -44,6 +44,7 @@ class ResponseList {
   final int intervalMonth;
   final int kmPercentage;
   final int monthPercentage;
+  final int monthPercentageDigit;
   final int remainingKm;
   final String remainingMonths;
   final int lastServiceKm;
@@ -59,6 +60,7 @@ class ResponseList {
     required this.intervalMonth,
     required this.kmPercentage,
     required this.monthPercentage,
+    required this.monthPercentageDigit,
     required this.remainingKm,
     required this.remainingMonths,
     required this.lastServiceKm,
@@ -75,6 +77,7 @@ class ResponseList {
     int? intervalMonth,
     int? kmPercentage,
     int? monthPercentage,
+    int? monthPercentageDigit,
     int? remainingKm,
     String? remainingMonths,
     int? lastServiceKm,
@@ -90,6 +93,7 @@ class ResponseList {
         intervalMonth: intervalMonth ?? this.intervalMonth,
         kmPercentage: kmPercentage ?? this.kmPercentage,
         monthPercentage: monthPercentage ?? this.monthPercentage,
+        monthPercentageDigit: monthPercentageDigit ?? this.monthPercentageDigit,
         remainingKm: remainingKm ?? this.remainingKm,
         remainingMonths: remainingMonths ?? this.remainingMonths,
         lastServiceKm: lastServiceKm ?? this.lastServiceKm,
@@ -99,7 +103,7 @@ class ResponseList {
       );
 
   factory ResponseList.fromJson(Map<String, dynamic> json) {
-    // Safe parsing with null checks
+
     return ResponseList(
       percentageId: json['percentageId'] as int? ?? 0,
       serviceName: json['serviceName'] as String? ?? '',
@@ -108,6 +112,7 @@ class ResponseList {
       intervalMonth: json['intervalMonth'] as int? ?? 0,
       kmPercentage: json['kmPercentage'] as int? ?? 0,
       monthPercentage: json['monthPercentage'] as int? ?? 0,
+      monthPercentageDigit: json['monthPercentageDigit'] as int? ?? 0,
       remainingKm: json['remainingKm'] as int? ?? 0,
       remainingMonths: json['remainingMonths'] as String? ?? '0',
       lastServiceKm: json['lastServiceKm'] as int? ?? 0,

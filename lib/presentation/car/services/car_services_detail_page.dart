@@ -664,16 +664,16 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
     }
 
     int getEffectivePercentage(ResponseList service) {
-      final hasKmInterval = (service.intervalKm ?? 0) > 0;
-      final hasMonthInterval = (service.intervalMonth ?? 0) > 0;
+      final hasKmInterval = (service.intervalKm) > 0;
+      final hasMonthInterval = (service.intervalMonth) > 0;
 
-      if (!hasKmInterval) return service.monthPercentageDigit ?? 100;
-      if (!hasMonthInterval) return service.kmPercentage ?? 100;
+      if (!hasKmInterval) return service.monthPercentageDigit;
+      if (!hasMonthInterval) return service.kmPercentage;
 
-      final isTimeBased = (service.monthPercentageDigit ?? 100) < (service.kmPercentage ?? 100);
+      final isTimeBased = (service.monthPercentageDigit) < (service.kmPercentage);
       return isTimeBased
-          ? (service.monthPercentageDigit ?? 100)
-          : (service.kmPercentage ?? 100);
+          ? (service.monthPercentageDigit)
+          : (service.kmPercentage);
     }
 
     final sortedServices = List<ResponseList>.from(services)

@@ -398,4 +398,24 @@ class AppStrings {
   static const String close = 'close';
   static const String serviceInfoDateSet = 'serviceInfoDateSet';
   static const String serviceInfoKmSet = 'serviceInfoKmSet';
+
+  static const String active = 'active';
+  static const String oldPinIncorrect = 'oldPinIncorrect';
+  static const String pinCreatedSuccessfully = 'pinCreatedSuccessfully';
+  static const String pinCodesDoNotMatch = 'pinCodesDoNotMatch';
+  static const String deletePin = 'deletePin';
+  static const String deletePinConfirmation = 'deletePinConfirmation';
+  static const String pinDeletedSuccessfully = 'pinDeletedSuccessfully';
+  static const String enterOldPin = 'enterOldPin';
+  static const String createNewPin = 'createNewPin';
+  static const String confirmPin = 'confirmPin';
+  static const String enterExistingPinToContinue = 'enterExistingPinToContinue';
+  static const String createFourDigitPin = 'createFourDigitPin';
+  static const String reenterNewPin = 'reenterNewPin';
+  static const String changePin = 'changePin';
+  static const String createPin = 'createPin';
+  static const String wantToRemovePinCompletely = 'wantToRemovePinCompletely';
+  static const String wrongPinTryAgain = 'wrongPinTryAgain';
+  static const String enterYourPin = 'enterYourPin';
+  static const String enterPinToContinue = 'enterPinToContinue';
 }

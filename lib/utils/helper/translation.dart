@@ -1614,6 +1614,101 @@ class Translations {
       'en': 'The service type specified by the service has a mileage set.',
       'ru': 'Для указанного сервисом типа услуги установлен километраж.',
     },
+    AppStrings.active: {
+      'az': 'Aktiv',
+      'en': 'Active',
+      'ru': 'Активный',
+    },
+    AppStrings.oldPinIncorrect: {
+      'az': 'Köhnə PIN yanlışdır',
+      'en': 'Old PIN is incorrect',
+      'ru': 'Старый PIN неверен',
+    },
+    AppStrings.pinCreatedSuccessfully: {
+      'az': 'PIN uğurla yaradıldı',
+      'en': 'PIN created successfully',
+      'ru': 'PIN успешно создан',
+    },
+    AppStrings.pinCodesDoNotMatch: {
+      'az': 'PIN kodları uyğun gəlmir',
+      'en': 'PIN codes do not match',
+      'ru': 'PIN-коды не совпадают',
+    },
+    AppStrings.deletePin: {
+      'az': 'PIN-i Sil',
+      'en': 'Delete PIN',
+      'ru': 'Удалить PIN',
+    },
+    AppStrings.deletePinConfirmation: {
+      'az': 'PIN kodunu silmək istədiyinə əminsən? Tətbiqi təkrar açanda PIN soruşulmayacaq.',
+      'en': 'Are you sure you want to delete the PIN code? You will not be asked for a PIN when you reopen the app.',
+      'ru': 'Вы уверены, что хотите удалить PIN-код? При повторном открытии приложения PIN-код не будет запрашиваться.',
+    },
+    AppStrings.pinDeletedSuccessfully: {
+      'az': 'PIN uğurla silindi',
+      'en': 'PIN deleted successfully',
+      'ru': 'PIN успешно удален',
+    },
+    AppStrings.enterOldPin: {
+      'az': 'Köhnə PIN-i daxil et',
+      'en': 'Enter Old PIN',
+      'ru': 'Введите старый PIN',
+    },
+    AppStrings.createNewPin: {
+      'az': 'Yeni PIN təyin et',
+      'en': 'Create New PIN',
+      'ru': 'Создайте новый PIN',
+    },
+    AppStrings.confirmPin: {
+      'az': 'PIN-i Təsdiqlə',
+      'en': 'Confirm PIN',
+      'ru': 'Подтвердите PIN',
+    },
+    AppStrings.enterExistingPinToContinue: {
+      'az': 'Davam etmək üçün mövcud PIN-i daxil et',
+      'en': 'Enter your existing PIN to continue',
+      'ru': 'Введите существующий PIN для продолжения',
+    },
+    AppStrings.createFourDigitPin: {
+      'az': '4 rəqəmli yeni PIN yarat',
+      'en': 'Create a new 4-digit PIN',
+      'ru': 'Создайте новый 4-значный PIN',
+    },
+    AppStrings.reenterNewPin: {
+      'az': 'Yeni PIN-i yenidən daxil et',
+      'en': 'Re-enter new PIN',
+      'ru': 'Повторно введите новый PIN',
+    },
+    AppStrings.changePin: {
+      'az': 'Tətbiq şifrəsini dəyişdir',
+      'en': 'Change PIN',
+      'ru': 'Изменить PIN',
+    },
+    AppStrings.createPin: {
+      'az': 'Tətbiq şifrəsi yarat',
+      'en': 'Create PIN',
+      'ru': 'Создать PIN',
+    },
+    AppStrings.wantToRemovePinCompletely: {
+      'az': 'PIN-i tamamilə silmək istəyirəm',
+      'en': 'I want to remove PIN completely',
+      'ru': 'Я хочу полностью удалить PIN',
+    },
+    AppStrings.wrongPinTryAgain: {
+      'az': 'Yanlış PIN. Yenidən cəhd et.',
+      'en': 'Wrong PIN. Try again.',
+      'ru': 'Неверный PIN. Попробуйте снова.',
+    },
+    AppStrings.enterYourPin: {
+      'az': 'PIN Kodunu daxil et',
+      'en': 'Enter Your PIN',
+      'ru': 'Введите ваш PIN',
+    },
+    AppStrings.enterPinToContinue: {
+      'az': 'Davam etmək üçün PIN kodunu daxil et',
+      'en': 'Enter your PIN code to continue',
+      'ru': 'Введите ваш PIN-код для продолжения',
+    },
   };
 
   static String translate(String key, String languageCode) {

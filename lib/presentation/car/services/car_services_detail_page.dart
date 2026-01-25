@@ -622,7 +622,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage> {
 
     return BlocBuilder<GetCarServicesCubit, GetCarServicesState>(
       builder: (context, state) {
-        // Show loading indicator only on first load
         if (state is GetCarServicesLoading && _previousServices == null) {
           return const Center(
             child: CircularProgressIndicator(

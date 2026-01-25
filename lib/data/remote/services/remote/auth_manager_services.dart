@@ -1,12 +1,13 @@
 import 'dart:async';
-
+import 'package:carcat/data/remote/services/remote/pin_local_service.dart';
 import '../../../../core/constants/enums/enums.dart';
 import '../local/login_local_services.dart';
 
 class AuthManagerService {
-  AuthManagerService(this._loginLocalService);
+  AuthManagerService(this._loginLocalService, this._pinLocalService);
 
   final LoginLocalService _loginLocalService;
+  final PinLocalService _pinLocalService;
 
   final _authStateController = StreamController<AuthState>.broadcast();
 
@@ -38,6 +39,9 @@ class AuthManagerService {
 
   Future<void> logout() async {
     await _loginLocalService.logout();
+    await _pinLocalService.clearPin();
+    _pinLocalService.resetSession();
+
     _authStateController.add(AuthState.unauthenticated);
   }
 
@@ -62,7 +66,6 @@ class AuthManagerService {
     _authStateController.close();
   }
 }
-
 enum AuthState {
   unauthenticated,
   guest,

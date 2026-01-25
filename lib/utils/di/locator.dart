@@ -113,6 +113,7 @@ import '../../data/remote/services/remote/get_transmission_type_service.dart';
 import '../../data/remote/services/remote/get_year_list_service.dart';
 import '../../data/remote/services/remote/login_service.dart';
 import '../../data/remote/services/remote/otp_service.dart';
+import '../../data/remote/services/remote/pin_local_service.dart';
 import '../../data/remote/services/remote/policy_service.dart';
 import '../../data/remote/services/remote/profile_photo_service.dart';
 import '../../data/remote/services/remote/register_service.dart';
@@ -136,6 +137,11 @@ Future<void> setupLocator() async {
   final Box<int> userBox = await Hive.openBox<int>('userBox');
   final Box<String> languageBox = await Hive.openBox<String>('languageBox');
   final Box<String> carOrderBox = await Hive.openBox<String>('carOrderBox');
+  final encryptionKey = await PinLocalService.getEncryptionKey();
+  final pinBox = await Hive.openBox(
+    'pinBox',
+    encryptionCipher: HiveAesCipher(encryptionKey),
+  );
 
   locator.registerLazySingleton<Dio>(() => authDio);
   locator.registerLazySingleton<RegisterLocalService>(
@@ -147,9 +153,14 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton<OnboardLocalService>(
     () => OnboardLocalService(onboardBox),
   );
-
+  locator.registerLazySingleton<PinLocalService>(
+        () => PinLocalService(pinBox),
+  );
   locator.registerLazySingleton<AuthManagerService>(
-    () => AuthManagerService(locator<LoginLocalService>()),
+    () => AuthManagerService(
+      locator<LoginLocalService>(),
+      locator<PinLocalService>(),
+    ),
   );
   locator.registerLazySingleton<UserLocalService>(
     () => UserLocalService(userBox),
@@ -158,7 +169,7 @@ Future<void> setupLocator() async {
     () => LanguageLocalService(languageBox),
   );
   locator.registerLazySingleton<CarOrderLocalService>(
-        () => CarOrderLocalService(carOrderBox),
+    () => CarOrderLocalService(carOrderBox),
   );
   locator.registerLazySingleton(() => RegisterService());
   locator.registerLazySingleton<LoginService>(() => LoginService(locator()));
@@ -446,27 +457,27 @@ Future<void> setupLocator() async {
   );
   // Privacy Policy
   locator.registerLazySingleton<PrivacyPolicyService>(
-        () => PrivacyPolicyService(),
+    () => PrivacyPolicyService(),
   );
   locator.registerLazySingleton<PrivacyPolicyContractor>(
-        () => PrivacyPolicyRepository(
+    () => PrivacyPolicyRepository(
       locator<PrivacyPolicyService>(),
     ),
   );
   locator.registerFactory<PrivacyPolicyCubit>(
-        () => PrivacyPolicyCubit(),
+    () => PrivacyPolicyCubit(),
   );
 
 // Terms & Conditions
   locator.registerLazySingleton<TermsConditionsService>(
-        () => TermsConditionsService(),
+    () => TermsConditionsService(),
   );
   locator.registerLazySingleton<TermsConditionsContractor>(
-        () => TermsConditionsRepository(
+    () => TermsConditionsRepository(
       locator<TermsConditionsService>(),
     ),
   );
   locator.registerFactory<TermsConditionsCubit>(
-        () => TermsConditionsCubit(),
+    () => TermsConditionsCubit(),
   );
 }

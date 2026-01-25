@@ -12,6 +12,7 @@ import 'cubit/language/language_state.dart';
 import 'data/remote/services/local/onboard_local_services.dart';
 import 'data/remote/services/local/login_local_services.dart';
 import 'data/remote/services/remote/auth_manager_services.dart';
+import 'data/remote/services/remote/pin_local_service.dart';
 
 class CarCatApp extends StatefulWidget {
   const CarCatApp({super.key});
@@ -31,7 +32,8 @@ class _CarCatAppState extends State<CarCatApp> {
   @override
   void initState() {
     super.initState();
-    _appRouter = AppRouter(_navigatorKey);
+    final pinService = locator<PinLocalService>();
+    _appRouter = AppRouter(_navigatorKey, pinService);
     locator.registerSingleton<GlobalKey<NavigatorState>>(_navigatorKey);
     _initializationFuture = _initializeDependencies();
   }
@@ -69,10 +71,9 @@ class _CarCatAppState extends State<CarCatApp> {
       print("📖 Onboarding görülmeyib - Onboarding page-e gedir");
       return _appRouter.getOnboardPage();
     }
-
     final authState = _authManager.currentAuthState;
     print("🔍 Mövcud state: $authState");
-    return _appRouter.getPageForAuthState(authState);
+    return _appRouter.getPageWithPinGuard(authState);
   }
 
   @override

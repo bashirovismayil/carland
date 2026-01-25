@@ -11,8 +11,10 @@ import '../../core/localization/app_translation.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/language/language_state.dart';
 import '../../data/remote/services/local/login_local_services.dart';
+import '../../data/remote/services/remote/pin_local_service.dart';
 import '../../utils/di/locator.dart';
 import '../../widgets/logout_dialog.dart';
+import '../auth/pin/pin_creation_page.dart';
 import 'language/language_settings.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -24,6 +26,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final _local = locator<LoginLocalService>();
+  final _pinLocalService = locator<PinLocalService>();
   String _userName = '';
   String _userSurname = '';
 
@@ -94,7 +97,7 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   child: Row(
                     children: [
                       const SizedBox(
@@ -151,7 +154,50 @@ class _SettingsPageState extends State<SettingsPage> {
                       svgPath: 'assets/svg/settings_pass_ico.svg',
                       titleKey: AppStrings.password,
                       subtitleKey: AppStrings.setAppPassword,
-                      onTap: () {},
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PinCreationPage(),
+                          ),
+                        );
+                        setState(() {});
+                      },
+                      trailing: _pinLocalService.hasPin
+                          ? Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              size: 14,
+                              color: Colors.black,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                             AppTranslation.translate(AppStrings.active),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primaryBlack,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                          : null,
                     ),
                   ],
                 ),
@@ -235,6 +281,7 @@ class _SettingsPageState extends State<SettingsPage> {
     required String titleKey,
     String? subtitleKey,
     required VoidCallback onTap,
+    Widget? trailing,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -287,6 +334,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
               ),
+              if (trailing != null) ...[
+                const SizedBox(width: 8),
+                trailing,
+                const SizedBox(width: 4),
+              ],
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,

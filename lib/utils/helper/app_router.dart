@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../data/remote/services/remote/auth_manager_services.dart';
+import '../../data/remote/services/remote/pin_local_service.dart';
 import '../../presentation/auth/auth_page.dart';
+import '../../presentation/auth/pin/pin_entry_page.dart';
 import '../../presentation/boss/boss_home_nav.dart';
 import '../../presentation/introduction/onboard_page.dart';
 import '../../presentation/user/user_main_nav.dart';
 
 class AppRouter {
   final GlobalKey<NavigatorState> _navigatorKey;
+  final PinLocalService _pinLocalService;
 
-  AppRouter(this._navigatorKey);
+  AppRouter(this._navigatorKey, this._pinLocalService);
 
   static final _routeMapping = <AuthState, Widget Function()>{
     AuthState.unauthenticated: () => const AuthPage(),
@@ -21,6 +24,24 @@ class AppRouter {
   Widget getPageForAuthState(AuthState authState) {
     final pageBuilder = _routeMapping[authState];
     return pageBuilder?.call() ?? const _ErrorPage();
+  }
+
+  Widget getPageWithPinGuard(AuthState authState) {
+    if (authState == AuthState.unauthenticated || authState == AuthState.guest) {
+      return getPageForAuthState(authState);
+    }
+
+    if (_pinLocalService.shouldAskPin) {
+      return PinEntryPage(
+        targetAuthState: authState,
+        onPinVerified: () {
+          _pinLocalService.markSessionVerified();
+          navigateToAuthState(authState);
+        },
+      );
+    }
+
+    return getPageForAuthState(authState);
   }
 
   void navigateToAuthState(AuthState authState) {
@@ -37,7 +58,8 @@ class AppRouter {
       return;
     }
 
-    final targetPage = getPageForAuthState(authState);
+    // PIN guard'dan geçir - bu kritik!
+    final targetPage = getPageWithPinGuard(authState);
     final targetRouteName = targetPage.runtimeType.toString();
 
     try {

@@ -117,6 +117,10 @@ class AppStrings {
   static const String alreadyHaveAccount = 'alreadyHaveAccount';
   static const String signInButton = 'signInButton';
   static const String areYouSureYouWantToLogOut = 'AreYouSureYouWantToLogOut';
+  static const String cannotLogin = 'cannotLogin';
+  static const String helpText = 'helpText';
+  static const String helpInfoText = 'helpInfoText';
+  static const String iCannotLogin = 'iCannotLogin';
 
 // Terms & Privacy
   static const String iAgreeToThe = 'iAgreeToThe';

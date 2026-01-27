@@ -1,9 +1,13 @@
+import 'package:carcat/core/constants/colors/app_colors.dart';
+import 'package:carcat/presentation/auth/login/login_page.dart';
+import 'package:carcat/utils/helper/go.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pinput/pinput.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/localization/app_translation.dart';
+import '../../../data/remote/services/local/login_local_services.dart';
 import '../../../data/remote/services/remote/auth_manager_services.dart';
 import '../../../data/remote/services/remote/pin_local_service.dart';
 import '../../../utils/di/locator.dart';
@@ -67,6 +71,59 @@ class PinEntryPage extends HookWidget {
       });
     }
 
+    void handleCannotLogin() {
+    Go.replaceAndRemove(context, LoginPage());
+    }
+
+    void showHelpDialog() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: AppColors.primaryWhite,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                const Icon(
+                    Icons.help_outline,
+                    color: Colors.red,
+                    size: 24,
+                  ),
+                const SizedBox(width: 12),
+                 Text(
+                  AppTranslation.translate(AppStrings.helpText),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              AppTranslation.translate(AppStrings.helpInfoText),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+              AppTranslation.translate(AppStrings.okButton),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -121,6 +178,31 @@ class PinEntryPage extends HookWidget {
                       fontSize: 14,
                     ),
                   ),
+
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: showHelpDialog,
+                      icon: const Icon(
+                          Icons.help_outline,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                      ),
+                    TextButton(
+                      onPressed: handleCannotLogin,
+                      child: Text(
+                        AppTranslation.translate(AppStrings.iCannotLogin),
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 if (isLoading.value)
                   const Padding(
                     padding: EdgeInsets.only(top: 16),

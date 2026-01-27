@@ -231,6 +231,29 @@ class Translations {
       'en': 'Are you sure you want to log out?',
       'ru': 'Вы уверены, что хотите выйти из аккаунта?',
     },
+    AppStrings.cannotLogin: {
+      'az': 'Daxil ola bilmirəm',
+      'en': "I can't login",
+      'ru': 'Не могу войти',
+    },
+    AppStrings.helpInfoText: {
+      'az':
+          'Əgər PIN şifrəsini unutmusansa, hesab məlumatlarınla giriş edərək, "Parametrlər" səhifəsindən 4 rəqəmli PIN-i sıfırlaya bilərsən.',
+      'en':
+          'If you have forgotten your PIN, you can log in with your account details and reset the 4-digit PIN from the "Settings" page.',
+      'ru':
+          'Если вы забыли свой PIN-код, вы можете войти с помощью данных своей учетной записи и сбросить 4-значный PIN-код на странице "Настройки".',
+    },
+    AppStrings.helpText: {
+      'az': 'Kömək',
+      'en': 'Help',
+      'ru': 'Помощь',
+
+    },   AppStrings.iCannotLogin: {
+      'az': 'Daxil ola bilmirəm',
+      'en': "I can't login",
+      'ru': 'Не могу войти',
+    },
     AppStrings.signUpButton: {
       'az': 'Qeydiyyat',
       'en': 'Sign up',

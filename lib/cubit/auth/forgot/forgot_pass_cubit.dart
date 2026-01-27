@@ -31,7 +31,7 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
       final ForgotPasswordResponse resp = await _repo.forgotPassword(
         phoneNumber: formattedPhone,
       );
-
+      await _local.saveRegisterToken(resp.registerToken);
       final registerResponse = RegisterResponse(
         registerToken: resp.registerToken,
         message: resp.message,

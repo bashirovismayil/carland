@@ -54,6 +54,19 @@ class RegisterLocalService {
       await _box.put('registeredPhone', phoneNumber);
     }
   }
+  Future<void> saveRegisterToken(String token) async {
+    if (token.isNotEmpty) {
+      await _box.put('registerToken', token);
+    }
+  }
+
+  String? get registerToken => _box.get('registerToken');
+
+  Future<void> clearRegisterToken() async {
+    await _box.delete('registerToken');
+  }
+
+  String? get tokenRegister => registerToken;
 
   String? get registeredPhoneNumber => _box.get('registeredPhone');
 }

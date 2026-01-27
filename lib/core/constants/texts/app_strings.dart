@@ -46,6 +46,7 @@ class AppStrings {
   static const String passwordLabel = 'passwordLabel';
   static const String forgotPassword = 'forgotPassword';
   static const String forgotPasswordPageHeader = 'forgotPasswordHeader';
+  static const String resetPasswordHeader = 'resetPasswordHeader';
   static const String rememberMe = 'rememberMe';
   static const String dontHaveAccount = 'dontHaveAccount';
 
@@ -162,6 +163,8 @@ class AppStrings {
   static const String confirmNewPassword = 'confirmNewPassword';
   static const String registerButton = 'registerButton';
   static const String registerFinish = 'registerFinish';
+  static const String changePassTitle = 'changePassTitle';
+  static const String changePassFinish = 'changePassFinish';
 
   // Password Requirements
   static const String capitalLetterRequired = 'capitalLetterRequired';
@@ -376,6 +379,8 @@ class AppStrings {
   static const String language = 'language';
   static const String changeAppLanguage = 'changeAppLanguage';
   static const String changeTheLanguage = 'changeTheLanguage';
+  static const String resetPassText = 'resetPassText';
+  static const String resetPassSubText = 'resetPassSubText';
   static const String password = 'password';
   static const String setAppPassword = 'setAppPassword';
 

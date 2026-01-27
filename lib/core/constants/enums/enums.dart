@@ -28,6 +28,7 @@ enum TitleType {
 
 enum SetupPassType {
   registration,
+  forgotPassword,
   resetPassword,
 }
 

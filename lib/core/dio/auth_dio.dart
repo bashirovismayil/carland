@@ -3,15 +3,18 @@ import 'package:carcat/core/dio/token_refresh_interceptor.dart';
 import 'package:carcat/presentation/auth/login/login_page.dart';
 import 'package:dio/dio.dart';
 import '../../data/remote/services/local/login_local_services.dart';
+import '../../data/remote/services/local/register_local_service.dart';
 import '../../utils/di/locator.dart';
 import '../../utils/helper/go.dart';
 
-final authDio =
-    Dio()
-      ..interceptors.addAll([
-        TokenRefreshInterceptor(locator<LoginLocalService>(),
-          onTokenExpired: () {
-            Go.replaceAndRemoveWithoutContext(LoginPage());
-          },),
-        AwesomeDioInterceptor(),
-      ]);
+final authDio = Dio()
+  ..interceptors.addAll([
+    TokenRefreshInterceptor(
+      locator<LoginLocalService>(),
+      locator<RegisterLocalService>(),
+      onTokenExpired: () {
+        Go.replaceAndRemoveWithoutContext(LoginPage());
+      },
+    ),
+    AwesomeDioInterceptor(),
+  ]);

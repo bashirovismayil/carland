@@ -16,6 +16,7 @@ class ForgotPasswordService {
     final headers = {
       'Content-Type': 'application/json',
       'Accept-Language': currentLanguage,
+      'X-Skip-Token-Refresh': 'true',
     };
 
     final body = {

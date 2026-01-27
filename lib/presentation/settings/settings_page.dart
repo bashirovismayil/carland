@@ -1,4 +1,5 @@
 import 'package:carcat/core/constants/colors/app_colors.dart';
+import 'package:carcat/presentation/auth/forgot/forgot_password.dart';
 import 'package:carcat/presentation/settings/profile_edit.dart';
 import 'package:carcat/presentation/terms_and_privacy/privacy_policy.dart';
 import 'package:carcat/utils/helper/go.dart';
@@ -147,6 +148,15 @@ class _SettingsPageState extends State<SettingsPage> {
                       subtitleKey: AppStrings.changeAppLanguage,
                       onTap: () {
                         Go.to(context, LanguageSettingsPage());
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildSettingsTile(
+                      svgPath: 'assets/svg/reset_pass_icon.svg',
+                      titleKey: AppStrings.resetPassText,
+                      subtitleKey: AppStrings.resetPassSubText,
+                      onTap: () {
+                        Go.to(context, ForgotPassword(isResetFlow: true,));
                       },
                     ),
                     const SizedBox(height: 10),

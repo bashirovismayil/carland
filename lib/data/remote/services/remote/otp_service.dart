@@ -15,13 +15,14 @@ class OtpService {
   final _languageService = locator<LanguageLocalService>();
 
   Future<OtpSendResponse> createAndSend({ required String phoneNumber }) async {
-    final token = locator<RegisterLocalService>().token;
+    final token = _local.registerToken;
     final currentLanguage = _languageService.currentLanguage;
 
     final headers = {
       'Content-Type': 'application/json',
       'Accept-Language': currentLanguage,
       'X-Client-Timezone': 'Asia/Baku',
+      'X-Skip-Token-Refresh': 'true',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
@@ -39,12 +40,14 @@ class OtpService {
   }
 
   Future<OtpVerifyResponse> verify({required String otpCode}) async {
-    final token = _local.token;
+    final token = _local.registerToken;
     final currentLanguage = _languageService.currentLanguage;
+
     final headers = {
       'Content-Type': 'application/json',
       'Accept-Language': currentLanguage,
       'X-Client-Timezone': 'Asia/Baku',
+      'X-Skip-Token-Refresh': 'true',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 

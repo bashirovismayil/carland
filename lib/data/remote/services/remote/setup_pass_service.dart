@@ -15,12 +15,13 @@ class SetupPassService {
     required String newPassword,
     required String newPasswordConfirm,
   }) async {
-    final token = _local.token;
+    final token = _local.registerToken;
     final currentLanguage = _languageService.currentLanguage;
 
     final headers = {
       'Content-Type': 'application/json',
       'Accept-Language': currentLanguage,
+      'X-Skip-Token-Refresh': 'true',
       if (token != null) 'Authorization': 'Bearer $token',
     };
 

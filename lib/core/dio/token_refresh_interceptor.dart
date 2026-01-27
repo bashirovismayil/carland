@@ -2,21 +2,25 @@ import 'dart:developer';
 import 'dart:ui';
 import 'package:dio/dio.dart';
 import '../../data/remote/services/local/login_local_services.dart';
+import '../../data/remote/services/local/register_local_service.dart';
 import '../extensions/auth_extensions/refresh_methods_extension.dart';
 
 class TokenRefreshInterceptor extends Interceptor {
   final LoginLocalService _loginLocalService;
+  final RegisterLocalService _registerLocalService;
   final Dio _refreshDio;
   final VoidCallback? onTokenExpired;
   bool _isRefreshing = false;
   final List<RequestOptionsWrapper> _pendingRequests = [];
 
   TokenRefreshInterceptor(
-      this._loginLocalService, {
+      this._loginLocalService,
+      this._registerLocalService,{
         this.onTokenExpired,
       }) : _refreshDio = Dio();
 
   LoginLocalService get loginLocalService => _loginLocalService;
+  RegisterLocalService get registerLocalService => _registerLocalService;
 
   Dio get refreshDio => _refreshDio;
 
@@ -24,9 +28,29 @@ class TokenRefreshInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final accessToken = _loginLocalService.accessToken;
     log('[onRequest] Token check.', name: 'TokenRefreshInterceptor');
 
+    final skipTokenRefresh = options.headers['X-Skip-Token-Refresh'] == 'true';
+
+    if (skipTokenRefresh) {
+      log('[onRequest] Skip token refresh detected', name: 'TokenRefreshInterceptor');
+      options.headers.remove('X-Skip-Token-Refresh');
+      final registerToken = _registerLocalService.registerToken;
+      if (registerToken != null && registerToken.isNotEmpty) {
+        options.headers['Authorization'] = 'Bearer $registerToken';
+        log(
+          '[onRequest] Register token added: Bearer ${registerToken.substring(0, 10)}...',
+          name: 'TokenRefreshInterceptor',
+        );
+      } else {
+        log('[onRequest] Register token not found', name: 'TokenRefreshInterceptor');
+      }
+
+      handler.next(options);
+      return;
+    }
+
+    final accessToken = _loginLocalService.accessToken;
     if (accessToken != null && accessToken.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $accessToken';
       log(
@@ -48,6 +72,15 @@ class TokenRefreshInterceptor extends Interceptor {
       '[onError] Error. StatusCode: ${err.response?.statusCode}',
       name: 'TokenRefreshInterceptor',
     );
+    final skipTokenRefresh = err.requestOptions.headers['X-Skip-Token-Refresh'] == 'true';
+    if (skipTokenRefresh) {
+      log(
+        '[onError] Skip token refresh flag detected - no refresh will be attempted',
+        name: 'TokenRefreshInterceptor',
+      );
+      handler.next(err);
+      return;
+    }
 
     if (err.response?.statusCode == 401) {
       log(

@@ -263,6 +263,11 @@ class Translations {
       'en': 'Forgot Password',
       'ru': 'Забыли пароль',
     },
+    AppStrings.resetPasswordHeader: {
+      'az': 'Şifrəni dəyişdir',
+      'en': 'Reset Password',
+      'ru': 'Сбросить пароль',
+    },
     AppStrings.rememberMe: {
       'az': 'Məni xatırla',
       'en': 'Remember me',
@@ -525,12 +530,12 @@ class Translations {
       'ru': 'Создать Пароль',
     },
     AppStrings.enterNewPassword: {
-      'az': 'Yeni şifrəni daxil edin',
+      'az': 'Yeni şifrəni daxil et',
       'en': 'Enter New Password',
       'ru': 'Введите Новый Пароль',
     },
     AppStrings.confirmNewPassword: {
-      'az': 'Yeni şifrəni təkrar daxil edin',
+      'az': 'Yeni şifrəni təkrar daxil et',
       'en': 'Confirm New Password',
       'ru': 'Подтвердите Новый Пароль',
     },
@@ -544,13 +549,23 @@ class Translations {
       'en': 'Register',
       'ru': 'Регистрация',
     },
+    AppStrings.changePassTitle: {
+      'az': 'Şifrənin dəyişdirilməsi',
+      'en': 'Reset Password',
+      'ru': 'Сброс Пароля',
+    },
+    AppStrings.changePassFinish: {
+      'az': 'Şifrəni dəyiş',
+      'en': 'Submit',
+      'ru': 'Изменить Пароль',
+    },
     AppStrings.setupPasswordText: {
       'az': 'Şifrə qurulması',
       'en': 'Set Up Password',
       'ru': 'Настройка пароля',
     },
     AppStrings.setupPasswordHintText: {
-      'az': 'Şifrənizi daxil edin',
+      'az': 'Şifrəni daxil et',
       'en': 'Enter your password',
       'ru': 'Введите пароль',
     },
@@ -560,7 +575,7 @@ class Translations {
       'ru': 'Подтвердите пароль',
     },
     AppStrings.confirmPasswordHint: {
-      'az': 'Şifrəni yenidən daxil edin',
+      'az': 'Şifrəni yenidən daxil et',
       'en': 'Re-enter your password',
       'ru': 'Введите пароль ещё раз',
     },
@@ -687,7 +702,7 @@ class Translations {
       'ru': 'Регистрация Успешна',
     },
     AppStrings.passwordResetSuccessful: {
-      'az': 'Şifrə Sıfırlama Uğurlu',
+      'az': 'Şifrən yeniləndi',
       'en': 'Password Reset Successful',
       'ru': 'Сброс Пароля Успешен',
     },
@@ -706,11 +721,11 @@ class Translations {
     },
     AppStrings.passwordResetSuccessSubtext: {
       'az':
-          'Hesabınız uğurla yaradıldı. İndi daxil olaraq avtomobilinizin texniki xidmətini asanlıqla idarə edə bilərsiniz.',
+          'Şifrən uğurla yeniləndi. İndi yeni şifrən ilə hesabına daxil ola bilərsən.',
       'en':
-          'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
+          'Your password has been successfully updated. You can now log in with your new password.',
       'ru':
-          'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
+          'Ваш пароль успешно обновлен. Теперь вы можете войти с новым паролем.',
     },
     AppStrings.carAddedSubtext: {
       'az': 'Yeni Kart Əlavə Edildi BMW M4 Sports 2024',
@@ -1523,13 +1538,23 @@ class Translations {
       'en': 'Change the Language',
       'ru': 'Изменить язык приложения',
     },
+    AppStrings.resetPassText: {
+      'az': 'Hesab şifrəsi',
+      'en': 'Account Password',
+      'ru': 'Пароль учетной записи',
+    },
+    AppStrings.resetPassSubText: {
+      'az': 'Hesab şifrəsini dəyişin',
+      'en': 'Change Account Password',
+      'ru': 'Изменить пароль учетной записи',
+    },
     AppStrings.password: {
-      'az': 'Şifrə',
-      'en': 'Password',
-      'ru': 'Пароль',
+      'az': 'Tətbiq kilidi',
+      'en': 'App Password',
+      'ru': 'Пароль приложения',
     },
     AppStrings.setAppPassword: {
-      'az': 'Tətbiq şifrəsi təyin edin',
+      'az': 'Tətbiq üçün PIN təyin edin',
       'en': 'Set App Password',
       'ru': 'Установить пароль приложения',
     },
@@ -1605,12 +1630,14 @@ class Translations {
       'ru': 'Закрыть',
     },
     AppStrings.serviceInfoDateSet: {
-      'az': 'Bu servis üzrə növbəti texniki xidmət yalnız "müddət" üzrə planlanır.',
+      'az':
+          'Bu servis üzrə növbəti texniki xidmət yalnız "müddət" üzrə planlanır.',
       'en': 'The service type specified by the service has a date set.',
       'ru': 'Для указанного сервисом типа услуги установлена дата.',
     },
     AppStrings.serviceInfoKmSet: {
-      'az': 'Bu servis üzrə növbəti texniki xidmət yalnız "yürüş" üzrə planlanır.',
+      'az':
+          'Bu servis üzrə növbəti texniki xidmət yalnız "yürüş" üzrə planlanır.',
       'en': 'The service type specified by the service has a mileage set.',
       'ru': 'Для указанного сервисом типа услуги установлен километраж.',
     },
@@ -1640,9 +1667,12 @@ class Translations {
       'ru': 'Удалить PIN',
     },
     AppStrings.deletePinConfirmation: {
-      'az': 'PIN kodunu silmək istədiyinə əminsən? Tətbiqi təkrar açanda PIN soruşulmayacaq.',
-      'en': 'Are you sure you want to delete the PIN code? You will not be asked for a PIN when you reopen the app.',
-      'ru': 'Вы уверены, что хотите удалить PIN-код? При повторном открытии приложения PIN-код не будет запрашиваться.',
+      'az':
+          'PIN kodunu silmək istədiyinə əminsən? Tətbiqi təkrar açanda PIN soruşulmayacaq.',
+      'en':
+          'Are you sure you want to delete the PIN code? You will not be asked for a PIN when you reopen the app.',
+      'ru':
+          'Вы уверены, что хотите удалить PIN-код? При повторном открытии приложения PIN-код не будет запрашиваться.',
     },
     AppStrings.pinDeletedSuccessfully: {
       'az': 'PIN uğurla silindi',
@@ -1680,12 +1710,12 @@ class Translations {
       'ru': 'Повторно введите новый PIN',
     },
     AppStrings.changePin: {
-      'az': 'Tətbiq şifrəsini dəyişdir',
+      'az': 'Tətbiq kilidini dəyişdir',
       'en': 'Change PIN',
       'ru': 'Изменить PIN',
     },
     AppStrings.createPin: {
-      'az': 'Tətbiq şifrəsi yarat',
+      'az': 'Tətbiq kilidi yarat',
       'en': 'Create PIN',
       'ru': 'Создать PIN',
     },

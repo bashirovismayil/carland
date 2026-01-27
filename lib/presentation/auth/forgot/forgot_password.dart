@@ -17,14 +17,18 @@ import '../otp/otp_page.dart';
 import '../pass/setup_pass_content.dart';
 
 class ForgotPassword extends HookWidget {
-  const ForgotPassword({super.key});
+  const ForgotPassword({super.key, this.isResetFlow = false});
+
+  final bool isResetFlow;
 
   @override
   Widget build(BuildContext context) {
     final phoneController = useTextEditingController();
     final formKey = useRef(GlobalKey<FormState>());
     final selectedCountryCode = useState(CountryCode.azerbaijan);
-    final navigationHandler = useMemoized(() => _ForgotPasswordNavigationHandler());
+    final navigationHandler = useMemoized(
+          () => _ForgotPasswordNavigationHandler(isResetFlow: isResetFlow),
+    );
 
     void showCountryCodePicker() {
       showModalBottomSheet(
@@ -52,6 +56,7 @@ class ForgotPassword extends HookWidget {
           navigationHandler: navigationHandler,
           selectedCountryCode: selectedCountryCode.value,
           onCountryCodeTap: showCountryCodePicker,
+          isResetFlow: isResetFlow,
         ),
       ),
     );
@@ -64,6 +69,7 @@ class _ForgotPasswordForm extends StatelessWidget {
   final _ForgotPasswordNavigationHandler navigationHandler;
   final CountryCode selectedCountryCode;
   final VoidCallback onCountryCodeTap;
+  final bool isResetFlow;
 
   const _ForgotPasswordForm({
     required this.phoneController,
@@ -71,6 +77,7 @@ class _ForgotPasswordForm extends StatelessWidget {
     required this.navigationHandler,
     required this.selectedCountryCode,
     required this.onCountryCodeTap,
+    required this.isResetFlow,
   });
 
   @override
@@ -120,7 +127,9 @@ class _ForgotPasswordForm extends StatelessWidget {
         ),
         SizedBox(width: 16),
         Text(
-          AppTranslation.translate(AppStrings.forgotPasswordPageHeader),
+          isResetFlow
+              ? AppTranslation.translate(AppStrings.resetPasswordHeader)
+              : AppTranslation.translate(AppStrings.forgotPasswordPageHeader),
           style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
@@ -230,7 +239,8 @@ class _ForgotPasswordForm extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32),
-                    borderSide: const BorderSide(color: Colors.black, width: 1.5),
+                    borderSide:
+                        const BorderSide(color: Colors.black, width: 1.5),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32),
@@ -238,7 +248,8 @@ class _ForgotPasswordForm extends StatelessWidget {
                   ),
                   focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32),
-                    borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+                    borderSide:
+                        BorderSide(color: Colors.red.shade400, width: 1.5),
                   ),
                 ),
               ),
@@ -276,8 +287,8 @@ class _ForgotPasswordForm extends StatelessWidget {
     if (_isFormValid()) {
       final fullPhoneNumber = _buildFormattedPhoneNumber();
       context.read<ForgotPasswordCubit>().submit(
-        phoneNumber: fullPhoneNumber,
-      );
+            phoneNumber: fullPhoneNumber,
+          );
     }
   }
 
@@ -357,6 +368,8 @@ class _PhoneValidator {
 }
 
 class _ForgotPasswordNavigationHandler {
+  final bool isResetFlow;
+  _ForgotPasswordNavigationHandler({required this.isResetFlow});
   void navigateToOtpVerification(BuildContext context, String phoneNumber) {
     Navigator.push(
       context,
@@ -371,7 +384,6 @@ class _ForgotPasswordNavigationHandler {
       ),
     );
   }
-
   void _navigateToPasswordSetup(BuildContext context, String phoneNumber) {
     final controllers = _PasswordSetupControllers();
 
@@ -382,7 +394,9 @@ class _ForgotPasswordNavigationHandler {
           formKey: controllers.formKey,
           passwordController: controllers.passwordController,
           confirmController: controllers.confirmController,
-          setupType: SetupPassType.resetPassword,
+          setupType: isResetFlow
+              ? SetupPassType.resetPassword
+              : SetupPassType.forgotPassword,
           phoneNumber: phoneNumber,
         ),
       ),
@@ -391,8 +405,8 @@ class _ForgotPasswordNavigationHandler {
 
   void _handleOtpError(BuildContext context, String error) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Wrong code"),
+      SnackBar(
+        content: Text(AppTranslation.translate(AppStrings.wrongOtpCode)),
         backgroundColor: Colors.red,
       ),
     );

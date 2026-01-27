@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../cubit/auth/user/user/user_add_details_cubit.dart';
+import '../../../data/remote/services/local/register_local_service.dart';
+import '../../../utils/di/locator.dart';
 import '../../home/home_page.dart';
 import '../../../utils/helper/go.dart';
 import '../../success/success_page.dart';
@@ -162,7 +164,9 @@ class _SetupPassContentState extends State<SetupPassContent> {
         ),
         const SizedBox(width: 12),
         Text(
-          context.currentLanguage(AppStrings.createPassword),
+          widget.setupType == SetupPassType.resetPassword
+              ? context.currentLanguage(AppStrings.changePassTitle)
+              : context.currentLanguage(AppStrings.createPassword),
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -427,7 +431,9 @@ class _SetupPassContentState extends State<SetupPassContent> {
     }
 
     return Text(
-      context.currentLanguage(AppStrings.registerFinish),
+      widget.setupType == SetupPassType.resetPassword
+          ? context.currentLanguage(AppStrings.changePassFinish)
+          : context.currentLanguage(AppStrings.registerFinish),
       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
     );
   }
@@ -460,7 +466,8 @@ class _SetupPassContentState extends State<SetupPassContent> {
       context,
       MaterialPageRoute(
         builder: (_) => SuccessPage(
-          isRegister: true,
+          isRegister: widget.setupType == SetupPassType.registration,
+          isPasswordReset: widget.setupType == SetupPassType.resetPassword,
           onButtonPressed: () async {
             await context.performAutoLogin(
               password: savedPassword,
@@ -501,7 +508,7 @@ class _SetupPassContentState extends State<SetupPassContent> {
     if (!mounted) return;
 
     log("✅ Auto login successful, token alındı");
-
+    await locator<RegisterLocalService>().clearRegisterToken();
     if (widget.setupType == SetupPassType.registration &&
         _userDetailsCubit != null) {
       try {

@@ -12,6 +12,7 @@ class PinLocalService {
   static const String _pinEnabledKey = 'pin_enabled';
 
   bool _isSessionVerified = false;
+  bool _bypassPinOnce = false;
 
   static const _secureStorage = FlutterSecureStorage();
   static const String _encryptionKeyStorageKey = 'hive_encryption_key';
@@ -22,10 +23,15 @@ class PinLocalService {
 
   bool get isSessionVerified => _isSessionVerified;
 
-  bool get shouldAskPin => hasPin && !_isSessionVerified;
+  bool get shouldAskPin => hasPin && !_isSessionVerified && !_bypassPinOnce;
+
+  void setBypassPinOnce() {
+    _bypassPinOnce = true;
+  }
 
   void markSessionVerified() {
     _isSessionVerified = true;
+    _bypassPinOnce = false;
   }
 
   void resetSession() {

@@ -7,7 +7,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pinput/pinput.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/localization/app_translation.dart';
-import '../../../data/remote/services/local/login_local_services.dart';
 import '../../../data/remote/services/remote/auth_manager_services.dart';
 import '../../../data/remote/services/remote/pin_local_service.dart';
 import '../../../utils/di/locator.dart';
@@ -72,7 +71,8 @@ class PinEntryPage extends HookWidget {
     }
 
     void handleCannotLogin() {
-    Go.replaceAndRemove(context, LoginPage());
+      pinLocalService.setBypassPinOnce();
+      Go.replaceAndRemove(context, LoginPage());
     }
 
     void showHelpDialog() {

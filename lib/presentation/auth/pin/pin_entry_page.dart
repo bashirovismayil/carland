@@ -183,21 +183,28 @@ class PinEntryPage extends HookWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      onPressed: showHelpDialog,
-                      icon: const Icon(
+                    InkWell(
+                      onTap: showHelpDialog,
+                      borderRadius: BorderRadius.circular(20),
+                      child: const Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
                           Icons.help_outline,
                           color: Colors.grey,
                           size: 20,
                         ),
                       ),
-                    TextButton(
-                      onPressed: handleCannotLogin,
-                      child: Text(
-                        AppTranslation.translate(AppStrings.iCannotLogin),
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
+                    ),
+                    InkWell(
+                      onTap: handleCannotLogin,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                        child: Text(
+                          AppTranslation.translate(AppStrings.iCannotLogin),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),

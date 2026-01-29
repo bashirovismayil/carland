@@ -1184,7 +1184,7 @@ class Translations {
       'ru': 'Обрезать изображение',
     },
     AppStrings.okButton: {
-      'az': 'Tamam',
+      'az': 'OK',
       'en': 'OK',
       'ru': 'ОК',
     },

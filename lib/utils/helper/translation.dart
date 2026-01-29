@@ -1208,6 +1208,31 @@ class Translations {
       'en': 'No Image',
       'ru': 'Нет изображения',
     },
+    AppStrings.choosePhoto: {
+      'az': 'Şəkil seçin',
+      'en': 'Choose Photo',
+      'ru': 'Выберите фото',
+    },
+    AppStrings.selectFromGallery: {
+      'az': 'Qalereyadan seç',
+      'en': 'Select from Gallery',
+      'ru': 'Выбрать из галереи',
+    },
+    AppStrings.useCamera: {
+      'az': 'Kameradan istifadə et',
+      'en': 'Use Camera',
+      'ru': 'Использовать камеру',
+    },
+    AppStrings.uploadSuccess: {
+      'az': 'Şəkil uğurla yükləndi',
+      'en': 'Image uploaded successfully',
+      'ru': 'Изображение успешно загружено',
+    },
+    AppStrings.uploadFailed: {
+      'az': 'Şəkil yüklənmədi',
+      'en': 'Image upload failed',
+      'ru': 'Не удалось загрузить изображение',
+    },
     'aspectRatio1_1': {
       'az': '1:1',
       'en': '1:1',

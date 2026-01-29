@@ -22,7 +22,7 @@ class ImageCropConfig {
   static const int jpegQuality = 85;
   static const double overlayOpacity = 0.65;
   static const double gridOpacity = 0.4;
-  static const double aspectRatio = 4 / 3; // Fixed 4:3 ratio
+  static const double defaultAspectRatio = 4 / 3;
 }
 
 Future<Uint8List> _processImageInIsolate(Map<String, dynamic> params) async {
@@ -64,11 +64,13 @@ Future<Uint8List> _processImageInIsolate(Map<String, dynamic> params) async {
 class ImageCropWidget extends StatefulWidget {
   final File imageFile;
   final int maxOutputDimension;
+  final double aspectRatio;
 
   const ImageCropWidget({
     super.key,
     required this.imageFile,
     this.maxOutputDimension = ImageCropConfig.maxOutputDimension,
+    this.aspectRatio = ImageCropConfig.defaultAspectRatio,
   });
 
   @override
@@ -247,13 +249,13 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
     final centerX = _displayAreaSize.width / 2;
     final centerY = _displayAreaSize.height / 2;
 
-    // Calculate crop size based on 4:3 ratio
+    // Calculate crop size based on aspect ratio
     double cropWidth = _imageDisplaySize.width * 0.8;
-    double cropHeight = cropWidth / ImageCropConfig.aspectRatio;
+    double cropHeight = cropWidth / widget.aspectRatio;
 
     if (cropHeight > _imageDisplaySize.height * 0.8) {
       cropHeight = _imageDisplaySize.height * 0.8;
-      cropWidth = cropHeight * ImageCropConfig.aspectRatio;
+      cropWidth = cropHeight * widget.aspectRatio;
     }
 
     setState(() {
@@ -433,9 +435,9 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
       right += delta.dx;
     }
 
-    // Maintain 4:3 aspect ratio
+    // Maintain aspect ratio
     final width = (right - left).abs();
-    final height = width / ImageCropConfig.aspectRatio;
+    final height = width / widget.aspectRatio;
 
     if (isTop) {
       top = bottom - height;
@@ -464,9 +466,9 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
         bottom += delta;
       }
 
-      // Maintain 4:3 aspect ratio
+      // Maintain aspect ratio
       final height = (bottom - top).abs();
-      final width = height * ImageCropConfig.aspectRatio;
+      final width = height * widget.aspectRatio;
       final center = (left + right) / 2;
       left = center - width / 2;
       right = center + width / 2;
@@ -477,9 +479,9 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
         right += delta;
       }
 
-      // Maintain 4:3 aspect ratio
+      // Maintain aspect ratio
       final width = (right - left).abs();
-      final height = width / ImageCropConfig.aspectRatio;
+      final height = width / widget.aspectRatio;
       final center = (top + bottom) / 2;
       top = center - height / 2;
       bottom = center + height / 2;

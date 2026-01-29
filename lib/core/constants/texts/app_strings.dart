@@ -309,6 +309,11 @@ class AppStrings {
   static const String aspectRatioFree = 'aspectRatioFree';
   static const String cropGestureHint = 'cropGestureHint';
   static const String noImage = 'noImage';
+  static const String choosePhoto = 'Choose photo';
+  static const String selectFromGallery = 'Select from gallery';
+  static const String useCamera = 'Use camera';
+  static const String uploadSuccess = 'uploadSuccess';
+  static const String uploadFailed = 'uploadFailed';
 
   static const String errorLoadingRecords = 'errorLoadingRecords';
   static const String retry = 'retry';

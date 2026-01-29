@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:carcat/core/constants/texts/app_strings.dart';
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,6 +10,7 @@ import '../core/extensions/photo/profile/image_cache_extension.dart';
 import '../cubit/photo/profile/profile_photo_cubit.dart';
 import '../cubit/photo/profile/profile_photo_state.dart';
 import '../utils/di/locator.dart';
+import 'image_crop_widget.dart';
 
 class ProfilePictureWidget extends StatefulWidget {
   final bool isEdit;
@@ -69,13 +72,15 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Choose photo'),
+          title: Text(AppTranslation.translate(AppStrings.choosePhoto)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.photo_library, color: AppColors.primaryBlack),
-                title: const Text('Select from gallery'),
+                leading:
+                Icon(Icons.photo_library, color: AppColors.primaryBlack),
+                title: Text(
+                    AppTranslation.translate(AppStrings.selectFromGallery)),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.gallery);
@@ -83,7 +88,7 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
               ),
               ListTile(
                 leading: Icon(Icons.camera_alt, color: AppColors.primaryBlack),
-                title: const Text('Use camera'),
+                title: Text(AppTranslation.translate(AppStrings.useCamera)),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.camera);
@@ -100,20 +105,38 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
     try {
       final pickedFile = await _picker.pickImage(
         source: source,
-        maxWidth: 720,
-        maxHeight: 720,
         imageQuality: 85,
       );
 
-      if (pickedFile != null) {
-        setState(() {
-          _imageFile = File(pickedFile.path);
-        });
+      if (pickedFile != null && mounted) {
+        final File imageFile = File(pickedFile.path);
+        final croppedFile = await Navigator.of(context).push<File>(
+          MaterialPageRoute(
+            builder: (context) => ImageCropWidget(
+              imageFile: imageFile,
+              aspectRatio: 1.0,
+            ),
+          ),
+        );
 
-        _cubit.uploadProfilePhoto(_imageFile!);
+        if (croppedFile != null && mounted) {
+          final fileSize = await croppedFile.length();
+          if (fileSize > 5242880) {
+            _showSnack(
+              AppTranslation.translate(AppStrings.fileSizeTooLarge),
+              color: AppColors.errorColor,
+            );
+            return;
+          }
+          setState(() {
+            _imageFile = croppedFile;
+          });
+          _cubit.uploadProfilePhoto(croppedFile);
+        }
       }
     } catch (e) {
-      _showSnack('Error: ${e.toString()}');
+      _showSnack(
+          '${AppTranslation.translate(AppStrings.errorOccurred)} ${e.toString()}');
     }
   }
 
@@ -123,7 +146,8 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
     return null;
   }
 
-  Widget _buildAvatar(ImageProvider? provider, ProfilePhotoState state, double size) {
+  Widget _buildAvatar(
+      ImageProvider? provider, ProfilePhotoState state, double size) {
     final borderWidth = size * 0.06;
     final padding = size * 0.08;
     final avatarRadius = (size - (borderWidth * 2) - (padding * 2)) / 2;
@@ -189,7 +213,8 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
             child: CircleAvatar(
               radius: innerRadius,
               backgroundColor: AppColors.primaryBlack,
-              child: Icon(Icons.camera_alt_outlined, size: iconSize, color: Colors.white),
+              child: Icon(Icons.camera_alt_outlined,
+                  size: iconSize, color: Colors.white),
             ),
           ),
         ),
@@ -198,15 +223,17 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
   }
 
   Widget _buildOverlay(ProfilePhotoState state, double size) {
-    if (state is ProfilePhotoUploading || (state is ProfilePhotoLoading && _serverImageData == null)) {
-      final progressSize = size * 0.3; // %30 of size
-      final strokeWidth = size * 0.02; // %2 of size
+    if (state is ProfilePhotoUploading ||
+        (state is ProfilePhotoLoading && _serverImageData == null)) {
+      final progressSize = size * 0.3;
+      final strokeWidth = size * 0.02;
 
       return Positioned.fill(
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.black.withOpacity(state is ProfilePhotoUploading ? 0.5 : 0.3),
+            color: Colors.black
+                .withOpacity(state is ProfilePhotoUploading ? 0.5 : 0.3),
           ),
           child: Center(
             child: SizedBox(
@@ -214,7 +241,8 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
               height: progressSize,
               child: CircularProgressIndicator(
                 strokeWidth: strokeWidth,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primaryBlack),
+                valueColor:
+                const AlwaysStoppedAnimation<Color>(AppColors.primaryBlack),
               ),
             ),
           ),
@@ -231,11 +259,13 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
       child: BlocConsumer<ProfilePhotoCubit, ProfilePhotoState>(
         listener: (context, state) {
           if (state is ProfilePhotoUploadSuccess) {
-            _showSnack('Profile photo uploaded successfully', color: AppColors.primaryBlack);
+            _showSnack(AppTranslation.translate(AppStrings.uploadSuccess),
+                color: AppColors.primaryBlack);
             clearImageCache();
             _cubit.getProfilePhoto();
           } else if (state is ProfilePhotoUploadError) {
-            _showSnack('Upload failed: ${state.message}');
+            _showSnack(
+                '${AppTranslation.translate(AppStrings.uploadFailed)}: ${state.message}');
           } else if (state is ProfilePhotoLoaded) {
             _saveImageToCache(state.imageData);
           } else if (state is ProfilePhotoLoadError) {

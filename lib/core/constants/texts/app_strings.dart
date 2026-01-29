@@ -432,4 +432,16 @@ class AppStrings {
   static const String wrongPinTryAgain = 'wrongPinTryAgain';
   static const String enterYourPin = 'enterYourPin';
   static const String enterPinToContinue = 'enterPinToContinue';
+
+  static const String noCameraAvailable = "noCameraAvailable";
+  static const String cameraPermissionDenied = "cameraPermissionDenied";
+  static const String failedToInitializeCamera = "failedToInitializeCamera";
+  static const String scannerDisposed = "scannerDisposed";
+  static const String cameraNotInitialized = "cameraNotInitialized";
+  static const String alreadyProcessing = "alreadyProcessing";
+  static const String failedToCaptureImage = "failedToCaptureImage";
+  static const String scannerNotReady = "scannerNotReady";
+  static const String noTextDetected = "noTextDetected";
+  static const String noVinFound = "noVinFound";
+  static const String failedToProcessImage = "failedToProcessImage";
 }

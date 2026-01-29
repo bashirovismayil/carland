@@ -8,6 +8,8 @@ import 'package:carcat/utils/helper/vin/vin_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import '../../../../core/constants/enums/enums.dart';
+import '../../../../core/localization/app_translation.dart';
+import '../../../core/constants/texts/app_strings.dart';
 import 'camera_manager.dart';
 
 class VinScannerService {
@@ -62,18 +64,18 @@ class VinScannerService {
         if (cameraResult.isCameraUnavailable) {
           return VinScanResult.failure(
             ScannerError.noCameraAvailable,
-            cameraResult.errorMessage ?? 'No camera available',
+            cameraResult.errorMessage ?? AppTranslation.translate(AppStrings.noCameraAvailable),
           );
         }
         if (cameraResult.isPermissionDenied) {
           return VinScanResult.failure(
             ScannerError.permissionDenied,
-            cameraResult.errorMessage ?? 'Camera permission denied',
+            cameraResult.errorMessage ?? AppTranslation.translate(AppStrings.cameraPermissionDenied),
           );
         }
         return VinScanResult.failure(
           ScannerError.cameraInitFailed,
-          cameraResult.errorMessage ?? 'Failed to initialize camera',
+          cameraResult.errorMessage ?? AppTranslation.translate(AppStrings.failedToInitializeCamera),
         );
       }
 
@@ -82,7 +84,7 @@ class VinScannerService {
       debugPrint('Init error: $e');
       return VinScanResult.failure(
         ScannerError.cameraInitFailed,
-        'Failed to initialize camera',
+        AppTranslation.translate(AppStrings.failedToInitializeCamera),
       );
     }
   }
@@ -258,6 +260,7 @@ class VinScannerService {
       }
     }
   }
+
   void _evaluateCandidate(String candidate) {
     final correctedCandidate = candidate.applyOcrCorrections();
 
@@ -276,6 +279,7 @@ class VinScannerService {
     }
     _addToDetectionBuffer(correctedCandidate);
   }
+
   void _addToChecksumValidBuffer(String candidate) {
     _checksumValidCounts[candidate] = (_checksumValidCounts[candidate] ?? 0) + 1;
     debugPrint('Buffer (checksum valid): $candidate = ${_checksumValidCounts[candidate]}');
@@ -285,6 +289,7 @@ class VinScannerService {
       _foundConfidence = 1.0;
     }
   }
+
   void _addToDetectionBuffer(String candidate) {
     _detectionCounts[candidate] = (_detectionCounts[candidate] ?? 0) + 1;
     debugPrint('Buffer (no checksum): $candidate = ${_detectionCounts[candidate]}');
@@ -322,21 +327,21 @@ class VinScannerService {
     if (_isDisposed) {
       return VinScanResult.failure(
         ScannerError.cameraInitFailed,
-        'Scanner has been disposed',
+        AppTranslation.translate(AppStrings.scannerDisposed),
       );
     }
 
     if (!_cameraManager.isInitialized) {
       return VinScanResult.failure(
         ScannerError.cameraInitFailed,
-        'Camera not initialized',
+        AppTranslation.translate(AppStrings.cameraNotInitialized),
       );
     }
 
     if (_isProcessing) {
       return VinScanResult.failure(
         ScannerError.processingFailed,
-        'Already processing',
+        AppTranslation.translate(AppStrings.alreadyProcessing),
       );
     }
 
@@ -353,7 +358,7 @@ class VinScannerService {
       if (_isDisposed) {
         return VinScanResult.failure(
           ScannerError.cameraInitFailed,
-          'Scanner has been disposed',
+          AppTranslation.translate(AppStrings.scannerDisposed),
         );
       }
 
@@ -361,7 +366,7 @@ class VinScannerService {
       if (imagePath == null) {
         return VinScanResult.failure(
           ScannerError.processingFailed,
-          'Failed to capture image',
+          AppTranslation.translate(AppStrings.failedToCaptureImage),
         );
       }
 
@@ -378,7 +383,7 @@ class VinScannerService {
       debugPrint('Capture error: $e');
       return VinScanResult.failure(
         ScannerError.processingFailed,
-        'Failed to capture image',
+        AppTranslation.translate(AppStrings.failedToCaptureImage),
       );
     } finally {
       _isProcessing = false;
@@ -389,7 +394,7 @@ class VinScannerService {
     if (_isDisposed || _textRecognizer == null) {
       return VinScanResult.failure(
         ScannerError.processingFailed,
-        'Scanner not ready',
+        AppTranslation.translate(AppStrings.scannerNotReady),
       );
     }
 
@@ -403,7 +408,7 @@ class VinScannerService {
       if (recognizedText.text.isEmpty) {
         return VinScanResult.failure(
           ScannerError.noTextFound,
-          'No text detected. Try better lighting.',
+          AppTranslation.translate(AppStrings.noTextDetected),
         );
       }
 
@@ -425,13 +430,13 @@ class VinScannerService {
 
       return VinScanResult.failure(
         ScannerError.noVinFound,
-        'No 17-character code found. Make sure the full code is visible.',
+        AppTranslation.translate(AppStrings.noVinFound),
       );
     } catch (e) {
       debugPrint('Process image error: $e');
       return VinScanResult.failure(
         ScannerError.processingFailed,
-        'Failed to process image',
+        AppTranslation.translate(AppStrings.failedToProcessImage),
       );
     }
   }

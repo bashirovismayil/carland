@@ -1787,6 +1787,61 @@ class Translations {
       'en': 'Enter your PIN code to continue',
       'ru': 'Введите ваш PIN-код для продолжения',
     },
+    AppStrings.noCameraAvailable: {
+      'az': 'Kamera mövcud deyil',
+      'en': 'No camera available',
+      'ru': 'Камера недоступна',
+    },
+    AppStrings.cameraPermissionDenied: {
+      'az': 'Kamera icazəsi rədd edildi',
+      'en': 'Camera permission denied',
+      'ru': 'Доступ к камере запрещен',
+    },
+    AppStrings.failedToInitializeCamera: {
+      'az': 'Kamera işə salına bilmədi',
+      'en': 'Failed to initialize camera',
+      'ru': 'Не удалось инициализировать камеру',
+    },
+    AppStrings.scannerDisposed: {
+      'az': 'Skaner bağlandı',
+      'en': 'Scanner has been disposed',
+      'ru': 'Сканер был закрыт',
+    },
+    AppStrings.cameraNotInitialized: {
+      'az': 'Kamera işə salınmayıb',
+      'en': 'Camera not initialized',
+      'ru': 'Камера не инициализирована',
+    },
+    AppStrings.alreadyProcessing: {
+      'az': 'Artıq işlənir',
+      'en': 'Already processing',
+      'ru': 'Уже обрабатывается',
+    },
+    AppStrings.failedToCaptureImage: {
+      'az': 'Şəkil çəkilə bilmədi',
+      'en': 'Failed to capture image',
+      'ru': 'Не удалось сделать снимок',
+    },
+    AppStrings.scannerNotReady: {
+      'az': 'Skaner hazır deyil',
+      'en': 'Scanner not ready',
+      'ru': 'Сканер не готов',
+    },
+    AppStrings.noTextDetected: {
+      'az': 'Mətn aşkar edilmədi. Daha yaxşı işıqlandırma cəhd edin.',
+      'en': 'No text detected. Try better lighting.',
+      'ru': 'Текст не обнаружен. Попробуйте лучшее освещение.',
+    },
+    AppStrings.noVinFound: {
+      'az': '17 simvollu kod tapılmadı. Tam kodun görünməsini təmin edin.',
+      'en': 'No 17-character code found. Make sure the full code is visible.',
+      'ru': '17-символьный код не найден. Убедитесь, что весь код виден.',
+    },
+    AppStrings.failedToProcessImage: {
+      'az': 'Şəkil işlənə bilmədi',
+      'en': 'Failed to process image',
+      'ru': 'Не удалось обработать изображение',
+    },
   };
 
   static String translate(String key, String languageCode) {

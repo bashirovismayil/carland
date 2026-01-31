@@ -397,7 +397,20 @@ class AppStrings {
   static const String appFeedback = 'appFeedback';
   static const String addFeedbackAboutApp = 'addFeedbackAboutApp';
   static const String bugReport = 'bugReport';
+  static const String supportText = 'supportText';
   static const String reportBugOrError = 'reportBugOrError';
+  static const String feedbackQuestion = 'feedbackQuestion';
+  static const String describeInDetail = 'describeInDetail';
+  static const String describeSupportInDetail = 'describeSupportInDetail';
+  static const String shareYourThoughts = 'shareYourThoughts';
+  static const String send = 'send';
+  static const String pleaseGiveRating = 'pleaseGiveRating';
+  static const String pleaseEnterDescription = 'pleaseEnterDescription';
+  static const String responseTime = 'responseTime';
+  static const String ticketId = 'ticketId';
+  static const String noPermission = 'noPermission';
+  static const String serviceNotFound = 'serviceNotFound';
+  static const String checkInternet = 'checkInternet';
 
   // Legals Section
   static const String setYourPrivacy = 'setYourPrivacy';
@@ -444,4 +457,24 @@ class AppStrings {
   static const String noTextDetected = "noTextDetected";
   static const String noVinFound = "noVinFound";
   static const String failedToProcessImage = "failedToProcessImage";
+
+  static const String addScreenshot = 'addScreenshot';
+  static const String optional = 'optional';
+  static const String fileSelected = 'fileSelected';
+  static const String removeFile = 'removeFile';
+  static const String supportedScreenshotFiles = 'supportedScreenshotFiles';
+  static const String fileNotSelected = 'fileNotSelected';
+
+  // AppStrings constants
+  static const String selectRequestType = "selectRequestType";
+  static const String enterDescription = "enterDescription";
+  static const String operationNotAuthorized = "operationNotAuthorized";
+  static const String checkInternetConnection = "checkInternetConnection";
+  static const String sendingRequest = "sendingRequest";
+  static const String requestType = "requestType";
+  static const String describeRequestHere = "describeRequestHere";
+  static const String supportTypeSupport = "supportTypeSupport";
+  static const String supportTypeBugReport = "supportTypeBugReport";
+
+  static const String termsOfServiceText = "Terms of Service";
 }

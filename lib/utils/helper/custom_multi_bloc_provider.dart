@@ -1,3 +1,4 @@
+import 'package:carcat/cubit/feedback/send_feedback_cubit.dart';
 import 'package:carcat/cubit/transmission/type/transmission_type_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubit/add/car/add_car_cubit.dart';
@@ -123,6 +124,9 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             ),
             BlocProvider<TermsConditionsCubit>(
               create: (_) => locator<TermsConditionsCubit>(),
+            ),
+            BlocProvider<FeedbackCubit>(
+              create: (_) => locator<FeedbackCubit>(),
             ),
           ],
         );

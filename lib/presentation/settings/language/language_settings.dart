@@ -20,7 +20,6 @@ class _LanguageSettingsPageState extends State<LanguageSettingsPage> {
   @override
   void initState() {
     super.initState();
-    // Başlangıçta mevcut dili al
     final currentState = context.read<LanguageCubit>().state;
     _selectedLanguage = currentState.currentLanguage;
   }

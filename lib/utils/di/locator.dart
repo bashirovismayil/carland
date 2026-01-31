@@ -18,6 +18,7 @@ import '../../cubit/delete/account/delete_account_cubit.dart';
 import '../../cubit/delete/delete_car_cubit.dart';
 import '../../cubit/edit/edit_car_details_cubit.dart';
 import '../../cubit/engine/type/get_engine_type_cubit.dart';
+import '../../cubit/feedback/send_feedback_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/mileage/update/update_car_mileage_cubit.dart';
 import '../../cubit/photo/car/upload_car_photo_cubit.dart';
@@ -53,6 +54,7 @@ import '../../data/remote/contractor/otp_contractor.dart';
 import '../../data/remote/contractor/privacy_policy_contractor.dart';
 import '../../data/remote/contractor/profile_photo_contractor.dart';
 import '../../data/remote/contractor/register_contractor.dart';
+import '../../data/remote/contractor/send_feedback_contractor.dart';
 import '../../data/remote/contractor/setup_pass_contractor.dart';
 import '../../data/remote/contractor/terms_and_conditions_contractor.dart';
 import '../../data/remote/contractor/update_car_records_contractor.dart';
@@ -81,6 +83,7 @@ import '../../data/remote/repository/otp_repository.dart';
 import '../../data/remote/repository/privacy_policy_repository.dart';
 import '../../data/remote/repository/profile_photo_repository.dart';
 import '../../data/remote/repository/register_repository.dart';
+import '../../data/remote/repository/send_feedback_repository.dart';
 import '../../data/remote/repository/setup_pass_repository.dart';
 import '../../data/remote/repository/terms_conditions_repository.dart';
 import '../../data/remote/repository/update_car_records_repository.dart';
@@ -117,6 +120,7 @@ import '../../data/remote/services/remote/pin_local_service.dart';
 import '../../data/remote/services/remote/policy_service.dart';
 import '../../data/remote/services/remote/profile_photo_service.dart';
 import '../../data/remote/services/remote/register_service.dart';
+import '../../data/remote/services/remote/send_feedback_service.dart';
 import '../../data/remote/services/remote/setup_pass_service.dart';
 import '../../data/remote/services/remote/terms_conditions_service.dart';
 import '../../data/remote/services/remote/update_car_mileage_service.dart';
@@ -154,7 +158,7 @@ Future<void> setupLocator() async {
     () => OnboardLocalService(onboardBox),
   );
   locator.registerLazySingleton<PinLocalService>(
-        () => PinLocalService(pinBox),
+    () => PinLocalService(pinBox),
   );
   locator.registerLazySingleton<AuthManagerService>(
     () => AuthManagerService(
@@ -480,4 +484,9 @@ Future<void> setupLocator() async {
   locator.registerFactory<TermsConditionsCubit>(
     () => TermsConditionsCubit(),
   );
+  locator.registerLazySingleton<FeedbackService>(() => FeedbackService());
+  locator.registerLazySingleton<FeedbackContractor>(
+    () => FeedbackRepository(locator<FeedbackService>()),
+  );
+  locator.registerFactory<FeedbackCubit>(() => FeedbackCubit());
 }

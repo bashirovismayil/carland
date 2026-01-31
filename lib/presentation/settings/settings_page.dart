@@ -1,7 +1,10 @@
 import 'package:carcat/core/constants/colors/app_colors.dart';
 import 'package:carcat/presentation/auth/forgot/forgot_password.dart';
+import 'package:carcat/presentation/settings/feedback/feedback_page.dart';
 import 'package:carcat/presentation/settings/profile_edit.dart';
+import 'package:carcat/presentation/settings/support/support_page.dart';
 import 'package:carcat/presentation/terms_and_privacy/privacy_policy.dart';
+import 'package:carcat/presentation/terms_and_privacy/terms_page.dart';
 import 'package:carcat/utils/helper/go.dart';
 import 'package:carcat/widgets/profile_picture_widget.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +101,7 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   child: Row(
                     children: [
                       const SizedBox(
@@ -145,25 +148,25 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       svgPath: 'assets/svg/settings_language.svg',
                       titleKey: AppStrings.language,
-                      subtitleKey: AppStrings.changeAppLanguage,
+                   //   subtitleKey: AppStrings.changeAppLanguage,
                       onTap: () {
                         Go.to(context, LanguageSettingsPage());
                       },
                     ),
-                    const SizedBox(height: 10),
-                    _buildSettingsTile(
-                      svgPath: 'assets/svg/reset_pass_icon.svg',
-                      titleKey: AppStrings.resetPassText,
-                      subtitleKey: AppStrings.resetPassSubText,
-                      onTap: () {
-                        Go.to(context, ForgotPassword(isResetFlow: true,));
-                      },
-                    ),
+                    // const SizedBox(height: 10),
+                    // _buildSettingsTile(
+                    //   svgPath: 'assets/svg/reset_pass_icon.svg',
+                    //   titleKey: AppStrings.resetPassText,
+                    //   subtitleKey: AppStrings.resetPassSubText,
+                    //   onTap: () {
+                    //     Go.to(context, ForgotPassword(isResetFlow: true,));
+                    //   },
+                    // ),
                     const SizedBox(height: 10),
                     _buildSettingsTile(
                       svgPath: 'assets/svg/settings_pass_ico.svg',
                       titleKey: AppStrings.password,
-                      subtitleKey: AppStrings.setAppPassword,
+                    //  subtitleKey: AppStrings.setAppPassword,
                       onTap: () async {
                         await Navigator.push(
                           context,
@@ -175,38 +178,38 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       trailing: _pinLocalService.hasPin
                           ? Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              size: 14,
-                              color: Colors.black,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                             AppTranslation.translate(AppStrings.active),
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primaryBlack,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
                               ),
-                            ),
-                          ],
-                        ),
-                      )
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.check_circle,
+                                    size: 14,
+                                    color: Colors.black,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    AppTranslation.translate(AppStrings.active),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primaryBlack,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
                           : null,
                     ),
                   ],
@@ -217,15 +220,19 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       svgPath: 'assets/svg/settings_feedback.svg',
                       titleKey: AppStrings.appFeedback,
-                      subtitleKey: AppStrings.addFeedbackAboutApp,
-                      onTap: () {},
+                    //  subtitleKey: AppStrings.addFeedbackAboutApp,
+                      onTap: () {
+                        Go.to(context, FeedbackPage());
+                      },
                     ),
                     const SizedBox(height: 10),
                     _buildSettingsTile(
-                      svgPath: 'assets/svg/settings_bug_report.svg',
-                      titleKey: AppStrings.bugReport,
-                      subtitleKey: AppStrings.reportBugOrError,
-                      onTap: () {},
+                      svgPath: 'assets/svg/support_icon.svg',
+                      titleKey: AppStrings.supportText,
+                     // subtitleKey: AppStrings.reportBugOrError,
+                      onTap: () {
+                        Go.to(context, SupportPage());
+                      },
                     ),
                   ],
                 ),
@@ -235,9 +242,18 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       svgPath: 'assets/svg/settings_privacy.svg',
                       titleKey: AppStrings.privacyPolicy,
-                      subtitleKey: AppStrings.setYourPrivacy,
+                     // subtitleKey: AppStrings.setYourPrivacy,
                       onTap: () {
                         Go.to(context, PrivacyPolicyPage());
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildSettingsTile(
+                      svgPath: 'assets/svg/terms_service.svg',
+                      titleKey: AppStrings.termsAndConditions,
+                      // subtitleKey: AppStrings.setYourPrivacy,
+                      onTap: () {
+                        Go.to(context, TermsConditionsPage());
                       },
                     ),
                     const SizedBox(height: 10),
@@ -310,7 +326,7 @@ class _SettingsPageState extends State<SettingsPage> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           child: Row(
             children: [
               SvgPicture.asset(

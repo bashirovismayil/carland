@@ -1123,9 +1123,9 @@ class Translations {
       'ru': 'Поддерживаемые файлы JPG, PNG, JPEG, MP4',
     },
     AppStrings.maxFileSize: {
-      'az': 'Maksimum fayl ölçüsü 5 MB',
-      'en': 'Maximum file size 5 MB',
-      'ru': 'Максимальный размер файла 5 МБ',
+      'az': 'Maksimum fayl ölçüsü',
+      'en': 'Maximum file size',
+      'ru': 'Максимальный размер файла',
     },
     AppStrings.select: {
       'az': 'Seç',
@@ -1555,19 +1555,79 @@ class Translations {
 
     // Section Headers
     AppStrings.general: {
-      'az': 'Ümumi',
+      'az': 'Ümumi tənzimləmələr',
       'en': 'General',
       'ru': 'Основные',
     },
     AppStrings.feedback: {
-      'az': 'Rəy',
+      'az': 'Geri bildiriş',
       'en': 'Feedback',
       'ru': 'Отзыв',
     },
     AppStrings.legals: {
-      'az': 'Qanuni',
+      'az': 'Hüquqi tənzimləmə',
       'en': 'Legals',
-      'ru': 'Правовые',
+      'ru': 'Юридическая информация',
+    },
+    AppStrings.feedbackQuestion: {
+      'az': 'Mobil tətbiqdən nə dərəcədə razısan?',
+      'en': 'Q. How would you rate your experience?',
+      'ru': 'Насколько вы довольны мобильным приложением?',
+    },
+    AppStrings.describeInDetail: {
+      'az': 'Ətraflı şəkildə təsvir et',
+      'en': 'Give written feedback',
+      'ru': 'Опишите подробно',
+    },
+    AppStrings.describeSupportInDetail: {
+      'az': 'Ətraflı şəkildə təsvir et',
+      'en': 'Issue detail',
+      'ru': 'Опишите подробно',
+    },
+    AppStrings.shareYourThoughts: {
+      'az': 'Fikirlərini bizimlə bölüş.',
+      'en': 'Share your thoughts with us.',
+      'ru': 'Поделитесь своими мыслями.',
+    },
+    AppStrings.send: {
+      'az': 'Göndər',
+      'en': 'Update Feedback',
+      'ru': 'Отправить',
+    },
+    AppStrings.pleaseGiveRating: {
+      'az': 'Zəhmət olmasa reytinq verin',
+      'en': 'Please give a rating',
+      'ru': 'Пожалуйста, поставьте оценку',
+    },
+    AppStrings.pleaseEnterDescription: {
+      'az': 'Zəhmət olmasa təsviri daxil edin',
+      'en': 'Please enter a description',
+      'ru': 'Пожалуйста, введите описание',
+    },
+    AppStrings.responseTime: {
+      'az': 'Cavab müddəti',
+      'en': 'Response time',
+      'ru': 'Время ответа',
+    },
+    AppStrings.ticketId: {
+      'az': 'Ticket ID',
+      'en': 'Ticket ID',
+      'ru': 'ID заявки',
+    },
+    AppStrings.noPermission: {
+      'az': 'Əməliyyat üçün icazə yoxdur. Zəhmət olmasa yenidən cəhd edin.',
+      'en': 'No permission for this operation. Please try again.',
+      'ru': 'Нет разрешения на эту операцию. Попробуйте снова.',
+    },
+    AppStrings.serviceNotFound: {
+      'az': 'Xidmət tapılmadı. Zəhmət olmasa dəstək ilə əlaqə saxlayın.',
+      'en': 'Service not found. Please contact support.',
+      'ru': 'Сервис не найден. Свяжитесь с поддержкой.',
+    },
+    AppStrings.checkInternet: {
+      'az': 'İnternet bağlantısını yoxlayın',
+      'en': 'Check your internet connection',
+      'ru': 'Проверьте подключение к интернету',
     },
 
     // General Section
@@ -1609,7 +1669,7 @@ class Translations {
 
     // Feedback Section
     AppStrings.appFeedback: {
-      'az': 'Tətbiq Rəyi',
+      'az': 'Geri bildiriş',
       'en': 'App Feedback',
       'ru': 'Отзыв о приложении',
     },
@@ -1619,9 +1679,14 @@ class Translations {
       'ru': 'Добавить отзыв о приложении',
     },
     AppStrings.bugReport: {
-      'az': 'Xəta Hesabatı',
+      'az': 'Xətanı bildirmə',
       'en': 'Bug Report',
       'ru': 'Отчет об ошибке',
+    },
+    AppStrings.supportText: {
+      'az': 'Dəstək',
+      'en': 'Support',
+      'ru': 'Поддержка',
     },
     AppStrings.reportBugOrError: {
       'az': 'Hər hansı bir xəta və ya səhvi bildirin',
@@ -1841,6 +1906,86 @@ class Translations {
       'az': 'Şəkil işlənə bilmədi',
       'en': 'Failed to process image',
       'ru': 'Не удалось обработать изображение',
+    },
+    AppStrings.addScreenshot: {
+      'az': 'Şəkil və ya ekran görüntüsü əlavə et',
+      'en': 'Upload media for reference',
+      'ru': 'Добавить изображение или скриншот',
+    },
+    AppStrings.optional: {
+      'az': 'şərti',
+      'en': 'optional',
+      'ru': 'необязательно',
+    },
+    AppStrings.fileSelected: {
+      'az': 'Fayl seçildi',
+      'en': 'File selected',
+      'ru': 'Файл выбран',
+    },
+    AppStrings.removeFile: {
+      'az': 'Sil',
+      'en': 'Remove',
+      'ru': 'Удалить',
+    },
+    AppStrings.supportedScreenshotFiles: {
+      'az': 'Dəstəklənən fayl tipləri: JPG, PNG, JPEG, MP4',
+      'en': 'Supported file types: JPG, PNG, JPEG, MP4',
+      'ru': 'Поддерживаемые форматы: JPG, PNG, JPEG, MP4',
+    },
+    AppStrings.fileNotSelected: {
+      'az': 'Fayl seçilmədi',
+      'en': 'File not selected',
+      'ru': 'Файл не выбран',
+    },
+    AppStrings.selectRequestType: {
+      'az': 'Zəhmət olmasa sorğunun növünü seçin',
+      'en': 'Please select request type',
+      'ru': 'Пожалуйста, выберите тип запроса',
+    },
+    AppStrings.enterDescription: {
+      'az': 'Zəhmət olmasa təsviri daxil edin',
+      'en': 'Please enter description',
+      'ru': 'Пожалуйста, введите описание',
+    },
+    AppStrings.operationNotAuthorized: {
+      'az': 'Əməliyyat üçün icazə yoxdur. Zəhmət olmasa yenidən cəhd edin.',
+      'en': 'Operation not authorized. Please try again.',
+      'ru': 'Операция не авторизована. Пожалуйста, попробуйте снова.',
+    },
+    AppStrings.checkInternetConnection: {
+      'az': 'İnternet bağlantısını yoxlayın',
+      'en': 'Check internet connection',
+      'ru': 'Проверьте интернет-соединение',
+    },
+    AppStrings.sendingRequest: {
+      'az': 'Sorğunun göndərilməsi',
+      'en': 'Describe the request',
+      'ru': 'Отправка запроса',
+    },
+    AppStrings.requestType: {
+      'az': 'Sorğunun növü',
+      'en': 'Type',
+      'ru': 'Тип запроса',
+    },
+    AppStrings.describeRequestHere: {
+      'az': 'Burada sorğunuzu təsvir edin...',
+      'en': 'Describe your request here...',
+      'ru': 'Опишите ваш запрос здесь...',
+    },
+    AppStrings.supportTypeSupport: {
+      'az': 'Dəstək',
+      'en': 'Support',
+      'ru': 'Поддержка',
+    },
+    AppStrings.supportTypeBugReport: {
+      'az': 'Xəta bildirişi',
+      'en': 'Bug report',
+      'ru': 'Сообщение об ошибке',
+    },
+    AppStrings.termsOfServiceText: {
+      'az': 'İstifadə Şərtləri',
+      'en': 'Terms of Service',
+      'ru': 'Условия обслуживания',
     },
   };
 

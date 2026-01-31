@@ -1,3 +1,5 @@
+import 'package:carcat/core/constants/texts/app_strings.dart';
+import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/colors/app_colors.dart';
@@ -35,8 +37,8 @@ class _TermsConditionsPageState extends State<TermsConditionsPage> {
           color: AppColors.textPrimary,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Terms of Service',
+        title: Text(
+         AppTranslation.translate(AppStrings.termsOfServiceText),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,

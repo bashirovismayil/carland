@@ -126,4 +126,10 @@ class ApiConstants {
       '$baseUrl/carland/legal/legal/privacy/policy?lang=';
   static const termsConditions =
       '$baseUrl/carland/legal/legal/terms-and-conditions?lang=';
+
+  static const getFeedbackTypes =
+      '$baseUrl/carland/server-carland/api/v1/feedback/get/types';
+
+  static const sendFeedback =
+      '$baseUrl/carland/server-carland/api/v1/feedback/push';
 }

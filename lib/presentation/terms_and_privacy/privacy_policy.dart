@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/values/app_theme.dart';
+import '../../core/constants/texts/app_strings.dart';
+import '../../core/localization/app_translation.dart';
 import '../../cubit/privacy/privacy_cubit.dart';
 import '../../cubit/privacy/privacy_policy_state.dart';
 import '../../data/remote/models/remote/privacy_policy_response.dart';
@@ -35,8 +37,8 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
           color: AppColors.textPrimary,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Privacy Policy',
+        title: Text(
+          AppTranslation.translate(AppStrings.privacyPolicy),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,

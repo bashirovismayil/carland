@@ -38,7 +38,7 @@ class _TermsConditionsPageState extends State<TermsConditionsPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-         AppTranslation.translate(AppStrings.termsOfServiceText),
+         AppTranslation.translate(AppStrings.termsOfService),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,

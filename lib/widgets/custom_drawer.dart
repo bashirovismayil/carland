@@ -1,11 +1,10 @@
-import 'dart:typed_data';
 import 'package:carcat/core/constants/texts/app_strings.dart';
 import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../core/extensions/photo/profile/image_cache_extension.dart';
+// ❌ REMOVED: import '../../core/extensions/photo/profile/image_cache_extension.dart';
 import '../../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_state.dart';
@@ -29,13 +28,10 @@ class CustomDrawer extends StatefulWidget {
 
 class _CustomDrawerState extends State<CustomDrawer> {
   late final ProfilePhotoCubit _cubit;
-  Uint8List? _cachedImage;
-
   @override
   void initState() {
     super.initState();
     _cubit = locator<ProfilePhotoCubit>();
-    _cachedImage = loadCachedImage();
     _cubit.getProfilePhoto();
   }
 
@@ -73,8 +69,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
                           if (state is ProfilePhotoLoaded) {
                             imageProvider = MemoryImage(state.imageData);
-                          } else if (_cachedImage != null) {
-                            imageProvider = MemoryImage(_cachedImage!);
+                          } else if (_cubit.cachedImage != null) {
+                            imageProvider = MemoryImage(_cubit.cachedImage!);
                           }
 
                           return Container(
@@ -130,7 +126,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   context.read<UserNavBarCubit>().goToSettingsPage();
                 },
                 child: Text(
-                 ' ${widget.userName} ${widget.userSurname}',
+                  ' ${widget.userName} ${widget.userSurname}',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
@@ -162,10 +158,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
-                        'assets/svg/user_nav_icon.svg',
-                        height: 22,
-                        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)
-                      ),
+                          'assets/svg/user_nav_icon.svg',
+                          height: 22,
+                          colorFilter: const ColorFilter.mode(
+                              Colors.white, BlendMode.srcIn)),
                       const SizedBox(width: 10),
                       Text(
                         AppTranslation.translate(AppStrings.logout),

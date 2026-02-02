@@ -1,12 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:carcat/core/constants/texts/app_strings.dart';
 import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/colors/app_colors.dart';
-import '../core/extensions/photo/profile/image_cache_extension.dart';
+// ❌ REMOVED: import '../core/extensions/photo/profile/image_cache_extension.dart';
 import '../cubit/photo/profile/profile_photo_cubit.dart';
 import '../cubit/photo/profile/profile_photo_state.dart';
 import '../utils/di/locator.dart';
@@ -27,36 +26,16 @@ class ProfilePictureWidget extends StatefulWidget {
 class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
   final ImagePicker _picker = ImagePicker();
   File? _imageFile;
-  Uint8List? _serverImageData;
   late final ProfilePhotoCubit _cubit;
 
   @override
   void initState() {
     super.initState();
     _cubit = locator<ProfilePhotoCubit>();
-    _loadImageFromCache();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _cubit.getProfilePhoto();
     });
   }
-
-  void _loadImageFromCache() {
-    final cachedImage = loadCachedImage();
-    if (cachedImage != null) {
-      setState(() {
-        _serverImageData = cachedImage;
-      });
-    }
-  }
-
-  void _saveImageToCache(Uint8List imageData) {
-    updateImageCache(imageData);
-    setState(() {
-      _serverImageData = imageData;
-    });
-  }
-
   void _showSnack(String msg, {Color color = Colors.red}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -140,9 +119,10 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
     }
   }
 
-  ImageProvider? _getImageProvider() {
+  ImageProvider? _getImageProvider(ProfilePhotoState state) {
     if (_imageFile != null) return FileImage(_imageFile!);
-    if (_serverImageData != null) return MemoryImage(_serverImageData!);
+    if (state is ProfilePhotoLoaded) return MemoryImage(state.imageData);
+    if (_cubit.cachedImage != null) return MemoryImage(_cubit.cachedImage!);
     return null;
   }
 
@@ -224,7 +204,7 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
 
   Widget _buildOverlay(ProfilePhotoState state, double size) {
     if (state is ProfilePhotoUploading ||
-        (state is ProfilePhotoLoading && _serverImageData == null)) {
+        (state is ProfilePhotoLoading && _cubit.cachedImage == null)) {
       final progressSize = size * 0.3;
       final strokeWidth = size * 0.02;
 
@@ -261,21 +241,13 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
           if (state is ProfilePhotoUploadSuccess) {
             _showSnack(AppTranslation.translate(AppStrings.uploadSuccess),
                 color: AppColors.primaryBlack);
-            clearImageCache();
-            _cubit.getProfilePhoto();
           } else if (state is ProfilePhotoUploadError) {
             _showSnack(
                 '${AppTranslation.translate(AppStrings.uploadFailed)}: ${state.message}');
-          } else if (state is ProfilePhotoLoaded) {
-            _saveImageToCache(state.imageData);
-          } else if (state is ProfilePhotoLoadError) {
-            setState(() {
-              _serverImageData = null;
-            });
           }
         },
         builder: (context, state) {
-          final imageProvider = _getImageProvider();
+          final imageProvider = _getImageProvider(state);
 
           return LayoutBuilder(
             builder: (context, constraints) {
@@ -283,7 +255,7 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
                   ? constraints.maxWidth
                   : constraints.maxHeight.isFinite
                   ? constraints.maxHeight
-                  : 100.0; // fallback size
+                  : 100.0;
 
               return Center(
                 child: Stack(

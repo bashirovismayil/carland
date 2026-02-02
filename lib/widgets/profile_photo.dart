@@ -1,8 +1,7 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../core/extensions/photo/profile/image_cache_extension.dart';
+// ❌ REMOVED: import '../core/extensions/photo/profile/image_cache_extension.dart';
 import '../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../cubit/photo/profile/profile_photo_cubit.dart';
 import '../cubit/photo/profile/profile_photo_state.dart';
@@ -24,14 +23,11 @@ class ProfilePhoto extends StatefulWidget {
 
 class _ProfilePhotoState extends State<ProfilePhoto> {
   late final ProfilePhotoCubit _cubit;
-  Uint8List? _cachedImage;
 
   @override
   void initState() {
     super.initState();
     _cubit = locator<ProfilePhotoCubit>();
-
-    _cachedImage = loadCachedImage();
     _cubit.getProfilePhoto();
   }
 
@@ -55,8 +51,8 @@ class _ProfilePhotoState extends State<ProfilePhoto> {
 
             if (state is ProfilePhotoLoaded) {
               imageProvider = MemoryImage(state.imageData);
-            } else if (_cachedImage != null) {
-              imageProvider = MemoryImage(_cachedImage!);
+            } else if (_cubit.cachedImage != null) {
+              imageProvider = MemoryImage(_cubit.cachedImage!);
             }
 
             return CircleAvatar(

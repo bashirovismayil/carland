@@ -211,7 +211,7 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton<ProfilePhotoContractor>(
     () => ProfilePhotoRepository(locator<ProfilePhotoService>()),
   );
-  locator.registerFactory<ProfilePhotoCubit>(() => ProfilePhotoCubit());
+  locator.registerLazySingleton<ProfilePhotoCubit>(() => ProfilePhotoCubit());
 
   locator.registerLazySingleton<CheckVinService>(
     () => CheckVinService(),

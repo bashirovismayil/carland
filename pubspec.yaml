@@ -25,8 +25,8 @@ dependencies:
   intl: ^0.20.2
   url_launcher: ^6.3.2
   fluttertoast: ^9.0.0
-  firebase_core: ^4.1.1
-  firebase_messaging: ^16.0.2
+  firebase_core: ^4.4.0
+  firebase_messaging: ^16.1.1
   dotted_border: ^3.1.0
   lottie: ^3.3.1
   image_picker: ^1.2.1

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/remote/services/local/login_local_services.dart';
 import '../../../core/constants/enums/enums.dart';
 import '../../../data/remote/contractor/login_contractor.dart';
+import '../../../data/remote/services/local/user_local_service.dart';
 import '../../../data/remote/services/remote/auth_manager_services.dart';
 import '../../../utils/di/locator.dart';
 import '../../../utils/helper/app_exceptions.dart';
@@ -15,6 +16,7 @@ class LoginCubit extends Cubit<LoginState> {
   final LoginContractor _loginContractor;
   final _local = locator<LoginLocalService>();
   final _authManager = locator<AuthManagerService>();
+  final _userLocal = locator<UserLocalService>();
 
   String _formatPhoneNumber(String phoneNumber, CountryCode countryCode) {
     String cleanedNumber = phoneNumber.replaceAll(RegExp(r'\D'), '');
@@ -71,11 +73,17 @@ class LoginCubit extends Cubit<LoginState> {
       await _local.saveUserName(resp.name);
       await _local.saveUserSurname(resp.surname);
       await _local.setRememberMe(rememberMe);
-
       debugPrint(rememberMe
           ? "🟢 CUBIT: Remember Me AÇIK - Bilgiler KALICI kaydediliyor"
           : "🟡 CUBIT: Remember Me KAPALI - Bilgiler GEÇİCİ (app kapanınca silinecek)");
-
+      final userId = resp.userId;
+      if (userId != null) {
+        await _userLocal.setUserId(userId);
+        log('✅ User ID saved: $userId');
+      } else {
+        log('⚠️ User ID is null, skipping save');
+      }
+      log('✅ User ID saved: ${resp.userId}');
       await _authManager.onLoginSuccess();
 
       log('✅ Login successful - Role: ${resp.role.displayName}');
@@ -135,6 +143,13 @@ class LoginCubit extends Cubit<LoginState> {
       await _local.saveLoginResponse(resp);
       await _local.saveUserName(resp.name);
       await _local.saveUserSurname(resp.surname);
+      final userId = resp.userId;
+      if (userId != null) {
+        await _userLocal.setUserId(userId);
+        log('✅ User ID saved: $userId');
+      } else {
+        log('⚠️ User ID is null, skipping save');
+      }
       await _authManager.onLoginSuccess();
 
       log('✅ Auto login successful - Role: ${resp.role.displayName}');
@@ -193,6 +208,13 @@ class LoginCubit extends Cubit<LoginState> {
       await _local.saveUserName(resp.name);
       await _local.saveUserSurname(resp.surname);
       await _local.setGuestMode(true);
+      final userId = resp.userId;
+      if (userId != null) {
+        await _userLocal.setUserId(userId);
+        log('✅ User ID saved: $userId');
+      } else {
+        log('⚠️ User ID is null, skipping save');
+      }
       await _authManager.onLoginSuccess();
 
       log('✅ Guest login successful - Role: ${resp.role.displayName}');

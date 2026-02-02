@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import '../../../../core/constants/texts/app_strings.dart';
 import '../../../../core/dio/auth_dio.dart';
+import '../../../../core/localization/app_translation.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../../../utils/di/locator.dart';
 import '../../models/remote/device_token_response.dart';
@@ -64,35 +66,35 @@ class DeviceTokenService {
   String _getErrorMessage(int statusCode) {
     switch (statusCode) {
       case 400:
-        return 'Yanlış sorğu göndərildi';
+        return AppTranslation.translate(AppStrings.badRequestAlt);
       case 401:
-        return 'İcazəniz yoxdur. Yenidən giriş edin';
+        return AppTranslation.translate(AppStrings.unauthorizedAlt);
       case 403:
-        return 'Bu əməliyyatı yerinə yetirmək üçün səlahiyyətiniz yoxdur';
+        return AppTranslation.translate(AppStrings.forbiddenAlt);
       case 404:
-        return 'Məlumat tapılmadı';
+        return AppTranslation.translate(AppStrings.notFoundAlt);
       case 408:
-        return 'Sorğu vaxtı doldu. Yenidən cəhd edin';
+        return AppTranslation.translate(AppStrings.requestTimeoutAlt);
       case 409:
-        return 'Konflikt baş verdi';
+        return AppTranslation.translate(AppStrings.conflictAlt);
       case 415:
-        return 'Dəstəklənməyən məzmun növü';
+        return AppTranslation.translate(AppStrings.unsupportedMediaTypeAlt);
       case 429:
-        return 'Çox sayda sorğu göndərildi. Bir az gözləyin';
+        return AppTranslation.translate(AppStrings.tooManyRequestsAlt);
       case 500:
-        return 'Server xətası baş verdi';
+        return AppTranslation.translate(AppStrings.internalServerErrorAlt);
       case 501:
-        return 'Server tərəfindən yerinə yetirilməyib';
+        return AppTranslation.translate(AppStrings.notImplementedAlt);
       case 502:
-        return 'Server əlaqə xətası';
+        return AppTranslation.translate(AppStrings.badGatewayAlt);
       case 503:
-        return 'Xidmət müvəqqəti əlçatan deyil';
+        return AppTranslation.translate(AppStrings.serviceUnavailableAlt);
       case 504:
-        return 'Server cavab vermə vaxtı doldu';
+        return AppTranslation.translate(AppStrings.gatewayTimeoutAlt);
       case 505:
-        return 'HTTP versiyası dəstəklənmir';
+        return AppTranslation.translate(AppStrings.httpVersionNotSupportedAlt);
       default:
-        return 'Xəta baş verdi (Kod: $statusCode)';
+        return AppTranslation.translate(AppStrings.errorOccurred);
     }
   }
 }

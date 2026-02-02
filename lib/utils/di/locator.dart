@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/dio/auth_dio.dart';
 import '../../cubit/add/car/add_car_cubit.dart';
 import '../../cubit/add/car/get_car_list_cubit.dart';
+import '../../cubit/auth/device/device_token_cubit.dart';
 import '../../cubit/auth/forgot/forgot_pass_cubit.dart';
 import '../../cubit/auth/login/login_cubit.dart';
 import '../../cubit/auth/otp/otp_send_cubit.dart';
@@ -36,6 +37,7 @@ import '../../data/remote/contractor/add_car_contractor.dart';
 import '../../data/remote/contractor/check_vin_contractor.dart';
 import '../../data/remote/contractor/delete_account_contractor.dart';
 import '../../data/remote/contractor/delete_car_contractor.dart';
+import '../../data/remote/contractor/device_token_contractor.dart';
 import '../../data/remote/contractor/edit_car_details_contractor.dart';
 import '../../data/remote/contractor/edit_service_details_contractor.dart';
 import '../../data/remote/contractor/execute_car_service_contractor.dart';
@@ -65,6 +67,7 @@ import '../../data/remote/repository/add_car_repository.dart';
 import '../../data/remote/repository/check_vin_repository.dart';
 import '../../data/remote/repository/delete_account_repository.dart';
 import '../../data/remote/repository/delete_car_repository.dart';
+import '../../data/remote/repository/device_token_repository.dart';
 import '../../data/remote/repository/edit_car_details_repository.dart';
 import '../../data/remote/repository/edit_car_service_detail_repository.dart';
 import '../../data/remote/repository/execute_car_service_repository.dart';
@@ -101,6 +104,7 @@ import '../../data/remote/services/remote/auth_manager_services.dart';
 import '../../data/remote/services/remote/check_vin_service.dart';
 import '../../data/remote/services/remote/delete_account_service.dart';
 import '../../data/remote/services/remote/delete_car_service.dart';
+import '../../data/remote/services/remote/device_token_service.dart';
 import '../../data/remote/services/remote/edit_car_details_service.dart';
 import '../../data/remote/services/remote/edit_services_details_service.dart';
 import '../../data/remote/services/remote/execute_car_service.dart';
@@ -160,10 +164,21 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton<PinLocalService>(
     () => PinLocalService(pinBox),
   );
+  locator.registerLazySingleton<DeviceTokenService>(
+    () => DeviceTokenService(),
+  );
+
+  locator.registerLazySingleton<DeviceTokenContractor>(
+    () => DeviceTokenRepository(locator<DeviceTokenService>()),
+  );
+
+  locator.registerLazySingleton<DeviceTokenCubit>(() => DeviceTokenCubit());
+
   locator.registerLazySingleton<AuthManagerService>(
     () => AuthManagerService(
       locator<LoginLocalService>(),
       locator<PinLocalService>(),
+      locator<DeviceTokenCubit>(),
     ),
   );
   locator.registerLazySingleton<UserLocalService>(

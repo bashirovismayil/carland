@@ -5,7 +5,7 @@ class ApiConstants {
 
   // Device token
   static const deviceToken =
-      '$baseUrl/hospital/server/api/v1/device-tokens/post';
+      '$baseUrl/carland/server-carland/api/v1/device-tokens/post';
 
   // Delete account
   static const deleteAccount = '$baseUrl/auth/server/api/v1/users/delete';

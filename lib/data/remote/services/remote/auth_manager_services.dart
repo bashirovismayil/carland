@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:carcat/data/remote/services/remote/pin_local_service.dart';
 import '../../../../core/constants/enums/enums.dart';
+import '../../../../cubit/auth/device/device_token_cubit.dart';
 import '../local/login_local_services.dart';
 
 class AuthManagerService {
-  AuthManagerService(this._loginLocalService, this._pinLocalService);
+  AuthManagerService(this._loginLocalService, this._pinLocalService, this._deviceTokenCubit);
 
   final LoginLocalService _loginLocalService;
   final PinLocalService _pinLocalService;
+  final DeviceTokenCubit _deviceTokenCubit;
 
   final _authStateController = StreamController<AuthState>.broadcast();
 
@@ -35,6 +38,8 @@ class AuthManagerService {
 
   Future<void> onLoginSuccess() async {
     _authStateController.add(currentAuthState);
+    await _deviceTokenCubit.registerDeviceToken();
+    log("==================Device token registered on login==================");
   }
 
   Future<void> logout() async {

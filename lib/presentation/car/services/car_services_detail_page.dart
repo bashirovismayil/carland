@@ -60,32 +60,42 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CarServicesHeader(),
-            const SizedBox(height: 20),
-            CarCarousel(
-              pageController: _pageController,
-              carList: _controller.carList,
-              currentCarIndex: _controller.currentCarIndex,
-              onPageChanged: _onPageChanged,
-              getCarPhoto: _controller.getCarPhoto,
-              getPhotoCacheVersion: (id) => _controller.photoCacheVersion[id] ?? 0,
-              onUpdateDetails: handleUpdateDetails,
-              onUpdateMileage: handleUpdateMileage,
+        child: CustomScrollView(
+          slivers: [
+            // Header
+            const SliverToBoxAdapter(
+              child: CarServicesHeader(),
             ),
-            const SizedBox(height: 16),
-            DotIndicator(
-              itemCount: _controller.carList.length + 1,
-              currentIndex: _controller.currentCarIndex,
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: ServicesSection(
-                isAddNewCarSelected: _controller.currentCarIndex >= _controller.carList.length,
-                onRefresh: _onRefresh,
+            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+            // Carousel
+            SliverToBoxAdapter(
+              child: CarCarousel(
+                pageController: _pageController,
+                carList: _controller.carList,
+                currentCarIndex: _controller.currentCarIndex,
+                onPageChanged: _onPageChanged,
+                getCarPhoto: _controller.getCarPhoto,
+                getPhotoCacheVersion: (id) => _controller.photoCacheVersion[id] ?? 0,
+                onUpdateDetails: handleUpdateDetails,
+                onUpdateMileage: handleUpdateMileage,
               ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+            // Dot Indicator
+            SliverToBoxAdapter(
+              child: DotIndicator(
+                itemCount: _controller.carList.length + 1,
+                currentIndex: _controller.currentCarIndex,
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+            // Services Section - artık Sliver olarak
+            ServicesSection(
+              isAddNewCarSelected: _controller.currentCarIndex >= _controller.carList.length,
+              onRefresh: _onRefresh,
             ),
           ],
         ),

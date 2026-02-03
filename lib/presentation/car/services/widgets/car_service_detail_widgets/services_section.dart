@@ -28,21 +28,27 @@ class _ServicesSectionState extends State<ServicesSection> {
   @override
   Widget build(BuildContext context) {
     if (widget.isAddNewCarSelected) {
-      return const ServicesEmptyState(isAddNewCarSelected: true);
+      return const SliverToBoxAdapter(
+        child: ServicesEmptyState(isAddNewCarSelected: true),
+      );
     }
 
     return BlocBuilder<GetCarServicesCubit, GetCarServicesState>(
       builder: (context, state) {
         if (state is GetCarServicesLoading && _previousServices == null) {
-          return const Center(
-            child: CircularProgressIndicator(color: AppColors.primaryBlack),
+          return const SliverFillRemaining(
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryBlack),
+            ),
           );
         }
 
         if (state is GetCarServicesSuccess) {
           _previousServices = state.servicesData.responseList;
           if (state.servicesData.responseList.isEmpty) {
-            return const ServicesEmptyState(isAddNewCarSelected: false);
+            return const SliverToBoxAdapter(
+              child: ServicesEmptyState(isAddNewCarSelected: false),
+            );
           }
           return ServicesList(
             services: state.servicesData.responseList,
@@ -53,7 +59,9 @@ class _ServicesSectionState extends State<ServicesSection> {
         }
 
         if (state is GetCarServicesError) {
-          return ServicesErrorState(message: state.message);
+          return SliverToBoxAdapter(
+            child: ServicesErrorState(message: state.message),
+          );
         }
 
         if (state is GetCarServicesLoading && _previousServices != null) {
@@ -70,7 +78,7 @@ class _ServicesSectionState extends State<ServicesSection> {
           );
         }
 
-        return const SizedBox.shrink();
+        return const SliverToBoxAdapter(child: SizedBox.shrink());
       },
     );
   }

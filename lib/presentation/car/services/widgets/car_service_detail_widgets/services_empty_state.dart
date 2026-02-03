@@ -29,6 +29,7 @@ class ServicesEmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 55,),
             SvgPicture.asset(
               "assets/svg/barcode_transparent.svg",
               width: 50,

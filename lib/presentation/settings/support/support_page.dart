@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:carcat/cubit/feedback/send_feedback_cubit.dart';
 import 'package:carcat/cubit/feedback/send_feedback_state.dart';
 
@@ -16,7 +15,6 @@ class SupportPage extends HookWidget {
   const SupportPage({super.key});
 
   static const _maxFileSizeMB = 10.0;
-  static const _maxFileSizeBytes = _maxFileSizeMB * 1024 * 1024;
 
   @override
   Widget build(BuildContext context) {
@@ -32,78 +30,47 @@ class SupportPage extends HookWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(context),
-      body: BlocConsumer<FeedbackCubit, FeedbackState>(
-        listener: (context, state) => _handleStateChanges(
-          context: context,
-          state: state,
-          selectedType: selectedType,
-          descriptionController: descriptionController,
-          selectedFile: selectedFile,
-        ),
-        builder: (context, state) {
-          final isLoading = state is FeedbackLoading;
-          final supportTypes = _extractSupportTypes(state);
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 24),
-                _buildTypeDropdown(
-                  selectedType: selectedType,
-                  supportTypes: supportTypes,
-                ),
-                const SizedBox(height: 20),
-                _buildDescriptionField(descriptionController),
-                const SizedBox(height: 20),
-                ScreenshotUploadWidget(
-                  selectedFile: selectedFile.value,
-                  onFileChanged: (file) => selectedFile.value = file,
-                  isOptional: true,
-                  maxFileSizeMB: _maxFileSizeMB,
-                  height: 220,
-                ),
-                const SizedBox(height: 32),
-                _buildSubmitButton(
-                  context: context,
-                  isLoading: isLoading,
-                  selectedType: selectedType.value,
-                  description: descriptionController.text,
-                  filePath: selectedFile.value?.path,
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          );
+      body: BlocListener<FeedbackCubit, FeedbackState>(
+        listener: (context, state) {
+          if (state is FeedbackSuccess) {
+            _resetForm(selectedType, descriptionController, selectedFile);
+            _navigateToSuccessPage(context);
+          } else if (state is FeedbackError) {
+            _showErrorSnackbar(context, state.message);
+          } else if (state is FeedbackValidationFailed) {
+            _showValidationError(context, state.error);
+          }
         },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 24),
+              _TypeDropdownSection(selectedType: selectedType),
+              const SizedBox(height: 20),
+              _buildDescriptionField(descriptionController),
+              const SizedBox(height: 20),
+              ScreenshotUploadWidget(
+                selectedFile: selectedFile.value,
+                onFileChanged: (file) => selectedFile.value = file,
+                isOptional: true,
+                maxFileSizeMB: _maxFileSizeMB,
+                height: 220,
+              ),
+              const SizedBox(height: 32),
+              _SubmitButtonSection(
+                selectedType: selectedType,
+                descriptionController: descriptionController,
+                selectedFile: selectedFile,
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
       ),
     );
-  }
-
-  List<String> _extractSupportTypes(FeedbackState state) {
-    if (state is FeedbackTypesLoaded) {
-      return state.types
-          .where((type) => type == 'support' || type == 'bug_report')
-          .toList();
-    }
-    return const [];
-  }
-
-  void _handleStateChanges({
-    required BuildContext context,
-    required FeedbackState state,
-    required ValueNotifier<String?> selectedType,
-    required TextEditingController descriptionController,
-    required ValueNotifier<File?> selectedFile,
-  }) {
-    if (state is FeedbackSuccess) {
-      _resetForm(selectedType, descriptionController, selectedFile);
-      _navigateToSuccessPage(context);
-    } else if (state is FeedbackError) {
-      _showErrorSnackbar(context, state.message);
-    }
   }
 
   void _navigateToSuccessPage(BuildContext context) {
@@ -128,42 +95,26 @@ class SupportPage extends HookWidget {
     selectedFile.value = null;
   }
 
-  bool _validateForm(
-      BuildContext context, {
-        required String? selectedType,
-        required String description,
-      }) {
-    if (selectedType == null) {
-      _showWarningSnackbar(
-          context, AppTranslation.translate(AppStrings.selectRequestType));
-      return false;
+  void _showValidationError(
+      BuildContext context,
+      FeedbackValidationError error,
+      ) {
+    String message;
+    switch (error) {
+      case FeedbackValidationError.typeRequired:
+        message = AppTranslation.translate(AppStrings.selectRequestType);
+        break;
+      case FeedbackValidationError.descriptionRequired:
+        message = AppTranslation.translate(AppStrings.enterDescription);
+        break;
     }
 
-    if (description.trim().isEmpty) {
-      _showWarningSnackbar(
-          context, AppTranslation.translate(AppStrings.enterDescription));
-      return false;
-    }
-
-    return true;
-  }
-
-  void _submitSupport(
-      BuildContext context, {
-        required String? selectedType,
-        required String description,
-        required String? filePath,
-      }) {
-    if (!_validateForm(context,
-        selectedType: selectedType, description: description)) {
-      return;
-    }
-
-    context.read<FeedbackCubit>().submitFeedback(
-      type: selectedType!,
-      subject: 'Support Topic',
-      description: description.trim(),
-      filePath: filePath,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.orange,
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
@@ -174,16 +125,6 @@ class SupportPage extends HookWidget {
       SnackBar(
         content: Text(errorMessage),
         backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _showWarningSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.orange,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -258,71 +199,6 @@ class SupportPage extends HookWidget {
     );
   }
 
-  Widget _buildTypeDropdown({
-    required ValueNotifier<String?> selectedType,
-    required List<String> supportTypes,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppTranslation.translate(AppStrings.requestType),
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: Colors.grey[300]!,
-              width: 1,
-            ),
-          ),
-          child: DropdownButtonFormField<String>(
-            value: selectedType.value,
-            decoration: InputDecoration(
-              hintText: AppTranslation.translate(AppStrings.select),
-              hintStyle: const TextStyle(color: AppColors.hintColor),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-            ),
-            dropdownColor: Colors.white,
-            icon: const Padding(
-              padding: EdgeInsets.only(right: 14),
-              child: Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-            ),
-            isExpanded: true,
-            items: supportTypes.map((type) {
-              return DropdownMenuItem(
-                value: type,
-                child: Text(_getTypeDisplayName(type)),
-              );
-            }).toList(),
-            onChanged: (value) => selectedType.value = value,
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _getTypeDisplayName(String type) {
-    final typeNames = {
-      'support': AppTranslation.translate(AppStrings.supportTypeSupport),
-      'bug_report': AppTranslation.translate(AppStrings.supportTypeBugReport),
-    };
-    return typeNames[type] ?? type;
-  }
-
   Widget _buildDescriptionField(TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,52 +240,151 @@ class SupportPage extends HookWidget {
       ],
     );
   }
+}
+class _TypeDropdownSection extends StatelessWidget {
+  final ValueNotifier<String?> selectedType;
 
-  Widget _buildSubmitButton({
-    required BuildContext context,
-    required bool isLoading,
-    required String? selectedType,
-    required String description,
-    required String? filePath,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: isLoading
-            ? null
-            : () => _submitSupport(
-          context,
-          selectedType: selectedType,
-          description: description,
-          filePath: filePath,
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          disabledBackgroundColor: Colors.grey[400],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
+  const _TypeDropdownSection({required this.selectedType});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<FeedbackCubit, FeedbackState>(
+      buildWhen: (previous, current) {
+        return current is FeedbackTypesLoaded;
+      },
+      builder: (context, state) {
+        final supportTypes = state is FeedbackTypesLoaded
+            ? state.types
+            .where((type) => type == 'support' || type == 'bug_report')
+            .toList()
+            : <String>[];
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              AppTranslation.translate(AppStrings.requestType),
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: Colors.grey[300]!,
+                  width: 1,
+                ),
+              ),
+              child: DropdownButtonFormField<String>(
+                value: selectedType.value,
+                decoration: InputDecoration(
+                  hintText: AppTranslation.translate(AppStrings.select),
+                  hintStyle: const TextStyle(color: AppColors.hintColor),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                ),
+                dropdownColor: Colors.white,
+                icon: const Padding(
+                  padding: EdgeInsets.only(right: 14),
+                  child: Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                ),
+                isExpanded: true,
+                items: supportTypes.map((type) {
+                  return DropdownMenuItem(
+                    value: type,
+                    child: Text(_getTypeDisplayName(type)),
+                  );
+                }).toList(),
+                onChanged: (value) => selectedType.value = value,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _getTypeDisplayName(String type) {
+    final typeNames = {
+      'support': AppTranslation.translate(AppStrings.supportTypeSupport),
+      'bug_report': AppTranslation.translate(AppStrings.supportTypeBugReport),
+    };
+    return typeNames[type] ?? type;
+  }
+}
+
+class _SubmitButtonSection extends HookWidget {
+  final ValueNotifier<String?> selectedType;
+  final TextEditingController descriptionController;
+  final ValueNotifier<File?> selectedFile;
+
+  const _SubmitButtonSection({
+    required this.selectedType,
+    required this.descriptionController,
+    required this.selectedFile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<FeedbackCubit, FeedbackState>(
+      buildWhen: (previous, current) {
+        return (previous is! FeedbackLoading && current is FeedbackLoading) ||
+            (previous is FeedbackLoading && current is! FeedbackLoading);
+      },
+      builder: (context, state) {
+        final isLoading = state is FeedbackLoading;
+
+        return SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: isLoading
+                ? null
+                : () {
+              context.read<FeedbackCubit>().submitSupportRequest(
+                selectedType: selectedType.value,
+                description: descriptionController.text,
+                filePath: selectedFile.value?.path,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              disabledBackgroundColor: Colors.grey[400],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32),
+              ),
+              elevation: 0,
+            ),
+            child: isLoading
+                ? const SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+                : Text(
+              AppTranslation.translate(AppStrings.submit),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
           ),
-          elevation: 0,
-        ),
-        child: isLoading
-            ? const SizedBox(
-          height: 24,
-          width: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        )
-            : Text(
-          AppTranslation.translate(AppStrings.submit),
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

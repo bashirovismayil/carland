@@ -1,22 +1,49 @@
-import '../../data/remote/models/remote/send_feedback_response.dart';
 
-sealed class FeedbackState {}
+import 'package:carcat/cubit/feedback/send_feedback_cubit.dart';
 
-final class FeedbackInitial extends FeedbackState {}
+abstract class FeedbackState {
+  const FeedbackState();
 
-final class FeedbackLoading extends FeedbackState {}
+  List<Object?> get props => [];
+}
 
-final class FeedbackTypesLoaded extends FeedbackState {
+class FeedbackInitial extends FeedbackState {}
+
+class FeedbackLoading extends FeedbackState {}
+
+class FeedbackTypesLoaded extends FeedbackState {
   final List<String> types;
-  FeedbackTypesLoaded(this.types);
+
+  const FeedbackTypesLoaded(this.types);
+
+  @override
+  List<Object?> get props => [types];
 }
 
-final class FeedbackSuccess extends FeedbackState {
-  final SendFeedbackResponse response;
-  FeedbackSuccess(this.response);
-}
-
-final class FeedbackError extends FeedbackState {
+class FeedbackSuccess extends FeedbackState {
   final String message;
-  FeedbackError(this.message);
+
+  const FeedbackSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class FeedbackError extends FeedbackState {
+  final String message;
+
+  const FeedbackError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// Yeni validation state
+class FeedbackValidationFailed extends FeedbackState {
+  final FeedbackValidationError error;
+
+  const FeedbackValidationFailed(this.error);
+
+  @override
+  List<Object?> get props => [error];
 }

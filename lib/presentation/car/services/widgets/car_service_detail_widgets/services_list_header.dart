@@ -30,19 +30,19 @@ class ServicesListHeader extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  // TODO: See all
-                },
-                child: Text(
-                  AppTranslation.translate(AppStrings.seeAll),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ),
+              // TextButton(
+              //   onPressed: () {
+              //     // TODO: See all
+              //   },
+              //   child: Text(
+              //     AppTranslation.translate(AppStrings.seeAll),
+              //     style: const TextStyle(
+              //       fontSize: 14,
+              //       fontWeight: FontWeight.w500,
+              //       color: AppColors.textSecondary,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           if (isLoading)

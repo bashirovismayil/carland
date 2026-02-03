@@ -7,7 +7,6 @@ class FeedbackCubit extends Cubit<FeedbackState> {
   FeedbackCubit() : super(FeedbackInitial()) {
     _repo = locator<FeedbackContractor>();
   }
-
   late final FeedbackContractor _repo;
   Future<void> loadFeedbackTypes() async {
     try {
@@ -21,11 +20,28 @@ class FeedbackCubit extends Cubit<FeedbackState> {
   Future<List<String>> getSupportTypes() async {
     try {
       final types = await _repo.getFeedbackTypes();
-      return types.where((type) => type == 'support' || type == 'bug_report').toList();
+      return types
+          .where((type) => type == 'support' || type == 'bug_report')
+          .toList();
     } catch (e) {
       emit(FeedbackError(e.toString()));
       return [];
     }
+  }
+
+  FeedbackValidationError? validateSupportForm({
+    required String? selectedType,
+    required String description,
+  }) {
+    if (selectedType == null || selectedType.isEmpty) {
+      return FeedbackValidationError.typeRequired;
+    }
+
+    if (description.trim().isEmpty) {
+      return FeedbackValidationError.descriptionRequired;
+    }
+
+    return null;
   }
 
   Future<void> submitFeedback({
@@ -45,11 +61,45 @@ class FeedbackCubit extends Cubit<FeedbackState> {
         rating: rating,
         filePath: filePath,
       );
-      print(">>> API cevap geldi: $response");
-      emit(FeedbackSuccess(response));
+      print(">>> API cavab gəldi: $response");
+      emit(FeedbackSuccess(response.message));
     } catch (e) {
-      print(">>> HATA: $e");
+      print(">>> XƏTA: $e");
       emit(FeedbackError(e.toString()));
     }
   }
+
+  Future<void> submitSupportRequest({
+    required String? selectedType,
+    required String description,
+    String? filePath,
+  }) async {
+    final validationError = validateSupportForm(
+      selectedType: selectedType,
+      description: description,
+    );
+
+    if (validationError != null) {
+      emit(FeedbackValidationFailed(validationError));
+      return;
+    }
+
+    await submitFeedback(
+      type: selectedType!,
+      subject: 'Support Topic',
+      description: description.trim(),
+      filePath: filePath,
+    );
+  }
+
+  void clearValidationError() {
+    if (state is FeedbackValidationFailed) {
+      emit(FeedbackInitial());
+    }
+  }
+}
+
+enum FeedbackValidationError {
+  typeRequired,
+  descriptionRequired,
 }

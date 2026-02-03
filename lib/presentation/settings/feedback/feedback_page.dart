@@ -7,6 +7,8 @@ import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/localization/app_translation.dart';
 import '../../../widgets/emoji_rating.dart';
+import '../../../widgets/support_success_page.dart';
+import '../support/support_page.dart';
 
 class FeedbackPage extends HookWidget {
   const FeedbackPage({super.key});
@@ -21,7 +23,8 @@ class FeedbackPage extends HookWidget {
       if (selectedRating.value == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppTranslation.translate(AppStrings.pleaseGiveRating)),
+            content:
+            Text(AppTranslation.translate(AppStrings.pleaseGiveRating)),
             backgroundColor: Colors.orange,
             behavior: SnackBarBehavior.floating,
           ),
@@ -32,7 +35,8 @@ class FeedbackPage extends HookWidget {
       if (descriptionController.text.trim().isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppTranslation.translate(AppStrings.pleaseEnterDescription)),
+            content: Text(
+                AppTranslation.translate(AppStrings.pleaseEnterDescription)),
             backgroundColor: Colors.orange,
             behavior: SnackBarBehavior.floating,
           ),
@@ -45,6 +49,18 @@ class FeedbackPage extends HookWidget {
         subject: 'General Feedback',
         description: descriptionController.text.trim(),
         rating: selectedRating.value,
+      );
+    }
+
+    void navigateToSuccessPage() {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const SupportSuccessPage(
+            isFeedback: true,
+            howManySeconds: 3,
+          ),
+        ),
+            (route) => false,
       );
     }
 
@@ -95,38 +111,24 @@ class FeedbackPage extends HookWidget {
         listener: (context, state) {
           if (state is FeedbackSuccess) {
             isLoading.value = false;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      state.response.message,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 4),
-                    // Text('${AppTranslation.translate(AppStrings.responseTime)}: ${state.response.estimatedResponseTime}'),
-                    // Text('${AppTranslation.translate(AppStrings.ticketId)}: ${state.response.ticketId}'),
-                  ],
-                ),
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 5),
-              ),
-            );
             selectedRating.value = null;
             descriptionController.clear();
+
+            navigateToSuccessPage();
           } else if (state is FeedbackError) {
             isLoading.value = false;
-            String errorMessage = AppTranslation.translate(AppStrings.errorOccurred);
+            String errorMessage =
+            AppTranslation.translate(AppStrings.errorOccurred);
 
             if (state.message.contains('403')) {
-              errorMessage = AppTranslation.translate(AppStrings.noPermission);
+              errorMessage =
+                  AppTranslation.translate(AppStrings.noPermission);
             } else if (state.message.contains('404')) {
-              errorMessage = AppTranslation.translate(AppStrings.serviceNotFound);
+              errorMessage =
+                  AppTranslation.translate(AppStrings.serviceNotFound);
             } else if (state.message.contains('network')) {
-              errorMessage = AppTranslation.translate(AppStrings.checkInternet);
+              errorMessage =
+                  AppTranslation.translate(AppStrings.checkInternet);
             }
 
             ScaffoldMessenger.of(context).showSnackBar(
@@ -165,7 +167,6 @@ class FeedbackPage extends HookWidget {
                       ),
                     ),
                     const SizedBox(height: 36),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: List.generate(5, (index) {
@@ -181,9 +182,7 @@ class FeedbackPage extends HookWidget {
                         );
                       }),
                     ),
-
                     const SizedBox(height: 40),
-
                     Text(
                       AppTranslation.translate(AppStrings.describeInDetail),
                       style: const TextStyle(
@@ -197,7 +196,8 @@ class FeedbackPage extends HookWidget {
                       controller: descriptionController,
                       maxLines: 8,
                       decoration: InputDecoration(
-                        hintText: AppTranslation.translate(AppStrings.shareYourThoughts),
+                        hintText: AppTranslation.translate(
+                            AppStrings.shareYourThoughts),
                         hintStyle: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -215,7 +215,8 @@ class FeedbackPage extends HookWidget {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppColors.borderGrey, width: 2),
+                          borderSide:
+                          BorderSide(color: AppColors.borderGrey, width: 2),
                         ),
                       ),
                     ),
@@ -223,7 +224,6 @@ class FeedbackPage extends HookWidget {
                 ),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.only(left: 17, right: 17, bottom: 40),
               child: SizedBox(
@@ -245,7 +245,8 @@ class FeedbackPage extends HookWidget {
                     width: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
                       : Text(

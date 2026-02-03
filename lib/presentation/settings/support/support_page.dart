@@ -10,6 +10,7 @@ import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/localization/app_translation.dart';
 import '../../../widgets/screenshoot_upload.dart';
+import '../../../widgets/support_success_page.dart';
 
 class SupportPage extends HookWidget {
   const SupportPage({super.key});
@@ -98,11 +99,23 @@ class SupportPage extends HookWidget {
     required ValueNotifier<File?> selectedFile,
   }) {
     if (state is FeedbackSuccess) {
-      _showSuccessSnackbar(context, state);
       _resetForm(selectedType, descriptionController, selectedFile);
+      _navigateToSuccessPage(context);
     } else if (state is FeedbackError) {
       _showErrorSnackbar(context, state.message);
     }
+  }
+
+  void _navigateToSuccessPage(BuildContext context) {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => const SupportSuccessPage(
+          isFeedback: false,
+          howManySeconds: 3,
+        ),
+      ),
+          (route) => false,
+    );
   }
 
   void _resetForm(
@@ -121,12 +134,14 @@ class SupportPage extends HookWidget {
         required String description,
       }) {
     if (selectedType == null) {
-      _showWarningSnackbar(context, AppTranslation.translate(AppStrings.selectRequestType));
+      _showWarningSnackbar(
+          context, AppTranslation.translate(AppStrings.selectRequestType));
       return false;
     }
 
     if (description.trim().isEmpty) {
-      _showWarningSnackbar(context, AppTranslation.translate(AppStrings.enterDescription));
+      _showWarningSnackbar(
+          context, AppTranslation.translate(AppStrings.enterDescription));
       return false;
     }
 
@@ -139,7 +154,8 @@ class SupportPage extends HookWidget {
         required String description,
         required String? filePath,
       }) {
-    if (!_validateForm(context, selectedType: selectedType, description: description)) {
+    if (!_validateForm(context,
+        selectedType: selectedType, description: description)) {
       return;
     }
 
@@ -148,29 +164,6 @@ class SupportPage extends HookWidget {
       subject: 'Support Topic',
       description: description.trim(),
       filePath: filePath,
-    );
-  }
-
-  void _showSuccessSnackbar(BuildContext context, FeedbackSuccess state) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              state.response.message,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 4),
-            Text('${AppTranslation.translate(AppStrings.responseTime)}: ${state.response.estimatedResponseTime}'),
-            Text('${AppTranslation.translate(AppStrings.ticketId)}: ${state.response.ticketId}'),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 5),
-      ),
     );
   }
 

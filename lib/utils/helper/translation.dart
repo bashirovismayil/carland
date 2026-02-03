@@ -248,8 +248,8 @@ class Translations {
       'az': 'Kömək',
       'en': 'Help',
       'ru': 'Помощь',
-
-    },   AppStrings.iCannotLogin: {
+    },
+    AppStrings.iCannotLogin: {
       'az': 'Daxil ola bilmirəm',
       'en': "I can't login",
       'ru': 'Не могу войти',
@@ -333,6 +333,21 @@ class Translations {
       'az': 'Zəhmət olmasa 9 rəqəm daxil edin',
       'en': 'Please enter 9 digits',
       'ru': 'Пожалуйста, введите 9 цифр',
+    },
+    AppStrings.supportSuccessTitle: {
+      'az': 'Göndərildi!',
+      'en': 'Submitted!',
+      'ru': 'Отправлено!',
+    },
+    AppStrings.supportSuccessSubtitle: {
+      'az': 'Dəstək xidmətimiz 24-48 saat içində geri dönüş edəcək.',
+      'en': 'Our support team will get back to you within 24-48 hours.',
+      'ru': 'Наша служба поддержки свяжется с вами в течение 24-48 часов.',
+    },
+    AppStrings.feedbackSuccessSubtitle: {
+      'az': 'Düşüncələrin bizim üçün əhəmiyyətlidir.',
+      'en': 'Your thoughts are important to us.',
+      'ru': 'Ваши мысли важны для нас.',
     },
     // Validation Messages - Password
     AppStrings.passwordRequired: {

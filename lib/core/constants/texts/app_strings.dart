@@ -190,6 +190,12 @@ class AppStrings {
   static const String passwordResetSuccess = 'passwordResetSuccess';
   static const String enterNineDigitsText = 'enterNineDigitsText';
 
+  static const String supportSuccessTitle = 'Göndərildi!';
+  static const String supportSuccessSubtitle =
+      'Dəstək xidmətimiz 24-48 saat içində geri dönüş edəcək.';
+  static const String feedbackSuccessSubtitle =
+      'Düşüncələrin bizim üçün əhəmiyyətlidir.';
+
   static const String unknownInternalError = 'unknownInternalError';
   static const String badRequest = 'badRequest';
   static const String invalidCredentials = 'invalidCredentials';

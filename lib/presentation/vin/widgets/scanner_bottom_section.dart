@@ -6,8 +6,6 @@ class ScannerBottomSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Bottom section için boş padding
-    // İleride manual capture butonu eklenebilir
     return const Padding(
       padding: EdgeInsets.all(AppTheme.spacingMd),
       child: SizedBox.shrink(),

@@ -14,7 +14,7 @@ class AzerbaijanPlateNumberFormatter extends TextInputFormatter
   String get pattern => '##-AA-###';
 
   @override
-  String get hint => '77-AA-609';
+  String get hint => '77-AA-509';
 
   @override
   TextInputFormatter get formatter => this;

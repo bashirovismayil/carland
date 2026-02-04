@@ -1018,9 +1018,9 @@ class Translations {
       'ru': 'Номерной знак',
     },
     AppStrings.plateNumberHint: {
-      'az': '77-AA-609',
-      'en': '77-AA-609',
-      'ru': '77-AA-609',
+      'az': '77-AA-509',
+      'en': '77-AA-509',
+      'ru': '77-AA-509',
     },
     AppStrings.plateNumberRequired: {
       'az': 'Qeydiyyat nişanı tələb olunur',
@@ -1028,9 +1028,9 @@ class Translations {
       'ru': 'Номерной знак обязателен',
     },
     AppStrings.invalidPlateNumberFormat: {
-      'az': 'Yanlış qeydiyyat nişanı formatı (məs., 77-AA-609)',
-      'en': 'Invalid plate number format (e.g., 77-AA-609)',
-      'ru': 'Неверный формат номерного знака (напр., 77-AA-609)',
+      'az': 'Yanlış qeydiyyat nişanı formatı (məs., 77-AA-509)',
+      'en': 'Invalid plate number format (e.g., 77-AA-509)',
+      'ru': 'Неверный формат номерного знака (напр., 77-AA-509)',
     },
     AppStrings.make: {
       'az': 'Marka',

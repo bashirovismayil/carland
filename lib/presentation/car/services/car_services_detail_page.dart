@@ -62,7 +62,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Header
             const SliverToBoxAdapter(
               child: CarServicesHeader(),
             ),
@@ -82,8 +81,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
-            // Dot Indicator
             SliverToBoxAdapter(
               child: DotIndicator(
                 itemCount: _controller.carList.length + 1,
@@ -91,8 +88,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-            // Services Section - artık Sliver olarak
             ServicesSection(
               isAddNewCarSelected: _controller.currentCarIndex >= _controller.carList.length,
               onRefresh: _onRefresh,

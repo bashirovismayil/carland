@@ -3,6 +3,7 @@ import 'package:carcat/utils/helper/app_localization.dart';
 import 'package:carcat/utils/helper/app_router.dart';
 import 'package:carcat/utils/helper/custom_multi_bloc_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -129,6 +130,13 @@ class _CarCatAppState extends State<CarCatApp> {
                   ),
                   textTheme: GoogleFonts.poppinsTextTheme(
                     ThemeData.light().textTheme,
+                  ),
+                  appBarTheme: const AppBarTheme(
+                    systemOverlayStyle: SystemUiOverlayStyle(
+                      statusBarColor: Colors.transparent,
+                      statusBarIconBrightness: Brightness.dark,
+                      statusBarBrightness: Brightness.light,
+                    ),
                   ),
                   useMaterial3: true,
                 ),

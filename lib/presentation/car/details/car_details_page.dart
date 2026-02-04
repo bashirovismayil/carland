@@ -97,7 +97,6 @@ class CarDetailsPage extends HookWidget {
       };
     });
 
-    // Data availability kontrolü
     final hasBrandData = carData.brand != null && carData.brand!.isNotEmpty;
     final hasModelData = carData.model != null && carData.model!.isNotEmpty;
     final hasEngineVolumeData = carData.engineVolume != null;
@@ -120,6 +119,19 @@ class CarDetailsPage extends HookWidget {
 
       return null;
     }, [locale.languageCode]);
+
+    useEffect(() {
+      void listener() {
+        final engineType = engineTypeController.text;
+        if (engineType.contains('Elektro') ||
+            engineType.contains('Electric') ||
+            engineType.contains('Электро')) {
+          engineController.text = '0';
+        }
+      }
+      engineTypeController.addListener(listener);
+      return () => engineTypeController.removeListener(listener);
+    }, []);
 
     return GestureDetector(
       onTap: unfocusAll,
@@ -182,7 +194,6 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Brand/Make - Enabled only if no data
                         _buildTextField(
                           controller: makeController,
                           focusNode: makeFocusNode,
@@ -202,7 +213,6 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Model - Enabled only if no data
                         _buildTextField(
                           controller: modelController,
                           focusNode: modelFocusNode,
@@ -222,7 +232,6 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Engine Volume - Enabled only if no data
                         _buildTextField(
                           controller: engineController,
                           focusNode: engineFocusNode,
@@ -248,7 +257,6 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Body Type - Enabled only if no data
                         _buildDropdownField(
                           context: context,
                           controller: bodyTypeController,
@@ -276,7 +284,6 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Engine Type
                         _buildDropdownField(
                           context: context,
                           controller: engineTypeController,
@@ -303,7 +310,6 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        // Year - Enabled only if no data
                         _buildDropdownField(
                           context: context,
                           controller: yearController,

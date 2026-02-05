@@ -51,6 +51,8 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/png/carcat_logo.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/png/carcat_logo.png"
 
 flutter:
 

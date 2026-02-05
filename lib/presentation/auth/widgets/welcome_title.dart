@@ -10,55 +10,32 @@ class WelcomeTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentLang = locator<LanguageLocalService>().currentLanguage;
-
     final isAzerbaijani = currentLang == 'az';
-
-    if (isAzerbaijani) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            context.currentLanguage(AppStrings.carcat),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            context.currentLanguage(AppStrings.welcomeTo),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          context.currentLanguage(AppStrings.welcomeTo),
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
+    final widgets = [
+      Text(
+        context.currentLanguage(isAzerbaijani ? AppStrings.carcat : AppStrings.welcomeTo),
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: isAzerbaijani ? FontWeight.w700 : FontWeight.w500,
+          color: Colors.black,
         ),
-        const SizedBox(width: 8),
-        Text(
-          context.currentLanguage(AppStrings.carcat),
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
+      ),
+      Text(
+        context.currentLanguage(isAzerbaijani ? AppStrings.welcomeTo : AppStrings.carcat),
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: isAzerbaijani ? FontWeight.w500 : FontWeight.w700,
+          color: Colors.black,
         ),
-      ],
+      ),
+    ];
+
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children: widgets,
     );
   }
 }

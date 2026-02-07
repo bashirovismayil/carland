@@ -51,6 +51,7 @@ class RegisterCubit extends Cubit<RegisterState> {
 
       await _registerLocalService.saveRegisterResponse(response);
       await _registerLocalService.savePhoneNumber(formattedPhone);
+      await _registerLocalService.saveRegisterToken(response.registerToken ?? '');
 
       if (isClosed) return;
 

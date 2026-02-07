@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../utils/helper/vin/vin_scanner_service.dart';
+import '../../utils/helper/config/vin_scanner_config.dart';
 import '../../utils/helper/controllers/vin_scanner_controller.dart';
 import '../../utils/helper/vin_navigation_helper.dart';
 import 'widgets/camera_layer.dart';
@@ -20,32 +21,46 @@ class VinScannerScreen extends StatefulWidget {
 
 class _VinScannerScreenState extends State<VinScannerScreen>
     with WidgetsBindingObserver {
-  late final VinScannerController _controller;
-  late final VinScannerService _scannerService;
+  VinScannerController? _controller;
+  VinScannerService? _scannerService;
+  bool _isConfigReady = false;
 
   @override
   void initState() {
     super.initState();
-    _scannerService = VinScannerService();
+    WidgetsBinding.instance.addObserver(this);
+    _initializeWithConfig();
+  }
+
+  Future<void> _initializeWithConfig() async {
+    final config = await VinScannerConfig.adaptive();
+
+    if (!mounted) return;
+
+    _scannerService = VinScannerService(config: config);
     _controller = VinScannerController(
-      scannerService: _scannerService,
+      scannerService: _scannerService!,
       onVinDetected: _handleVinDetected,
       onStateChanged: _onStateChanged,
     );
-    WidgetsBinding.instance.addObserver(this);
-    _controller.checkPermissionAndInitialize();
+
+    setState(() {
+      _isConfigReady = true;
+    });
+
+    _controller!.checkPermissionAndInitialize();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    _controller.handleLifecycleChange(state);
+    _controller?.handleLifecycleChange(state);
   }
 
   void _onStateChanged() {
@@ -58,25 +73,35 @@ class _VinScannerScreenState extends State<VinScannerScreen>
 
   void _handleTapToFocus(TapDownDetails details) {
     final size = MediaQuery.of(context).size;
-    _controller.handleTapToFocus(details.localPosition, size);
+    _controller?.handleTapToFocus(details.localPosition, size);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_isConfigReady || _controller == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.primaryWhite,
       body: GestureDetector(
-        onTapDown: _controller.state.isInitialized ? _handleTapToFocus : null,
+        onTapDown:
+        _controller!.state.isInitialized ? _handleTapToFocus : null,
         child: Stack(
           fit: StackFit.expand,
           children: [
             CameraLayer(
-              state: _controller.state,
-              cameraController: _scannerService.cameraController,
-              onToggleFlash: _controller.toggleFlash,
-              onRequestPermission: _controller.checkPermissionAndInitialize,
+              state: _controller!.state,
+              cameraController: _scannerService!.cameraController,
+              onToggleFlash: _controller!.toggleFlash,
+              onRequestPermission: _controller!.checkPermissionAndInitialize,
             ),
-            ScannerUILayer(state: _controller.state),
+            ScannerUILayer(state: _controller!.state),
           ],
         ),
       ),

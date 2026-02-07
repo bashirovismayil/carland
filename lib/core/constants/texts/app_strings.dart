@@ -224,6 +224,13 @@ class AppStrings {
   static const String gotIt = "gotIt";
   static const String checkMyCars = "checkMyCars";
   static const String vinText = "vinText";
+  static const String initCam = "Initializing camera";
+  static const String cameraAccessDenied = 'cameraAccessDenied';
+  static const String cameraPermissionRequired = 'cameraPermissionRequired';
+  static const String enableCameraAccessInSettings = 'enableCameraAccessInSettings';
+  static const String needCameraAccessToScan = 'needCameraAccessToScan';
+  static const String openSettings = 'openSettings';
+  static const String grantPermission = 'grantPermission';
 
   static const String newCarAdded = "newCarAdded";
 

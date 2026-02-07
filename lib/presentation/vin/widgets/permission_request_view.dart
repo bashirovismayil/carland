@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../../core/constants/values/app_theme.dart';
+import '../../../core/constants/texts/app_strings.dart';
+import '../../../core/localization/app_translation.dart';
 
 class PermissionRequestView extends StatelessWidget {
   final bool permissionDenied;
@@ -46,7 +48,9 @@ class PermissionRequestView extends StatelessWidget {
 
   Widget _buildTitle() {
     return Text(
-      permissionDenied ? 'Camera Access Denied' : 'Camera Permission Required',
+      permissionDenied
+          ? AppTranslation.translate(AppStrings.cameraAccessDenied)
+          : AppTranslation.translate(AppStrings.cameraPermissionRequired),
       style: const TextStyle(
         color: Colors.white,
         fontSize: 16,
@@ -59,8 +63,8 @@ class PermissionRequestView extends StatelessWidget {
   Widget _buildSubtitle() {
     return Text(
       permissionDenied
-          ? 'Please enable camera access in settings'
-          : 'We need camera access to scan VIN codes',
+          ? AppTranslation.translate(AppStrings.enableCameraAccessInSettings)
+          : AppTranslation.translate(AppStrings.needCameraAccessToScan),
       style: const TextStyle(
         color: Colors.white70,
         fontSize: 14,
@@ -77,7 +81,9 @@ class PermissionRequestView extends StatelessWidget {
         backgroundColor: Colors.white24,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       ),
-      child: Text(permissionDenied ? 'Open Settings' : 'Grant Permission'),
+      child: Text(permissionDenied
+          ? AppTranslation.translate(AppStrings.openSettings)
+          : AppTranslation.translate(AppStrings.grantPermission)),
     );
   }
 }

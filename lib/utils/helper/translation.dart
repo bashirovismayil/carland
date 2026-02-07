@@ -785,6 +785,41 @@ class Translations {
       'en': 'VIN Number',
       'ru': 'VIN Номер',
     },
+ AppStrings.initCam: {
+      'az': 'Kamera işə salınır...',
+      'en': 'Initializing camera...',
+      'ru': 'Инициализация камеры...',
+    },
+    AppStrings.cameraAccessDenied: {
+      'az': 'Kamera girişi rədd edildi',
+      'en': 'Camera Access Denied',
+      'ru': 'Доступ к камере запрещен',
+    },
+    AppStrings.cameraPermissionRequired: {
+      'az': 'Kamera icazəsi tələb olunur',
+      'en': 'Camera Permission Required',
+      'ru': 'Требуется разрешение камеры',
+    },
+    AppStrings.enableCameraAccessInSettings: {
+      'az': 'Zəhmət olmasa parametrlərdə kamera girişini aktiv edin',
+      'en': 'Please enable camera access in settings',
+      'ru': 'Пожалуйста, включите доступ к камере в настройках',
+    },
+    AppStrings.needCameraAccessToScan: {
+      'az': 'BAN kodunu skan etmək üçün kamera girişi lazımdır',
+      'en': 'We need camera access to scan VIN codes',
+      'ru': 'Нам нужен доступ к камере для сканирования VIN-кодов',
+    },
+    AppStrings.openSettings: {
+      'az': 'Parametrləri Aç',
+      'en': 'Open Settings',
+      'ru': 'Открыть настройки',
+    },
+    AppStrings.grantPermission: {
+      'az': 'İcazə Ver',
+      'en': 'Grant Permission',
+      'ru': 'Предоставить разрешение',
+    },
 
     // Navigation Pages
     AppStrings.homePage: {

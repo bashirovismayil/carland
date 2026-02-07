@@ -1,25 +1,32 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
+import '../config/vin_scanner_config.dart';
+
 class CameraManager {
+  final VinScannerConfig _config;
+
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
   bool _isDisposed = false;
   double _minZoomLevel = 1.0;
   double _maxZoomLevel = 1.0;
   double _currentZoomLevel = 1.0;
-  static const double _targetInitialZoom = 2.0;
   double get minZoomLevel => _minZoomLevel;
   double get maxZoomLevel => _maxZoomLevel;
   double get currentZoomLevel => _currentZoomLevel;
   CameraController? get controller => _cameraController;
   bool get isInitialized => _cameraController?.value.isInitialized ?? false;
   bool get isDisposed => _isDisposed;
-  bool get isStreamingImages => _cameraController?.value.isStreamingImages ?? false;
+  bool get isStreamingImages =>
+      _cameraController?.value.isStreamingImages ?? false;
   FlashMode? get currentFlashMode => _cameraController?.value.flashMode;
+
+  CameraManager({required VinScannerConfig config}) : _config = config;
 
   Future<CameraInitResult> initialize() async {
     if (_isDisposed) {
@@ -27,34 +34,7 @@ class CameraManager {
     }
 
     try {
-      _cameras = await availableCameras();
-
-      if (_cameras == null || _cameras!.isEmpty) {
-        return CameraInitResult.failure(
-          'No camera found on this device',
-          isCameraUnavailable: true,
-        );
-      }
-
-      final backCamera = _cameras!.firstWhere(
-            (c) => c.lensDirection == CameraLensDirection.back,
-        orElse: () => _cameras!.first,
-      );
-
-      _cameraController = CameraController(
-        backCamera,
-        ResolutionPreset.high,
-        enableAudio: false,
-        imageFormatGroup: Platform.isAndroid
-            ? ImageFormatGroup.nv21
-            : ImageFormatGroup.bgra8888,
-      );
-
-      await _cameraController!.initialize();
-      await _initializeZoomLevels();
-      await _setupCameraSettings();
-
-      return CameraInitResult.success();
+      return await _initializeWithTimeout();
     } on CameraException catch (e) {
       debugPrint('Camera error: ${e.code} - ${e.description}');
 
@@ -74,6 +54,71 @@ class CameraManager {
     }
   }
 
+  Future<CameraInitResult> _initializeWithTimeout() async {
+    final completer = Completer<CameraInitResult>();
+
+    _doInitialize().then((result) {
+      if (!completer.isCompleted) completer.complete(result);
+    }).catchError((e) {
+      if (!completer.isCompleted) {
+        completer.complete(
+          CameraInitResult.failure('Camera initialization failed: $e'),
+        );
+      }
+    });
+
+    Future.delayed(_config.initializationTimeout, () {
+      if (!completer.isCompleted) {
+        debugPrint(
+          'Camera init timed out after ${_config.initializationTimeout.inSeconds}s',
+        );
+        completer.complete(
+          CameraInitResult.failure(
+            'Camera initialization timed out. Please try again.',
+          ),
+        );
+      }
+    });
+
+    return completer.future;
+  }
+
+  Future<CameraInitResult> _doInitialize() async {
+    _cameras = await availableCameras();
+
+    if (_cameras == null || _cameras!.isEmpty) {
+      return CameraInitResult.failure(
+        'No camera found on this device',
+        isCameraUnavailable: true,
+      );
+    }
+
+    final backCamera = _cameras!.firstWhere(
+          (c) => c.lensDirection == CameraLensDirection.back,
+      orElse: () => _cameras!.first,
+    );
+
+    _cameraController = CameraController(
+      backCamera,
+      _config.resolutionPreset,
+      enableAudio: false,
+      imageFormatGroup: Platform.isAndroid
+          ? ImageFormatGroup.nv21
+          : ImageFormatGroup.bgra8888,
+    );
+
+    await _cameraController!.initialize();
+
+    if (_isDisposed) {
+      return CameraInitResult.failure('Disposed during initialization');
+    }
+
+    await _initializeZoomLevels();
+    await _setupCameraSettings();
+
+    return CameraInitResult.success();
+  }
+
   Future<void> _initializeZoomLevels() async {
     if (_cameraController == null) return;
 
@@ -83,7 +128,7 @@ class CameraManager {
 
       debugPrint('Zoom levels - Min: $_minZoomLevel, Max: $_maxZoomLevel');
 
-      double targetZoom = _targetInitialZoom;
+      double targetZoom = _config.targetInitialZoom;
 
       if (targetZoom < _minZoomLevel) {
         targetZoom = _minZoomLevel;
@@ -95,7 +140,8 @@ class CameraManager {
       _currentZoomLevel = targetZoom;
 
       debugPrint(
-        'Initial zoom set to: $_currentZoomLevel (target was $_targetInitialZoom)',
+        'Initial zoom set to: $_currentZoomLevel '
+            '(target was ${_config.targetInitialZoom})',
       );
     } catch (e) {
       debugPrint('Zoom initialization error: $e');
@@ -210,9 +256,8 @@ class CameraManager {
 
     try {
       final currentMode = _cameraController!.value.flashMode;
-      final newMode = currentMode == FlashMode.torch
-          ? FlashMode.off
-          : FlashMode.torch;
+      final newMode =
+      currentMode == FlashMode.torch ? FlashMode.off : FlashMode.torch;
       await _cameraController!.setFlashMode(newMode);
       return newMode == FlashMode.torch;
     } catch (e) {
@@ -273,17 +318,11 @@ class CameraManager {
       final rotation = InputImageRotationValue.fromRawValue(
         camera.sensorOrientation,
       );
-      if (rotation == null) {
-        debugPrint('Warning: Could not determine image rotation');
-        return null;
-      }
+      if (rotation == null) return null;
 
       final format = InputImageFormatValue.fromRawValue(image.format.raw);
 
-      if (image.planes.isEmpty) {
-        debugPrint('Warning: No image planes available');
-        return null;
-      }
+      if (image.planes.isEmpty) return null;
 
       final WriteBuffer allBytesBuffer = WriteBuffer();
       for (final Plane plane in image.planes) {

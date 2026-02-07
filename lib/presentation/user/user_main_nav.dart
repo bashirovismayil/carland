@@ -38,15 +38,20 @@ class UserMainNavigationView extends StatelessWidget {
     return BlocBuilder<UserNavBarCubit, UserNavBarState>(
       builder: (context, state) {
         final cubit = context.read<UserNavBarCubit>();
-
+        final bottomPadding = MediaQuery.of(context).padding.bottom;
         return Scaffold(
           backgroundColor: AppColors.primaryWhite,
           body: IndexedStack(
             index: cubit.currentIndex,
             children: _pages,
           ),
-          bottomNavigationBar: Padding(
-            padding: const EdgeInsets.only(left: 2, right: 2, top: 10, bottom: 30),
+          bottomNavigationBar: Container(
+            padding: EdgeInsets.only(
+              left: 2,
+              right: 2,
+              top: 10,
+              bottom: bottomPadding > 0 ? bottomPadding : 15,
+            ),
             child: Container(
               height: 70,
               decoration: const BoxDecoration(

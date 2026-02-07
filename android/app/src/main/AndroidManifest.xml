@@ -4,7 +4,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     package="com.nematmirzayev.carcat">
     <application
-        android:label="carcat"
+        android:label="CarCat"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

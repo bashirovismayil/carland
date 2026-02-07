@@ -65,6 +65,33 @@ class VinValidator {
     2
   ];
 
+  // ─────────────────────────────────────────────────────────
+  // REGION DETECTION
+  //
+  // VIN checksum (position 9) is ONLY mandatory for vehicles
+  // manufactured for North American markets (USA, Canada, Mexico).
+  // First character of VIN identifies the country of manufacture:
+  //   1, 4, 5 = USA
+  //   2       = Canada
+  //   3       = Mexico
+  //
+  // For all other regions (Europe, Asia, etc.), position 9 is
+  // a regular manufacturer-assigned character with no checksum
+  // requirement. Attempting to "correct" characters to satisfy
+  // checksum on non-NA VINs can change a correctly-read VIN
+  // into a wrong one.
+  // ─────────────────────────────────────────────────────────
+
+  bool isNorthAmericanVin(String vin) {
+    if (vin.isEmpty) return false;
+    final firstChar = vin[0];
+    return firstChar == '1' ||
+        firstChar == '2' ||
+        firstChar == '3' ||
+        firstChar == '4' ||
+        firstChar == '5';
+  }
+
   bool validateChecksum(String vin) {
     if (vin.length != 17) return false;
 
@@ -152,13 +179,31 @@ class VinValidator {
     return true;
   }
 
+  /// Find all checksum-valid variants of a VIN candidate.
+  ///
+  /// **Region-aware behavior:**
+  /// - North American VINs (first char 1-5): Tries all ambiguous
+  ///   character swaps (S↔5, B↔8, G↔6, Z↔2) to find checksum-valid
+  ///   variants. This corrects common OCR misreads.
+  /// - Non-NA VINs (Europe, Asia, etc.): Does NOT swap characters.
+  ///   Only checks if the raw candidate itself passes checksum
+  ///   (unlikely but possible). OCR reading is trusted as-is.
+  ///
+  /// If no checksum-valid variant is found, returns empty list.
+  /// The caller should then use the detection buffer (multiple
+  /// consistent reads) for confirmation.
   List<String> findAllValidVariants(String candidate) {
     final validVariants = <String>[];
 
     if (!isValidCandidate(candidate)) return validVariants;
 
+    // Always check the raw candidate first
     if (validateChecksum(candidate)) {
       validVariants.add(candidate);
+    }
+
+    if (!isNorthAmericanVin(candidate)) {
+      return validVariants;
     }
 
     final ambiguousPositions = <int>[];
@@ -241,6 +286,7 @@ class VinValidator {
 
     return bestVariant ?? variants.first;
   }
+
   List<String> extract17CharPatternsWithBoundary(String text) {
     final results = <String>[];
     final matches = vinBoundaryRegex.allMatches(text);

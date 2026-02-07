@@ -90,47 +90,22 @@ class RegisterFormController {
   Future<void> _handleRegisterSuccess() async {
     if (!context.mounted) return;
 
-    final phoneData = _preparePhoneData();
+    final cleanPhone = registerCubit.phoneController.text.replaceAll(RegExp(r'\D'), '');
+    final backendPhone = '${selectedCountryCode.dialCode}$cleanPhone';
+    final formattedPhone = '${selectedCountryCode.code} $cleanPhone';
 
-    await otpSendCubit.sendOtp(phoneData.forBackend);
+    await otpSendCubit.sendOtp(backendPhone);
 
     if (context.mounted) {
-      _navigateToOtpPage(phoneData);
+      Go.to(
+        context,
+        OtpPage(
+          phoneNumber: backendPhone,
+          verifyType: OtpVerifyType.registration,
+          countryCode: selectedCountryCode.code,
+        ),
+      );
     }
-  }
-
-  ({String formatted, String forBackend}) _preparePhoneData() {
-    final rawPhone = registerCubit.phoneController.text;
-    final cleanPhone = rawPhone.replaceAll(RegExp(r'\D'), '');
-
-    return (
-    formatted: '${selectedCountryCode.code} $cleanPhone',
-    forBackend: '${selectedCountryCode.dialCode}$cleanPhone',
-    );
-  }
-
-  // Commented out - no longer needed as per product owner request
-  // Future<bool?> _showOtpConfirmation(
-  //     ({String formatted, String forBackend}) phoneData,
-  //     ) {
-  //   return OtpSendConfirmationDialog.show(
-  //     context: context,
-  //     phoneNumber: phoneData.formatted,
-  //     onConfirm: () async {
-  //       await otpSendCubit.sendOtp(phoneData.forBackend);
-  //     },
-  //   );
-  // }
-
-  void _navigateToOtpPage(({String formatted, String forBackend}) phoneData) {
-    Go.to(
-      context,
-      OtpPage(
-        phoneNumber: phoneData.forBackend,
-        verifyType: OtpVerifyType.registration,
-        countryCode: selectedCountryCode.code,
-      ),
-    );
   }
 
   void navigateToLogin() {

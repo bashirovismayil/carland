@@ -36,28 +36,21 @@ class PinEntryPage extends HookWidget {
     final pinController = useTextEditingController();
     final errorMessage = useState<String?>(null);
     final isLoading = useState(false);
-
     final isBiometricReady = useState(false);
     final showBiometricMode = useState(false);
     final biometricChecked = useState(false);
 
-    // ── Biometric availability check & auto-trigger ──
     useEffect(() {
       if (biometricChecked.value) return null;
       biometricChecked.value = true;
 
       Future<void> initBiometric() async {
         if (!biometricService.isEnabled) return;
-
         final ready = await biometricService.isReadyToAuthenticate();
         if (!ready) return;
-
         isBiometricReady.value = true;
         showBiometricMode.value = true;
-
-        // Platform'a göre gecikme ekle
         await Future.delayed(_biometricDelay);
-
         _triggerBiometric(
           biometricService: biometricService,
           onSuccess: onPinVerified,
@@ -74,7 +67,6 @@ class PinEntryPage extends HookWidget {
       return null;
     }, const []);
 
-    // ── PIN themes ──
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 56,
@@ -100,7 +92,6 @@ class PinEntryPage extends HookWidget {
       ),
     );
 
-    // ── Handlers ──
     void verifyPin(String pin) {
       isLoading.value = true;
       errorMessage.value = null;
@@ -128,7 +119,6 @@ class PinEntryPage extends HookWidget {
       errorMessage.value = null;
       showBiometricMode.value = true;
 
-      // Manuel geçişte gecikme yok — kullanıcı zaten bekledi
       _triggerBiometric(
         biometricService: biometricService,
         onSuccess: onPinVerified,
@@ -187,7 +177,6 @@ class PinEntryPage extends HookWidget {
       );
     }
 
-    // ── UI ──
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -227,7 +216,6 @@ class PinEntryPage extends HookWidget {
                 ),
                 const SizedBox(height: 48),
 
-                // ── Biometric Mode ──
                 if (showBiometricMode.value) ...[
                   _BiometricActionButton(
                     onTap: () => _triggerBiometric(
@@ -253,8 +241,6 @@ class PinEntryPage extends HookWidget {
                       isOutlined: true,
                     ),
                 ],
-
-                // ── PIN Mode ──
                 if (!showBiometricMode.value) ...[
                   Pinput(
                     controller: pinController,
@@ -270,7 +256,6 @@ class PinEntryPage extends HookWidget {
                     autofocus: true,
                   ),
                   const SizedBox(height: 16),
-
                   if (isBiometricReady.value)
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
@@ -283,7 +268,6 @@ class PinEntryPage extends HookWidget {
                       ),
                     ),
                 ],
-
                 if (errorMessage.value != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 16),
@@ -293,9 +277,7 @@ class PinEntryPage extends HookWidget {
                       const TextStyle(color: Colors.red, fontSize: 14),
                     ),
                   ),
-
                 const SizedBox(height: 32),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -327,7 +309,6 @@ class PinEntryPage extends HookWidget {
                     ),
                   ],
                 ),
-
                 if (isLoading.value)
                   const Padding(
                     padding: EdgeInsets.only(top: 16),

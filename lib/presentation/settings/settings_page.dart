@@ -102,7 +102,6 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showBiometricNotEnrolledDialog() {
-    // Platform'a göre yönlendirme metni
     final instructionKey = Platform.isIOS
         ? AppStrings.biometricNotEnrolledMessageIos
         : AppStrings.biometricNotEnrolledMessageAndroid;

@@ -21,29 +21,20 @@ class AppRouter {
     AuthState.authenticatedUser: () => const UserMainNavigationPage(),
   };
 
-  /// PIN veya biometric'ten herhangi biri aktifse ve session doğrulanmamışsa
-  /// güvenlik kapısı gösterilmeli.
-  /// PinLocalService'teki shouldAskPin zaten _bypassPinOnce'ı kontrol eder,
-  /// biometric için de aynı bypass mantığını uyguluyoruz.
   bool get _shouldAskSecurity {
-    // shouldAskPin = hasPin && !isSessionVerified && !bypassPinOnce
     final needsPin = _pinLocalService.shouldAskPin;
 
-    // Biometric için de aynı bypass ve session kontrolü
     final needsBiometric = _biometricService.isEnabled &&
         !_pinLocalService.isSessionVerified &&
-        _pinLocalService.shouldAskPin != false || // bypass aktifse atla
+        _pinLocalService.shouldAskPin != false ||
         (_biometricService.isEnabled &&
             !_pinLocalService.isSessionVerified &&
-            !_pinLocalService.hasPin); // sadece biometric açık, pin yok
+            !_pinLocalService.hasPin);
 
-    // Bypass aktifse hiçbir güvenlik kapısı gösterme
     if (_pinLocalService.isBypassActive) return false;
 
-    // Session zaten doğrulanmışsa geç
     if (_pinLocalService.isSessionVerified) return false;
 
-    // PIN veya biometric'ten biri aktifse güvenlik kapısı göster
     return _pinLocalService.hasPin || _biometricService.isEnabled;
   }
 

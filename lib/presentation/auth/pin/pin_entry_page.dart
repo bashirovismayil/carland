@@ -240,7 +240,7 @@ class PinEntryPage extends HookWidget {
                         }
                       },
                     ),
-                    icon: Icons.face,
+                    svgPath: 'assets/svg/scanner_icon.svg',
                     label: AppTranslation.translate(AppStrings.tryAgain),
                   ),
                   const SizedBox(height: 16),
@@ -276,7 +276,7 @@ class PinEntryPage extends HookWidget {
                       padding: const EdgeInsets.only(top: 8),
                       child: _BiometricActionButton(
                         onTap: switchToBiometric,
-                        icon: Icons.face,
+                        svgPath: 'assets/svg/scanner_icon.svg',
                         label:
                         AppTranslation.translate(AppStrings.useFaceId),
                         isOutlined: true,
@@ -361,29 +361,50 @@ class PinEntryPage extends HookWidget {
 
 class _BiometricActionButton extends StatelessWidget {
   final VoidCallback onTap;
-  final IconData icon;
+  final IconData? icon;
+  final String? svgPath;
   final String label;
   final bool isOutlined;
 
   const _BiometricActionButton({
     required this.onTap,
-    required this.icon,
     required this.label,
+    this.icon,
+    this.svgPath,
     this.isOutlined = false,
-  });
+  }) : assert(
+  icon != null || svgPath != null,
+  'Either icon or svgPath must be provided',
+  );
+
+  Widget _buildIcon(Color color) {
+    if (svgPath != null) {
+      return SvgPicture.asset(
+        svgPath!,
+        width: 20,
+        height: 20,
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      );
+    }
+
+    return Icon(icon, size: 20, color: color);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final foregroundColor = isOutlined ? Colors.black87 : Colors.white;
+    final iconWidget = _buildIcon(foregroundColor);
+
     return SizedBox(
       width: 220,
       height: 48,
       child: isOutlined
           ? OutlinedButton.icon(
         onPressed: onTap,
-        icon: Icon(icon, size: 20),
+        icon: iconWidget,
         label: Text(label),
         style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.black87,
+          foregroundColor: foregroundColor,
           side: BorderSide(color: Colors.grey.shade300),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -392,11 +413,11 @@ class _BiometricActionButton extends StatelessWidget {
       )
           : ElevatedButton.icon(
         onPressed: onTap,
-        icon: Icon(icon, size: 20),
+        icon: iconWidget,
         label: Text(label),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
+          foregroundColor: foregroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

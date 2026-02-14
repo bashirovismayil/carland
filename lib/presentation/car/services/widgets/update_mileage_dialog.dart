@@ -106,8 +106,6 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
         if (state is UpdateCarMileageSuccess) {
           _focusNode.unfocus();
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-
-          // Return updated mileage value instead of just true
           final updatedMileage = int.tryParse(_mileageController.text.replaceAll(' ', ''));
           Navigator.of(context).pop<Map<String, dynamic>>({
             'mileage': updatedMileage,
@@ -307,67 +305,68 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
       builder: (context, state) {
         final isLoading = state is UpdateCarMileageLoading;
 
-        return Column(
+        return Row(
           children: [
-            // Save Button
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: isLoading ? null : _saveMileage,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlack,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  disabledBackgroundColor: AppColors.primaryBlack.withOpacity(0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+            Expanded(
+              child: SizedBox(
+                height: 50,
+                child: TextButton(
+                  onPressed: isLoading ? null : _closeDialog,
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.textSecondary,
+                    backgroundColor: AppColors.lightGrey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                    ),
                   ),
-                ),
-                child: isLoading
-                    ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-                    : Text(
-                  AppTranslation.translate(AppStrings.saveMileage),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  child: Text(
+                    AppTranslation.translate(AppStrings.cancel),
+                    textScaler: TextScaler.noScaling,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryBlack,
+                    ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
 
-            // Cancel Button
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: TextButton(
-                onPressed: isLoading ? null : _closeDialog,
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.textSecondary,
-                  backgroundColor: AppColors.lightGrey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+            const SizedBox(width: 10),
+            Expanded(
+              child: SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : _saveMileage,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlack,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    disabledBackgroundColor: AppColors.primaryBlack.withOpacity(0.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                    ),
                   ),
-                ),
-                child: Text(
-                  AppTranslation.translate(AppStrings.cancel),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryBlack,
+                  child: isLoading
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                      : Text(
+                    AppTranslation.translate(AppStrings.saveMileage),
+                    textScaler: TextScaler.noScaling,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
           ],
         );
       },

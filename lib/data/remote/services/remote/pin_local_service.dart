@@ -25,6 +25,8 @@ class PinLocalService {
 
   bool get shouldAskPin => hasPin && !_isSessionVerified && !_bypassPinOnce;
 
+  bool get isBypassActive => _bypassPinOnce;
+
   void setBypassPinOnce() {
     _bypassPinOnce = true;
   }

@@ -1717,6 +1717,82 @@ class Translations {
       'ru': 'Установить пароль приложения',
     },
 
+    AppStrings.faceRecognition: {
+      'az': 'Üz tanıma',
+      'en': 'Face Recognition',
+      'ru': 'Распознавание лица',
+    },
+    AppStrings.faceRecognitionSubtitle: {
+      'az': 'Üz tanıma ilə giriş',
+      'en': 'Login with face recognition',
+      'ru': 'Вход по лицу',
+    },
+    AppStrings.verifyIdentity: {
+      'az': 'Şəxsiyyətinizi təsdiqləyin',
+      'en': 'Verify your identity',
+      'ru': 'Подтвердите личность',
+    },
+    AppStrings.scanFaceToLogin: {
+      'az': 'Davam etmək üçün üzünüzü oxudun',
+      'en': 'Scan your face to continue',
+      'ru': 'Отсканируйте лицо для продолжения',
+    },
+    AppStrings.biometricFailed: {
+      'az': 'Üz tanıma uğursuz oldu',
+      'en': 'Face recognition failed',
+      'ru': 'Распознавание лица не удалось',
+    },
+    AppStrings.usePin: {
+      'az': 'PIN istifadə et',
+      'en': 'Use PIN',
+      'ru': 'Использовать PIN',
+    },
+    AppStrings.useFaceId: {
+      'az': 'Üz tanıma ilə daxil ol',
+      'en': 'Use Face ID',
+      'ru': 'Распознавание лица',
+    },
+    AppStrings.tryAgain: {
+      'az': 'Yenidən cəhd et',
+      'en': 'Try again',
+      'ru': 'Попробовать снова',
+    },
+    AppStrings.biometricNotAvailable: {
+      'az': 'Bu cihazda biometrik dəstək yoxdur',
+      'en': 'Biometric not available on this device',
+      'ru': 'Биометрия недоступна на этом устройстве',
+    },
+    AppStrings.biometricEnableReason: {
+      'az': 'Üz tanımanı aktivləşdirmək üçün təsdiqləyin',
+      'en': 'Verify to enable face recognition',
+      'ru': 'Подтвердите для включения распознавания лица',
+    },
+    AppStrings.biometricNotEnrolledTitle: {
+      'az': 'Üz tanıma qurulmayıb',
+      'en': 'Face ID not set up',
+      'ru': 'Face ID не настроен',
+    },
+    AppStrings.biometricNotEnrolledMessageIos: {
+      'az': 'Parametrlər → Face ID və Şifrə bölməsinə keçib Face ID-ni quraşdırın.',
+      'en': 'Go to Settings → Face ID & Passcode to set up Face ID.',
+      'ru': 'Перейдите в Настройки → Face ID и код-пароль, чтобы настроить Face ID.',
+    },
+    AppStrings.biometricNotEnrolledMessageAndroid: {
+      'az': 'Ayarlar → Təhlükəsizlik bölməsinə keçib üz tanımanı quraşdırın.',
+      'en': 'Go to Settings → Security to set up face recognition.',
+      'ru': 'Перейдите в Настройки → Безопасность, чтобы настроить распознавание лица.',
+    },
+    AppStrings.biometricLoginReason: {
+      'az': 'Daxil olmaq üçün üzünüzü kameraya yaxınlaşdırın',
+      'en': 'Scan your face to login',
+      'ru': 'Отсканируйте лицо для входа',
+    },
+    AppStrings.biometricNotEnrolledMessage: {
+      'az': 'Üz tanımanı istifadə etmək üçün əvvəlcə cihaz parametrlərindən Face ID-ni quraşdırın.',
+      'en': 'To use face recognition, please set up Face ID in your device settings first.',
+      'ru': 'Чтобы использовать распознавание лица, сначала настройте Face ID в настройках устройства.',
+    },
+
     // Feedback Section
     AppStrings.appFeedback: {
       'az': 'Geri bildiriş',

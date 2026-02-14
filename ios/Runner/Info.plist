@@ -38,6 +38,8 @@
     </array>
     <key>NSLocalNetworkUsageDescription</key>
     <string>Cihazınızda uygulamayı geliştirme ve test etmek için yerel ağ erişimi gereklidir.</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>Giriş üçün FaceID istifadə edin.</string>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
     <key>UILaunchStoryboardName</key>

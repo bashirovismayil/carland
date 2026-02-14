@@ -1,5 +1,5 @@
+import 'dart:io';
 import 'package:carcat/core/constants/colors/app_colors.dart';
-import 'package:carcat/presentation/auth/forgot/forgot_password.dart';
 import 'package:carcat/presentation/settings/feedback/feedback_page.dart';
 import 'package:carcat/presentation/settings/profile_edit.dart';
 import 'package:carcat/presentation/settings/support/support_page.dart';
@@ -14,6 +14,7 @@ import '../../core/constants/texts/app_strings.dart';
 import '../../core/localization/app_translation.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/language/language_state.dart';
+import '../../data/remote/services/local/biometric_service.dart';
 import '../../data/remote/services/local/login_local_services.dart';
 import '../../data/remote/services/remote/pin_local_service.dart';
 import '../../utils/di/locator.dart';
@@ -31,13 +32,17 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final _local = locator<LoginLocalService>();
   final _pinLocalService = locator<PinLocalService>();
+  final _biometricService = locator<BiometricService>();
+
   String _userName = '';
   String _userSurname = '';
+  bool _isBiometricAvailable = false;
 
   @override
   void initState() {
     super.initState();
     _loadUserInfo();
+    _checkBiometricAvailability();
   }
 
   void _loadUserInfo() {
@@ -48,6 +53,92 @@ class _SettingsPageState extends State<SettingsPage> {
       _userName = name ?? '';
       _userSurname = surname ?? '';
     });
+  }
+
+  void _checkBiometricAvailability() async {
+    final supported = await _biometricService.isHardwareSupported();
+    if (mounted) {
+      setState(() => _isBiometricAvailable = supported);
+    }
+  }
+
+  void _toggleBiometric() async {
+    if (_biometricService.isEnabled) {
+      await _biometricService.disable();
+      setState(() {});
+      return;
+    }
+
+    final enrolled = await _biometricService.hasEnrolledBiometrics();
+
+    if (!enrolled) {
+      if (!mounted) return;
+      _showBiometricNotEnrolledDialog();
+      return;
+    }
+
+    final success = await _biometricService.enrollAndEnable(
+      localizedReason:
+      AppTranslation.translate(AppStrings.biometricEnableReason),
+    );
+
+    if (mounted) {
+      if (success) {
+        setState(() {});
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppTranslation.translate(AppStrings.biometricFailed),
+            ),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showBiometricNotEnrolledDialog() {
+    // Platform'a göre yönlendirme metni
+    final instructionKey = Platform.isIOS
+        ? AppStrings.biometricNotEnrolledMessageIos
+        : AppStrings.biometricNotEnrolledMessageAndroid;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.primaryWhite,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+                  AppTranslation.translate(
+                      AppStrings.biometricNotEnrolledTitle),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+          ),
+          content: Text(
+            AppTranslation.translate(instructionKey),
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                AppTranslation.translate(AppStrings.okButton),
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -101,7 +192,7 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   child: Row(
                     children: [
                       const SizedBox(
@@ -148,25 +239,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       svgPath: 'assets/svg/settings_language.svg',
                       titleKey: AppStrings.language,
-                   //   subtitleKey: AppStrings.changeAppLanguage,
                       onTap: () {
                         Go.to(context, LanguageSettingsPage());
                       },
                     ),
-                    // const SizedBox(height: 10),
-                    // _buildSettingsTile(
-                    //   svgPath: 'assets/svg/reset_pass_icon.svg',
-                    //   titleKey: AppStrings.resetPassText,
-                    //   subtitleKey: AppStrings.resetPassSubText,
-                    //   onTap: () {
-                    //     Go.to(context, ForgotPassword(isResetFlow: true,));
-                    //   },
-                    // ),
                     const SizedBox(height: 10),
                     _buildSettingsTile(
                       svgPath: 'assets/svg/settings_pass_ico.svg',
                       titleKey: AppStrings.password,
-                    //  subtitleKey: AppStrings.setAppPassword,
                       onTap: () async {
                         await Navigator.push(
                           context,
@@ -176,42 +256,20 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                         setState(() {});
                       },
-                      trailing: _pinLocalService.hasPin
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.check_circle,
-                                    size: 14,
-                                    color: Colors.black,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    AppTranslation.translate(AppStrings.active),
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.primaryBlack,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : null,
+                      trailing:
+                      _pinLocalService.hasPin ? _buildActiveBadge() : null,
                     ),
+                    if (_isBiometricAvailable) ...[
+                      const SizedBox(height: 10),
+                      _buildSettingsTile(
+                        svgPath: 'assets/svg/settings_face_recognition.svg',
+                        titleKey: AppStrings.faceRecognition,
+                        onTap: () => _toggleBiometric(),
+                        trailing: _biometricService.isEnabled
+                            ? _buildActiveBadge()
+                            : null,
+                      ),
+                    ],
                   ],
                 ),
                 _buildSectionHeader(AppStrings.feedback),
@@ -220,7 +278,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       svgPath: 'assets/svg/settings_feedback.svg',
                       titleKey: AppStrings.appFeedback,
-                    //  subtitleKey: AppStrings.addFeedbackAboutApp,
                       onTap: () {
                         Go.to(context, FeedbackPage());
                       },
@@ -229,7 +286,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       svgPath: 'assets/svg/support_icon.svg',
                       titleKey: AppStrings.supportText,
-                     // subtitleKey: AppStrings.reportBugOrError,
                       onTap: () {
                         Go.to(context, SupportPage());
                       },
@@ -242,7 +298,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       svgPath: 'assets/svg/settings_privacy.svg',
                       titleKey: AppStrings.privacyPolicy,
-                     // subtitleKey: AppStrings.setYourPrivacy,
                       onTap: () {
                         Go.to(context, PrivacyPolicyPage());
                       },
@@ -251,7 +306,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       svgPath: 'assets/svg/terms_service.svg',
                       titleKey: AppStrings.termsAndConditions,
-                      // subtitleKey: AppStrings.setYourPrivacy,
                       onTap: () {
                         Go.to(context, TermsConditionsPage());
                       },
@@ -276,6 +330,32 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildActiveBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.check_circle, size: 14, color: Colors.black),
+          const SizedBox(width: 4),
+          Text(
+            AppTranslation.translate(AppStrings.active),
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primaryBlack,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

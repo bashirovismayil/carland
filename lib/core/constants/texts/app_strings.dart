@@ -406,6 +406,25 @@ class AppStrings {
   static const String password = 'password';
   static const String setAppPassword = 'setAppPassword';
 
+  // Settings
+  static const String faceRecognition = 'face_recognition';
+  static const String faceRecognitionSubtitle = 'face_recognition_subtitle';
+
+  // Biometric Entry Page
+  static const String verifyIdentity = 'verify_identity';
+  static const String scanFaceToLogin = 'scan_face_to_login';
+  static const String biometricFailed = 'biometric_failed';
+  static const String usePin = 'use_pin';
+  static const String useFaceId = 'use_face_id';
+  static const String tryAgain = 'try_again';
+  static const String biometricNotEnrolledTitle = 'biometric_not_enrolled_title';
+  static const String biometricNotEnrolledMessageIos = 'biometric_not_enrolled_message_ios';
+  static const String biometricNotEnrolledMessageAndroid = 'biometric_not_enrolled_message_android';
+  static const String biometricNotEnrolledMessage = 'biometricNotEnrolledMessage';
+  static const String biometricNotAvailable = 'biometric_not_available';
+  static const String biometricEnableReason = 'biometric_enable_reason';
+  static const String biometricLoginReason = 'biometric_login_reason';
+
   // Feedback Section
   static const String appFeedback = 'appFeedback';
   static const String addFeedbackAboutApp = 'addFeedbackAboutApp';

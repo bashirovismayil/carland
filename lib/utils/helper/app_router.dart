@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/remote/services/remote/auth_manager_services.dart';
+import '../../data/remote/services/local/biometric_service.dart';
 import '../../data/remote/services/remote/pin_local_service.dart';
 import '../../presentation/auth/auth_page.dart';
 import '../../presentation/auth/pin/pin_entry_page.dart';
@@ -10,14 +11,41 @@ import '../../presentation/user/user_main_nav.dart';
 class AppRouter {
   final GlobalKey<NavigatorState> _navigatorKey;
   final PinLocalService _pinLocalService;
+  final BiometricService _biometricService;
 
-  AppRouter(this._navigatorKey, this._pinLocalService);
+  AppRouter(this._navigatorKey, this._pinLocalService, this._biometricService);
 
   static final _routeMapping = <AuthState, Widget Function()>{
     AuthState.unauthenticated: () => const AuthPage(),
     AuthState.authenticatedBoss: () => const BossHomeNavigation(),
     AuthState.authenticatedUser: () => const UserMainNavigationPage(),
   };
+
+  /// PIN veya biometric'ten herhangi biri aktifse ve session doğrulanmamışsa
+  /// güvenlik kapısı gösterilmeli.
+  /// PinLocalService'teki shouldAskPin zaten _bypassPinOnce'ı kontrol eder,
+  /// biometric için de aynı bypass mantığını uyguluyoruz.
+  bool get _shouldAskSecurity {
+    // shouldAskPin = hasPin && !isSessionVerified && !bypassPinOnce
+    final needsPin = _pinLocalService.shouldAskPin;
+
+    // Biometric için de aynı bypass ve session kontrolü
+    final needsBiometric = _biometricService.isEnabled &&
+        !_pinLocalService.isSessionVerified &&
+        _pinLocalService.shouldAskPin != false || // bypass aktifse atla
+        (_biometricService.isEnabled &&
+            !_pinLocalService.isSessionVerified &&
+            !_pinLocalService.hasPin); // sadece biometric açık, pin yok
+
+    // Bypass aktifse hiçbir güvenlik kapısı gösterme
+    if (_pinLocalService.isBypassActive) return false;
+
+    // Session zaten doğrulanmışsa geç
+    if (_pinLocalService.isSessionVerified) return false;
+
+    // PIN veya biometric'ten biri aktifse güvenlik kapısı göster
+    return _pinLocalService.hasPin || _biometricService.isEnabled;
+  }
 
   Widget getOnboardPage() => const OnboardPage();
 
@@ -27,11 +55,12 @@ class AppRouter {
   }
 
   Widget getPageWithPinGuard(AuthState authState) {
-    if (authState == AuthState.unauthenticated || authState == AuthState.guest) {
+    if (authState == AuthState.unauthenticated ||
+        authState == AuthState.guest) {
       return getPageForAuthState(authState);
     }
 
-    if (_pinLocalService.shouldAskPin) {
+    if (_shouldAskSecurity) {
       return PinEntryPage(
         targetAuthState: authState,
         onPinVerified: () {
@@ -48,7 +77,8 @@ class AppRouter {
     final navigator = _navigatorKey.currentState;
 
     if (navigator == null || !navigator.mounted) {
-      debugPrint('[AppRouter] Navigator is null or not mounted, skipping navigation');
+      debugPrint(
+          '[AppRouter] Navigator is null or not mounted, skipping navigation');
       return;
     }
 
@@ -58,7 +88,6 @@ class AppRouter {
       return;
     }
 
-    // PIN guard'dan geçir - bu kritik!
     final targetPage = getPageWithPinGuard(authState);
     final targetRouteName = targetPage.runtimeType.toString();
 

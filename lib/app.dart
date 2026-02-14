@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'core/constants/colors/app_colors.dart';
 import 'cubit/language/language_cubit.dart';
 import 'cubit/language/language_state.dart';
+import 'data/remote/services/local/biometric_service.dart';
 import 'data/remote/services/local/onboard_local_services.dart';
 import 'data/remote/services/local/login_local_services.dart';
 import 'data/remote/services/remote/auth_manager_services.dart';
@@ -34,7 +35,8 @@ class _CarCatAppState extends State<CarCatApp> {
   void initState() {
     super.initState();
     final pinService = locator<PinLocalService>();
-    _appRouter = AppRouter(_navigatorKey, pinService);
+    final biometricService = locator<BiometricService>();
+    _appRouter = AppRouter(_navigatorKey, pinService, biometricService);
     locator.registerSingleton<GlobalKey<NavigatorState>>(_navigatorKey);
     _initializationFuture = _initializeDependencies();
   }

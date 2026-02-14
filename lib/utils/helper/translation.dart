@@ -238,7 +238,7 @@ class Translations {
     },
     AppStrings.helpInfoText: {
       'az':
-          'Əgər PIN şifrəsini unutmusansa, hesab məlumatlarınla giriş edərək, "Parametrlər" səhifəsindən 4 rəqəmli PIN-i sıfırlaya bilərsən.',
+          'Əgər PIN şifrəsini unutmusansa və ya üz tanınması uğursuz oldusa, hesab məlumatlarınla giriş edərək, "Parametrlər" səhifəsindən 4 rəqəmli PIN-i sıfırlaya bilərsən.',
       'en':
           'If you have forgotten your PIN, you can log in with your account details and reset the 4-digit PIN from the "Settings" page.',
       'ru':

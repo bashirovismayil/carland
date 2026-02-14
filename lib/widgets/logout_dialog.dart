@@ -7,6 +7,9 @@ import 'package:carcat/utils/di/locator.dart';
 import 'package:carcat/utils/helper/go.dart';
 import 'package:carcat/data/remote/services/local/login_local_services.dart';
 
+import '../data/remote/services/local/biometric_service.dart';
+import '../data/remote/services/remote/pin_local_service.dart';
+
 class LogoutDialog extends StatelessWidget {
   const LogoutDialog({super.key});
 
@@ -45,8 +48,9 @@ class LogoutDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () async {
-            locator<LoginLocalService>().logout();
-
+            await locator<LoginLocalService>().logout();
+            await locator<PinLocalService>().clearPin();
+            await locator<BiometricService>().disable();
             if (context.mounted) {
               Go.replaceAndRemove(context, AuthPage());
             }

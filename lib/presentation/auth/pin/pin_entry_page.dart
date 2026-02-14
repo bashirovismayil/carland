@@ -39,17 +39,26 @@ class PinEntryPage extends HookWidget {
     final isBiometricReady = useState(false);
     final showBiometricMode = useState(false);
     final biometricChecked = useState(false);
+    final isInitializing = useState(true);
 
     useEffect(() {
       if (biometricChecked.value) return null;
       biometricChecked.value = true;
 
       Future<void> initBiometric() async {
-        if (!biometricService.isEnabled) return;
+        if (!biometricService.isEnabled) {
+          isInitializing.value = false;
+          return;
+        }
         final ready = await biometricService.isReadyToAuthenticate();
-        if (!ready) return;
+        if (!ready) {
+          isInitializing.value = false;
+          return;
+        }
+
         isBiometricReady.value = true;
         showBiometricMode.value = true;
+        isInitializing.value = false;
         await Future.delayed(_biometricDelay);
         _triggerBiometric(
           biometricService: biometricService,
@@ -181,7 +190,9 @@ class PinEntryPage extends HookWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
+          child: isInitializing.value
+              ? const SizedBox.shrink()
+              : SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -189,7 +200,7 @@ class PinEntryPage extends HookWidget {
               children: [
                 SvgPicture.asset(
                   showBiometricMode.value
-                      ? 'assets/svg/face_recognition_ico.svg'
+                      ? 'assets/svg/settings_face_recognition.svg'
                       : 'assets/svg/settings_pass_ico.svg',
                   width: 85,
                   height: 85,

@@ -42,7 +42,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
     _focusNode = FocusNode();
 
     _mileageController.addListener(() {
-      final cleanText = _mileageController.text.replaceAll(' ', '');
+      final cleanText = _mileageController.text.replaceAll(RegExp(r'\D'), '');
       final value = int.tryParse(cleanText);
       if (value != null && value != _displayedMileage) {
         setState(() {
@@ -63,7 +63,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
   }
 
   void _saveMileage() {
-    final mileage = int.tryParse(_mileageController.text.replaceAll(' ', ''));
+    final mileage = int.tryParse(_mileageController.text.replaceAll(RegExp(r'\D'), ''));
 
     if (mileage == null || mileage <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -106,7 +106,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
         if (state is UpdateCarMileageSuccess) {
           _focusNode.unfocus();
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-          final updatedMileage = int.tryParse(_mileageController.text.replaceAll(' ', ''));
+          final updatedMileage = int.tryParse(_mileageController.text.replaceAll(RegExp(r'\D'), ''));
           Navigator.of(context).pop<Map<String, dynamic>>({
             'mileage': updatedMileage,
           });
@@ -390,6 +390,14 @@ class _MileageLengthFormatter extends TextInputFormatter {
       return oldValue;
     }
 
-    return newValue;
+    final formatted = cleanText.replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+          (match) => '${match[1]}.',
+    );
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
   }
 }

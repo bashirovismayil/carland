@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:carcat/utils/helper/mileage_number_formatter.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
@@ -88,7 +89,7 @@ class CarCardContent extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: ActionButton(
-            label: "${car.mileage} km",
+            label: "${MileageNumberFormatter.format(car.mileage)} km",
             onTap: onUpdateMileage,
           ),
         ),

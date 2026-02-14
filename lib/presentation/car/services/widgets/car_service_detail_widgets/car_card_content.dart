@@ -88,7 +88,7 @@ class CarCardContent extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: ActionButton(
-            label: AppTranslation.translate(AppStrings.updateMileage),
+            label: "${car.mileage} km",
             onTap: onUpdateMileage,
           ),
         ),

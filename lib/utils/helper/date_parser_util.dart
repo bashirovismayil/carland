@@ -3,7 +3,7 @@ class DateParserUtil {
 
   static String parseDateOrDefault(String dateText, int? carModelYear) {
     final defaultYear = carModelYear ?? 2020;
-    final defaultDate = '$defaultYear-12-31';
+    final defaultDate = '$defaultYear-01-01';
 
     if (dateText.isEmpty) return defaultDate;
 

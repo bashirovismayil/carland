@@ -8,13 +8,17 @@ import '../edit_service_details_dialog.dart';
 class ServiceMenuButton extends StatelessWidget {
   final ResponseList service;
   final int carId;
+  final bool isHidden;
   final VoidCallback onRefresh;
+  final VoidCallback onToggleHidden;
 
   const ServiceMenuButton({
     super.key,
     required this.service,
     required this.carId,
+    required this.isHidden,
     required this.onRefresh,
+    required this.onToggleHidden,
   });
 
   @override
@@ -34,6 +38,23 @@ class ServiceMenuButton extends StatelessWidget {
                 const Icon(Icons.edit_outlined, size: 18),
                 const SizedBox(width: 8),
                 Text(AppTranslation.translate(AppStrings.editServiceDetails)),
+              ],
+            ),
+          ),
+          PopupMenuItem<String>(
+            value: 'toggleHidden',
+            child: Row(
+              children: [
+                Icon(
+                  isHidden ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  isHidden
+                      ? AppTranslation.translate(AppStrings.unhideService)
+                      : AppTranslation.translate(AppStrings.hideService),
+                ),
               ],
             ),
           ),
@@ -59,6 +80,8 @@ class ServiceMenuButton extends StatelessWidget {
         ),
       );
       if (result == true) onRefresh();
+    } else if (value == 'toggleHidden') {
+      onToggleHidden();
     }
   }
 }

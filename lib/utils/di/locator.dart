@@ -95,6 +95,7 @@ import '../../data/remote/repository/upload_car_photo_repository.dart';
 import '../../data/remote/repository/user_add_details_repository.dart';
 import '../../data/remote/services/local/biometric_service.dart';
 import '../../data/remote/services/local/car_list_local_service.dart';
+import '../../data/remote/services/local/hidden_services_local_service.dart';
 import '../../data/remote/services/local/language_local_service.dart';
 import '../../data/remote/services/local/login_local_services.dart';
 import '../../data/remote/services/local/onboard_local_services.dart';
@@ -146,6 +147,7 @@ Future<void> setupLocator() async {
   final Box<int> userBox = await Hive.openBox<int>('userBox');
   final Box<String> languageBox = await Hive.openBox<String>('languageBox');
   final Box<String> carOrderBox = await Hive.openBox<String>('carOrderBox');
+  final Box<bool> hiddenServicesBox = await Hive.openBox<bool>('hiddenServicesBox');
   final encryptionKey = await PinLocalService.getEncryptionKey();
   final pinBox = await Hive.openBox(
     'pinBox',
@@ -193,6 +195,9 @@ Future<void> setupLocator() async {
   );
   locator.registerLazySingleton<CarOrderLocalService>(
     () => CarOrderLocalService(carOrderBox),
+  );
+  locator.registerLazySingleton<HiddenServicesLocalService>(
+        () => HiddenServicesLocalService(hiddenServicesBox),
   );
   locator.registerLazySingleton(() => RegisterService());
   locator.registerLazySingleton<LoginService>(() => LoginService(locator()));

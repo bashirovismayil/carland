@@ -785,7 +785,7 @@ class Translations {
       'en': 'VIN Number',
       'ru': 'VIN Номер',
     },
- AppStrings.initCam: {
+    AppStrings.initCam: {
       'az': 'Kamera işə salınır...',
       'en': 'Initializing camera...',
       'ru': 'Инициализация камеры...',
@@ -1523,6 +1523,21 @@ class Translations {
       'en': 'Edit Car Details',
       'ru': 'Редактировать детали автомобиля',
     },
+    AppStrings.hideService: {
+      'az': 'Gizlət',
+      'en': 'Hide',
+      'ru': 'Скрыть',
+    },
+    AppStrings.unhideService: {
+      'az': 'Göstər',
+      'en': 'Unhide',
+      'ru': 'Показать',
+    },
+    AppStrings.hiddenServices: {
+      'az': 'Gizli Servislər',
+      'en': 'Hidden Services',
+      'ru': 'Скрытые услуги',
+    },
 
     AppStrings.updateCarInformation: {
       'az': 'Avtomobil Məlumatlarını Yenilə',
@@ -1773,14 +1788,17 @@ class Translations {
       'ru': 'Face ID не настроен',
     },
     AppStrings.biometricNotEnrolledMessageIos: {
-      'az': 'Parametrlər → Face ID və Şifrə bölməsinə keçib Face ID-ni quraşdırın.',
+      'az':
+          'Parametrlər → Face ID və Şifrə bölməsinə keçib Face ID-ni quraşdırın.',
       'en': 'Go to Settings → Face ID & Passcode to set up Face ID.',
-      'ru': 'Перейдите в Настройки → Face ID и код-пароль, чтобы настроить Face ID.',
+      'ru':
+          'Перейдите в Настройки → Face ID и код-пароль, чтобы настроить Face ID.',
     },
     AppStrings.biometricNotEnrolledMessageAndroid: {
       'az': 'Ayarlar → Təhlükəsizlik bölməsinə keçib üz tanımanı quraşdırın.',
       'en': 'Go to Settings → Security to set up face recognition.',
-      'ru': 'Перейдите в Настройки → Безопасность, чтобы настроить распознавание лица.',
+      'ru':
+          'Перейдите в Настройки → Безопасность, чтобы настроить распознавание лица.',
     },
     AppStrings.biometricLoginReason: {
       'az': 'Daxil olmaq üçün üzünüzü kameraya yaxınlaşdırın',
@@ -1788,9 +1806,12 @@ class Translations {
       'ru': 'Отсканируйте лицо для входа',
     },
     AppStrings.biometricNotEnrolledMessage: {
-      'az': 'Üz tanımanı istifadə etmək üçün əvvəlcə cihaz parametrlərindən Face ID-ni quraşdırın.',
-      'en': 'To use face recognition, please set up Face ID in your device settings first.',
-      'ru': 'Чтобы использовать распознавание лица, сначала настройте Face ID в настройках устройства.',
+      'az':
+          'Üz tanımanı istifadə etmək üçün əvvəlcə cihaz parametrlərindən Face ID-ni quraşdırın.',
+      'en':
+          'To use face recognition, please set up Face ID in your device settings first.',
+      'ru':
+          'Чтобы использовать распознавание лица, сначала настройте Face ID в настройках устройства.',
     },
 
     // Feedback Section

@@ -9,14 +9,18 @@ class ServiceCardHeader extends StatelessWidget {
   final ResponseList service;
   final int carId;
   final int percentage;
+  final bool isHidden;
   final VoidCallback onRefresh;
+  final VoidCallback onToggleHidden;
 
   const ServiceCardHeader({
     super.key,
     required this.service,
     required this.carId,
     required this.percentage,
+    required this.isHidden,
     required this.onRefresh,
+    required this.onToggleHidden,
   });
 
   @override
@@ -36,7 +40,9 @@ class ServiceCardHeader extends StatelessWidget {
         ServiceMenuButton(
           service: service,
           carId: carId,
+          isHidden: isHidden,
           onRefresh: onRefresh,
+          onToggleHidden: onToggleHidden,
         ),
       ],
     );

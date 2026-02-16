@@ -369,6 +369,10 @@ class AppStrings {
   static const String nextServiceKmMustBeGreaterThanLastService = 'nextServiceKmMustBeGreaterThanLastService';
   static const String serviceInfoWillAppear = 'serviceInfoWillAppear';
 
+  static const String hideService = 'hideService';
+  static const String unhideService = 'unhideService';
+  static const String hiddenServices = 'hiddenServices';
+
   static const String editCarDetails = 'editCarDetails';
   static const String updateCarInformation = 'updateCarInformation';
   static const String carDetailsUpdated = 'carDetailsUpdated';

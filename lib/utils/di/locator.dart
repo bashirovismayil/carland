@@ -14,6 +14,8 @@ import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
 import '../../cubit/auth/user/user/user_add_details_cubit.dart';
 import '../../cubit/body/type/get_body_type_cubit.dart';
+import '../../cubit/car/brand/get_car_brand_list_cubit.dart';
+import '../../cubit/car/brand/model/get_car_model_cubit.dart';
 import '../../cubit/color/get_color_list_cubit.dart';
 import '../../cubit/delete/account/delete_account_cubit.dart';
 import '../../cubit/delete/delete_car_cubit.dart';
@@ -34,6 +36,7 @@ import '../../cubit/terms/terms_canditions_cubit.dart';
 import '../../cubit/vin/check/check_vin_cubit.dart';
 import '../../cubit/year/list/get_year_list_cubit.dart';
 import '../../data/remote/contractor/add_car_contractor.dart';
+import '../../data/remote/contractor/brand_list_contractor.dart';
 import '../../data/remote/contractor/check_vin_contractor.dart';
 import '../../data/remote/contractor/delete_account_contractor.dart';
 import '../../data/remote/contractor/delete_car_contractor.dart';
@@ -52,6 +55,7 @@ import '../../data/remote/contractor/get_record_contractor.dart';
 import '../../data/remote/contractor/get_transmission_type_contractor.dart';
 import '../../data/remote/contractor/get_year_list_contractor.dart';
 import '../../data/remote/contractor/login_contractor.dart';
+import '../../data/remote/contractor/model_list_contractor.dart';
 import '../../data/remote/contractor/otp_contractor.dart';
 import '../../data/remote/contractor/privacy_policy_contractor.dart';
 import '../../data/remote/contractor/profile_photo_contractor.dart';
@@ -64,6 +68,7 @@ import '../../data/remote/contractor/update_mileage_contractor.dart';
 import '../../data/remote/contractor/upload_car_photo_contractor.dart';
 import '../../data/remote/contractor/user_add_details_contractor.dart';
 import '../../data/remote/repository/add_car_repository.dart';
+import '../../data/remote/repository/brand_list_repository.dart';
 import '../../data/remote/repository/check_vin_repository.dart';
 import '../../data/remote/repository/delete_account_repository.dart';
 import '../../data/remote/repository/delete_car_repository.dart';
@@ -82,6 +87,7 @@ import '../../data/remote/repository/get_engine_type_repository.dart';
 import '../../data/remote/repository/get_tranmission_type_repository.dart';
 import '../../data/remote/repository/get_year_list_repository.dart';
 import '../../data/remote/repository/login_repository.dart';
+import '../../data/remote/repository/model_list_repository.dart';
 import '../../data/remote/repository/otp_repository.dart';
 import '../../data/remote/repository/privacy_policy_repository.dart';
 import '../../data/remote/repository/profile_photo_repository.dart';
@@ -112,12 +118,14 @@ import '../../data/remote/services/remote/edit_services_details_service.dart';
 import '../../data/remote/services/remote/execute_car_service.dart';
 import '../../data/remote/services/remote/forgot_pass_service.dart';
 import '../../data/remote/services/remote/get_body_type_list_service.dart';
+import '../../data/remote/services/remote/get_brand_list_service.dart';
 import '../../data/remote/services/remote/get_car_list_service.dart';
 import '../../data/remote/services/remote/get_car_photo_service.dart';
 import '../../data/remote/services/remote/get_car_records_service.dart';
 import '../../data/remote/services/remote/get_car_services_list_service.dart';
 import '../../data/remote/services/remote/get_color_list_service.dart';
 import '../../data/remote/services/remote/get_engine_type_list_service.dart';
+import '../../data/remote/services/remote/get_model_list_service.dart';
 import '../../data/remote/services/remote/get_transmission_type_service.dart';
 import '../../data/remote/services/remote/get_year_list_service.dart';
 import '../../data/remote/services/remote/login_service.dart';
@@ -147,7 +155,8 @@ Future<void> setupLocator() async {
   final Box<int> userBox = await Hive.openBox<int>('userBox');
   final Box<String> languageBox = await Hive.openBox<String>('languageBox');
   final Box<String> carOrderBox = await Hive.openBox<String>('carOrderBox');
-  final Box<bool> hiddenServicesBox = await Hive.openBox<bool>('hiddenServicesBox');
+  final Box<bool> hiddenServicesBox =
+      await Hive.openBox<bool>('hiddenServicesBox');
   final encryptionKey = await PinLocalService.getEncryptionKey();
   final pinBox = await Hive.openBox(
     'pinBox',
@@ -197,7 +206,7 @@ Future<void> setupLocator() async {
     () => CarOrderLocalService(carOrderBox),
   );
   locator.registerLazySingleton<HiddenServicesLocalService>(
-        () => HiddenServicesLocalService(hiddenServicesBox),
+    () => HiddenServicesLocalService(hiddenServicesBox),
   );
   locator.registerLazySingleton(() => RegisterService());
   locator.registerLazySingleton<LoginService>(() => LoginService(locator()));
@@ -247,6 +256,28 @@ Future<void> setupLocator() async {
   );
   locator.registerFactory<CheckVinCubit>(
     () => CheckVinCubit(),
+  );
+
+  // Brand List
+  locator.registerLazySingleton<GetCarBrandListService>(
+    () => GetCarBrandListService(),
+  );
+  locator.registerLazySingleton<GetCarBrandListContractor>(
+    () => GetCarBrandListRepository(locator<GetCarBrandListService>()),
+  );
+  locator.registerFactory<GetCarBrandListCubit>(
+    () => GetCarBrandListCubit(),
+  );
+
+// Model List
+  locator.registerLazySingleton<GetCarModelListService>(
+    () => GetCarModelListService(),
+  );
+  locator.registerLazySingleton<GetCarModelListContractor>(
+    () => GetCarModelListRepository(locator<GetCarModelListService>()),
+  );
+  locator.registerFactory<GetCarModelListCubit>(
+    () => GetCarModelListCubit(),
   );
 
   // Get Engine Type List

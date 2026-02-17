@@ -1,15 +1,12 @@
 import 'dart:io';
-import 'package:carcat/cubit/color/get_color_list_cubit.dart';
 import 'package:carcat/cubit/color/get_color_list_state.dart';
 import 'package:carcat/cubit/transmission/type/tranmission_type_state.dart';
 import 'package:carcat/presentation/user/user_main_nav.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/constants/values/app_theme.dart';
@@ -19,6 +16,10 @@ import '../../../cubit/add/car/add_car_cubit.dart';
 import '../../../cubit/add/car/add_car_state.dart';
 import '../../../cubit/body/type/get_body_type_cubit.dart';
 import '../../../cubit/body/type/get_body_type_state.dart';
+import '../../../cubit/car/brand/get_car_brand_list_cubit.dart';
+import '../../../cubit/car/brand/get_car_brand_list_state.dart';
+import '../../../cubit/car/brand/model/get_car_model_cubit.dart';
+import '../../../cubit/car/brand/model/get_car_model_list_state.dart';
 import '../../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../../cubit/engine/type/get_engine_type_state.dart';
 import '../../../cubit/language/language_cubit.dart';
@@ -32,7 +33,6 @@ import '../../../cubit/year/list/get_year_list_state.dart';
 import '../../../data/remote/models/remote/check_vin_response.dart';
 import '../../../utils/helper/capital_case_formatter.dart';
 import '../../../widgets/custom_button.dart';
-import '../../../widgets/image_crop_widget.dart';
 import '../photo/car_photo_upload_widget.dart';
 import 'maintenance_history_page.dart';
 
@@ -48,7 +48,7 @@ class CarDetailsPage extends HookWidget {
   Widget build(BuildContext context) {
     final vinController = useTextEditingController(text: carData.vin ?? '');
     final plateController =
-    useTextEditingController(text: carData.plateNumber ?? '');
+        useTextEditingController(text: carData.plateNumber ?? '');
     final makeController = useTextEditingController(text: carData.brand ?? '');
     final modelController = useTextEditingController(text: carData.model ?? '');
     final engineController = useTextEditingController(
@@ -64,7 +64,8 @@ class CarDetailsPage extends HookWidget {
     final mileageController = useTextEditingController(
       text: carData.mileage != null ? '${carData.mileage}' : '',
     );
-    final bodyTypeController = useTextEditingController(text: carData.bodyType ?? '');
+    final bodyTypeController =
+        useTextEditingController(text: carData.bodyType ?? '');
 
     final plateFocusNode = useFocusNode();
     final makeFocusNode = useFocusNode();
@@ -82,6 +83,8 @@ class CarDetailsPage extends HookWidget {
     final transmissionKey = useMemoized(() => GlobalKey());
     final engineTypeKey = useMemoized(() => GlobalKey());
     final yearKey = useMemoized(() => GlobalKey());
+    final brandKey = useMemoized(() => GlobalKey());
+    final modelDropdownKey = useMemoized(() => GlobalKey());
     // Temporarily disabled - Color
     // final colorKey = useMemoized(() => GlobalKey());
 
@@ -101,7 +104,14 @@ class CarDetailsPage extends HookWidget {
     final hasModelData = carData.model != null && carData.model!.isNotEmpty;
     final hasEngineVolumeData = carData.engineVolume != null;
     final hasModelYearData = carData.modelYear != null;
-    final hasBodyTypeData = carData.bodyType != null && carData.bodyType!.isNotEmpty;
+    final hasBodyTypeData =
+        carData.bodyType != null && carData.bodyType!.isNotEmpty;
+
+    // Senaryo tespiti
+    final isBothFromVin = hasBrandData && hasModelData; // A: ikisi de geldi
+    final isBothMissing = !hasBrandData && !hasModelData; // B: ikisi de yok
+    final isBrandOnlyFromVin =
+        hasBrandData && !hasModelData; // C: sadece brand geldi
 
     void unfocusAll() {
       FocusScope.of(context).unfocus();
@@ -114,6 +124,12 @@ class CarDetailsPage extends HookWidget {
       context.read<GetBodyTypeListCubit>().getBodyTypeList();
       context.read<GetTransmissionListCubit>().getTransmissionList();
       context.read<GetYearListCubit>().getYearList();
+
+      // Brand list: Senaryo B veya C için yükle
+      if (!hasBrandData || !hasModelData) {
+        context.read<GetCarBrandListCubit>().getBrandList();
+      }
+
       // Temporarily disabled - Color
       // context.read<GetColorListCubit>().getColorList();
 
@@ -129,6 +145,7 @@ class CarDetailsPage extends HookWidget {
           engineController.text = '0';
         }
       }
+
       engineTypeController.addListener(listener);
       return () => engineTypeController.removeListener(listener);
     }, []);
@@ -163,17 +180,17 @@ class CarDetailsPage extends HookWidget {
                           isRequired: false,
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
+
                         _buildTextField(
                           controller: plateController,
                           focusNode: plateFocusNode,
                           label:
-                          AppTranslation.translate(AppStrings.plateNumber),
+                              AppTranslation.translate(AppStrings.plateNumber),
                           hint: plateFormatter.hint,
                           svgIcon: 'assets/svg/plate_number_icon.svg',
                           enabled: true,
                           textCapitalization: TextCapitalization.characters,
-                          isRequired:
-                          fieldRequirements['plateNumber'] ?? false,
+                          isRequired: fieldRequirements['plateNumber'] ?? false,
                           inputFormatters: [plateFormatter],
                           maxLength: AzerbaijanPlateNumberFormatter.maxLength,
                           validator: (value) {
@@ -194,41 +211,29 @@ class CarDetailsPage extends HookWidget {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        _buildTextField(
-                          controller: makeController,
-                          focusNode: makeFocusNode,
-                          label: AppTranslation.translate(AppStrings.make),
-                          hint: AppTranslation.translate(AppStrings.makeHint),
-                          svgIcon: 'assets/svg/car_make_icon.svg',
-                          enabled: !hasBrandData,
-                          isRequired: true,
-                          inputFormatters: [CapitalCaseFormatter()],
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return AppTranslation.translate(
-                                  AppStrings.required);
-                            }
-                            return null;
-                          },
+                        // Make (Brand) field — 3 senaryoya göre davranır
+                        _buildMakeField(
+                          context: context,
+                          makeController: makeController,
+                          modelController: modelController,
+                          isBothFromVin: isBothFromVin,
+                          isBothMissing: isBothMissing,
+                          isBrandOnlyFromVin: isBrandOnlyFromVin,
+                          brandKey: brandKey,
+                          unfocusAll: unfocusAll,
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
-                        _buildTextField(
-                          controller: modelController,
-                          focusNode: modelFocusNode,
-                          label: AppTranslation.translate(AppStrings.model),
-                          hint: AppTranslation.translate(AppStrings.modelHint),
-                          svgIcon: 'assets/svg/car_model_icon.svg',
-                          enabled: !hasModelData,
-                          isRequired: true,
-                          inputFormatters: [CapitalCaseFormatter()],
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return AppTranslation.translate(
-                                  AppStrings.required);
-                            }
-                            return null;
-                          },
+                        // Model field — 3 senaryoya göre davranır
+                        _buildModelField(
+                          context: context,
+                          modelController: modelController,
+                          makeController: makeController,
+                          isBothFromVin: isBothFromVin,
+                          isBothMissing: isBothMissing,
+                          isBrandOnlyFromVin: isBrandOnlyFromVin,
+                          modelDropdownKey: modelDropdownKey,
+                          unfocusAll: unfocusAll,
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
 
@@ -236,8 +241,8 @@ class CarDetailsPage extends HookWidget {
                           controller: engineController,
                           focusNode: engineFocusNode,
                           maxLength: 4,
-                          label: AppTranslation.translate(
-                              AppStrings.engineVolume),
+                          label:
+                              AppTranslation.translate(AppStrings.engineVolume),
                           hint: AppTranslation.translate(
                               AppStrings.engineVolumeHint),
                           svgIcon: 'assets/svg/car_engine_icon.svg',
@@ -260,15 +265,14 @@ class CarDetailsPage extends HookWidget {
                         _buildDropdownField(
                           context: context,
                           controller: bodyTypeController,
-                          label:
-                          AppTranslation.translate(AppStrings.bodyType),
+                          label: AppTranslation.translate(AppStrings.bodyType),
                           hint: AppTranslation.translate(
                               AppStrings.selectBodyType),
                           svgIcon: 'assets/svg/car_body_type_icon.svg',
                           cubitBuilder: () =>
                               context.read<GetBodyTypeListCubit>(),
                           stateBuilder: (context) =>
-                          context.watch<GetBodyTypeListCubit>().state,
+                              context.watch<GetBodyTypeListCubit>().state,
                           itemsExtractor: (state) {
                             if (state is GetBodyTypeListSuccess) {
                               return state.bodyTypes
@@ -288,14 +292,13 @@ class CarDetailsPage extends HookWidget {
                           context: context,
                           controller: engineTypeController,
                           label:
-                          AppTranslation.translate(AppStrings.engineType),
-                          hint:
-                          AppTranslation.translate(AppStrings.selectType),
+                              AppTranslation.translate(AppStrings.engineType),
+                          hint: AppTranslation.translate(AppStrings.selectType),
                           svgIcon: 'assets/svg/car_engine_type_icon.svg',
                           cubitBuilder: () =>
                               context.read<GetEngineTypeListCubit>(),
                           stateBuilder: (context) =>
-                          context.watch<GetEngineTypeListCubit>().state,
+                              context.watch<GetEngineTypeListCubit>().state,
                           itemsExtractor: (state) {
                             if (state is GetEngineTypeListSuccess) {
                               return state.engineTypes
@@ -314,13 +317,11 @@ class CarDetailsPage extends HookWidget {
                           context: context,
                           controller: yearController,
                           label: AppTranslation.translate(AppStrings.year),
-                          hint:
-                          AppTranslation.translate(AppStrings.selectYear),
+                          hint: AppTranslation.translate(AppStrings.selectYear),
                           svgIcon: 'assets/svg/calendar_nav_icon.svg',
-                          cubitBuilder: () =>
-                              context.read<GetYearListCubit>(),
+                          cubitBuilder: () => context.read<GetYearListCubit>(),
                           stateBuilder: (context) =>
-                          context.watch<GetYearListCubit>().state,
+                              context.watch<GetYearListCubit>().state,
                           itemsExtractor: (state) {
                             if (state is GetYearListSuccess) {
                               return state.years
@@ -368,7 +369,7 @@ class CarDetailsPage extends HookWidget {
                           label: AppTranslation.translate(
                               AppStrings.currentMileage),
                           hint:
-                          AppTranslation.translate(AppStrings.mileageHint),
+                              AppTranslation.translate(AppStrings.mileageHint),
                           svgIcon: 'assets/svg/odometer_icon.svg',
                           enabled: true,
                           keyboardType: TextInputType.number,
@@ -422,6 +423,696 @@ class CarDetailsPage extends HookWidget {
       ),
     );
   }
+
+  // ─────────────────────────────────────────────
+  // MAKE FIELD
+  // ─────────────────────────────────────────────
+
+  Widget _buildMakeField({
+    required BuildContext context,
+    required TextEditingController makeController,
+    required TextEditingController modelController,
+    required bool isBothFromVin,
+    required bool isBothMissing,
+    required bool isBrandOnlyFromVin,
+    required GlobalKey brandKey,
+    required VoidCallback unfocusAll,
+  }) {
+    // Senaryo A veya C → brand verisi var, disabled textfield
+    if (isBothFromVin || isBrandOnlyFromVin) {
+      return _buildTextField(
+        controller: makeController,
+        label: AppTranslation.translate(AppStrings.make),
+        hint: AppTranslation.translate(AppStrings.makeHint),
+        svgIcon: 'assets/svg/car_make_icon.svg',
+        enabled: false,
+        isRequired: true,
+        inputFormatters: [CapitalCaseFormatter()],
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return AppTranslation.translate(AppStrings.required);
+          }
+          return null;
+        },
+      );
+    }
+
+    // Senaryo B → brand dropdown
+    return BlocBuilder<GetCarBrandListCubit, GetCarBrandListState>(
+      builder: (context, state) {
+        final brands = state is GetCarBrandListSuccess ? state.brands : [];
+        final isLoading = state is GetCarBrandListLoading;
+        final items = brands
+            .map((b) => b.brandName as String? ?? '')
+            .where((name) => name.isNotEmpty)
+            .toList();
+
+        return FormField<String>(
+          initialValue: makeController.text,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return AppTranslation.translate(AppStrings.required);
+            }
+            return null;
+          },
+          builder: (fieldState) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (fieldState.value != makeController.text) {
+                fieldState.didChange(makeController.text);
+              }
+            });
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      AppTranslation.translate(AppStrings.make),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const Text(
+                      ' *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.errorColor,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppTheme.spacingSm),
+                GestureDetector(
+                  key: brandKey,
+                  onTap: (isLoading || items.isEmpty)
+                      ? null
+                      : () {
+                          unfocusAll();
+                          _showDropdownMenu(
+                            context,
+                            AppTranslation.translate(AppStrings.make),
+                            items,
+                            makeController,
+                            fieldState,
+                            brandKey,
+                            onSelected: (selectedBrandName) {
+                              // Model seçimini sıfırla
+                              modelController.clear();
+                              // Seçilen brand'ın ID'sini bul ve model listesini yükle
+                              if (state is GetCarBrandListSuccess) {
+                                try {
+                                  final matched = state.brands.firstWhere(
+                                    (b) => b.brandName == selectedBrandName,
+                                  );
+                                  if (matched.brandId != null) {
+                                    context
+                                        .read<GetCarModelListCubit>()
+                                        .getModelList(matched.brandId!);
+                                  }
+                                } catch (_) {}
+                              }
+                            },
+                          );
+                        },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                      border: Border.all(
+                        color: fieldState.hasError
+                            ? AppColors.errorColor
+                            : Colors.grey.shade300,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacingMd,
+                      vertical: AppTheme.spacingMd,
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: SvgPicture.asset(
+                            'assets/svg/car_make_icon.svg',
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.textSecondary,
+                              BlendMode.srcIn,
+                            ),
+                            width: 20,
+                            height: 20,
+                          ),
+                        ),
+                        Expanded(
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                )
+                              : Text(
+                                  makeController.text.isEmpty
+                                      ? AppTranslation.translate(
+                                          AppStrings.makeHint)
+                                      : makeController.text,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color: makeController.text.isEmpty
+                                        ? AppColors.textSecondary
+                                            .withOpacity(0.5)
+                                        : AppColors.textPrimary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                        ),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: AppColors.textSecondary,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (fieldState.hasError)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6, left: 12),
+                    child: Text(
+                      fieldState.errorText!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.errorColor,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // MODEL FIELD
+  // ─────────────────────────────────────────────
+
+  Widget _buildModelField({
+    required BuildContext context,
+    required TextEditingController modelController,
+    required TextEditingController makeController,
+    required bool isBothFromVin,
+    required bool isBothMissing,
+    required bool isBrandOnlyFromVin,
+    required GlobalKey modelDropdownKey,
+    required VoidCallback unfocusAll,
+  }) {
+    // Senaryo A → ikisi de geldi, disabled textfield
+    if (isBothFromVin) {
+      return _buildTextField(
+        controller: modelController,
+        label: AppTranslation.translate(AppStrings.model),
+        hint: AppTranslation.translate(AppStrings.modelHint),
+        svgIcon: 'assets/svg/car_model_icon.svg',
+        enabled: false,
+        isRequired: true,
+        inputFormatters: [CapitalCaseFormatter()],
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return AppTranslation.translate(AppStrings.required);
+          }
+          return null;
+        },
+      );
+    }
+
+    // Senaryo B → brand seçildikten sonra model dropdown
+    if (isBothMissing) {
+      return FormField<String>(
+        initialValue: modelController.text,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return AppTranslation.translate(AppStrings.required);
+          }
+          return null;
+        },
+        builder: (fieldState) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (fieldState.value != modelController.text) {
+              fieldState.didChange(modelController.text);
+            }
+          });
+
+          return BlocBuilder<GetCarModelListCubit, GetCarModelListState>(
+            builder: (context, state) {
+              final models =
+                  state is GetCarModelListSuccess ? state.models : [];
+              final isLoading = state is GetCarModelListLoading;
+              final items = models
+                  .map((m) => m.modelName as String? ?? '')
+                  .where((name) => name.isNotEmpty)
+                  .toList();
+
+              final isBrandSelected = makeController.text.isNotEmpty;
+              final isEnabled =
+                  isBrandSelected && !isLoading && items.isNotEmpty;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        AppTranslation.translate(AppStrings.model),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const Text(
+                        ' *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.errorColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppTheme.spacingSm),
+                  GestureDetector(
+                    key: modelDropdownKey,
+                    onTap: !isEnabled
+                        ? null
+                        : () {
+                            unfocusAll();
+                            _showDropdownMenu(
+                              context,
+                              AppTranslation.translate(AppStrings.model),
+                              items,
+                              modelController,
+                              fieldState,
+                              modelDropdownKey,
+                            );
+                          },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isEnabled ? Colors.white : AppColors.lightGrey,
+                        borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                        border: Border.all(
+                          color: fieldState.hasError
+                              ? AppColors.errorColor
+                              : (isEnabled
+                                  ? Colors.grey.shade300
+                                  : Colors.grey.shade200),
+                        ),
+                        boxShadow: isEnabled
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppTheme.spacingMd,
+                        vertical: AppTheme.spacingMd,
+                      ),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: SvgPicture.asset(
+                              'assets/svg/car_model_icon.svg',
+                              colorFilter: ColorFilter.mode(
+                                isEnabled
+                                    ? AppColors.textSecondary
+                                    : Colors.grey.shade400,
+                                BlendMode.srcIn,
+                              ),
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          Expanded(
+                            child: isLoading
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  )
+                                : Text(
+                                    !isBrandSelected
+                                        ? AppTranslation.translate(
+                                            AppStrings.chooseTheBrandFirst)
+                                        : (modelController.text.isEmpty
+                                            ? AppTranslation.translate(
+                                                AppStrings.modelHint)
+                                            : modelController.text),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: (!isEnabled ||
+                                              modelController.text.isEmpty)
+                                          ? AppColors.textSecondary
+                                              .withOpacity(0.5)
+                                          : AppColors.textPrimary,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: isEnabled
+                                ? AppColors.textSecondary
+                                : Colors.grey.shade400,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (fieldState.hasError)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6, left: 12),
+                      child: Text(
+                        fieldState.errorText!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.errorColor,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    }
+
+    // Senaryo C → brand geldi, model yok
+    // BrandId resolve et → başarılıysa Autocomplete, değilse fallback TextField
+    return BlocBuilder<GetCarBrandListCubit, GetCarBrandListState>(
+      builder: (context, brandState) {
+        int? resolvedBrandId;
+
+        if (brandState is GetCarBrandListSuccess && carData.brand != null) {
+          try {
+            final matched = brandState.brands.firstWhere(
+              (b) => b.brandName?.toLowerCase() == carData.brand!.toLowerCase(),
+            );
+            resolvedBrandId = matched.brandId;
+          } catch (_) {
+            resolvedBrandId = null;
+          }
+
+          // BrandId bulunduysa model listesini bir kez yükle
+          if (resolvedBrandId != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final modelState = context.read<GetCarModelListCubit>().state;
+
+              // ✅ Yüklü modeller bu brand'a ait değilse yeniden yükle
+              final loadedBrandId = modelState is GetCarModelListSuccess
+                  ? (modelState.models.isNotEmpty
+                      ? modelState.models.first.brandId
+                      : null)
+                  : null;
+
+              final shouldReload = modelState is GetCarModelListInitial ||
+                  (modelState is GetCarModelListSuccess &&
+                      loadedBrandId != resolvedBrandId);
+
+              if (shouldReload) {
+                context
+                    .read<GetCarModelListCubit>()
+                    .getModelList(resolvedBrandId!);
+              }
+            });
+          }
+        }
+
+        // BrandId resolve edilemedi → fallback: düz TextField
+        if (resolvedBrandId == null && brandState is! GetCarBrandListLoading) {
+          return _buildTextField(
+            controller: modelController,
+            label: AppTranslation.translate(AppStrings.model),
+            hint: AppTranslation.translate(AppStrings.modelHint),
+            svgIcon: 'assets/svg/car_model_icon.svg',
+            enabled: true,
+            isRequired: true,
+            inputFormatters: [CapitalCaseFormatter()],
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return AppTranslation.translate(AppStrings.required);
+              }
+              return null;
+            },
+          );
+        }
+
+        // BrandId resolve edildi → Autocomplete
+        return BlocBuilder<GetCarModelListCubit, GetCarModelListState>(
+          builder: (context, modelState) {
+            final modelNames = modelState is GetCarModelListSuccess
+                ? modelState.models
+                    .map((m) => m.modelName ?? '')
+                    .where((n) => n.isNotEmpty)
+                    .toList()
+                : <String>[];
+
+            return _buildModelAutocompleteField(
+              controller: modelController,
+              modelNames: modelNames,
+              isLoading: modelState is GetCarModelListLoading ||
+                  brandState is GetCarBrandListLoading,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // MODEL AUTOCOMPLETE (Senaryo C)
+  // ─────────────────────────────────────────────
+
+  Widget _buildModelAutocompleteField({
+    required TextEditingController controller,
+    required List<String> modelNames,
+    required bool isLoading,
+  }) {
+    return FormField<String>(
+      initialValue: controller.text,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return AppTranslation.translate(AppStrings.required);
+        }
+        return null;
+      },
+      builder: (fieldState) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (fieldState.value != controller.text) {
+            fieldState.didChange(controller.text);
+          }
+        });
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  AppTranslation.translate(AppStrings.model),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const Text(
+                  ' *',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.errorColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppTheme.spacingSm),
+            Autocomplete<String>(
+              initialValue: TextEditingValue(text: controller.text),
+              optionsBuilder: (textEditingValue) {
+                if (textEditingValue.text.isEmpty) return const [];
+                return modelNames.where(
+                  (name) => name
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase()),
+                );
+              },
+              onSelected: (selected) {
+                controller.text = selected;
+                fieldState.didChange(selected);
+              },
+              fieldViewBuilder: (
+                ctx,
+                textEditingController,
+                focusNode,
+                onFieldSubmitted,
+              ) {
+                textEditingController.addListener(() {
+                  controller.text = textEditingController.text;
+                  fieldState.didChange(textEditingController.text);
+                });
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                    border: Border.all(
+                      color: fieldState.hasError
+                          ? AppColors.errorColor
+                          : Colors.grey.shade300,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: textEditingController,
+                    focusNode: focusNode,
+                    inputFormatters: [CapitalCaseFormatter()],
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textPrimary,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      hintText: isLoading
+                          ? 'Yüklənir...'
+                          : AppTranslation.translate(AppStrings.modelHint),
+                      hintStyle: TextStyle(
+                        color: AppColors.textSecondary.withOpacity(0.5),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: SvgPicture.asset(
+                          'assets/svg/car_model_icon.svg',
+                          color: AppColors.textSecondary,
+                          width: 20,
+                          height: 20,
+                        ),
+                      ),
+                      suffixIcon: isLoading
+                          ? const Padding(
+                              padding: EdgeInsets.all(14),
+                              child: SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppTheme.spacingMd,
+                        vertical: AppTheme.spacingMd,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              optionsViewBuilder: (context, onSelected, options) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    elevation: 8,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        itemCount: options.length,
+                        itemBuilder: (context, index) {
+                          final option = options.elementAt(index);
+                          return InkWell(
+                            onTap: () => onSelected(option),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              child: Text(
+                                option,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            if (fieldState.hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, left: 12),
+                child: Text(
+                  fieldState.errorText!,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.errorColor,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // MEVCUT METODLAR (değiştirilmedi)
+  // ─────────────────────────────────────────────
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
@@ -539,18 +1230,16 @@ class CarDetailsPage extends HookWidget {
                 border: Border.all(
                   color: state.hasError
                       ? AppColors.errorColor
-                      : (enabled
-                      ? Colors.grey.shade300
-                      : Colors.grey.shade200),
+                      : (enabled ? Colors.grey.shade300 : Colors.grey.shade200),
                 ),
                 boxShadow: enabled
                     ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
                     : null,
               ),
               child: TextField(
@@ -565,9 +1254,8 @@ class CarDetailsPage extends HookWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: enabled
-                      ? AppColors.textPrimary
-                      : AppColors.textSecondary,
+                  color:
+                      enabled ? AppColors.textPrimary : AppColors.textSecondary,
                   overflow: TextOverflow.ellipsis,
                 ),
                 maxLines: 1,
@@ -579,16 +1267,16 @@ class CarDetailsPage extends HookWidget {
                   ),
                   prefixIcon: svgIcon != null
                       ? Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: SvgPicture.asset(
-                      svgIcon,
-                      color: enabled
-                          ? AppColors.textSecondary
-                          : Colors.grey.shade400,
-                      width: 20,
-                      height: 20,
-                    ),
-                  )
+                          padding: const EdgeInsets.all(12.0),
+                          child: SvgPicture.asset(
+                            svgIcon,
+                            color: enabled
+                                ? AppColors.textSecondary
+                                : Colors.grey.shade400,
+                            width: 20,
+                            height: 20,
+                          ),
+                        )
                       : null,
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
@@ -634,7 +1322,7 @@ class CarDetailsPage extends HookWidget {
     return FormField<String>(
       initialValue: controller.text,
       validator: validator ??
-              (value) {
+          (value) {
             if (isRequired && (value == null || value.trim().isEmpty)) {
               return AppTranslation.translate(AppStrings.required);
             }
@@ -684,16 +1372,16 @@ class CarDetailsPage extends HookWidget {
               onTap: (!enabled || isLoading || items.isEmpty)
                   ? null
                   : () {
-                onTap?.call();
-                _showDropdownMenu(
-                  context,
-                  label,
-                  items,
-                  controller,
-                  fieldState,
-                  dropdownKey,
-                );
-              },
+                      onTap?.call();
+                      _showDropdownMenu(
+                        context,
+                        label,
+                        items,
+                        controller,
+                        fieldState,
+                        dropdownKey,
+                      );
+                    },
               child: Container(
                 key: dropdownKey,
                 decoration: BoxDecoration(
@@ -703,17 +1391,17 @@ class CarDetailsPage extends HookWidget {
                     color: fieldState.hasError
                         ? AppColors.errorColor
                         : (enabled
-                        ? Colors.grey.shade300
-                        : Colors.grey.shade200),
+                            ? Colors.grey.shade300
+                            : Colors.grey.shade200),
                   ),
                   boxShadow: enabled
                       ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.03),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
                       : null,
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -740,29 +1428,28 @@ class CarDetailsPage extends HookWidget {
                     Expanded(
                       child: isLoading
                           ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.textSecondary,
-                        ),
-                      )
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.textSecondary,
+                              ),
+                            )
                           : Text(
-                        controller.text.isEmpty
-                            ? hint
-                            : controller.text,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: !enabled
-                              ? AppColors.textSecondary
-                              : (controller.text.isEmpty
-                              ? AppColors.textSecondary.withOpacity(0.5)
-                              : AppColors.textPrimary),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                              controller.text.isEmpty ? hint : controller.text,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: !enabled
+                                    ? AppColors.textSecondary
+                                    : (controller.text.isEmpty
+                                        ? AppColors.textSecondary
+                                            .withOpacity(0.5)
+                                        : AppColors.textPrimary),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                     ),
                     Icon(
                       Icons.keyboard_arrow_down_rounded,
@@ -793,16 +1480,17 @@ class CarDetailsPage extends HookWidget {
   }
 
   void _showDropdownMenu(
-      BuildContext context,
-      String title,
-      List<String> items,
-      TextEditingController controller,
-      FormFieldState<String> fieldState,
-      GlobalKey key,
-      ) {
+    BuildContext context,
+    String title,
+    List<String> items,
+    TextEditingController controller,
+    FormFieldState<String> fieldState,
+    GlobalKey key, {
+    void Function(String selected)? onSelected,
+  }) {
     FocusManager.instance.primaryFocus?.unfocus();
     final RenderBox renderBox =
-    key.currentContext!.findRenderObject() as RenderBox;
+        key.currentContext!.findRenderObject() as RenderBox;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
     final Size size = renderBox.size;
 
@@ -866,6 +1554,7 @@ class CarDetailsPage extends HookWidget {
       if (value != null) {
         controller.text = value;
         fieldState.didChange(value);
+        onSelected?.call(value); // brand seçiminde model listesi tetiklenir
       }
       WidgetsBinding.instance.addPostFrameCallback((_) {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -874,23 +1563,23 @@ class CarDetailsPage extends HookWidget {
   }
 
   Widget _buildBottomSection(
-      BuildContext context,
-      GlobalKey<FormState> formKey,
-      ValueNotifier<bool> isSubmitting,
-      ValueNotifier<File?> selectedImage,
-      TextEditingController vinController,
-      TextEditingController plateController,
-      TextEditingController makeController,
-      TextEditingController modelController,
-      TextEditingController engineController,
-      TextEditingController bodyTypeController,
-      TextEditingController transmissionController,
-      TextEditingController engineTypeController,
-      TextEditingController yearController,
-      // Temporarily disabled - Color
-      // TextEditingController colorController,
-      TextEditingController mileageController,
-      ) {
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    ValueNotifier<bool> isSubmitting,
+    ValueNotifier<File?> selectedImage,
+    TextEditingController vinController,
+    TextEditingController plateController,
+    TextEditingController makeController,
+    TextEditingController modelController,
+    TextEditingController engineController,
+    TextEditingController bodyTypeController,
+    TextEditingController transmissionController,
+    TextEditingController engineTypeController,
+    TextEditingController yearController,
+    // Temporarily disabled - Color
+    // TextEditingController colorController,
+    TextEditingController mileageController,
+  ) {
     return MultiBlocListener(
       listeners: [
         BlocListener<AddCarCubit, AddCarState>(
@@ -924,18 +1613,18 @@ class CarDetailsPage extends HookWidget {
 
               if (selectedImage.value != null) {
                 context.read<UploadCarPhotoCubit>().uploadCarPhoto(
-                  carId: carIdString,
-                  imageFile: selectedImage.value!,
-                );
+                      carId: carIdString,
+                      imageFile: selectedImage.value!,
+                    );
               } else {
                 final vin = vinController.text.trim();
                 final mileage =
                     int.tryParse(mileageController.text.trim()) ?? 0;
 
                 context.read<UpdateCarMileageCubit>().updateCarMileage(
-                  vin: vin,
-                  mileage: mileage,
-                );
+                      vin: vin,
+                      mileage: mileage,
+                    );
               }
             } else if (state is AddCarError) {
               isSubmitting.value = false;
@@ -954,12 +1643,11 @@ class CarDetailsPage extends HookWidget {
           listener: (context, state) {
             if (state is UploadCarPhotoSuccess) {
               final vin = vinController.text.trim();
-              final mileage =
-                  int.tryParse(mileageController.text.trim()) ?? 0;
+              final mileage = int.tryParse(mileageController.text.trim()) ?? 0;
               context.read<UpdateCarMileageCubit>().updateCarMileage(
-                vin: vin,
-                mileage: mileage,
-              );
+                    vin: vin,
+                    mileage: mileage,
+                  );
             } else if (state is UploadCarPhotoError) {
               isSubmitting.value = false;
 
@@ -973,13 +1661,12 @@ class CarDetailsPage extends HookWidget {
               );
 
               final vin = vinController.text.trim();
-              final mileage =
-                  int.tryParse(mileageController.text.trim()) ?? 0;
+              final mileage = int.tryParse(mileageController.text.trim()) ?? 0;
 
               context.read<UpdateCarMileageCubit>().updateCarMileage(
-                vin: vin,
-                mileage: mileage,
-              );
+                    vin: vin,
+                    mileage: mileage,
+                  );
             }
           },
         ),
@@ -1014,50 +1701,50 @@ class CarDetailsPage extends HookWidget {
               onPressed: isSubmitting.value
                   ? null
                   : () => _submitForm(
-                context,
-                formKey,
-                isSubmitting,
-                selectedImage,
-                vinController,
-                plateController,
-                makeController,
-                modelController,
-                engineController,
-                bodyTypeController,
-                transmissionController,
-                engineTypeController,
-                yearController,
-                // Temporarily disabled - Color
-                // colorController,
-                mileageController,
-              ),
+                        context,
+                        formKey,
+                        isSubmitting,
+                        selectedImage,
+                        vinController,
+                        plateController,
+                        makeController,
+                        modelController,
+                        engineController,
+                        bodyTypeController,
+                        transmissionController,
+                        engineTypeController,
+                        yearController,
+                        // Temporarily disabled - Color
+                        // colorController,
+                        mileageController,
+                      ),
               backgroundColor: AppColors.primaryBlack,
               foregroundColor: Colors.white,
               borderRadius: BorderRadius.circular(AppTheme.radiusXl),
               elevation: 0,
               child: isSubmitting.value
                   ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
                   : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.check_circle_outline, size: 20),
-                  const SizedBox(width: AppTheme.spacingSm),
-                  Text(
-                    AppTranslation.translate(AppStrings.continueButton),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.check_circle_outline, size: 20),
+                        const SizedBox(width: AppTheme.spacingSm),
+                        Text(
+                          AppTranslation.translate(AppStrings.continueButton),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ),
             const SizedBox(height: 15),
             CustomElevatedButton(
@@ -1066,7 +1753,7 @@ class CarDetailsPage extends HookWidget {
                 MaterialPageRoute(
                   builder: (context) => const UserMainNavigationPage(),
                 ),
-                    (route) => false,
+                (route) => false,
               ),
               backgroundColor: AppColors.lightGrey,
               foregroundColor: Colors.white,
@@ -1093,21 +1780,21 @@ class CarDetailsPage extends HookWidget {
   }
 
   void _submitForm(
-      BuildContext context,
-      GlobalKey<FormState> formKey,
-      ValueNotifier<bool> isSubmitting,
-      ValueNotifier<File?> selectedImage,
-      TextEditingController vinController,
-      TextEditingController plateController,
-      TextEditingController makeController,
-      TextEditingController modelController,
-      TextEditingController engineController,
-      TextEditingController bodyTypeController,
-      TextEditingController transmissionController,
-      TextEditingController engineTypeController,
-      TextEditingController yearController,
-      TextEditingController mileageController,
-      ) {
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    ValueNotifier<bool> isSubmitting,
+    ValueNotifier<File?> selectedImage,
+    TextEditingController vinController,
+    TextEditingController plateController,
+    TextEditingController makeController,
+    TextEditingController modelController,
+    TextEditingController engineController,
+    TextEditingController bodyTypeController,
+    TextEditingController transmissionController,
+    TextEditingController engineTypeController,
+    TextEditingController yearController,
+    TextEditingController mileageController,
+  ) {
     FocusScope.of(context).unfocus();
 
     if (isSubmitting.value) return;
@@ -1117,8 +1804,8 @@ class CarDetailsPage extends HookWidget {
       isSubmitting.value = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppTranslation.translate(
-              AppStrings.pleaseFillAllRequiredFields)),
+          content: Text(
+              AppTranslation.translate(AppStrings.pleaseFillAllRequiredFields)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -1132,8 +1819,8 @@ class CarDetailsPage extends HookWidget {
       isSubmitting.value = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppTranslation.translate(
-              AppStrings.pleaseFillAllRequiredFields)),
+          content: Text(
+              AppTranslation.translate(AppStrings.pleaseFillAllRequiredFields)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -1150,7 +1837,7 @@ class CarDetailsPage extends HookWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-          Text(AppTranslation.translate(AppStrings.invalidNumberFormat)),
+              Text(AppTranslation.translate(AppStrings.invalidNumberFormat)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -1159,18 +1846,18 @@ class CarDetailsPage extends HookWidget {
     }
 
     context.read<AddCarCubit>().addCar(
-      vin: vinController.text.trim(),
-      plateNumber: plateController.text.trim(),
-      brand: makeController.text.trim(),
-      model: modelController.text.trim(),
-      modelYear: year,
-      engineType: engineTypeController.text.trim(),
-      engineVolume: engineVol,
-      transmissionType: transmissionController.text.trim(),
-      bodyType: bodyTypeController.text.trim(),
-      colorId: null,
-      mileage: mileage,
-      vinProvidedFields: carData.vinProvidedFields,
-    );
+          vin: vinController.text.trim(),
+          plateNumber: plateController.text.trim(),
+          brand: makeController.text.trim(),
+          model: modelController.text.trim(),
+          modelYear: year,
+          engineType: engineTypeController.text.trim(),
+          engineVolume: engineVol,
+          transmissionType: transmissionController.text.trim(),
+          bodyType: bodyTypeController.text.trim(),
+          colorId: null,
+          mileage: mileage,
+          vinProvidedFields: carData.vinProvidedFields,
+        );
   }
 }

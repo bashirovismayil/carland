@@ -277,6 +277,7 @@ class AppStrings {
   static const String invalidPlateNumberFormat = 'invalidPlateNumberFormat';
   static const String make = 'make';
   static const String makeHint = 'makeHint';
+  static const String chooseTheBrandFirst = 'choose the brand first';
   static const String model = 'model';
   static const String modelHint = 'modelHint';
   static const String engineVolume = 'engineVolume';

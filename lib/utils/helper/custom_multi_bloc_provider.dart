@@ -12,6 +12,8 @@ import '../../cubit/auth/register/register_cubit.dart';
 import '../../cubit/auth/setup_pass/setup_pass_cubit.dart';
 import '../../cubit/auth/user/user/user_add_details_cubit.dart';
 import '../../cubit/body/type/get_body_type_cubit.dart';
+import '../../cubit/car/brand/get_car_brand_list_cubit.dart';
+import '../../cubit/car/brand/model/get_car_model_cubit.dart';
 import '../../cubit/color/get_color_list_cubit.dart';
 import '../../cubit/delete/account/delete_account_cubit.dart';
 import '../../cubit/delete/delete_car_cubit.dart';
@@ -64,6 +66,12 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
             ),
             BlocProvider<CheckVinCubit>(
               create: (_) => locator<CheckVinCubit>(),
+            ),
+            BlocProvider<GetCarBrandListCubit>(
+              create: (_) => locator<GetCarBrandListCubit>(),
+            ),
+            BlocProvider<GetCarModelListCubit>(
+              create: (_) => locator<GetCarModelListCubit>(),
             ),
             BlocProvider<GetEngineTypeListCubit>(
               create: (_) => locator<GetEngineTypeListCubit>(),

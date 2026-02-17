@@ -74,6 +74,8 @@ enum HandleCropType {
   center,
 }
 
+enum BrandStatus { ACTIVE, UNKNOWN }
+
 enum UserRole {
   guest('GUEST'),
   user('USER'),

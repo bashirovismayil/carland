@@ -1077,6 +1077,11 @@ class Translations {
       'en': 'e.g., TOYOTA',
       'ru': 'напр., TOYOTA',
     },
+    AppStrings.chooseTheBrandFirst: {
+      'az': 'Əvvəl markanı seç',
+      'en': 'Choose the brand first',
+      'ru': 'Сначала выберите марку',
+    },
     AppStrings.model: {
       'az': 'Model',
       'en': 'Model',

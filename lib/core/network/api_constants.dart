@@ -73,6 +73,12 @@ class ApiConstants {
   static const checkVin =
       '$baseUrl/carland/server-carland/api/v1/car/check/vin?vin=';
 
+  static const getCarBrandList =
+      '$baseUrl/carland/server-carland/api/v1/group/by/get/brand/list';
+
+  static const getCarModelList =
+      '$baseUrl/carland/server-carland/api/v1/group/by/get/model/list/by/brand?brandId=';
+
   static const getColorList =
       '$baseUrl/carland/server-carland/api/v1/car/get/color/list';
 

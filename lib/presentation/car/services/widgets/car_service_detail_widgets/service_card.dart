@@ -53,13 +53,13 @@ class ServiceCard extends StatelessWidget {
               onRefresh: onRefresh,
               onToggleHidden: onToggleHidden,
             ),
-            const SizedBox(height: 20),
+
             ServiceInfoRow(
               title: AppTranslation.translate(AppStrings.lastService),
               km: service.lastServiceKm,
               date: service.lastServiceDate,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             ServiceInfoRow(
               title: AppTranslation.translate(AppStrings.nextService),
               km: service.nextServiceKm,
@@ -68,7 +68,7 @@ class ServiceCard extends StatelessWidget {
               hasIntervalKm: service.intervalKm > 0,
               hasIntervalMonth: service.intervalMonth > 0,
             ),
-            const SizedBox(height: 16),
+
           ],
         ),
       ),

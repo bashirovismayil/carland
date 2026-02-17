@@ -29,7 +29,7 @@ class ServiceInfoRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: _titleStyle),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Row(
           children: [
             Expanded(child: _buildDateSection(context)),
@@ -41,10 +41,10 @@ class ServiceInfoRow extends StatelessWidget {
   }
 
   TextStyle get _titleStyle => TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        color: AppColors.primaryBlack,
-      );
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: AppColors.primaryBlack,
+  );
 
   Widget _buildDateSection(BuildContext context) {
     if (isForNextService && !hasIntervalMonth) {

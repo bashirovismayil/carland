@@ -107,14 +107,14 @@ class _ServicesListState extends State<ServicesList> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.visibility_off_outlined, size: 16, color: Colors.grey.shade500),
+                  Icon(Icons.visibility_off_outlined, size: 16, color: Colors.grey.shade700),
                   const SizedBox(width: 6),
                   Text(
                     '${AppTranslation.translate(AppStrings.hiddenServices)} ($count)',
                     style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade500,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade600,
                     ),
                   ),
                   const SizedBox(width: 4),

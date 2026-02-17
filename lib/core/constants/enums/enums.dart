@@ -75,6 +75,7 @@ enum HandleCropType {
 }
 
 enum BrandStatus { ACTIVE, UNKNOWN }
+enum BrandModelScenario { bothFromVin, bothMissing, brandOnlyFromVin }
 
 enum UserRole {
   guest('GUEST'),

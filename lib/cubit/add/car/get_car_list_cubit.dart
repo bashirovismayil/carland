@@ -31,6 +31,17 @@ class GetCarListCubit extends Cubit<GetCarListState> {
     }
   }
 
+  Future<void> refreshCarList() async {
+    try {
+      final List<GetCarListResponse> carList = await _carListRepo.getCarList();
+
+      log("Refresh Car List Success: ${carList.length} cars found");
+      emit(GetCarListSuccess(carList));
+    } catch (e) {
+      log("Refresh Car List Error: $e");
+    }
+  }
+
   Future<Uint8List?> getCarPhoto(int carId) async {
     try {
       if (_carPhotosCache.containsKey(carId)) {

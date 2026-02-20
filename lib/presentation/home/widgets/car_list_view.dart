@@ -32,10 +32,11 @@ class _CarListViewState extends State<CarListView> {
   bool _isReorderMode = false;
   Timer? _autoDisableTimer;
 
-  // Refresh için yeni değişkenler
   bool _isRefreshing = false;
   double _dragOffset = 0.0;
+  bool _isDraggingDown = false;
   static const double _refreshTriggerOffset = 100.0;
+  static const double _minDragThreshold = 70.0;
 
   @override
   void initState() {
@@ -57,11 +58,13 @@ class _CarListViewState extends State<CarListView> {
         _orderedList = _getOrderedList(widget.carList);
         _isRefreshing = false;
         _dragOffset = 0.0;
+        _isDraggingDown = false;
       });
     }
   }
 
-  List<GetCarListResponse> _getOrderedList(List<GetCarListResponse> backendList) {
+  List<GetCarListResponse> _getOrderedList(
+      List<GetCarListResponse> backendList) {
     final savedOrder = _carOrderService.getOrder();
     if (savedOrder == null || savedOrder.isEmpty) {
       return List.from(backendList);
@@ -150,11 +153,12 @@ class _CarListViewState extends State<CarListView> {
     await _carOrderService.saveOrder(orderIds);
   }
 
-  // Custom refresh metodları
   Future<void> _handleRefresh() async {
-    setState(() => _isRefreshing = true);
+    setState(() {
+      _isRefreshing = true;
+      _isDraggingDown = false;
+    });
     widget.onRefresh();
-    // onRefresh callback olduğu için didUpdateWidget'ta _isRefreshing false olacak
   }
 
   @override
@@ -178,18 +182,33 @@ class _CarListViewState extends State<CarListView> {
         if (_isRefreshing) return false;
 
         if (notification is ScrollUpdateNotification) {
-          if (notification.metrics.pixels < 0) {
+          final pixels = notification.metrics.pixels;
+
+          if (pixels < 0) {
+            final absDrag = -pixels;
+            if (!_isDraggingDown && absDrag < _minDragThreshold) {
+              return false;
+            }
+            _isDraggingDown = true;
             setState(() {
-              _dragOffset = -notification.metrics.pixels;
+              _dragOffset = absDrag;
+            });
+          } else if (_isDraggingDown && pixels >= 0) {
+            setState(() {
+              _dragOffset = 0.0;
+              _isDraggingDown = false;
             });
           }
         }
 
         if (notification is ScrollEndNotification) {
-          if (_dragOffset >= _refreshTriggerOffset) {
+          if (_isDraggingDown && _dragOffset >= _refreshTriggerOffset) {
             _handleRefresh();
-          } else {
-            setState(() => _dragOffset = 0.0);
+          } else if (_isDraggingDown) {
+            setState(() {
+              _dragOffset = 0.0;
+              _isDraggingDown = false;
+            });
           }
         }
 
@@ -197,7 +216,6 @@ class _CarListViewState extends State<CarListView> {
       },
       child: Stack(
         children: [
-          // Refresh indicator (üstte)
           if (_dragOffset > 0 || _isRefreshing)
             Positioned(
               top: 0,
@@ -209,9 +227,11 @@ class _CarListViewState extends State<CarListView> {
                 child: _isRefreshing
                     ? const SpeedometerLoader(size: 50)
                     : Opacity(
-                  opacity: (_dragOffset / _refreshTriggerOffset).clamp(0, 1),
+                  opacity: (_dragOffset / _refreshTriggerOffset)
+                      .clamp(0.0, 1.0),
                   child: Transform.scale(
-                    scale: (_dragOffset / _refreshTriggerOffset).clamp(0.5, 1),
+                    scale: (_dragOffset / _refreshTriggerOffset)
+                        .clamp(0.5, 1.0),
                     child: SpeedometerLoader(
                       size: 50,
                       color: _dragOffset >= _refreshTriggerOffset
@@ -228,14 +248,7 @@ class _CarListViewState extends State<CarListView> {
             padding: EdgeInsets.only(
               top: _isRefreshing ? 80 : 0,
             ),
-            child: ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
-              ),
-              itemCount: _orderedList.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
-              itemBuilder: (context, index) => _buildCarItem(context, index),
-            ),
+            child: _buildNormalList(),
           ),
         ],
       ),
@@ -244,7 +257,9 @@ class _CarListViewState extends State<CarListView> {
 
   Widget _buildNormalList() {
     return ListView.separated(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       itemCount: _orderedList.length,
       separatorBuilder: (_, __) => const SizedBox(height: 16),
       itemBuilder: (context, index) => _buildCarItem(context, index),
@@ -263,7 +278,8 @@ class _CarListViewState extends State<CarListView> {
           key: ValueKey(_getCarId(car)),
           index: index,
           child: Padding(
-            padding: EdgeInsets.only(bottom: index < _orderedList.length - 1 ? 16 : 0),
+            padding: EdgeInsets.only(
+                bottom: index < _orderedList.length - 1 ? 16 : 0),
             child: CarCard(
               car: car,
               onDelete: () {},
@@ -274,12 +290,13 @@ class _CarListViewState extends State<CarListView> {
     );
   }
 
-  Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
+  Widget _proxyDecorator(
+      Widget child, int index, Animation<double> animation) {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        final double elevation = Tween<double>(begin: 0, end: 6)
-            .evaluate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+        final double elevation = Tween<double>(begin: 0, end: 6).evaluate(
+            CurvedAnimation(parent: animation, curve: Curves.easeOut));
         return Material(
           elevation: elevation,
           color: Colors.transparent,

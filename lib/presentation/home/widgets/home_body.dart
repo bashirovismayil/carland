@@ -21,8 +21,8 @@ class _HomeBodyState extends State<HomeBody> {
     super.initState();
     _loadCarList();
   }
-
   void _loadCarList() => context.read<GetCarListCubit>().getCarList();
+  void _refreshCarList() => context.read<GetCarListCubit>().refreshCarList();
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _HomeBodyState extends State<HomeBody> {
       builder: (context, state) => switch (state) {
         GetCarListLoading() => const _LoadingIndicator(),
         GetCarListSuccess(:final carList) when carList.isNotEmpty =>
-            CarListView(carList: carList, onRefresh: _loadCarList),
+            CarListView(carList: carList, onRefresh: _refreshCarList),
         _ => const EmptyState(),
       },
     );

@@ -135,8 +135,8 @@ enum UserRole {
 }
 enum AppLanguage {
   azerbaijani('az', 'Azərbaycan dili', Locale('az', 'AZ')),
-  english('en', 'English', Locale('en', 'US'));
- // russian('ru', 'Русский', Locale('ru', 'RU'));
+  english('en', 'English', Locale('en', 'US')),
+  russian('ru', 'Русский', Locale('ru', 'RU'));
 
   final String code;
   final String displayName;

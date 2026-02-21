@@ -168,7 +168,7 @@ class Translations {
       'en':
           'Get access to wide range of auto services\nand leave your car care to us',
       'ru':
-          'Получите доступ к широкому спектру автосервисов\nи доверьте заботу о машине нам',
+          'Получите доступ к широкому спектру автосервисов и доверьте заботу\nо машине нам',
     },
     AppStrings.onboardTitle_2: {
       'az': 'Servis randevusu və idarəetmə',
@@ -194,7 +194,7 @@ class Translations {
       'en':
           'View repair records, maintenance history\nand spare parts in one place',
       'ru':
-          'Просматривайте записи ремонта, историю ТО\nи запчасти в одном месте',
+          'Просматривайте записи ремонта, историю ТО и запчасти в одном месте',
     },
 
     // Welcome Page
@@ -1416,12 +1416,12 @@ class Translations {
     AppStrings.lastService: {
       'az': 'Son Servis',
       'en': 'Last Service',
-      'ru': 'Последнее техническое обслуживание',
+      'ru': 'Последнее обслуживание',
     },
     AppStrings.nextService: {
       'az': 'Növbəti Servis',
       'en': 'Next Service',
-      'ru': 'Следующее техническое обслуживание',
+      'ru': 'Следующее обслуживание',
     },
     AppStrings.vinNotFound: {
       'az': 'BAN tapılmadı. Yenidən cəhd edin.',
@@ -2067,7 +2067,7 @@ class Translations {
     AppStrings.optional: {
       'az': 'şərti',
       'en': 'optional',
-      'ru': 'необязательно',
+      'ru': 'не обяз.',
     },
     AppStrings.fileSelected: {
       'az': 'Fayl seçildi',

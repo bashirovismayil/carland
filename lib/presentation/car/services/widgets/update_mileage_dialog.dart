@@ -257,7 +257,7 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
             },
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
-              // ✅ 6 haneli maksimum sınırlaması
+
               _MileageLengthFormatter(_maxMileageDigits),
             ],
             style: const TextStyle(

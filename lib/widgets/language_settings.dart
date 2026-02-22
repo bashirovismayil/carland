@@ -52,11 +52,11 @@ class LanguageSettingsWidget extends HookWidget {
                 onTap: state.isLoading
                     ? null
                     : () =>
-                        context.read<LanguageCubit>().changeLanguage(language),
+                    context.read<LanguageCubit>().changeLanguage(language),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   decoration: BoxDecoration(
                     color: isSelected ? Colors.black : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(12),
@@ -68,20 +68,30 @@ class LanguageSettingsWidget extends HookWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        _getFlag(language),
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      const SizedBox(width: 12),
-                      Flexible(
-                        child: Text(
-                          language.displayName,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: isSelected ? Colors.white : Colors.black87,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                      SizedBox(
+                        width: 160,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _getFlag(language),
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            const SizedBox(width: 12),
+                            Flexible(
+                              child: Text(
+                                language.displayName,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -208,12 +218,12 @@ class LanguageSettingsWidget extends HookWidget {
                       onChanged: state.isLoading
                           ? null
                           : (AppLanguage? newLanguage) {
-                              if (newLanguage != null) {
-                                context
-                                    .read<LanguageCubit>()
-                                    .changeLanguage(newLanguage);
-                              }
-                            },
+                        if (newLanguage != null) {
+                          context
+                              .read<LanguageCubit>()
+                              .changeLanguage(newLanguage);
+                        }
+                      },
                     ),
                   ),
                 ),

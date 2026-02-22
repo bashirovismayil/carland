@@ -55,6 +55,7 @@ class CarDetailsBlocListeners extends StatelessWidget {
         builder: (_) => MaintenanceHistoryPage(
           carId: carIdStr,
           carModelYear: modelYear,
+          isInvisible: true,
         ),
       ));
 

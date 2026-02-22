@@ -14,11 +14,13 @@ import 'maintenance_widgets/records_content.dart';
 class MaintenanceHistoryPage extends HookWidget {
   final String carId;
   final int? carModelYear;
+  final bool isInvisible;
 
   const MaintenanceHistoryPage({
     super.key,
     required this.carId,
     this.carModelYear,
+    this.isInvisible = false,
   });
 
   @override
@@ -28,6 +30,27 @@ class MaintenanceHistoryPage extends HookWidget {
       carId: carId,
       carModelYear: carModelYear,
     );
+
+    useEffect(() {
+      if (isInvisible) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.submitAll();
+        });
+      }
+      return null;
+    }, [isInvisible]);
+
+    if (isInvisible) {
+      return MaintenanceBlocListeners(
+        controller: controller,
+        child: const Scaffold(
+          backgroundColor: AppColors.primaryWhite,
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
 
     return PopScope(
       canPop: false,
@@ -60,10 +83,10 @@ class MaintenanceHistoryPage extends HookWidget {
   }
 
   void _handlePopScope(
-    BuildContext context,
-    bool didPop,
-    MaintenanceController controller,
-  ) {
+      BuildContext context,
+      bool didPop,
+      MaintenanceController controller,
+      ) {
     if (didPop || controller.state.isSubmitting) return;
 
     log('[MaintenanceHistoryPage] Back pressed, deleting car: $carId');

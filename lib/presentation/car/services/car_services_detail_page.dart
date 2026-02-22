@@ -66,8 +66,6 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
               child: CarServicesHeader(),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-            // Carousel
             SliverToBoxAdapter(
               child: CarCarousel(
                 pageController: _pageController,

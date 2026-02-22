@@ -9,6 +9,7 @@ import 'profile_photo_state.dart';
 class ProfilePhotoCubit extends Cubit<ProfilePhotoState> {
   ProfilePhotoCubit() : super(ProfilePhotoInitial()) {
     _profilePhotoRepo = locator<ProfilePhotoContractor>();
+    getProfilePhoto();
   }
 
   late final ProfilePhotoContractor _profilePhotoRepo;

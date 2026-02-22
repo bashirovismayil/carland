@@ -16,5 +16,5 @@ final authDio = Dio()
         Go.replaceAndRemoveWithoutContext(LoginPage());
       },
     ),
-    AwesomeDioInterceptor(),
+    AwesomeDioInterceptor(logResponseHeaders: false),
   ]);

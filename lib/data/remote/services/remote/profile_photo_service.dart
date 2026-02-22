@@ -76,9 +76,8 @@ class ProfilePhotoService {
       );
 
       log('[ProfilePhotoService] Get Response Status: ${resp.statusCode}');
-      log('[ProfilePhotoService] Get Response Content-Type: ${resp.headers.value('content-type')}');
-      log('[ProfilePhotoService] Get Response Data Length: ${resp.data.length}');
-
+      log('[ProfilePhotoService] Content-Type: ${resp.headers.value('content-type')}');
+      log('[ProfilePhotoService] Image size: ${(resp.data as Uint8List).length} bytes');
       return resp.data as Uint8List;
     } on DioException catch (e) {
       log('[ProfilePhotoService] Get DioException: ${e.response?.statusCode}');

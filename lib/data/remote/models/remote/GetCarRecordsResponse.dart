@@ -2,16 +2,16 @@ class GetCarRecordsResponse {
   final int id;
   final String serviceName;
   final String actionType;
-  final DateTime? doneDate;    // nullable yaptık
-  final int? doneKm;           // nullable yaptık
+  final DateTime? doneDate;
+  final int? doneKm;
   final dynamic message;
 
   GetCarRecordsResponse({
     required this.id,
     required this.serviceName,
     required this.actionType,
-    this.doneDate,             // required kaldırıldı
-    this.doneKm,               // required kaldırıldı
+    this.doneDate,
+    this.doneKm,
     this.message,
   });
 

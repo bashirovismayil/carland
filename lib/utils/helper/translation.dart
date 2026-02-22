@@ -1523,6 +1523,11 @@ class Translations {
       'ru':
           'После добавления автомобиля информация о сервисе вашего автомобиля появится здесь',
     },
+    AppStrings.collapseText: {
+      'az': 'Yığcamlaşdır',
+      'en': 'Collapse',
+      'ru': 'Свернуть',
+    },
     AppStrings.editCarDetails: {
       'az': 'Avtomobil Detallarını Redaktə Et',
       'en': 'Edit Car Details',

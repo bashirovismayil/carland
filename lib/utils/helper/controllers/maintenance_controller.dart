@@ -10,6 +10,7 @@ import '../date_parser_util.dart';
 class MaintenanceController {
   final String carId;
   final int? carModelYear;
+  final bool isInvisible;
   final UpdateCarRecordCubit updateCubit;
   final ExecuteCarServiceCubit executeCubit;
   VoidCallback onStateChanged;
@@ -20,16 +21,20 @@ class MaintenanceController {
   MaintenanceController({
     required this.carId,
     required this.carModelYear,
+    this.isInvisible = false,
     required this.updateCubit,
     required this.executeCubit,
     required this.onStateChanged,
   });
 
   void initializeControllers(List<GetCarRecordsResponse> records) {
+    log('[MaintenanceController] initializeControllers called with ${records.length} records, isInvisible: $isInvisible');
+
     final newDateControllers = Map<int, TextEditingController>.from(_state.dateControllers);
     final newMileageControllers = Map<int, TextEditingController>.from(_state.mileageControllers);
 
     for (var record in records) {
+      log('[MaintenanceController] Record id: ${record.id}, doneDate: ${record.doneDate}, doneKm: ${record.doneKm}');
       if (!newDateControllers.containsKey(record.id)) {
         newDateControllers[record.id] = TextEditingController(
           text: record.doneDate != null ? DateFormat('dd/MM/yyyy').format(record.doneDate!) : '',
@@ -70,8 +75,18 @@ class MaintenanceController {
     final mileageController = _state.mileageControllers[recordId];
     if (dateController == null || mileageController == null) return;
 
-    final formattedDate = DateParserUtil.parseDateOrDefault(dateController.text.trim(), carModelYear);
-    final mileage = DateParserUtil.parseMileageOrDefault(mileageController.text.trim());
+    final dateText = dateController.text.trim();
+    final mileageText = mileageController.text.trim();
+
+    log('[MaintenanceController] _saveRecord($recordId) - isInvisible: $isInvisible, dateText: "$dateText", mileageText: "$mileageText"');
+
+    if (isInvisible && dateText.isEmpty && mileageText.isEmpty) {
+      log('[MaintenanceController] SKIPPING empty record $recordId (isInvisible mode)');
+      return;
+    }
+
+    final formattedDate = DateParserUtil.parseDateOrDefault(dateText, carModelYear);
+    final mileage = DateParserUtil.parseMileageOrDefault(mileageText);
 
     log('[MaintenanceController] Saving record $recordId - date: $formattedDate, mileage: $mileage');
 
@@ -88,20 +103,19 @@ class MaintenanceController {
   }
 
   Future<void> submitAll() async {
+    log('[MaintenanceController] submitAll() called - isInvisible: $isInvisible');
     _state = _state.copyWith(isSubmitting: true);
     onStateChanged();
 
     try {
       final savedRecords = Set<int>.from(_state.completedSections);
 
-      // Save expanded section first
       if (_state.expandedSectionId != null) {
         _saveRecord(_state.expandedSectionId!);
         savedRecords.add(_state.expandedSectionId!);
         await Future.delayed(const Duration(milliseconds: 300));
       }
 
-      // Save remaining records
       for (final recordId in _state.dateControllers.keys) {
         if (savedRecords.contains(recordId)) continue;
         _saveRecord(recordId);

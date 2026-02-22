@@ -10,11 +10,13 @@ MaintenanceController useMaintenanceController({
   required BuildContext context,
   required String carId,
   required int? carModelYear,
+  bool isInvisible = false,
 }) {
   final controller = useMemoized(
-    () => MaintenanceController(
+        () => MaintenanceController(
       carId: carId,
       carModelYear: carModelYear,
+      isInvisible: isInvisible,
       updateCubit: context.read<UpdateCarRecordCubit>(),
       executeCubit: context.read<ExecuteCarServiceCubit>(),
       onStateChanged: () {},

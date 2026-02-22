@@ -29,6 +29,7 @@ class MaintenanceHistoryPage extends HookWidget {
       context: context,
       carId: carId,
       carModelYear: carModelYear,
+      isInvisible: isInvisible,
     );
 
     useEffect(() {

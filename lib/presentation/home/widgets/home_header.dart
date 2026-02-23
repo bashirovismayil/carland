@@ -5,6 +5,8 @@ import '../../../core/localization/app_translation.dart';
 import '../../../widgets/profile_photo.dart';
 import '../../../utils/di/locator.dart';
 import '../../../data/remote/services/local/login_local_services.dart';
+// TODO: Adjust this import path to match your project structure.
+import '../../notification/notification_page.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -18,9 +20,21 @@ class HomeHeader extends StatelessWidget {
         const ProfilePhoto(),
         const SizedBox(width: 12),
         Expanded(child: _UserGreeting(userName: userName)),
-        const _NotificationIcon(),
+        _NotificationIcon(
+          hasUnread: _checkUnreadNotifications(),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const NotificationPage()),
+            );
+          },
+        ),
       ],
     );
+  }
+
+  bool _checkUnreadNotifications() {
+    final notifications = generateMockNotifications();
+    return notifications.any((n) => !n.isRead);
   }
 }
 
@@ -56,17 +70,54 @@ class _UserGreeting extends StatelessWidget {
 }
 
 class _NotificationIcon extends StatelessWidget {
-  const _NotificationIcon();
+  final bool hasUnread;
+  final VoidCallback onTap;
+
+  const _NotificationIcon({
+    required this.hasUnread,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: const BoxDecoration(
-        color: AppColors.lightGrey,
-        shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 44,
+        height: 44,
+        child: Stack(
+          children: [
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: AppColors.lightGrey,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.notifications,
+                  color: Colors.black87,
+                  size: 24,
+                ),
+              ),
+            ),
+            if (hasUnread)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF3B30),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
-      child: const Icon(Icons.notifications, color: Colors.black87, size: 24),
     );
   }
 }

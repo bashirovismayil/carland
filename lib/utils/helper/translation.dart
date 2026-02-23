@@ -2144,6 +2144,31 @@ class Translations {
       'en': 'Terms of Service',
       'ru': 'Условия обслуживания',
     },
+    AppStrings.notifications: {
+      'az': 'Bildirişlər',
+      'en': 'Notifications',
+      'ru': 'Входящие',
+    },
+    AppStrings.markAllRead: {
+      'az': 'Hamısını oxunmuş et',
+      'en': 'Mark all read',
+      'ru': 'Прочитать все',
+    },
+    AppStrings.remove: {
+      'az': 'Sil',
+      'en': 'Remove',
+      'ru': 'Удалить',
+    },
+    AppStrings.noNewNotifications: {
+      'az': 'Yeni bildiriş yoxdur',
+      'en': 'No new notifications',
+      'ru': 'Нет новых уведомлений',
+    },
+    AppStrings.emptyStateSubtitle: {
+      'az': 'Hər şey yenilənib! Yeni bildiriş\ngəldikdə sizə xəbər verəcəyik.',
+      'en': "You're all caught up! We'll notify you\nwhen something new arrives.",
+      'ru': 'Вы всё прочитали! Мы уведомим вас,\nкогда появится что-то новое.',
+    },
   };
 
   static String translate(String key, String languageCode) {

@@ -237,17 +237,22 @@ class _ServiceCardState extends State<ServiceCard>
                                   widget.service.intervalMonth > 0,
                             ),
                           ],
-                          const SizedBox(height: 10),
+
                           if (needsEdit) ...[
-                            const SizedBox(height: 5),
+                            const SizedBox(height: 11),
                             GestureDetector(
                               onTap: _toggle,
                               behavior: HitTestBehavior.opaque,
-                              child: Center(
-                                child: Icon(
-                                  Icons.keyboard_arrow_up,
-                                  color: Colors.grey.shade600,
-                                  size: 18,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 5.0, right: 1, left: 12),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_up,
+                                    color: Colors.grey.shade600,
+                                    size: 20,
+                                  ),
                                 ),
                               ),
                             ),

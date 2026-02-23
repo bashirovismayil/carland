@@ -74,6 +74,10 @@ class _ServiceCardState extends State<ServiceCard>
         curve: const Interval(0.45, 1.0, curve: Curves.linear),
       ),
     );
+    if (!_needsEdit) {
+      _isExpanded = true;
+      _controller.value = 1.0;
+    }
   }
 
   @override
@@ -83,6 +87,7 @@ class _ServiceCardState extends State<ServiceCard>
   }
 
   void _toggle() {
+    if (!_needsEdit) return;
     _isExpanded = !_isExpanded;
     if (_isExpanded) {
       _controller.forward();
@@ -94,7 +99,7 @@ class _ServiceCardState extends State<ServiceCard>
   @override
   Widget build(BuildContext context) {
     final percentage =
-    ServicePercentageCalculator.getEffectivePercentage(widget.service);
+        ServicePercentageCalculator.getEffectivePercentage(widget.service);
     final needsEdit = _needsEdit;
 
     return AnimatedOpacity(
@@ -124,7 +129,6 @@ class _ServiceCardState extends State<ServiceCard>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Slim header — yalnız bura tıklanabilir
                 GestureDetector(
                   onTap: _toggle,
                   behavior: HitTestBehavior.opaque,
@@ -178,7 +182,7 @@ class _ServiceCardState extends State<ServiceCard>
                             Container(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration (
+                              decoration: BoxDecoration(
                                 color: Colors.grey.shade100,
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -199,7 +203,8 @@ class _ServiceCardState extends State<ServiceCard>
                             ),
                             const SizedBox(height: 16),
                             ServiceCardEditContent(
-                              key: ValueKey('edit_${widget.service.percentageId}'),
+                              key: ValueKey(
+                                  'edit_${widget.service.percentageId}'),
                               carId: widget.carId,
                               serviceName: widget.service.serviceName,
                               onRefresh: widget.onRefresh,
@@ -229,30 +234,24 @@ class _ServiceCardState extends State<ServiceCard>
                               isForNextService: true,
                               hasIntervalKm: widget.service.intervalKm > 0,
                               hasIntervalMonth:
-                              widget.service.intervalMonth > 0,
+                                  widget.service.intervalMonth > 0,
                             ),
                           ],
-
-                          const SizedBox(height: 12),
-                          GestureDetector(
-                            onTap: _toggle,
-                            behavior: HitTestBehavior.opaque,
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                const EdgeInsets.symmetric(vertical: 4),
-                                child: Text(
-                                  AppTranslation.translate(AppStrings.collapseText),
-                                  style: TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey.shade600,
-                                  ),
+                          const SizedBox(height: 10),
+                          if (needsEdit) ...[
+                            const SizedBox(height: 5),
+                            GestureDetector(
+                              onTap: _toggle,
+                              behavior: HitTestBehavior.opaque,
+                              child: Center(
+                                child: Icon(
+                                  Icons.keyboard_arrow_up,
+                                  color: Colors.grey.shade600,
+                                  size: 18,
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),

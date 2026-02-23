@@ -437,7 +437,6 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
       right += delta.dx;
     }
 
-    // Maintain aspect ratio
     final width = (right - left).abs();
     final height = width / widget.aspectRatio;
 
@@ -481,7 +480,6 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
         right += delta;
       }
 
-      // Maintain aspect ratio
       final width = (right - left).abs();
       final height = width / widget.aspectRatio;
       final center = (top + bottom) / 2;
@@ -808,7 +806,6 @@ class _CropOverlayPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (cropRect == Rect.zero) return;
 
-    // Dark overlay outside the crop rect
     final overlayPaint = Paint()
       ..color = Colors.black.withOpacity(ImageCropConfig.overlayOpacity)
       ..style = PaintingStyle.fill;
@@ -820,7 +817,6 @@ class _CropOverlayPainter extends CustomPainter {
 
     canvas.drawPath(overlayPath, overlayPaint);
 
-    // Circular preview overlay: darken corners inside the square, outside the circle
     if (isCircular) {
       final center = cropRect.center;
       final radius = cropRect.shortestSide / 2;
@@ -836,7 +832,6 @@ class _CropOverlayPainter extends CustomPainter {
 
       canvas.drawPath(cornerPath, circularOverlayPaint);
 
-      // Circle border
       final circleBorderPaint = Paint()
         ..color = Colors.white.withOpacity(0.6)
         ..strokeWidth = 1.5
@@ -845,7 +840,6 @@ class _CropOverlayPainter extends CustomPainter {
       canvas.drawCircle(center, radius, circleBorderPaint);
     }
 
-    // Grid (rule of thirds)
     final gridPaint = Paint()
       ..color = Colors.white.withOpacity(ImageCropConfig.gridOpacity)
       ..strokeWidth = 0.5;
@@ -874,7 +868,6 @@ class _CropOverlayPainter extends CustomPainter {
       gridPaint,
     );
 
-    // Border
     final borderPaint = Paint()
       ..color = Colors.white
       ..strokeWidth = 2
@@ -882,7 +875,6 @@ class _CropOverlayPainter extends CustomPainter {
 
     canvas.drawRect(cropRect, borderPaint);
 
-    // Corner handles
     _drawCircleHandle(canvas, cropRect.topLeft, HandleCropType.topLeft, true);
     _drawCircleHandle(
         canvas, cropRect.topRight, HandleCropType.topRight, true);
@@ -927,20 +919,17 @@ class _CropOverlayPainter extends CustomPainter {
         : ImageCropConfig.edgeHandleRadius;
     final radius = isActive ? baseRadius * 1.3 : baseRadius;
 
-    // Shadow
     final shadowPaint = Paint()
       ..color = Colors.black.withOpacity(0.3)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
     canvas.drawCircle(position, radius + 2, shadowPaint);
 
-    // Outer circle (border)
     final borderPaint = Paint()
       ..color = isActive ? Colors.white : Colors.white.withOpacity(0.9)
       ..style = PaintingStyle.stroke
       ..strokeWidth = isActive ? 3 : 2;
     canvas.drawCircle(position, radius, borderPaint);
 
-    // Inner fill
     final fillPaint = Paint()
       ..color = isActive
           ? Colors.white.withOpacity(0.95)
@@ -948,7 +937,6 @@ class _CropOverlayPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
     canvas.drawCircle(position, radius - (isActive ? 1.5 : 1), fillPaint);
 
-    // Center dot for corners
     if (isCorner) {
       final dotPaint = Paint()
         ..color = Colors.black.withOpacity(0.4)

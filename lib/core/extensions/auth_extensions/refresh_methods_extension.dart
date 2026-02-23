@@ -174,6 +174,7 @@ extension TokenRefreshMethods on TokenRefreshInterceptor {
     );
     final newOptions = Options(
       method: options.method,
+      responseType: options.responseType,
       headers: {...options.headers, 'Authorization': 'Bearer $newAccessToken'},
     );
 

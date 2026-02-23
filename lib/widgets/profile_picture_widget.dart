@@ -129,7 +129,7 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
   Widget _buildAvatar(
       ImageProvider? provider, ProfilePhotoState state, double size) {
     final borderWidth = size * 0.06;
-    final padding = size * 0.08;
+    final padding = size * 0.000;
     final avatarRadius = (size - (borderWidth * 2) - (padding * 2)) / 2;
     final iconSize = size * 0.6;
 

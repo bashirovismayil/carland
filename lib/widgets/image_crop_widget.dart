@@ -343,7 +343,9 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
       _activeHandle = null;
     }
 
-    if (_activeHandle != null && _dragStart != null && _initialCropRect != null) {
+    if (_activeHandle != null &&
+        _dragStart != null &&
+        _initialCropRect != null) {
       final delta = details.localFocalPoint - _dragStart!;
       setState(() {
         _handleCropUpdate(delta);
@@ -520,10 +522,14 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
     }
 
     // Edge handles
-    final topCenter = Offset((cropRect.left + cropRect.right) / 2, cropRect.top);
-    final bottomCenter = Offset((cropRect.left + cropRect.right) / 2, cropRect.bottom);
-    final leftCenter = Offset(cropRect.left, (cropRect.top + cropRect.bottom) / 2);
-    final rightCenter = Offset(cropRect.right, (cropRect.top + cropRect.bottom) / 2);
+    final topCenter =
+    Offset((cropRect.left + cropRect.right) / 2, cropRect.top);
+    final bottomCenter =
+    Offset((cropRect.left + cropRect.right) / 2, cropRect.bottom);
+    final leftCenter =
+    Offset(cropRect.left, (cropRect.top + cropRect.bottom) / 2);
+    final rightCenter =
+    Offset(cropRect.right, (cropRect.top + cropRect.bottom) / 2);
 
     if ((point - topCenter).distance < edgeMargin) {
       return HandleCropType.top;
@@ -715,6 +721,7 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
                   painter: _CropOverlayPainter(
                     cropRect: _cropRect,
                     activeHandle: _activeHandle,
+                    isCircular: widget.aspectRatio == 1.0,
                   ),
                 ),
               ],
@@ -789,17 +796,19 @@ class _ImagePainter extends CustomPainter {
 class _CropOverlayPainter extends CustomPainter {
   final Rect cropRect;
   final HandleCropType? activeHandle;
+  final bool isCircular;
 
   _CropOverlayPainter({
     required this.cropRect,
     this.activeHandle,
+    this.isCircular = false,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     if (cropRect == Rect.zero) return;
 
-    // Dark overlay
+    // Dark overlay outside the crop rect
     final overlayPaint = Paint()
       ..color = Colors.black.withOpacity(ImageCropConfig.overlayOpacity)
       ..style = PaintingStyle.fill;
@@ -811,7 +820,32 @@ class _CropOverlayPainter extends CustomPainter {
 
     canvas.drawPath(overlayPath, overlayPaint);
 
-    // Grid
+    // Circular preview overlay: darken corners inside the square, outside the circle
+    if (isCircular) {
+      final center = cropRect.center;
+      final radius = cropRect.shortestSide / 2;
+
+      final circularOverlayPaint = Paint()
+        ..color = Colors.black.withOpacity(0.45)
+        ..style = PaintingStyle.fill;
+
+      final cornerPath = Path()
+        ..addRect(cropRect)
+        ..addOval(Rect.fromCircle(center: center, radius: radius))
+        ..fillType = PathFillType.evenOdd;
+
+      canvas.drawPath(cornerPath, circularOverlayPaint);
+
+      // Circle border
+      final circleBorderPaint = Paint()
+        ..color = Colors.white.withOpacity(0.6)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke;
+
+      canvas.drawCircle(center, radius, circleBorderPaint);
+    }
+
+    // Grid (rule of thirds)
     final gridPaint = Paint()
       ..color = Colors.white.withOpacity(ImageCropConfig.gridOpacity)
       ..strokeWidth = 0.5;
@@ -850,9 +884,12 @@ class _CropOverlayPainter extends CustomPainter {
 
     // Corner handles
     _drawCircleHandle(canvas, cropRect.topLeft, HandleCropType.topLeft, true);
-    _drawCircleHandle(canvas, cropRect.topRight, HandleCropType.topRight, true);
-    _drawCircleHandle(canvas, cropRect.bottomLeft, HandleCropType.bottomLeft, true);
-    _drawCircleHandle(canvas, cropRect.bottomRight, HandleCropType.bottomRight, true);
+    _drawCircleHandle(
+        canvas, cropRect.topRight, HandleCropType.topRight, true);
+    _drawCircleHandle(
+        canvas, cropRect.bottomLeft, HandleCropType.bottomLeft, true);
+    _drawCircleHandle(
+        canvas, cropRect.bottomRight, HandleCropType.bottomRight, true);
 
     // Edge handles
     _drawCircleHandle(
@@ -881,7 +918,8 @@ class _CropOverlayPainter extends CustomPainter {
     );
   }
 
-  void _drawCircleHandle(Canvas canvas, Offset position, HandleCropType type, bool isCorner) {
+  void _drawCircleHandle(
+      Canvas canvas, Offset position, HandleCropType type, bool isCorner) {
     final isActive = activeHandle == type;
 
     final baseRadius = isCorner
@@ -922,6 +960,7 @@ class _CropOverlayPainter extends CustomPainter {
   @override
   bool shouldRepaint(_CropOverlayPainter oldDelegate) {
     return oldDelegate.cropRect != cropRect ||
-        oldDelegate.activeHandle != activeHandle;
+        oldDelegate.activeHandle != activeHandle ||
+        oldDelegate.isCircular != isCircular;
   }
 }

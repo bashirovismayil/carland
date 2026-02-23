@@ -2165,7 +2165,7 @@ class Translations {
       'ru': 'Нет новых уведомлений',
     },
     AppStrings.emptyStateSubtitle: {
-      'az': 'Hər şey yenilənib! Yeni bildiriş\ngəldikdə sizə xəbər verəcəyik.',
+      'az': 'Yeni bildirişlərin\nolduqda burada görünəcək.',
       'en': "You're all caught up! We'll notify you\nwhen something new arrives.",
       'ru': 'Вы всё прочитали! Мы уведомим вас,\nкогда появится что-то новое.',
     },

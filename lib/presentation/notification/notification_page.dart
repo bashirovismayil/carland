@@ -1,7 +1,7 @@
+import 'package:carcat/core/constants/colors/app_colors.dart';
 import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../../core/constants/texts/app_strings.dart';
 
 const List<String> _monthKeys = [
@@ -18,6 +18,11 @@ const List<String> _monthKeys = [
   AppStrings.november,
   AppStrings.december,
 ];
+
+// ──────────────────────────────────────────────
+// DATA MODEL
+// ──────────────────────────────────────────────
+// TODO: Replace with actual API model when backend is ready.
 class NotificationItem {
   final String id;
   final String title;
@@ -35,6 +40,7 @@ class NotificationItem {
     this.isRead = false,
   });
 }
+
 List<NotificationItem> generateMockNotifications() {
   return [
     NotificationItem(
@@ -57,7 +63,7 @@ List<NotificationItem> generateMockNotifications() {
     ),
     NotificationItem(
       id: '3',
-      title: 'Əyləc baxımı xatırlatması 🛞',
+      title: 'Əyləcin texniki baxış xatırlatması 🛞',
       description:
       '10AZ887 - son əyləc yoxlamasından 11 ay keçib. Təhlükəsiz sürüş üçün baxımı gecikdirməyin',
       icon: Icons.disc_full_outlined,
@@ -93,6 +99,7 @@ List<NotificationItem> generateMockNotifications() {
     ),
   ];
 }
+
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
 
@@ -141,11 +148,29 @@ class _NotificationPageState extends State<NotificationPage> {
     setState(() {
       item.isRead = true;
     });
-    // TODO: Navigate to notification detail / deep link.
+    _showNotificationDetail(context, item);
   }
 
   // ── Helpers ────────────────────────────────
   bool get _hasUnread => _notifications.any((n) => !n.isRead);
+
+  String _formatDate(DateTime date) {
+    final monthName = AppTranslation.translate(_monthKeys[date.month - 1]);
+    return '${date.day} $monthName ${date.year}';
+  }
+
+  // ── Detail Bottom Sheet ────────────────────
+  void _showNotificationDetail(BuildContext context, NotificationItem item) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _NotificationDetailSheet(
+        item: item,
+        formattedDate: _formatDate(item.date),
+      ),
+    );
+  }
 
   List<Widget> _buildGroupedList() {
     if (_notifications.isEmpty) return [];
@@ -239,8 +264,135 @@ class _NotificationPageState extends State<NotificationPage> {
 }
 
 // ──────────────────────────────────────────────
-// SECTION HEADER
+// NOTIFICATION DETAIL BOTTOM SHEET
 // ──────────────────────────────────────────────
+class _NotificationDetailSheet extends StatelessWidget {
+  final NotificationItem item;
+  final String formattedDate;
+
+  const _NotificationDetailSheet({
+    required this.item,
+    required this.formattedDate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ── Drag handle ──
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD1D1D6),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Icon ──
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF2F2F7),
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: Icon(item.icon, color: const Color(0xFF3C3C43), size: 28),
+              ),
+              const SizedBox(height: 16),
+
+              // ── Title ──
+              Text(
+                item.title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF1C1C1E),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                  height: 1.3,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // ── Date ──
+              Text(
+                formattedDate,
+                style: const TextStyle(
+                  color: AppColors.hintColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // ── Divider ──
+              const Divider(color: Color(0xFFF2F2F7), height: 1),
+              const SizedBox(height: 16),
+
+              // ── Full description (scrollable if very long) ──
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.35,
+                ),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Text(
+                    item.description,
+                    style: const TextStyle(
+                      color: Color(0xFF3C3C43),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Close button ──
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: TextButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlack,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    AppTranslation.translate(AppStrings.close),
+                    style: const TextStyle(
+                      color: AppColors.primaryWhite,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 class _SectionHeader extends StatelessWidget {
   final DateTime date;
   const _SectionHeader({required this.date});
@@ -324,9 +476,6 @@ class _DismissibleNotificationCard extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────
-// CARD CONTENT
-// ──────────────────────────────────────────────
 class _NotificationCardContent extends StatelessWidget {
   final NotificationItem item;
   final VoidCallback onTap;
@@ -393,9 +542,6 @@ class _NotificationCardContent extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────
-// NOTIFICATION ICON WITH UNREAD BADGE
-// ──────────────────────────────────────────────
 class _NotificationIcon extends StatelessWidget {
   final IconData icon;
   final bool showBadge;
@@ -442,9 +588,6 @@ class _NotificationIcon extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────
-// EMPTY STATE
-// ──────────────────────────────────────────────
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
 

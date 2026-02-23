@@ -146,7 +146,7 @@ class _ServiceCardState extends State<ServiceCard>
                               child: Text(
                                 widget.service.serviceName,
                                 style: const TextStyle(
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.textPrimary,
                                 ),
@@ -166,8 +166,6 @@ class _ServiceCardState extends State<ServiceCard>
                     ),
                   ),
                 ),
-
-                // Full content
                 SizeTransition(
                   sizeFactor: _contentSize,
                   axisAlignment: -1.0,
@@ -237,7 +235,6 @@ class _ServiceCardState extends State<ServiceCard>
                                   widget.service.intervalMonth > 0,
                             ),
                           ],
-
                           if (needsEdit) ...[
                             const SizedBox(height: 11),
                             GestureDetector(

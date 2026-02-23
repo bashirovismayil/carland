@@ -10,7 +10,7 @@ class UserNavBarCubit extends Cubit<UserNavBarState> {
   int get currentIndex => _currentIndex;
 
   void changeTab(int index) {
-    if (index != _currentIndex && index >= 0 && index < 4) {
+    if (index != _currentIndex && index >= 0 && index < 3) {
       _currentIndex = index;
       emit(UserNavBarChanged(index));
     }

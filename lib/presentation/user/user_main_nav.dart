@@ -29,7 +29,7 @@ class UserMainNavigationView extends StatelessWidget {
   static const List<Widget> _pages = [
     HomePage(),
     HistoryPage(),
-    ReservationListPage(),
+   // ReservationListPage(),
     SettingsPage(),
   ];
 
@@ -79,23 +79,23 @@ class UserMainNavigationView extends StatelessWidget {
                     label: context.currentLanguage(AppStrings.settingsPage),
                     onTap: () => cubit.changeTab(1),
                   ),
+                  // _buildNavItem(
+                  //   context: context,
+                  //   index: 2,
+                  //   currentIndex: cubit.currentIndex,
+                  //   icon: 'assets/svg/calendar_nav_icon.svg',
+                  //   activeIcon: 'assets/svg/calendar_nav_icon_active.svg',
+                  //   label: context.currentLanguage(AppStrings.bookingPage),
+                  //   onTap: () => cubit.changeTab(2),
+                  // ),
                   _buildNavItem(
                     context: context,
                     index: 2,
                     currentIndex: cubit.currentIndex,
-                    icon: 'assets/svg/calendar_nav_icon.svg',
-                    activeIcon: 'assets/svg/calendar_nav_icon_active.svg',
-                    label: context.currentLanguage(AppStrings.bookingPage),
-                    onTap: () => cubit.changeTab(2),
-                  ),
-                  _buildNavItem(
-                    context: context,
-                    index: 3,
-                    currentIndex: cubit.currentIndex,
                     icon: 'assets/svg/user_nav_icon.svg',
                     activeIcon: 'assets/svg/user_nav_icon_active.svg',
                     label: context.currentLanguage(AppStrings.profilePage),
-                    onTap: () => cubit.changeTab(3),
+                    onTap: () => cubit.changeTab(2),
                   ),
                 ],
               ),

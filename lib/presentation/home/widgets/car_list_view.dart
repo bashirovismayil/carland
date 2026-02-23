@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/localization/app_translation.dart';
+import '../../../cubit/add/car/get_car_list_cubit.dart';
 import '../../../data/remote/models/remote/get_car_list_response.dart';
 import '../../../data/remote/services/local/car_list_local_service.dart';
 import '../../../presentation/car/services/car_services_detail_page.dart';
@@ -342,6 +344,9 @@ class _CarListViewState extends State<CarListView> {
       builder: (_) => DeleteCarDialog(
         car: car,
         onDeleted: () {
+          context.read<
+              GetCarListCubit>().removeCarLocally(car.carId);
+
           setState(() {
             _orderedList.removeWhere((c) => _getCarId(c) == _getCarId(car));
           });

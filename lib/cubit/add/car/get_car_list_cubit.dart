@@ -62,6 +62,16 @@ class GetCarListCubit extends Cubit<GetCarListState> {
     }
   }
 
+  void removeCarLocally(int carId) {
+    final currentState = state;
+    if (currentState is GetCarListSuccess) {
+      final updatedList = currentState.carList
+          .where((c) => c.carId != carId)
+          .toList();
+      emit(GetCarListSuccess(updatedList));
+    }
+  }
+
   void invalidatePhotoCache(int carId) {
     if (_carPhotosCache.containsKey(carId)) {
       _carPhotosCache.remove(carId);

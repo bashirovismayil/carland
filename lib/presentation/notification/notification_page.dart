@@ -2,6 +2,7 @@ import 'package:carcat/core/constants/colors/app_colors.dart';
 import 'package:carcat/core/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../core/constants/texts/app_strings.dart';
 
 const List<String> _monthKeys = [
@@ -233,14 +234,18 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
           actions: [
             if (_hasUnread && !_hasMarkedRead)
-              TextButton(
-                onPressed: _onMarkAllAsReadTapped,
-                child: Text(
-                  AppTranslation.translate(AppStrings.markAllRead),
-                  style: const TextStyle(
-                    color: Color(0xFF007AFF),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+              Tooltip(
+                message: AppTranslation.translate(AppStrings.markAllRead),
+                waitDuration: const Duration(milliseconds: 500),
+                child: TextButton(
+                  onPressed: _onMarkAllAsReadTapped,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                  child: SvgPicture.asset(
+                    'assets/svg/tick_icon.svg',
+                    width: 22,
+                    height: 22,
                   ),
                 ),
               ),
@@ -263,9 +268,6 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 }
 
-// ──────────────────────────────────────────────
-// NOTIFICATION DETAIL BOTTOM SHEET
-// ──────────────────────────────────────────────
 class _NotificationDetailSheet extends StatelessWidget {
   final NotificationItem item;
   final String formattedDate;

@@ -164,11 +164,11 @@ class Translations {
     },
     AppStrings.onboardSubtext_1: {
       'az':
-          'Geniş avtoservis xidmətlərinə çıxış əldə edin və avtomobilinizin qayğısını bizə həvalə edin',
+      'Geniş avtoservis xidmətlərinə çıxış əldə edin və avtomobilinizin qayğısını bizə həvalə edin',
       'en':
-          'Get access to wide range of auto services\nand leave your car care to us',
+      'Get access to wide range of auto services\nand leave your car care to us',
       'ru':
-          'Получите доступ к широкому спектру автосервисов и доверьте заботу\nо машине нам',
+      'Получите доступ к широкому спектру автосервисов и доверьте заботу\nо машине нам',
     },
     AppStrings.onboardTitle_2: {
       'az': 'Servis randevusu və idarəetmə',
@@ -177,11 +177,11 @@ class Translations {
     },
     AppStrings.onboardSubtext_2: {
       'az':
-          'Ustalarla randevu təyin edin,\nmövcudluğu görün və xatırlatmalar alın',
+      'Ustalarla randevu təyin edin,\nmövcudluğu görün və xatırlatmalar alın',
       'en':
-          'Schedule appointments with mechanics,\ncheck availability and get reminders',
+      'Schedule appointments with mechanics,\ncheck availability and get reminders',
       'ru':
-          'Назначайте встречи с мастерами,\nпроверяйте доступность и получайте напоминания',
+      'Назначайте встречи с мастерами,\nпроверяйте доступность и получайте напоминания',
     },
     AppStrings.onboardTitle_3: {
       'az': 'Servis tarixçənizi izləyin',
@@ -190,11 +190,11 @@ class Translations {
     },
     AppStrings.onboardSubtext_3: {
       'az':
-          'Təmir qeydləri, texniki baxış tarixçəsi\nvə ehtiyat hissələrinə bir yerdən baxın',
+      'Təmir qeydləri, texniki baxış tarixçəsi\nvə ehtiyat hissələrinə bir yerdən baxın',
       'en':
-          'View repair records, maintenance history\nand spare parts in one place',
+      'View repair records, maintenance history\nand spare parts in one place',
       'ru':
-          'Просматривайте записи ремонта, историю ТО и запчасти в одном месте',
+      'Просматривайте записи ремонта, историю ТО и запчасти в одном месте',
     },
 
     // Welcome Page
@@ -210,11 +210,11 @@ class Translations {
     },
     AppStrings.welcomeSubtitle: {
       'az':
-          'Avtomobillərini əlavə etməklə, texniki\nbaxım tarixlərini izlə və təhlükəsiz sür.',
+      'Avtomobillərini əlavə etməklə, texniki\nbaxım tarixlərini izlə və təhlükəsiz sür.',
       'en':
-          'Your smart companion for hassle-free car maintenance. Track, schedule, and book services all in one place.',
+      'Your smart companion for hassle-free car maintenance. Track, schedule, and book services all in one place.',
       'ru':
-          'Ваш умный помощник для беспроблемного обслуживания автомобиля. Отслеживайте, планируйте и бронируйте услуги в одном месте.',
+      'Ваш умный помощник для беспроблемного обслуживания автомобиля. Отслеживайте, планируйте и бронируйте услуги в одном месте.',
     },
     AppStrings.loginButton: {
       'az': 'Daxil ol',
@@ -238,11 +238,11 @@ class Translations {
     },
     AppStrings.helpInfoText: {
       'az':
-          'Əgər PIN şifrəsini unutmusansa və ya üz tanınması uğursuz oldusa, hesab məlumatlarınla giriş edərək, "Parametrlər" səhifəsindən 4 rəqəmli PIN-i sıfırlaya bilərsən.',
+      'Əgər PIN şifrəsini unutmusansa və ya üz tanınması uğursuz oldusa, hesab məlumatlarınla giriş edərək, "Parametrlər" səhifəsindən 4 rəqəmli PIN-i sıfırlaya bilərsən.',
       'en':
-          'If you have forgotten your PIN, you can log in with your account details and reset the 4-digit PIN from the "Settings" page.',
+      'If you have forgotten your PIN, you can log in with your account details and reset the 4-digit PIN from the "Settings" page.',
       'ru':
-          'Если вы забыли свой PIN-код, вы можете войти с помощью данных своей учетной записи и сбросить 4-значный PIN-код на странице "Настройки".',
+      'Если вы забыли свой PIN-код, вы можете войти с помощью данных своей учетной записи и сбросить 4-значный PIN-код на странице "Настройки".',
     },
     AppStrings.helpText: {
       'az': 'Kömək',
@@ -521,7 +521,7 @@ class Translations {
     },
     AppStrings.otpSubtitle: {
       'az':
-          'Təqdim etdiyiniz telefon nömrəsinə təsdiq (avtorizasiya) kodu göndərildi',
+      'Təqdim etdiyiniz telefon nömrəsinə təsdiq (avtorizasiya) kodu göndərildi',
       'en': 'An authorization code has been sent to your provided Phone Number',
       'ru': 'Код подтверждения был отправлен на указанный номер телефона',
     },
@@ -651,7 +651,7 @@ class Translations {
     },
     AppStrings.autoLoginFailed: {
       'az':
-          'Avtomatik giriş uğursuz oldu. Zəhmət olmasa giriş səhifəsi ilə daxil olun',
+      'Avtomatik giriş uğursuz oldu. Zəhmət olmasa giriş səhifəsi ilə daxil olun',
       'en': 'Automatic login failed. Please login manually',
       'ru': 'Автоматический вход не удался. Пожалуйста, войдите вручную',
     },
@@ -751,19 +751,19 @@ class Translations {
     },
     AppStrings.registrationSuccessSubtext: {
       'az':
-          'Hesabın uğurla yaradıldı. İndi avtomobilinin texniki xidmətini asanlıqla idarə etməyə başlaya bilərsən.',
+      'Hesabın uğurla yaradıldı. İndi avtomobilinin texniki xidmətini asanlıqla idarə etməyə başlaya bilərsən.',
       'en':
-          'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
+      'Your account has been created successfully. You can now log in and start managing your car\'s maintenance with ease.',
       'ru':
-          'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
+      'Ваш аккаунт успешно создан. Теперь вы можете войти и начать управлять обслуживанием вашего автомобиля с легкостью.',
     },
     AppStrings.passwordResetSuccessSubtext: {
       'az':
-          'Şifrən uğurla yeniləndi. İndi yeni şifrən ilə hesabına daxil ola bilərsən.',
+      'Şifrən uğurla yeniləndi. İndi yeni şifrən ilə hesabına daxil ola bilərsən.',
       'en':
-          'Your password has been successfully updated. You can now log in with your new password.',
+      'Your password has been successfully updated. You can now log in with your new password.',
       'ru':
-          'Ваш пароль успешно обновлен. Теперь вы можете войти с новым паролем.',
+      'Ваш пароль успешно обновлен. Теперь вы можете войти с новым паролем.',
     },
     AppStrings.carAddedSubtext: {
       'az': 'Yeni Kart Əlavə Edildi BMW M4 Sports 2024',
@@ -860,11 +860,11 @@ class Translations {
     },
     AppStrings.noCarsAddedDescription: {
       'az':
-          'Hələ heç bir avtomobil əlavə etməmisiniz. Texniki xidmət cədvəllərini izləməyə başlamaq üçün ilk avtomobilinizi əlavə edin.',
+      'Hələ heç bir avtomobil əlavə etməmisiniz. Texniki xidmət cədvəllərini izləməyə başlamaq üçün ilk avtomobilinizi əlavə edin.',
       'en':
-          'You haven\'t added any cars yet. Add your first car to start tracking maintenance schedules, service history, and bookings.',
+      'You haven\'t added any cars yet. Add your first car to start tracking maintenance schedules, service history, and bookings.',
       'ru':
-          'Вы еще не добавили автомобили. Добавьте свой первый автомобиль, чтобы начать отслеживать график обслуживания, историю сервиса и бронирования.',
+      'Вы еще не добавили автомобили. Добавьте свой первый автомобиль, чтобы начать отслеживать график обслуживания, историю сервиса и бронирования.',
     },
     AppStrings.addCarButton: {
       'az': 'Avtomobil Əlavə Et',
@@ -961,11 +961,11 @@ class Translations {
 
     AppStrings.vinScanDescription: {
       'az':
-          'BAN nömrə avtomobilə məxsus 17 simvolluq unikal identifikasiya nömrəsidir, avtomobilin ön şüşəsində, sürücü qapısının kənarında və texniki pasportda göstərilir.',
+      'BAN nömrə avtomobilə məxsus 17 simvolluq unikal identifikasiya nömrəsidir, avtomobilin ön şüşəsində, sürücü qapısının kənarında və texniki pasportda göstərilir.',
       'en':
-          'Point your camera at the VIN code located on the dashboard or driver-side door to scan it',
+      'Point your camera at the VIN code located on the dashboard or driver-side door to scan it',
       'ru':
-          'Наведите камеру на VIN-код, расположенный на приборной панели или на стойке водительской двери, чтобы сканировать',
+      'Наведите камеру на VIN-код, расположенный на приборной панели или на стойке водительской двери, чтобы сканировать',
     },
 
     AppStrings.enterCarVin: {
@@ -1018,11 +1018,11 @@ class Translations {
     },
     AppStrings.scannerPageSubtitle: {
       'az':
-          'Avtomobilinizin ön şüşəsinin sağ aşağı küncündən, qapı kənarından və ya texniki pasportdan BAN nömrəsini skan edin.',
+      'Avtomobilinizin ön şüşəsinin sağ aşağı küncündən, qapı kənarından və ya texniki pasportdan BAN nömrəsini skan edin.',
       'en':
-          'Use your car\'s Vehicle Identification Number (VIN) to fetch accurate details. You can type it in or scan via camera.',
+      'Use your car\'s Vehicle Identification Number (VIN) to fetch accurate details. You can type it in or scan via camera.',
       'ru':
-          'Используйте идентификационный номер вашего автомобиля (VIN) для получения точных данных. Вы можете ввести его вручную или отсканировать с помощью камеры.',
+      'Используйте идентификационный номер вашего автомобиля (VIN) для получения точных данных. Вы можете ввести его вручную или отсканировать с помощью камеры.',
     },
 
     AppStrings.continueButton: {
@@ -1378,6 +1378,18 @@ class Translations {
       'en': 'Failed to update record: ',
       'ru': 'Не удалось обновить запись: ',
     },
+    AppStrings.neverServicedInfoMessage: {
+      'az': 'Əgər maşının yenidirsə və ya ümumiyyətlə bu xidmət növü üzrə avtomobilin servisdə olmayıbsa, bu bəndi seç',
+      'en':
+      'If the car is new or has never been serviced for this type of service, select this option',
+      'ru':
+      'Если автомобиль новый или никогда не обслуживался для этого типа обслуживания, выберите эту'
+    },
+    AppStrings.neverServicedLabel: {
+      'az': 'Bu xidmət üzrə servisdə olmamışam',
+      'en': 'Never Serviced',
+      'ru': 'Никогда не обслуживался',
+    },
     AppStrings.myCars: {
       'az': 'Avtomobillərim',
       'en': 'My Cars',
@@ -1507,21 +1519,21 @@ class Translations {
       'az': 'Növbəti servis tarixi son servis tarixindən sonra olmalıdır',
       'en': 'Next service date must be after last service date',
       'ru':
-          'Дата следующего обслуживания должна быть после даты последнего обслуживания',
+      'Дата следующего обслуживания должна быть после даты последнего обслуживания',
     },
     AppStrings.nextServiceKmMustBeGreaterThanLastService: {
       'az': 'Növbəti servis km son servis km-dən böyük olmalıdır',
       'en': 'Next service km must be greater than last service km',
       'ru':
-          'Км следующего обслуживания должен быть больше км последнего обслуживания',
+      'Км следующего обслуживания должен быть больше км последнего обслуживания',
     },
     AppStrings.serviceInfoWillAppear: {
       'az':
-          'Avtomobil əlavə etdikdən sonra avtomobilinin servis məlumatları burada görünəcək',
+      'Avtomobil əlavə etdikdən sonra avtomobilinin servis məlumatları burada görünəcək',
       'en':
-          'After adding a car, your car\'s service information will appear here',
+      'After adding a car, your car\'s service information will appear here',
       'ru':
-          'После добавления автомобиля информация о сервисе вашего автомобиля появится здесь',
+      'После добавления автомобиля информация о сервисе вашего автомобиля появится здесь',
     },
     AppStrings.collapseText: {
       'az': 'Yığcamlaşdır',
@@ -1608,7 +1620,7 @@ class Translations {
     },
     AppStrings.reorderHint: {
       'az':
-          'Avtomobil fotosuna uzun basıb saxlayın və siyahını sürükləyərək yenidən sıralayın',
+      'Avtomobil fotosuna uzun basıb saxlayın və siyahını sürükləyərək yenidən sıralayın',
       'en': 'Reorder the list by drag and drop',
       'ru': 'Переставьте список с помощью перетаскивания',
     },
@@ -1799,16 +1811,16 @@ class Translations {
     },
     AppStrings.biometricNotEnrolledMessageIos: {
       'az':
-          'Parametrlər → Face ID və Şifrə bölməsinə keçib Face ID-ni quraşdırın.',
+      'Parametrlər → Face ID və Şifrə bölməsinə keçib Face ID-ni quraşdırın.',
       'en': 'Go to Settings → Face ID & Passcode to set up Face ID.',
       'ru':
-          'Перейдите в Настройки → Face ID и код-пароль, чтобы настроить Face ID.',
+      'Перейдите в Настройки → Face ID и код-пароль, чтобы настроить Face ID.',
     },
     AppStrings.biometricNotEnrolledMessageAndroid: {
       'az': 'Ayarlar → Təhlükəsizlik bölməsinə keçib üz tanımanı quraşdırın.',
       'en': 'Go to Settings → Security to set up face recognition.',
       'ru':
-          'Перейдите в Настройки → Безопасность, чтобы настроить распознавание лица.',
+      'Перейдите в Настройки → Безопасность, чтобы настроить распознавание лица.',
     },
     AppStrings.biometricLoginReason: {
       'az': 'Daxil olmaq üçün üzünüzü kameraya yaxınlaşdırın',
@@ -1817,11 +1829,11 @@ class Translations {
     },
     AppStrings.biometricNotEnrolledMessage: {
       'az':
-          'Üz tanımanı istifadə etmək üçün əvvəlcə cihaz parametrlərindən Face ID-ni quraşdırın.',
+      'Üz tanımanı istifadə etmək üçün əvvəlcə cihaz parametrlərindən Face ID-ni quraşdırın.',
       'en':
-          'To use face recognition, please set up Face ID in your device settings first.',
+      'To use face recognition, please set up Face ID in your device settings first.',
       'ru':
-          'Чтобы использовать распознавание лица, сначала настройте Face ID в настройках устройства.',
+      'Чтобы использовать распознавание лица, сначала настройте Face ID в настройках устройства.',
     },
 
     // Feedback Section
@@ -1863,11 +1875,11 @@ class Translations {
     },
     AppStrings.deleteAccountWarning: {
       'az':
-          'Hesabınızı silmək istədiyinizə əminsiniz? Bütün məlumatlarınız silinəcək və bu əməliyyat geri qaytarılmayacaq.',
+      'Hesabınızı silmək istədiyinizə əminsiniz? Bütün məlumatlarınız silinəcək və bu əməliyyat geri qaytarılmayacaq.',
       'en':
-          'Are you sure you want to delete your account? All your data will be lost and this action cannot be undone.',
+      'Are you sure you want to delete your account? All your data will be lost and this action cannot be undone.',
       'ru':
-          'Вы уверены, что хотите удалить свой аккаунт? Все ваши данные будут потеряны, и это действие нельзя будет отменить.',
+      'Вы уверены, что хотите удалить свой аккаунт? Все ваши данные будут потеряны, и это действие нельзя будет отменить.',
     },
     AppStrings.deleteAccountPermanent: {
       'az': 'Bu əməliyyat geri qaytarıla bilməz.',
@@ -1901,13 +1913,13 @@ class Translations {
     },
     AppStrings.serviceInfoDateSet: {
       'az':
-          'Bu servis üzrə növbəti texniki xidmət yalnız "müddət" üzrə planlanır.',
+      'Bu servis üzrə növbəti texniki xidmət yalnız "müddət" üzrə planlanır.',
       'en': 'The service type specified by the service has a date set.',
       'ru': 'Для указанного сервисом типа услуги установлена дата.',
     },
     AppStrings.serviceInfoKmSet: {
       'az':
-          'Bu servis üzrə növbəti texniki xidmət yalnız "yürüş" üzrə planlanır.',
+      'Bu servis üzrə növbəti texniki xidmət yalnız "yürüş" üzrə planlanır.',
       'en': 'The service type specified by the service has a mileage set.',
       'ru': 'Для указанного сервисом типа услуги установлен километраж.',
     },
@@ -1938,11 +1950,11 @@ class Translations {
     },
     AppStrings.deletePinConfirmation: {
       'az':
-          'PIN kodunu silmək istədiyinə əminsən? Tətbiqi təkrar açanda PIN soruşulmayacaq.',
+      'PIN kodunu silmək istədiyinə əminsən? Tətbiqi təkrar açanda PIN soruşulmayacaq.',
       'en':
-          'Are you sure you want to delete the PIN code? You will not be asked for a PIN when you reopen the app.',
+      'Are you sure you want to delete the PIN code? You will not be asked for a PIN when you reopen the app.',
       'ru':
-          'Вы уверены, что хотите удалить PIN-код? При повторном открытии приложения PIN-код не будет запрашиваться.',
+      'Вы уверены, что хотите удалить PIN-код? При повторном открытии приложения PIN-код не будет запрашиваться.',
     },
     AppStrings.pinDeletedSuccessfully: {
       'az': 'PIN uğurla silindi',

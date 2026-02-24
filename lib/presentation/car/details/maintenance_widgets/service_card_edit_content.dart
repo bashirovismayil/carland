@@ -13,16 +13,19 @@ import '../../../../../cubit/records/get_records/get_car_records_state.dart';
 import '../../../../../cubit/records/update/update_car_record_cubit.dart';
 import '../../../../../cubit/records/update/update_car_record_state.dart';
 import '../../../../../widgets/custom_date_picker.dart';
+import '../../../../utils/helper/date_parser_util.dart';
 
 class ServiceCardEditContent extends StatefulWidget {
   final int carId;
   final String serviceName;
+  final int? carModelYear;
   final VoidCallback onRefresh;
 
   const ServiceCardEditContent({
     super.key,
     required this.carId,
     required this.serviceName,
+    this.carModelYear,
     required this.onRefresh,
   });
 
@@ -35,6 +38,7 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
   late TextEditingController _mileageController;
   bool _isSubmitting = false;
   bool _isFetchingRecords = false;
+  bool _neverServiced = false;
   String? _dateError;
   String? _mileageError;
 
@@ -53,6 +57,7 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
       _mileageController.clear();
       _isSubmitting = false;
       _isFetchingRecords = false;
+      _neverServiced = false;
       _dateError = null;
       _mileageError = null;
     }
@@ -66,6 +71,8 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
   }
 
   bool _validate() {
+    if (_neverServiced) return true;
+
     bool isValid = true;
     setState(() {
       _dateError = null;
@@ -76,7 +83,8 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
         isValid = false;
       }
       if (_mileageController.text.trim().isEmpty) {
-        _mileageError = AppTranslation.translate(AppStrings.lastServiceMileageHint);
+        _mileageError =
+            AppTranslation.translate(AppStrings.lastServiceMileageHint);
         isValid = false;
       }
     });
@@ -102,7 +110,8 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
       _isFetchingRecords = false;
 
       final matchingRecord = state.records.where(
-            (r) => r.serviceName.trim().toLowerCase() ==
+            (r) =>
+        r.serviceName.trim().toLowerCase() ==
             widget.serviceName.trim().toLowerCase(),
       );
 
@@ -137,15 +146,21 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
   }
 
   void _submitWithRecordId(int recordId) {
-    final dateText = _dateController.text.trim();
-    final mileageText = _mileageController.text.trim();
+    late final String formattedDate;
+    late final int mileage;
 
-    final dateParts = dateText.split('/');
-    final formattedDate =
-        '${dateParts[2]}-${dateParts[1].padLeft(2, '0')}-${dateParts[0].padLeft(2, '0')}';
-    final mileage = int.tryParse(mileageText) ?? 0;
+    if (_neverServiced) {
+      formattedDate = DateParserUtil.parseDateOrDefault('', widget.carModelYear);
+      mileage = 1;
+    } else {
+      final dateText = _dateController.text.trim();
+      final mileageText = _mileageController.text.trim();
+      formattedDate =
+          DateParserUtil.parseDateOrDefault(dateText, widget.carModelYear);
+      mileage = DateParserUtil.parseMileageOrDefault(mileageText);
+    }
 
-    log('[ServiceCardEditContent] Submitting recordId: $recordId, date: $formattedDate, mileage: $mileage');
+    log('[ServiceCardEditContent] Submitting recordId: $recordId, date: $formattedDate, mileage: $mileage, neverServiced: $_neverServiced');
 
     context.read<UpdateCarRecordCubit>().updateCarRecord(
       carId: widget.carId,
@@ -169,6 +184,62 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
         setState(() => _dateError = null);
       }
     }
+  }
+
+  void _toggleNeverServiced(bool? value) {
+    setState(() {
+      _neverServiced = value ?? false;
+      if (_neverServiced) {
+        _dateController.clear();
+        _mileageController.clear();
+        _dateError = null;
+        _mileageError = null;
+      }
+    });
+  }
+
+  void _showNeverServicedInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info_outline, color: AppColors.primaryBlack, size: 22),
+            const SizedBox(width: 8),
+            Text(
+              AppTranslation.translate(AppStrings.information),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          AppTranslation.translate(AppStrings.neverServicedInfoMessage),
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey.shade700,
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              AppTranslation.translate(AppStrings.okButton),
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryBlack,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -199,37 +270,94 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
 
             _dateController.clear();
             _mileageController.clear();
-            setState(() => _isSubmitting = false);
+            setState(() {
+              _isSubmitting = false;
+              _neverServiced = false;
+            });
             widget.onRefresh();
           },
         ),
       ],
       child: Column(
         children: [
-          _buildField(
-            label: AppTranslation.translate(AppStrings.lastServiceDate),
-            controller: _dateController,
-            hint: AppTranslation.translate(AppStrings.lastServiceDateHint),
-            svgIconPath: 'assets/svg/calendar_nav_icon_active.svg',
-            readOnly: true,
-            onTap: _selectDate,
-            errorText: _dateError,
+          AnimatedOpacity(
+            opacity: _neverServiced ? 0.4 : 1.0,
+            duration: const Duration(milliseconds: 200),
+            child: IgnorePointer(
+              ignoring: _neverServiced,
+              child: Column(
+                children: [
+                  _buildField(
+                    label: AppTranslation.translate(AppStrings.lastServiceDate),
+                    controller: _dateController,
+                    hint: AppTranslation.translate(
+                        AppStrings.lastServiceDateHint),
+                    svgIconPath: 'assets/svg/calendar_nav_icon_active.svg',
+                    readOnly: true,
+                    onTap: _selectDate,
+                    errorText: _dateError,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildField(
+                    label: AppTranslation.translate(
+                        AppStrings.lastServiceMileage),
+                    controller: _mileageController,
+                    hint: AppTranslation.translate(
+                        AppStrings.lastServiceMileageHint),
+                    svgIconPath: 'assets/svg/odometer_icon.svg',
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    maxLength: 6,
+                    errorText: _mileageError,
+                  ),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 12),
-          _buildField(
-            label: AppTranslation.translate(AppStrings.lastServiceMileage),
-            controller: _mileageController,
-            hint: AppTranslation.translate(AppStrings.lastServiceMileageHint),
-            svgIconPath: 'assets/svg/odometer_icon.svg',
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            maxLength: 6,
-            errorText: _mileageError,
-          ),
+          _buildNeverServicedCheckbox(),
           const SizedBox(height: 16),
           _buildSubmitButton(),
         ],
       ),
+    );
+  }
+
+  Widget _buildNeverServicedCheckbox() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 24,
+          height: 24,
+          child: Checkbox(
+            value: _neverServiced,
+            onChanged: _toggleNeverServiced,
+            activeColor: AppColors.primaryBlack,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            side: BorderSide(color: Colors.grey.shade400, width: 1.5),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: GestureDetector(
+            onTap: _showNeverServicedInfoDialog,
+            child: Text(
+              AppTranslation.translate(AppStrings.neverServicedLabel),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade700,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.grey.shade500,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -277,9 +405,7 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
                 keyboardType: keyboardType,
                 inputFormatters: inputFormatters,
                 maxLength: maxLength,
-                buildCounter:
-                    (_, {required currentLength, required isFocused, maxLength}) =>
-                null,
+                buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,

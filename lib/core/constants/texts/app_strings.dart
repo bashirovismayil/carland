@@ -339,6 +339,8 @@ class AppStrings {
   static const String lastServiceMileage = 'lastServiceMileage';
   static const String lastServiceMileageHint = 'lastServiceMileageHint';
   static const String failedToUpdateRecord = 'failedToUpdateRecord';
+  static const String neverServicedInfoMessage = 'neverServicedInfoMessage';
+  static const String neverServicedLabel = 'neverServicedLabel';
 
   static const String myCars = 'myCars';
   static const String addNewCar = 'addNewCar';

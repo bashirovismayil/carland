@@ -1047,6 +1047,11 @@ class Translations {
       'en': 'Add Car Details',
       'ru': 'Добавить детали автомобиля',
     },
+    AppStrings.addButton: {
+      'az': 'Əlavə Et',
+      'en': 'Add',
+      'ru': 'Добавить',
+    },
     AppStrings.plateNumber: {
       'az': 'Dövlət Qeydiyyat Nişanı',
       'en': 'Plate Number',

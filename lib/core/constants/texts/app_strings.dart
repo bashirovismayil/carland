@@ -270,6 +270,7 @@ class AppStrings {
   // Car Details Page
   static const String carDetails = 'carDetails';
   static const String addCarDetails = 'addCarDetails';
+  static const String addButton = 'addButton';
   static const String plateNumber = 'plateNumber';
   static const String plateNumberHint = 'plateNumberHint';
   static const String plateNumberRequired = 'plateNumberRequired';

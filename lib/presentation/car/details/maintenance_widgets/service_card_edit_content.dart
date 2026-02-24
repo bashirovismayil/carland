@@ -479,7 +479,7 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
           ),
         )
             : Text(
-          AppTranslation.translate(AppStrings.submit),
+          AppTranslation.translate(AppStrings.addButton),
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,

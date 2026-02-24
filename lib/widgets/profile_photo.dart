@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// ❌ REMOVED: import '../core/extensions/photo/profile/image_cache_extension.dart';
 import '../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../cubit/photo/profile/profile_photo_cubit.dart';
 import '../cubit/photo/profile/profile_photo_state.dart';

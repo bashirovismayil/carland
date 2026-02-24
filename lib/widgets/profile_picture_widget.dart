@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/colors/app_colors.dart';
-// ❌ REMOVED: import '../core/extensions/photo/profile/image_cache_extension.dart';
 import '../cubit/photo/profile/profile_photo_cubit.dart';
 import '../cubit/photo/profile/profile_photo_state.dart';
 import '../utils/di/locator.dart';
@@ -128,10 +127,9 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
 
   Widget _buildAvatar(
       ImageProvider? provider, ProfilePhotoState state, double size) {
-    final borderWidth = size * 0.06;
-    final padding = size * 0.000;
-    final avatarRadius = (size - (borderWidth * 2) - (padding * 2)) / 2;
-    final iconSize = size * 0.6;
+    final borderWidth = (size * 0.04).clamp(1.5, 4.0);
+    final avatarRadius = size / 2;
+    final iconSize = size * 0.5;
 
     return Container(
       width: size,
@@ -142,20 +140,24 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            spreadRadius: size * 0.04,
-            blurRadius: size * 0.1,
+            spreadRadius: size * 0.02,
+            blurRadius: size * 0.06,
             offset: const Offset(0, 1),
           ),
         ],
       ),
-      padding: EdgeInsets.all(padding),
-      child: CircleAvatar(
-        radius: avatarRadius,
-        backgroundColor: Colors.grey[200],
-        backgroundImage: provider,
-        child: provider == null
-            ? Icon(Icons.person, size: iconSize, color: AppColors.primaryBlack)
-            : null,
+      child: ClipOval(
+        child: provider != null
+            ? Image(
+          image: provider,
+          fit: BoxFit.cover,
+          width: size,
+          height: size,
+        )
+            : Center(
+          child: Icon(Icons.person,
+              size: iconSize, color: AppColors.primaryBlack),
+        ),
       ),
     );
   }

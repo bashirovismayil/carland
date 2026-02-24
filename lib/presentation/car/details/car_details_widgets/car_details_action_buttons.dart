@@ -40,7 +40,7 @@ class SubmitButton extends StatelessWidget {
           const Icon(Icons.check_circle_outline, size: 20),
           const SizedBox(width: AppTheme.spacingSm),
           Text(
-            AppTranslation.translate(AppStrings.continueButton),
+            AppTranslation.translate(AppStrings.addButton),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,

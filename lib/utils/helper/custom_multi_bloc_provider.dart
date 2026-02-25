@@ -21,6 +21,9 @@ import '../../cubit/edit/edit_car_details_cubit.dart';
 import '../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/mileage/update/update_car_mileage_cubit.dart';
+import '../../cubit/notifications/delete_notifications/delete_notification_cubit.dart';
+import '../../cubit/notifications/notifications_list/get_notificatons_cubit.dart';
+import '../../cubit/notifications/read_unread/mark_read_notification_cubit.dart';
 import '../../cubit/photo/car/upload_car_photo_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../../cubit/privacy/privacy_cubit.dart';
@@ -40,6 +43,15 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
           providers: [
             BlocProvider<DeviceTokenCubit>(
               create: (_) => locator<DeviceTokenCubit>(),
+            ),
+            BlocProvider<GetNotificationListCubit>(
+              create: (_) => locator<GetNotificationListCubit>(),
+            ),
+            BlocProvider<MarkNotificationAsReadCubit>(
+              create: (_) => locator<MarkNotificationAsReadCubit>(),
+            ),
+            BlocProvider<DeleteNotificationCubit>(
+              create: (_) => locator<DeleteNotificationCubit>(),
             ),
             BlocProvider<LanguageCubit>(
               create: (_) => locator<LanguageCubit>(),

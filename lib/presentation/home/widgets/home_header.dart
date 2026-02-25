@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/colors/app_colors.dart';
-import '../../../core/constants/texts/app_strings.dart';
-import '../../../core/localization/app_translation.dart';
-import '../../../widgets/profile_photo.dart';
-import '../../../utils/di/locator.dart';
-import '../../../data/remote/services/local/login_local_services.dart';
-// TODO: Adjust this import path to match your project structure.
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/constants/colors/app_colors.dart';
+import '../../../../core/constants/texts/app_strings.dart';
+import '../../../../core/localization/app_translation.dart';
+import '../../../../widgets/profile_photo.dart';
+import '../../../../utils/di/locator.dart';
+import '../../../../data/remote/services/local/login_local_services.dart';
+import '../../../cubit/notifications/notifications_list/get_notifications_state.dart';
+import '../../../cubit/notifications/notifications_list/get_notificatons_cubit.dart';
 import '../../notification/notification_page.dart';
 
 class HomeHeader extends StatelessWidget {
@@ -20,26 +22,24 @@ class HomeHeader extends StatelessWidget {
         const ProfilePhoto(),
         const SizedBox(width: 12),
         Expanded(child: _UserGreeting(userName: userName)),
-        _NotificationIcon(
-          hasUnread: _checkUnreadNotifications(),
-          onTap: () {
-            Navigator.of(context).push(
+        _NotificationIconWithBadge(
+          onTap: () async {
+            await Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const NotificationPage()),
             );
+            if (context.mounted) {
+              context.read<GetNotificationListCubit>().getNotificationList();
+            }
           },
         ),
       ],
     );
   }
-
-  bool _checkUnreadNotifications() {
-    final notifications = generateMockNotifications();
-    return notifications.any((n) => !n.isRead);
-  }
 }
 
 class _UserGreeting extends StatelessWidget {
   final String userName;
+
   const _UserGreeting({required this.userName});
 
   @override
@@ -71,10 +71,12 @@ class _UserGreeting extends StatelessWidget {
 
 class _NotificationIcon extends StatelessWidget {
   final bool hasUnread;
+  final int unreadCount;
   final VoidCallback onTap;
 
   const _NotificationIcon({
     required this.hasUnread,
+    this.unreadCount = 0,
     required this.onTap,
   });
 
@@ -103,21 +105,66 @@ class _NotificationIcon extends StatelessWidget {
             ),
             if (hasUnread)
               Positioned(
-                top: 4,
-                right: 4,
+                top: 2,
+                right: 2,
                 child: Container(
-                  width: 10,
-                  height: 10,
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF3B30),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                  child: Text(
+                    unreadCount > 99 ? '99+' : unreadCount.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _NotificationIconWithBadge extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _NotificationIconWithBadge({
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<GetNotificationListCubit, GetNotificationListState>(
+      builder: (context, state) {
+        bool hasUnread = false;
+        int unreadCount = 0;
+
+        if (state is GetNotificationListSuccess) {
+          final unreadNotifications =
+              state.notifications.where((n) => !n.isRead).toList();
+          hasUnread = unreadNotifications.isNotEmpty;
+          unreadCount = unreadNotifications.length;
+        }
+
+        return _NotificationIcon(
+          hasUnread: hasUnread,
+          unreadCount: unreadCount, // Pass count
+          onTap: onTap,
+        );
+      },
     );
   }
 }

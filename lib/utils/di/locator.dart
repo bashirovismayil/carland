@@ -24,6 +24,9 @@ import '../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../cubit/feedback/send_feedback_cubit.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/mileage/update/update_car_mileage_cubit.dart';
+import '../../cubit/notifications/delete_notifications/delete_notification_cubit.dart';
+import '../../cubit/notifications/notifications_list/get_notificatons_cubit.dart';
+import '../../cubit/notifications/read_unread/mark_read_notification_cubit.dart';
 import '../../cubit/photo/car/upload_car_photo_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../../cubit/privacy/privacy_cubit.dart';
@@ -40,6 +43,7 @@ import '../../data/remote/contractor/brand_list_contractor.dart';
 import '../../data/remote/contractor/check_vin_contractor.dart';
 import '../../data/remote/contractor/delete_account_contractor.dart';
 import '../../data/remote/contractor/delete_car_contractor.dart';
+import '../../data/remote/contractor/delete_notification_contractor.dart';
 import '../../data/remote/contractor/device_token_contractor.dart';
 import '../../data/remote/contractor/edit_car_details_contractor.dart';
 import '../../data/remote/contractor/edit_service_details_contractor.dart';
@@ -51,10 +55,12 @@ import '../../data/remote/contractor/get_car_photo_contractor.dart';
 import '../../data/remote/contractor/get_car_services_contractor.dart';
 import '../../data/remote/contractor/get_color_list_contractor.dart';
 import '../../data/remote/contractor/get_engine_type_contractor.dart';
+import '../../data/remote/contractor/get_notifications_list_contractor.dart';
 import '../../data/remote/contractor/get_record_contractor.dart';
 import '../../data/remote/contractor/get_transmission_type_contractor.dart';
 import '../../data/remote/contractor/get_year_list_contractor.dart';
 import '../../data/remote/contractor/login_contractor.dart';
+import '../../data/remote/contractor/mark_read_notification_contractor.dart';
 import '../../data/remote/contractor/model_list_contractor.dart';
 import '../../data/remote/contractor/otp_contractor.dart';
 import '../../data/remote/contractor/privacy_policy_contractor.dart';
@@ -72,6 +78,7 @@ import '../../data/remote/repository/brand_list_repository.dart';
 import '../../data/remote/repository/check_vin_repository.dart';
 import '../../data/remote/repository/delete_account_repository.dart';
 import '../../data/remote/repository/delete_car_repository.dart';
+import '../../data/remote/repository/delete_notification_repository.dart';
 import '../../data/remote/repository/device_token_repository.dart';
 import '../../data/remote/repository/edit_car_details_repository.dart';
 import '../../data/remote/repository/edit_car_service_detail_repository.dart';
@@ -84,9 +91,11 @@ import '../../data/remote/repository/get_car_records_repository.dart';
 import '../../data/remote/repository/get_car_services_repository.dart';
 import '../../data/remote/repository/get_color_list_repository.dart';
 import '../../data/remote/repository/get_engine_type_repository.dart';
+import '../../data/remote/repository/get_notifications_list_repository.dart';
 import '../../data/remote/repository/get_tranmission_type_repository.dart';
 import '../../data/remote/repository/get_year_list_repository.dart';
 import '../../data/remote/repository/login_repository.dart';
+import '../../data/remote/repository/mark_read_notification_repository.dart';
 import '../../data/remote/repository/model_list_repository.dart';
 import '../../data/remote/repository/otp_repository.dart';
 import '../../data/remote/repository/privacy_policy_repository.dart';
@@ -112,6 +121,7 @@ import '../../data/remote/services/remote/auth_manager_services.dart';
 import '../../data/remote/services/remote/check_vin_service.dart';
 import '../../data/remote/services/remote/delete_account_service.dart';
 import '../../data/remote/services/remote/delete_car_service.dart';
+import '../../data/remote/services/remote/delete_notification_service.dart';
 import '../../data/remote/services/remote/device_token_service.dart';
 import '../../data/remote/services/remote/edit_car_details_service.dart';
 import '../../data/remote/services/remote/edit_services_details_service.dart';
@@ -126,9 +136,11 @@ import '../../data/remote/services/remote/get_car_services_list_service.dart';
 import '../../data/remote/services/remote/get_color_list_service.dart';
 import '../../data/remote/services/remote/get_engine_type_list_service.dart';
 import '../../data/remote/services/remote/get_model_list_service.dart';
+import '../../data/remote/services/remote/get_notifications_list_service.dart';
 import '../../data/remote/services/remote/get_transmission_type_service.dart';
 import '../../data/remote/services/remote/get_year_list_service.dart';
 import '../../data/remote/services/remote/login_service.dart';
+import '../../data/remote/services/remote/mark_read_notification_service.dart';
 import '../../data/remote/services/remote/otp_service.dart';
 import '../../data/remote/services/remote/pin_local_service.dart';
 import '../../data/remote/services/remote/policy_service.dart';
@@ -544,4 +556,42 @@ Future<void> setupLocator() async {
     () => FeedbackRepository(locator<FeedbackService>()),
   );
   locator.registerFactory<FeedbackCubit>(() => FeedbackCubit());
+  // Get Notification List
+  locator.registerLazySingleton<GetNotificationListService>(
+    () => GetNotificationListService(),
+  );
+  locator.registerLazySingleton<GetNotificationListContractor>(
+    () => GetNotificationListRepository(
+      locator<GetNotificationListService>(),
+    ),
+  );
+  locator.registerFactory<GetNotificationListCubit>(
+    () => GetNotificationListCubit(),
+  );
+
+// Mark Notification As Read
+  locator.registerLazySingleton<MarkNotificationAsReadService>(
+    () => MarkNotificationAsReadService(),
+  );
+  locator.registerLazySingleton<MarkNotificationAsReadContractor>(
+    () => MarkNotificationAsReadRepository(
+      locator<MarkNotificationAsReadService>(),
+    ),
+  );
+  locator.registerFactory<MarkNotificationAsReadCubit>(
+    () => MarkNotificationAsReadCubit(),
+  );
+
+// Delete Notification
+  locator.registerLazySingleton<DeleteNotificationService>(
+    () => DeleteNotificationService(),
+  );
+  locator.registerLazySingleton<DeleteNotificationContractor>(
+    () => DeleteNotificationRepository(
+      locator<DeleteNotificationService>(),
+    ),
+  );
+  locator.registerFactory<DeleteNotificationCubit>(
+    () => DeleteNotificationCubit(),
+  );
 }

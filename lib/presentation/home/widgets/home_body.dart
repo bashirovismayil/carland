@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../cubit/add/car/get_car_list_cubit.dart';
 import '../../../cubit/add/car/get_car_list_state.dart';
+import '../../../cubit/notifications/notifications_list/get_notificatons_cubit.dart';
 import 'add_car_button.dart';
 import 'car_list_view.dart';
 import 'empty_state.dart';
@@ -20,9 +21,12 @@ class _HomeBodyState extends State<HomeBody> {
   void initState() {
     super.initState();
     _loadCarList();
+    _loadNotifications();
   }
+
   void _loadCarList() => context.read<GetCarListCubit>().getCarList();
   void _refreshCarList() => context.read<GetCarListCubit>().refreshCarList();
+  void _loadNotifications() => context.read<GetNotificationListCubit>().getNotificationList();
 
   @override
   Widget build(BuildContext context) {

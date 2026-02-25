@@ -138,4 +138,13 @@ class ApiConstants {
 
   static const sendFeedback =
       '$baseUrl/carland/server-carland/api/v1/feedback/push';
+
+  static const getNotificationList =
+      '$baseUrl/carland/server-carland/api/v1/notification/get/list/by/customer';
+
+  static const markNotificationAsRead =
+      '$baseUrl/carland/server-carland/api/v1/notification/edit/byId?notificationId={id}&setRead=';
+
+  static const deleteNotification =
+      '$baseUrl/carland/server-carland/api/v1/notification/delete/byId?notificationId=';
 }

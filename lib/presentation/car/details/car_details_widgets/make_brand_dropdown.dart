@@ -32,7 +32,8 @@ class MakeBrandDropdown extends StatelessWidget {
         final items = brands
             .map((b) => b.brandName as String? ?? '')
             .where((name) => name.isNotEmpty)
-            .toList();
+            .toList()
+          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
         return FormField<String>(
           initialValue: makeController.text,

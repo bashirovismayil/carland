@@ -37,13 +37,13 @@ class ModelDropdownField extends StatelessWidget {
 
         return BlocBuilder<GetCarModelListCubit, GetCarModelListState>(
           builder: (context, state) {
-            final models =
-            state is GetCarModelListSuccess ? state.models : [];
+            final models = state is GetCarModelListSuccess ? state.models : [];
             final isLoading = state is GetCarModelListLoading;
             final items = models
                 .map((m) => m.modelName as String? ?? '')
                 .where((name) => name.isNotEmpty)
-                .toList();
+                .toList()
+              ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
             final isBrandSelected = makeController.text.isNotEmpty;
             final isEnabled = isBrandSelected && !isLoading && items.isNotEmpty;
@@ -51,8 +51,8 @@ class ModelDropdownField extends StatelessWidget {
             final displayText = !isBrandSelected
                 ? AppTranslation.translate(AppStrings.chooseTheBrandFirst)
                 : (modelController.text.isEmpty
-                ? AppTranslation.translate(AppStrings.modelHint)
-                : modelController.text);
+                    ? AppTranslation.translate(AppStrings.modelHint)
+                    : modelController.text);
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,16 +73,16 @@ class ModelDropdownField extends StatelessWidget {
                   onTap: !isEnabled
                       ? null
                       : () {
-                    unfocusAll();
-                    showDropdownMenu(
-                      context: context,
-                      title: AppTranslation.translate(AppStrings.model),
-                      items: items,
-                      controller: modelController,
-                      fieldState: fieldState,
-                      anchorKey: modelDropdownKey,
-                    );
-                  },
+                          unfocusAll();
+                          showDropdownMenu(
+                            context: context,
+                            title: AppTranslation.translate(AppStrings.model),
+                            items: items,
+                            controller: modelController,
+                            fieldState: fieldState,
+                            anchorKey: modelDropdownKey,
+                          );
+                        },
                 ),
                 if (fieldState.hasError)
                   FieldError(text: fieldState.errorText!),

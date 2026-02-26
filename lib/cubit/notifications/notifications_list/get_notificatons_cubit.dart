@@ -18,8 +18,10 @@ class GetNotificationListCubit extends Cubit<GetNotificationListState> {
 
       final notifications = await _notificationRepo.getNotificationList();
 
-      log("Get Notification List Success: ${notifications.length} notifications found");
-      emit(GetNotificationListSuccess(notifications));
+      final sorted = [...notifications]..sort((a, b) => b.id.compareTo(a.id));
+
+      log("Get Notification List Success: ${sorted.length} notifications found");
+      emit(GetNotificationListSuccess(sorted));
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 404) {
         emit(GetNotificationListSuccess([]));

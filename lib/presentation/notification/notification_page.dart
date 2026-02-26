@@ -61,10 +61,14 @@ class _NotificationPageState extends State<NotificationPage> {
   void _onNotificationTapped(GetNotificationListResponse item) {
     if (!item.read) {
       // Mark as read locally
-      context.read<GetNotificationListCubit>().updateNotificationReadStatus(item.id, true);
+      context
+          .read<GetNotificationListCubit>()
+          .updateNotificationReadStatus(item.id, true);
 
       // Call API
-      context.read<MarkNotificationAsReadCubit>().markNotificationAsRead(item.id, true);
+      context
+          .read<MarkNotificationAsReadCubit>()
+          .markNotificationAsRead(item.id, true);
     }
 
     _showNotificationDetail(context, item);
@@ -80,7 +84,8 @@ class _NotificationPageState extends State<NotificationPage> {
     return '${date.day} $monthName ${date.year}';
   }
 
-  void _showNotificationDetail(BuildContext context, GetNotificationListResponse item) {
+  void _showNotificationDetail(
+      BuildContext context, GetNotificationListResponse item) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -92,7 +97,8 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  List<Widget> _buildGroupedList(List<GetNotificationListResponse> notifications) {
+  List<Widget> _buildGroupedList(
+      List<GetNotificationListResponse> notifications) {
     if (notifications.isEmpty) return [];
 
     final Map<DateTime, List<GetNotificationListResponse>> grouped = {};
@@ -107,7 +113,9 @@ class _NotificationPageState extends State<NotificationPage> {
 
     for (final key in sortedKeys) {
       widgets.add(_SectionHeader(date: key));
-      for (final item in grouped[key]!) {
+      final sortedItems = grouped[key]!
+        ..sort((a, b) => b.created.compareTo(a.created));
+      for (final item in sortedItems) {
         widgets.add(
           _DismissibleNotificationCard(
             item: item,
@@ -156,7 +164,8 @@ class _NotificationPageState extends State<NotificationPage> {
           actions: [
             BlocBuilder<GetNotificationListCubit, GetNotificationListState>(
               builder: (context, state) {
-                if (state is GetNotificationListSuccess && _hasUnread(state.notifications)) {
+                if (state is GetNotificationListSuccess &&
+                    _hasUnread(state.notifications)) {
                   return Tooltip(
                     message: AppTranslation.translate(AppStrings.markAllRead),
                     waitDuration: const Duration(milliseconds: 500),
@@ -179,7 +188,8 @@ class _NotificationPageState extends State<NotificationPage> {
           ],
         ),
         body: SafeArea(
-          child: BlocBuilder<GetNotificationListCubit, GetNotificationListState>(
+          child:
+              BlocBuilder<GetNotificationListCubit, GetNotificationListState>(
             builder: (context, state) {
               if (state is GetNotificationListLoading) {
                 return const Center(
@@ -194,11 +204,15 @@ class _NotificationPageState extends State<NotificationPage> {
                 return RefreshIndicator(
                   onRefresh: () async => _loadNotifications(),
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16).copyWith(bottom: 32),
+                    padding: const EdgeInsets.symmetric(horizontal: 16)
+                        .copyWith(bottom: 32),
                     physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics(),
                     ),
-                    children: _buildGroupedList(state.notifications),
+                    children: _buildGroupedList(
+                      [...state.notifications]
+                        ..sort((a, b) => b.created.compareTo(a.created)),
+                    ),
                   ),
                 );
               } else if (state is GetNotificationListError) {
@@ -212,7 +226,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         color: AppColors.errorColor.withOpacity(0.5),
                       ),
                       const SizedBox(height: 16),
-                       Text(
+                      Text(
                         AppTranslation.translate(AppStrings.errorOccurred),
                         style: TextStyle(
                           fontSize: 16,
@@ -386,6 +400,7 @@ class _NotificationDetailSheet extends StatelessWidget {
 
 class _SectionHeader extends StatelessWidget {
   final DateTime date;
+
   const _SectionHeader({required this.date});
 
   String get _label {
@@ -515,7 +530,8 @@ class _NotificationCardContent extends StatelessWidget {
                       style: TextStyle(
                         color: const Color(0xFF1C1C1E),
                         fontSize: 15,
-                        fontWeight: item.read ? FontWeight.w500 : FontWeight.w700,
+                        fontWeight:
+                            item.read ? FontWeight.w500 : FontWeight.w700,
                         letterSpacing: -0.2,
                       ),
                     ),
@@ -559,21 +575,13 @@ class _NotificationIcon extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5E5EA),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Center(
-              child: Image.asset(
-                iconAsset,
-                width: 28,
-                height: 28,
-                color: const Color(0xFF3C3C43),
-                colorBlendMode: BlendMode.srcIn,
-              ),
+          Center(
+            child: Image.asset(
+              iconAsset,
+              width: 35,
+              height: 35,
+              color: const Color(0xFF3C3C43),
+              colorBlendMode: BlendMode.srcIn,
             ),
           ),
           if (showBadge)

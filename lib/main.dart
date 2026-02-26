@@ -1,4 +1,5 @@
 import 'package:carcat/app.dart';
+import 'package:carcat/presentation/notification/notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:carcat/utils/di/locator.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,5 +21,24 @@ Future<void> main() async {
   );
   await init();
   await setupLocator();
+
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateToNotificationPage();
+    });
+  }
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    _navigateToNotificationPage();
+  });
+
   runApp(const CarCatApp());
+}
+
+void _navigateToNotificationPage() {
+  final navigatorKey = locator<GlobalKey<NavigatorState>>();
+  navigatorKey.currentState?.push(
+    MaterialPageRoute(builder: (_) => const NotificationPage()),
+  );
 }

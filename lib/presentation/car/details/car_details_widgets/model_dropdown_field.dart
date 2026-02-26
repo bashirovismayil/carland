@@ -32,6 +32,7 @@ class ModelDropdownField extends StatelessWidget {
         }
         return null;
       },
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       builder: (fieldState) {
         _syncFieldState(fieldState);
 

@@ -4,7 +4,7 @@ import '../../../../core/constants/colors/app_colors.dart';
 import '../../../../core/constants/values/app_theme.dart';
 import 'shared_field_widgets.dart';
 
-class CarTextField extends StatelessWidget {
+class CarTextField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final String hint;
@@ -17,6 +17,7 @@ class CarTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final int? maxLength;
   final FocusNode? focusNode;
+  final AutovalidateMode? autovalidateMode;
 
   const CarTextField({
     super.key,
@@ -32,43 +33,73 @@ class CarTextField extends StatelessWidget {
     this.validator,
     this.maxLength,
     this.focusNode,
+    this.autovalidateMode,
   });
+
+  @override
+  State<CarTextField> createState() => _CarTextFieldState();
+}
+
+class _CarTextFieldState extends State<CarTextField> {
+  final _formFieldKey = GlobalKey<FormFieldState<String>>();
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_syncFormField);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_syncFormField);
+    super.dispose();
+  }
+
+  void _syncFormField() {
+    final fieldState = _formFieldKey.currentState;
+    if (fieldState != null && fieldState.value != widget.controller.text) {
+      fieldState.didChange(widget.controller.text);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return FormField<String>(
-      initialValue: controller.text,
-      validator: validator,
+      key: _formFieldKey,
+      initialValue: widget.controller.text,
+      validator: widget.validator,
+      autovalidateMode:
+      widget.autovalidateMode ?? AutovalidateMode.onUserInteraction,
       builder: (state) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FieldLabel(label: label, isRequired: isRequired),
+          FieldLabel(label: widget.label, isRequired: widget.isRequired),
           const SizedBox(height: AppTheme.spacingSm),
           InputContainer(
-            enabled: enabled,
+            enabled: widget.enabled,
             hasError: state.hasError,
             child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              enabled: enabled,
-              keyboardType: keyboardType,
-              inputFormatters: inputFormatters,
-              textCapitalization: textCapitalization,
-              maxLength: maxLength,
+              controller: widget.controller,
+              focusNode: widget.focusNode,
+              enabled: widget.enabled,
+              keyboardType: widget.keyboardType,
+              inputFormatters: widget.inputFormatters,
+              textCapitalization: widget.textCapitalization,
+              maxLength: widget.maxLength,
               onChanged: (value) => state.didChange(value),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: enabled
+                color: widget.enabled
                     ? AppColors.textPrimary
                     : AppColors.textSecondary,
                 overflow: TextOverflow.ellipsis,
               ),
               maxLines: 1,
               decoration: buildFieldDecoration(
-                hint: hint,
-                svgIcon: svgIcon,
-                enabled: enabled,
+                hint: widget.hint,
+                svgIcon: widget.svgIcon,
+                enabled: widget.enabled,
               ),
             ),
           ),

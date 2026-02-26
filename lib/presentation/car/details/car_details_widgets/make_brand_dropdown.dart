@@ -43,6 +43,7 @@ class MakeBrandDropdown extends StatelessWidget {
             }
             return null;
           },
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           builder: (fieldState) {
             _syncFieldState(fieldState);
 
@@ -102,6 +103,7 @@ class MakeBrandDropdown extends StatelessWidget {
       anchorKey: brandKey,
       onSelected: (selectedBrandName) {
         _onBrandSelected(context, state, selectedBrandName);
+        fieldState.didChange(makeController.text);
       },
     );
   }

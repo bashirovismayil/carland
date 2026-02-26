@@ -46,6 +46,7 @@ class CarDropdownField extends StatelessWidget {
         }
         return null;
       },
+      autovalidateMode: AutovalidateMode.always,
       builder: (fieldState) {
         final items = itemsExtractor(state);
         final isLoading = _isLoadingState(state);
@@ -81,6 +82,7 @@ class CarDropdownField extends StatelessWidget {
                   fieldState: fieldState,
                   anchorKey: dropdownKey,
                 );
+                fieldState.didChange(controller.text);
               },
             ),
             if (fieldState.hasError) FieldError(text: fieldState.errorText!),

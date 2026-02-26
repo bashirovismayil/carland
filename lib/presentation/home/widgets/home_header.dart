@@ -154,7 +154,7 @@ class _NotificationIconWithBadge extends StatelessWidget {
 
         if (state is GetNotificationListSuccess) {
           final unreadNotifications =
-              state.notifications.where((n) => !n.isRead).toList();
+              state.notifications.where((n) => !n.read).toList();
           hasUnread = unreadNotifications.isNotEmpty;
           unreadCount = unreadNotifications.length;
         }

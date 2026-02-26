@@ -24,12 +24,12 @@ class GetNotificationListCubit extends Cubit<GetNotificationListState> {
       log("Get Notification List Error: $e");
     }
   }
-  void updateNotificationReadStatus(int notificationId, bool isRead) {
+  void updateNotificationReadStatus(int notificationId, bool read) {
     final currentState = state;
     if (currentState is GetNotificationListSuccess) {
       final updatedList = currentState.notifications.map((n) {
         if (n.id == notificationId) {
-          return n.copyWith(isRead: isRead);
+          return n.copyWith(read: read);
         }
         return n;
       }).toList();
@@ -53,7 +53,7 @@ class GetNotificationListCubit extends Cubit<GetNotificationListState> {
     final currentState = state;
     if (currentState is GetNotificationListSuccess) {
       final updatedList = currentState.notifications
-          .map((n) => n.copyWith(isRead: true))
+          .map((n) => n.copyWith(read: true))
           .toList();
 
       emit(GetNotificationListSuccess(updatedList));

@@ -49,7 +49,7 @@ class _NotificationPageState extends State<NotificationPage> {
     if (state is GetNotificationListSuccess) {
       context.read<GetNotificationListCubit>().markAllAsRead();
       for (final notification in state.notifications) {
-        if (!notification.isRead) {
+        if (!notification.read) {
           context
               .read<MarkNotificationAsReadCubit>()
               .markNotificationAsRead(notification.id, true);
@@ -59,7 +59,7 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   void _onNotificationTapped(GetNotificationListResponse item) {
-    if (!item.isRead) {
+    if (!item.read) {
       // Mark as read locally
       context.read<GetNotificationListCubit>().updateNotificationReadStatus(item.id, true);
 
@@ -122,7 +122,7 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   bool _hasUnread(List<GetNotificationListResponse> notifications) {
-    return notifications.any((n) => !n.isRead);
+    return notifications.any((n) => !n.read);
   }
 
   @override
@@ -497,7 +497,7 @@ class _NotificationCardContent extends StatelessWidget {
             children: [
               _NotificationIcon(
                 icon: _getIconForType(item.type),
-                showBadge: !item.isRead,
+                showBadge: !item.read,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -511,7 +511,7 @@ class _NotificationCardContent extends StatelessWidget {
                       style: TextStyle(
                         color: const Color(0xFF1C1C1E),
                         fontSize: 15,
-                        fontWeight: item.isRead ? FontWeight.w500 : FontWeight.w700,
+                        fontWeight: item.read ? FontWeight.w500 : FontWeight.w700,
                         letterSpacing: -0.2,
                       ),
                     ),

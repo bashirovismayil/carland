@@ -6,7 +6,7 @@ class GetNotificationListResponse {
   final String title;
   final int customerId;
   final String status;
-  final bool isRead;
+  final bool read;
 
   GetNotificationListResponse({
     required this.id,
@@ -16,7 +16,7 @@ class GetNotificationListResponse {
     required this.title,
     required this.customerId,
     required this.status,
-    required this.isRead,
+    required this.read,
   });
 
   GetNotificationListResponse copyWith({
@@ -27,7 +27,7 @@ class GetNotificationListResponse {
     String? title,
     int? customerId,
     String? status,
-    bool? isRead,
+    bool? read,
   }) =>
       GetNotificationListResponse(
         id: id ?? this.id,
@@ -37,7 +37,7 @@ class GetNotificationListResponse {
         title: title ?? this.title,
         customerId: customerId ?? this.customerId,
         status: status ?? this.status,
-        isRead: isRead ?? this.isRead,
+        read: read ?? this.read,
       );
 
   factory GetNotificationListResponse.fromJson(Map<String, dynamic> json) =>
@@ -49,7 +49,7 @@ class GetNotificationListResponse {
         title: json['title'] as String,
         customerId: json['customerId'] as int,
         status: json['status'] as String,
-        isRead: json['isRead'] as bool,
+        read: json['read'] as bool,
       );
 
   Map<String, dynamic> toJson() => {
@@ -60,6 +60,6 @@ class GetNotificationListResponse {
     'title': title,
     'customerId': customerId,
     'status': status,
-    'isRead': isRead,
+    'read': read,
   };
 }

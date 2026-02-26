@@ -221,6 +221,7 @@ class AppStrings {
   static const String carAddedSubtext = "carAddedSubtext";
 
   static const String gotIt = "gotIt";
+  static const String show = "show";
   static const String checkMyCars = "checkMyCars";
   static const String vinText = "vinText";
   static const String initCam = "Initializing camera";

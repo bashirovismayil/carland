@@ -28,6 +28,7 @@ class CarServicesDetailPage extends StatefulWidget {
 class _CarServicesDetailPageState extends State<CarServicesDetailPage>
     with CarUpdateHandler {
   late PageController _pageController;
+  late ScrollController _scrollController;
   late CarServicesController _controller;
 
   @override
@@ -40,6 +41,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
       initialPage: widget.initialCarIndex,
       viewportFraction: 0.85,
     );
+    _scrollController = ScrollController();
     _controller = CarServicesController(
       carListCubit: context.read<GetCarListCubit>(),
       carServicesCubit: context.read<GetCarServicesCubit>(),
@@ -51,6 +53,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
   @override
   void dispose() {
     _pageController.dispose();
+    _scrollController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -61,6 +64,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
       backgroundColor: AppColors.backgroundGrey,
       body: SafeArea(
         child: CustomScrollView(
+          controller: _scrollController,
           slivers: [
             const SliverToBoxAdapter(
               child: CarServicesHeader(),
@@ -89,6 +93,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
             ServicesSection(
               isAddNewCarSelected: _controller.currentCarIndex >= _controller.carList.length,
               onRefresh: _onRefresh,
+              scrollController: _scrollController,
             ),
           ],
         ),

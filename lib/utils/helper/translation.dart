@@ -131,6 +131,11 @@ class Translations {
       'en': 'Got It',
       'ru': 'Понятно',
     },
+    AppStrings.show: {
+      'az': 'Göstər',
+      'en': 'Show',
+      'ru': 'Показать',
+    },
 
     // Language Selection
     AppStrings.selectLanguageToContinue: {

@@ -11,11 +11,13 @@ import 'services_list.dart';
 class ServicesSection extends StatefulWidget {
   final bool isAddNewCarSelected;
   final VoidCallback onRefresh;
+  final ScrollController scrollController;
 
   const ServicesSection({
     super.key,
     required this.isAddNewCarSelected,
     required this.onRefresh,
+    required this.scrollController,
   });
 
   @override
@@ -55,6 +57,7 @@ class _ServicesSectionState extends State<ServicesSection> {
             carId: state.servicesData.carId ?? 0,
             isLoading: false,
             onRefresh: widget.onRefresh,
+            scrollController: widget.scrollController,
           );
         }
 
@@ -75,6 +78,7 @@ class _ServicesSectionState extends State<ServicesSection> {
             carId: carId,
             isLoading: true,
             onRefresh: widget.onRefresh,
+            scrollController: widget.scrollController,
           );
         }
 

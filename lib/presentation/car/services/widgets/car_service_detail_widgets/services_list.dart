@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
 import '../../../../../core/constants/values/app_theme.dart';
 import '../../../../../core/localization/app_translation.dart';
@@ -14,6 +15,7 @@ class ServicesList extends StatefulWidget {
   final int carId;
   final bool isLoading;
   final VoidCallback onRefresh;
+  final ScrollController scrollController;
 
   const ServicesList({
     super.key,
@@ -21,6 +23,7 @@ class ServicesList extends StatefulWidget {
     required this.carId,
     required this.isLoading,
     required this.onRefresh,
+    required this.scrollController,
   });
 
   @override
@@ -45,8 +48,75 @@ class _ServicesListState extends State<ServicesList> {
       _sortedServices.where((s) => _hiddenServicesService.isHidden(s.percentageId)).toList();
 
   void _onToggleHidden(int percentageId) {
+    final wasVisible = !_hiddenServicesService.isHidden(percentageId);
     _hiddenServicesService.toggleHidden(percentageId);
     setState(() {});
+
+    if (wasVisible) {
+      _showHiddenSnackBar();
+    }
+  }
+
+  void _showHiddenSnackBar() {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    final count = _hiddenServices.length;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(
+              Icons.visibility_off_outlined,
+              size: 16,
+              color: Colors.white.withOpacity(0.7),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '${AppTranslation.translate(AppStrings.hiddenServices)} ($count)',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        action: SnackBarAction(
+          label: AppTranslation.translate(AppStrings.show),
+          textColor: Colors.white,
+          onPressed: _scrollToHiddenSection,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: AppColors.primaryBlack,
+        duration: const Duration(seconds: 3),
+        dismissDirection: DismissDirection.down,
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+          left: 24,
+          right: 24,
+        ),
+      ),
+    );
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+    });
+  }
+
+  void _scrollToHiddenSection() {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    setState(() => _hiddenSectionExpanded = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sc = widget.scrollController;
+      if (sc.hasClients) {
+        sc.animateTo(
+          sc.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    });
   }
 
   @override

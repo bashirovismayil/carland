@@ -48,6 +48,9 @@ class GetNotificationListService {
       }
     } on DioException catch (e) {
       log('[GetNotificationListService] DioException: $e');
+      if (e.response?.statusCode == 404) {
+        return [];
+      }
       if (e.response != null) {
         final message = _getErrorMessage(e.response?.statusCode ?? 0);
         throw Exception(message);

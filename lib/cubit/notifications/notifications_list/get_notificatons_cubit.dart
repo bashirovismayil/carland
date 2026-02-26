@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/remote/contractor/get_notifications_list_contractor.dart';
 import '../../../utils/di/locator.dart';
@@ -20,10 +21,15 @@ class GetNotificationListCubit extends Cubit<GetNotificationListState> {
       log("Get Notification List Success: ${notifications.length} notifications found");
       emit(GetNotificationListSuccess(notifications));
     } catch (e) {
-      emit(GetNotificationListError(e.toString()));
+      if (e is DioException && e.response?.statusCode == 404) {
+        emit(GetNotificationListSuccess([]));
+      } else {
+        emit(GetNotificationListError(e.toString()));
+      }
       log("Get Notification List Error: $e");
     }
   }
+
   void updateNotificationReadStatus(int notificationId, bool read) {
     final currentState = state;
     if (currentState is GetNotificationListSuccess) {

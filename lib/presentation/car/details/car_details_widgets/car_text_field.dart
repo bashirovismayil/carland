@@ -79,6 +79,7 @@ class _CarTextFieldState extends State<CarTextField> {
             enabled: widget.enabled,
             hasError: state.hasError,
             child: TextField(
+              textInputAction: TextInputAction.done,
               controller: widget.controller,
               focusNode: widget.focusNode,
               enabled: widget.enabled,

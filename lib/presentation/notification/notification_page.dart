@@ -578,8 +578,8 @@ class _NotificationIcon extends StatelessWidget {
           ),
           if (showBadge)
             Positioned(
-              top: -1,
-              right: -1,
+              top: 3,
+              right: 3,
               child: Container(
                 width: 10,
                 height: 10,

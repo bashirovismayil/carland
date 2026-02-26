@@ -60,12 +60,10 @@ class _NotificationPageState extends State<NotificationPage> {
 
   void _onNotificationTapped(GetNotificationListResponse item) {
     if (!item.read) {
-      // Mark as read locally
       context
           .read<GetNotificationListCubit>()
           .updateNotificationReadStatus(item.id, true);
 
-      // Call API
       context
           .read<MarkNotificationAsReadCubit>()
           .markNotificationAsRead(item.id, true);
@@ -166,20 +164,33 @@ class _NotificationPageState extends State<NotificationPage> {
               builder: (context, state) {
                 if (state is GetNotificationListSuccess &&
                     _hasUnread(state.notifications)) {
-                  return Tooltip(
-                    message: AppTranslation.translate(AppStrings.markAllRead),
-                    waitDuration: const Duration(milliseconds: 500),
-                    child: TextButton(
-                      onPressed: _onMarkAllAsReadTapped,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/svg/tick_icon.svg',
-                        width: 22,
-                        height: 22,
-                      ),
+                  return PopupMenuButton<String>(
+                    onSelected: (value) => _onMarkAllAsReadTapped(),
+                    color: AppColors.primaryWhite,
+                    surfaceTintColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    offset: const Offset(0, 45),
+                    icon: SvgPicture.asset(
+                      'assets/svg/tick_icon.svg',
+                      width: 22,
+                      height: 22,
+                    ),
+                    itemBuilder: (_) => [
+                      PopupMenuItem<String>(
+                        value: 'markAllRead',
+                        height: 40,
+                        child: Text(
+                          AppTranslation.translate(AppStrings.markAllRead),
+                          style: const TextStyle(
+                            color: Color(0xFF1C1C1E),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   );
                 }
                 return const SizedBox.shrink();

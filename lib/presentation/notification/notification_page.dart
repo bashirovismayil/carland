@@ -259,16 +259,16 @@ class _NotificationDetailSheet extends StatelessWidget {
     required this.formattedDate,
   });
 
-  IconData _getIconForType(String type) {
+  String _getIconForType(String type) {
     switch (type.toLowerCase()) {
       case 'service':
-        return Icons.build_outlined;
+        return 'assets/png/carcat_logo.png';
       case 'reminder':
-        return Icons.notifications_outlined;
+        return 'assets/png/carcat_logo.png';
       case 'alert':
-        return Icons.warning_amber_outlined;
+        return 'assets/png/carcat_logo.png';
       default:
-        return Icons.info_outlined;
+        return 'assets/png/carcat_logo.png';
     }
   }
 
@@ -297,16 +297,20 @@ class _NotificationDetailSheet extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Container(
-                width: 56,
-                height: 56,
+                width: 50,
+                height: 50,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF2F2F7),
                   borderRadius: BorderRadius.circular(28),
                 ),
-                child: Icon(
-                  _getIconForType(item.type),
-                  color: const Color(0xFF3C3C43),
-                  size: 28,
+                child: Center(
+                  child: Image.asset(
+                    _getIconForType(item.type),
+                    width: 35,
+                    height: 35,
+                    color: const Color(0xFF3C3C43),
+                    colorBlendMode: BlendMode.srcIn,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -469,16 +473,16 @@ class _NotificationCardContent extends StatelessWidget {
     required this.onTap,
   });
 
-  IconData _getIconForType(String type) {
+  String _getIconForType(String type) {
     switch (type.toLowerCase()) {
       case 'service':
-        return Icons.build_outlined;
+        return 'assets/png/carcat_logo.png';
       case 'reminder':
-        return Icons.notifications_outlined;
+        return 'assets/png/carcat_logo.png';
       case 'alert':
-        return Icons.warning_amber_outlined;
+        return 'assets/png/carcat_logo.png';
       default:
-        return Icons.info_outlined;
+        return 'assets/png/carcat_logo.png';
     }
   }
 
@@ -496,7 +500,7 @@ class _NotificationCardContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _NotificationIcon(
-                icon: _getIconForType(item.type),
+                iconAsset: _getIconForType(item.type),
                 showBadge: !item.read,
               ),
               const SizedBox(width: 12),
@@ -539,11 +543,11 @@ class _NotificationCardContent extends StatelessWidget {
 }
 
 class _NotificationIcon extends StatelessWidget {
-  final IconData icon;
+  final String iconAsset;
   final bool showBadge;
 
   const _NotificationIcon({
-    required this.icon,
+    required this.iconAsset,
     this.showBadge = false,
   });
 
@@ -553,27 +557,39 @@ class _NotificationIcon extends StatelessWidget {
       width: 44,
       height: 44,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
               color: const Color(0xFFE5E5EA),
               borderRadius: BorderRadius.circular(22),
             ),
-            child: Icon(icon, color: const Color(0xFF3C3C43), size: 22),
+            child: Center(
+              child: Image.asset(
+                iconAsset,
+                width: 28,
+                height: 28,
+                color: const Color(0xFF3C3C43),
+                colorBlendMode: BlendMode.srcIn,
+              ),
+            ),
           ),
           if (showBadge)
             Positioned(
-              top: 0,
-              right: 0,
+              top: -1,
+              right: -1,
               child: Container(
                 width: 10,
                 height: 10,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF3B30),
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFF2F2F7), width: 1.5),
+                  border: Border.all(
+                    color: const Color(0xFFF2F2F7),
+                    width: 1.5,
+                  ),
                 ),
               ),
             ),

@@ -36,8 +36,15 @@ class _ServicesListState extends State<ServicesList> {
 
   List<ResponseList> get _sortedServices {
     final sorted = List<ResponseList>.from(widget.services)
-      ..sort((a, b) => ServicePercentageCalculator.getEffectivePercentage(a)
-          .compareTo(ServicePercentageCalculator.getEffectivePercentage(b)));
+      ..sort((a, b) {
+        final aNeedsEdit = a.lastServiceKm == 0;
+        final bNeedsEdit = b.lastServiceKm == 0;
+        if (aNeedsEdit != bNeedsEdit) {
+          return aNeedsEdit ? 1 : -1;
+        }
+        return ServicePercentageCalculator.getEffectivePercentage(a)
+            .compareTo(ServicePercentageCalculator.getEffectivePercentage(b));
+      });
     return sorted;
   }
 

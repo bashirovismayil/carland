@@ -81,6 +81,21 @@ class _ServiceCardState extends State<ServiceCard>
   }
 
   @override
+  void didUpdateWidget(covariant ServiceCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.service.percentageId != widget.service.percentageId) {
+      final needsEdit = widget.service.lastServiceKm == 0;
+      if (!needsEdit) {
+        _isExpanded = true;
+        _controller.value = 1.0;
+      } else {
+        _isExpanded = false;
+        _controller.value = 0.0;
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

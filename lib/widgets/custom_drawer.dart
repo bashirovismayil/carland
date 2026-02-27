@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// ❌ REMOVED: import '../../core/extensions/photo/profile/image_cache_extension.dart';
 import '../../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_cubit.dart';
 import '../../cubit/photo/profile/profile_photo_state.dart';
 import '../../utils/di/locator.dart';
+import '../presentation/settings/settings_page.dart';
+import '../presentation/settings/support/support_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   final String userName;
@@ -98,7 +99,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       ),
                     ),
                   ),
-                  // Close button
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
@@ -128,16 +128,66 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 child: Text(
                   ' ${widget.userName} ${widget.userSurname}',
                   style: const TextStyle(
-                    fontSize: 22,
+                    fontSize: 21,
                     fontWeight: FontWeight.w800,
                     color: Colors.black87,
                   ),
                 ),
               ),
 
+              const SizedBox(height: 35),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SupportPage()),
+                  );
+                },
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/svg/bubble_chat.svg',
+                      height: 26,
+                    ),
+                    const SizedBox(width: 12),
+                     Text(
+                      AppTranslation.translate(AppStrings.supportText),
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SettingsPage()),
+                  );
+                },
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/svg/drawer_settings.svg',
+                      height: 26,
+                    ),
+                    const SizedBox(width: 12),
+                     Text(
+                      AppTranslation.translate(AppStrings.settings),
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const Spacer(),
-
-              // Logout Button
               SizedBox(
                 width: double.infinity,
                 height: 56,

@@ -11,7 +11,7 @@ class HistoryPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Lottie.asset(
-            'assets/svg/coming_soon_animation.json',
+            'assets/lottie/coming_soon_animation.json',
             width: 200,
             height: 200,
             repeat: true,

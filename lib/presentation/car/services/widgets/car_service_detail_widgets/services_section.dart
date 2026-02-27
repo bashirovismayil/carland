@@ -12,12 +12,14 @@ class ServicesSection extends StatefulWidget {
   final bool isAddNewCarSelected;
   final VoidCallback onRefresh;
   final ScrollController scrollController;
+  final int? carModelYear;
 
   const ServicesSection({
     super.key,
     required this.isAddNewCarSelected,
     required this.onRefresh,
     required this.scrollController,
+    this.carModelYear,
   });
 
   @override
@@ -58,6 +60,7 @@ class _ServicesSectionState extends State<ServicesSection> {
             isLoading: false,
             onRefresh: widget.onRefresh,
             scrollController: widget.scrollController,
+            carModelYear: widget.carModelYear,
           );
         }
 
@@ -79,6 +82,7 @@ class _ServicesSectionState extends State<ServicesSection> {
             isLoading: true,
             onRefresh: widget.onRefresh,
             scrollController: widget.scrollController,
+            carModelYear: widget.carModelYear,
           );
         }
 

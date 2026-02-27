@@ -16,6 +16,7 @@ class ServicesList extends StatefulWidget {
   final bool isLoading;
   final VoidCallback onRefresh;
   final ScrollController scrollController;
+  final int? carModelYear;
 
   const ServicesList({
     super.key,
@@ -24,6 +25,7 @@ class ServicesList extends StatefulWidget {
     required this.isLoading,
     required this.onRefresh,
     required this.scrollController,
+    this.carModelYear,
   });
 
   @override
@@ -166,6 +168,7 @@ class _ServicesListState extends State<ServicesList> {
           isHidden: isHidden,
           onRefresh: widget.onRefresh,
           onToggleHidden: () => _onToggleHidden(service.percentageId),
+          carModelYear: widget.carModelYear,
         ),
       ),
     );

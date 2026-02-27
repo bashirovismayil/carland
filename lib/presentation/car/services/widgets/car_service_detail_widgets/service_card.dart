@@ -14,6 +14,7 @@ class ServiceCard extends StatefulWidget {
   final bool isHidden;
   final VoidCallback onRefresh;
   final VoidCallback onToggleHidden;
+  final int? carModelYear;
 
   const ServiceCard({
     super.key,
@@ -22,6 +23,7 @@ class ServiceCard extends StatefulWidget {
     required this.isHidden,
     required this.onRefresh,
     required this.onToggleHidden,
+    this.carModelYear,
   });
 
   @override
@@ -221,6 +223,7 @@ class _ServiceCardState extends State<ServiceCard>
                               carId: widget.carId,
                               serviceName: widget.service.serviceName,
                               onRefresh: widget.onRefresh,
+                              carModelYear: widget.carModelYear,
                             ),
                           ] else ...[
                             ServiceCardHeader(

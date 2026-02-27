@@ -94,6 +94,9 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
               isAddNewCarSelected: _controller.currentCarIndex >= _controller.carList.length,
               onRefresh: _onRefresh,
               scrollController: _scrollController,
+              carModelYear: _controller.currentCarIndex < _controller.carList.length
+                  ? _controller.carList[_controller.currentCarIndex].modelYear
+                  : null,
             ),
           ],
         ),

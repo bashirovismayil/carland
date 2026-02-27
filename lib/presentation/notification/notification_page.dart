@@ -320,25 +320,17 @@ class _NotificationDetailSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 24),
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F7),
-                  borderRadius: BorderRadius.circular(28),
-                ),
-                child: Center(
+              const SizedBox(height: 15),
+             Center(
                   child: Image.asset(
                     _getIconForType(item.type),
-                    width: 35,
-                    height: 35,
+                    width: 45,
+                    height: 45,
                     color: const Color(0xFF3C3C43),
                     colorBlendMode: BlendMode.srcIn,
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Text(
                 item.title,
                 textAlign: TextAlign.center,

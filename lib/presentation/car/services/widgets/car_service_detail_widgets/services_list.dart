@@ -175,7 +175,22 @@ class _ServicesListState extends State<ServicesList> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
       child: GestureDetector(
-        onTap: () => setState(() => _hiddenSectionExpanded = !_hiddenSectionExpanded),
+        onTap: () {
+          setState(() => _hiddenSectionExpanded = !_hiddenSectionExpanded);
+          if (_hiddenSectionExpanded) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final sc = widget.scrollController;
+              if (sc.hasClients) {
+                final target = (sc.offset + 250).clamp(0.0, sc.position.maxScrollExtent);
+                sc.animateTo(
+                  target,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                );
+              }
+            });
+          }
+        },
         child: Row(
           children: [
             Expanded(child: Divider(color: Colors.grey.shade300)),

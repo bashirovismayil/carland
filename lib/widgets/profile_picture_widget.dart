@@ -35,6 +35,7 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
       _cubit.getProfilePhoto();
     });
   }
+
   void _showSnack(String msg, {Color color = Colors.red}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -65,7 +66,8 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.camera_alt, color: AppColors.primaryBlack),
+                leading:
+                Icon(Icons.camera_alt, color: AppColors.primaryBlack),
                 title: Text(AppTranslation.translate(AppStrings.useCamera)),
                 onTap: () {
                   Navigator.pop(context);
@@ -119,16 +121,15 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
   }
 
   ImageProvider? _getImageProvider(ProfilePhotoState state) {
-    if (_imageFile != null) return FileImage(_imageFile!);
     if (state is ProfilePhotoLoaded) return MemoryImage(state.imageData);
     if (_cubit.cachedImage != null) return MemoryImage(_cubit.cachedImage!);
+    if (_imageFile != null) return FileImage(_imageFile!);
     return null;
   }
 
   Widget _buildAvatar(
       ImageProvider? provider, ProfilePhotoState state, double size) {
     final borderWidth = (size * 0.04).clamp(1.5, 4.0);
-    final avatarRadius = size / 2;
     final iconSize = size * 0.5;
 
     return Container(
@@ -136,7 +137,8 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.primaryBlack, width: borderWidth),
+        border:
+        Border.all(color: AppColors.primaryBlack, width: borderWidth),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -223,8 +225,8 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
               height: progressSize,
               child: CircularProgressIndicator(
                 strokeWidth: strokeWidth,
-                valueColor:
-                const AlwaysStoppedAnimation<Color>(AppColors.primaryBlack),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.primaryBlack),
               ),
             ),
           ),
@@ -241,9 +243,17 @@ class _ProfilePictureWidgetState extends State<ProfilePictureWidget> {
       child: BlocConsumer<ProfilePhotoCubit, ProfilePhotoState>(
         listener: (context, state) {
           if (state is ProfilePhotoUploadSuccess) {
-            _showSnack(AppTranslation.translate(AppStrings.uploadSuccess),
-                color: AppColors.primaryBlack);
+            setState(() {
+              _imageFile = null;
+            });
+            _showSnack(
+              AppTranslation.translate(AppStrings.uploadSuccess),
+              color: AppColors.primaryBlack,
+            );
           } else if (state is ProfilePhotoUploadError) {
+            setState(() {
+              _imageFile = null;
+            });
             _showSnack(
                 '${AppTranslation.translate(AppStrings.uploadFailed)}: ${state.message}');
           }

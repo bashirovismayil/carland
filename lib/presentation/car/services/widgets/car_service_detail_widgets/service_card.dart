@@ -15,6 +15,8 @@ class ServiceCard extends StatefulWidget {
   final VoidCallback onRefresh;
   final VoidCallback onToggleHidden;
   final int? carModelYear;
+  final VoidCallback? onExpand;
+  final bool isForceCollapsed;
 
   const ServiceCard({
     super.key,
@@ -24,6 +26,8 @@ class ServiceCard extends StatefulWidget {
     required this.onRefresh,
     required this.onToggleHidden,
     this.carModelYear,
+    this.onExpand,
+    this.isForceCollapsed = false,
   });
 
   @override
@@ -94,6 +98,14 @@ class _ServiceCardState extends State<ServiceCard>
         _isExpanded = false;
         _controller.value = 0.0;
       }
+      return;
+    }
+    if (_needsEdit &&
+        widget.isForceCollapsed != oldWidget.isForceCollapsed &&
+        widget.isForceCollapsed &&
+        _isExpanded) {
+      _isExpanded = false;
+      _controller.reverse();
     }
   }
 
@@ -107,6 +119,7 @@ class _ServiceCardState extends State<ServiceCard>
     if (!_needsEdit) return;
     _isExpanded = !_isExpanded;
     if (_isExpanded) {
+      widget.onExpand?.call();
       _controller.forward();
     } else {
       _controller.reverse();
@@ -116,7 +129,7 @@ class _ServiceCardState extends State<ServiceCard>
   @override
   Widget build(BuildContext context) {
     final percentage =
-        ServicePercentageCalculator.getEffectivePercentage(widget.service);
+    ServicePercentageCalculator.getEffectivePercentage(widget.service);
     final needsEdit = _needsEdit;
 
     return AnimatedOpacity(
@@ -250,7 +263,7 @@ class _ServiceCardState extends State<ServiceCard>
                               isForNextService: true,
                               hasIntervalKm: widget.service.intervalKm > 0,
                               hasIntervalMonth:
-                                  widget.service.intervalMonth > 0,
+                              widget.service.intervalMonth > 0,
                             ),
                           ],
                           if (needsEdit) ...[

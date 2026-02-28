@@ -35,6 +35,7 @@ class ServicesList extends StatefulWidget {
 class _ServicesListState extends State<ServicesList> {
   final _hiddenServicesService = locator<HiddenServicesLocalService>();
   bool _hiddenSectionExpanded = false;
+  int? _expandedPercentageId;
 
   List<ResponseList> get _sortedServices {
     final sorted = List<ResponseList>.from(widget.services)
@@ -63,6 +64,12 @@ class _ServicesListState extends State<ServicesList> {
 
     if (wasVisible) {
       _showHiddenSnackBar();
+    }
+  }
+
+  void _onCardExpanded(int percentageId) {
+    if (_expandedPercentageId != percentageId) {
+      setState(() => _expandedPercentageId = percentageId);
     }
   }
 
@@ -157,6 +164,7 @@ class _ServicesListState extends State<ServicesList> {
   }
 
   Widget _buildServiceCard(ResponseList service, {required bool isHidden}) {
+    final needsEdit = service.lastServiceKm == 0;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
       child: AnimatedOpacity(
@@ -169,6 +177,9 @@ class _ServicesListState extends State<ServicesList> {
           onRefresh: widget.onRefresh,
           onToggleHidden: () => _onToggleHidden(service.percentageId),
           carModelYear: widget.carModelYear,
+          onExpand: needsEdit ? () => _onCardExpanded(service.percentageId) : null,
+          isForceCollapsed: needsEdit && _expandedPercentageId != null
+              && _expandedPercentageId != service.percentageId,
         ),
       ),
     );

@@ -175,6 +175,9 @@ class CarDetailsFormBody extends StatelessWidget {
   }
 
   Widget _buildEngineTypeDropdown(BuildContext context) {
+    final isFromDecoder = carData.resource == 'fromDecoderTool' &&
+        controllers.engineType.text.isNotEmpty;
+
     return CarDropdownField(
       controller: controllers.engineType,
       label: AppTranslation.translate(AppStrings.engineType),
@@ -187,6 +190,7 @@ class CarDetailsFormBody extends StatelessWidget {
         }
         return [];
       },
+      enabled: !isFromDecoder,
       isRequired: true,
       dropdownKey: dropdownKeys.engineType,
       onTap: unfocusAll,
@@ -214,13 +218,16 @@ class CarDetailsFormBody extends StatelessWidget {
   }
 
   Widget _buildMileageField() {
+    final isFromDecoder = carData.resource == 'fromDecoderTool' &&
+        controllers.mileage.text.isNotEmpty;
+
     return CarTextField(
       controller: controllers.mileage,
       focusNode: controllers.mileageFocus,
       label: AppTranslation.translate(AppStrings.currentMileage),
       hint: AppTranslation.translate(AppStrings.mileageHint),
       svgIcon: 'assets/svg/odometer_icon.svg',
-      enabled: true,
+      enabled: !isFromDecoder,
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 6,

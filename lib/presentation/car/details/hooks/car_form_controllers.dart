@@ -13,12 +13,18 @@ CarFormControllers useCarFormControllers(CheckVinResponse carData) {
     text: carData.engineVolume != null ? '${carData.engineVolume}' : '',
   );
   final transmission = useTextEditingController();
-  final engineType = useTextEditingController();
+  final isFromDecoder = carData.resource == 'fromDecoderTool';
+
+  final engineType = useTextEditingController(
+    text: isFromDecoder ? (carData.engineType ?? '') : '',
+  );
   final year = useTextEditingController(
     text: carData.modelYear != null ? '${carData.modelYear}' : '',
   );
   final mileage = useTextEditingController(
-    text: carData.mileage != null ? '${carData.mileage}' : '',
+    text: isFromDecoder
+        ? (carData.mileage != null ? '${carData.mileage}' : '')
+        : '',
   );
   final bodyType = useTextEditingController(text: carData.bodyType ?? '');
 

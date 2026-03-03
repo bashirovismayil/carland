@@ -46,7 +46,7 @@ class CarDropdownField extends StatelessWidget {
         }
         return null;
       },
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       builder: (fieldState) {
         final items = itemsExtractor(state);
         final isLoading = _isLoadingState(state);

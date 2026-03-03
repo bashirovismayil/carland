@@ -22,12 +22,15 @@ class ServicesListHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                AppTranslation.translate(AppStrings.schedule),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+              Padding(
+                padding: const EdgeInsets.only(left: 2.0),
+                child: Text(
+                  AppTranslation.translate(AppStrings.schedule),
+                  style: const TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
               // TextButton(

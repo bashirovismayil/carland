@@ -32,7 +32,7 @@ class ServiceCardHeader extends StatelessWidget {
         const SizedBox(width: 12),
         CircularPercentageChart(
           percentage: percentage,
-          size: 70,
+          size: 60,
           strokeWidth: 7,
           getColor: ServicePercentageCalculator.getChartColor,
         ),

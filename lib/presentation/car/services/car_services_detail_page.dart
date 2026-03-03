@@ -69,7 +69,7 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
             const SliverToBoxAdapter(
               child: CarServicesHeader(),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            const SliverToBoxAdapter(child: SizedBox(height: 15)),
             SliverToBoxAdapter(
               child: CarCarousel(
                 pageController: _pageController,
@@ -82,14 +82,14 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
                 onUpdateMileage: handleUpdateMileage,
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            const SliverToBoxAdapter(child: SizedBox(height: 8)),
             SliverToBoxAdapter(
               child: DotIndicator(
                 itemCount: _controller.carList.length + 1,
                 currentIndex: _controller.currentCarIndex,
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
             ServicesSection(
               isAddNewCarSelected: _controller.currentCarIndex >= _controller.carList.length,
               onRefresh: _onRefresh,

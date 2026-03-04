@@ -176,7 +176,7 @@ class CarDetailsFormBody extends StatelessWidget {
 
   Widget _buildEngineTypeDropdown(BuildContext context) {
     final isFromDecoder = carData.resource == 'fromDecoderTool' &&
-        controllers.engineType.text.isNotEmpty;
+        carData.engineType != null;
 
     return CarDropdownField(
       controller: controllers.engineType,
@@ -219,7 +219,7 @@ class CarDetailsFormBody extends StatelessWidget {
 
   Widget _buildMileageField() {
     final isFromDecoder = carData.resource == 'fromDecoderTool' &&
-        controllers.mileage.text.isNotEmpty;
+        carData.mileage != null;
 
     return CarTextField(
       controller: controllers.mileage,

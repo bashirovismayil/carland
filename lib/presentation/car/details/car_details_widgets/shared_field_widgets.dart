@@ -41,6 +41,7 @@ class FieldLabel extends StatelessWidget {
 
 class FieldError extends StatelessWidget {
   final String text;
+
   const FieldError({super.key, required this.text});
 
   @override
@@ -80,12 +81,12 @@ class InputContainer extends StatelessWidget {
         ),
         boxShadow: enabled
             ? [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ]
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
             : null,
       ),
       child: child,
@@ -160,9 +161,7 @@ class DropdownContainer extends StatelessWidget {
                   child: SvgPicture.asset(
                     svgIcon!,
                     colorFilter: ColorFilter.mode(
-                      enabled
-                          ? AppColors.textSecondary
-                          : Colors.grey.shade400,
+                      enabled ? AppColors.textSecondary : Colors.grey.shade400,
                       BlendMode.srcIn,
                     ),
                     width: 20,
@@ -172,9 +171,7 @@ class DropdownContainer extends StatelessWidget {
               Expanded(child: _buildContent()),
               Icon(
                 Icons.keyboard_arrow_down_rounded,
-                color: enabled
-                    ? AppColors.textSecondary
-                    : Colors.grey.shade400,
+                color: enabled ? AppColors.textSecondary : Colors.grey.shade400,
                 size: 20,
               ),
             ],
@@ -200,9 +197,11 @@ class DropdownContainer extends StatelessWidget {
       style: TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.w500,
-        color: (!enabled || isEmpty)
+        color: isEmpty
             ? AppColors.textSecondary.withOpacity(0.5)
-            : AppColors.textPrimary,
+            : enabled
+                ? AppColors.textPrimary
+                : AppColors.textSecondary,
       ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

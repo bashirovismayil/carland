@@ -46,9 +46,11 @@ class CarFormScenario {
 
   bool get isBrandEditable => scenario == BrandModelScenario.bothMissing;
   bool get isModelEditable => scenario != BrandModelScenario.bothFromVin;
+  bool get isEngineVolumeEditable => !hasEngineVolume;
+  bool get isYearEditable => !hasModelYear;
+  bool get isBodyTypeEditable => !hasBodyType;
 }
 
-/// Tüm text controller'ları ve focus node'ları tutan veri sınıfı.
 class CarFormControllers {
   final TextEditingController vin;
   final TextEditingController plate;

@@ -175,7 +175,7 @@ class CarDetailsFormBody extends StatelessWidget {
   }
 
   Widget _buildEngineTypeDropdown(BuildContext context) {
-    final isFromDecoder = carData.resource == 'fromDecoderTool' &&
+    final isFromDecoder = carData.resource == 'fromDb' &&
         carData.engineType != null;
 
     return CarDropdownField(

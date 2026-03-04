@@ -1378,6 +1378,11 @@ class Translations {
       'en': 'Last service mileage',
       'ru': 'Пробег при последнем обслуживании',
     },
+    AppStrings.lastServiceMileageMustNotBeGreaterThan: {
+      'az': 'Son servis yürüşü cari yürüşdən böyük olmamalıdır. Cari yürüş:',
+      'en': 'Last service mileage must not be greater than current mileage:',
+      'ru': 'Пробег при последнем обслуживании не должен быть больше текущего пробега:',
+    },
     AppStrings.lastServiceMileageHint: {
       'az': '70092 km',
       'en': '70092 km',

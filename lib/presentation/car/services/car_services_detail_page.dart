@@ -97,6 +97,9 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
               carModelYear: _controller.currentCarIndex < _controller.carList.length
                   ? _controller.carList[_controller.currentCarIndex].modelYear
                   : null,
+              currentMileage: _controller.currentCarIndex < _controller.carList.length
+                  ? _controller.carList[_controller.currentCarIndex].mileage
+                  : null,
             ),
           ],
         ),

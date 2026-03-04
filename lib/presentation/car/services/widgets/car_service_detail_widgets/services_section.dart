@@ -13,6 +13,7 @@ class ServicesSection extends StatefulWidget {
   final VoidCallback onRefresh;
   final ScrollController scrollController;
   final int? carModelYear;
+  final int? currentMileage;
 
   const ServicesSection({
     super.key,
@@ -20,6 +21,7 @@ class ServicesSection extends StatefulWidget {
     required this.onRefresh,
     required this.scrollController,
     this.carModelYear,
+    this.currentMileage,
   });
 
   @override
@@ -61,6 +63,7 @@ class _ServicesSectionState extends State<ServicesSection> {
             onRefresh: widget.onRefresh,
             scrollController: widget.scrollController,
             carModelYear: widget.carModelYear,
+            currentMileage: widget.currentMileage,
           );
         }
 
@@ -83,6 +86,7 @@ class _ServicesSectionState extends State<ServicesSection> {
             onRefresh: widget.onRefresh,
             scrollController: widget.scrollController,
             carModelYear: widget.carModelYear,
+            currentMileage: widget.currentMileage,
           );
         }
 

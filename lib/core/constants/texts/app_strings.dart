@@ -339,6 +339,7 @@ class AppStrings {
   static const String lastServiceDate = 'lastServiceDate';
   static const String lastServiceDateHint = 'lastServiceDateHint';
   static const String lastServiceMileage = 'lastServiceMileage';
+  static const String lastServiceMileageMustNotBeGreaterThan= 'lastServiceMileageMustNotBeGreaterThan';
   static const String lastServiceMileageHint = 'lastServiceMileageHint';
   static const String failedToUpdateRecord = 'failedToUpdateRecord';
   static const String neverServicedInfoMessage = 'neverServicedInfoMessage';

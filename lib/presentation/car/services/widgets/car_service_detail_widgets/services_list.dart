@@ -18,6 +18,7 @@ class ServicesList extends StatefulWidget {
   final VoidCallback onRefresh;
   final ScrollController scrollController;
   final int? carModelYear;
+  final int? currentMileage;
 
   const ServicesList({
     super.key,
@@ -27,6 +28,7 @@ class ServicesList extends StatefulWidget {
     required this.onRefresh,
     required this.scrollController,
     this.carModelYear,
+    this.currentMileage,
   });
 
   @override
@@ -178,6 +180,7 @@ class _ServicesListState extends State<ServicesList> {
           onRefresh: widget.onRefresh,
           onToggleHidden: () => _onToggleHidden(service.percentageId),
           carModelYear: widget.carModelYear,
+          currentMileage: widget.currentMileage,
           onExpand: needsEdit ? () => _onCardExpanded(service.percentageId) : null,
           isForceCollapsed: needsEdit && _expandedPercentageId != null
               && _expandedPercentageId != service.percentageId,

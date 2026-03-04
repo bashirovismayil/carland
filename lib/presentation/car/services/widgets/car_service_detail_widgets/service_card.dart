@@ -16,6 +16,7 @@ class ServiceCard extends StatefulWidget {
   final VoidCallback onRefresh;
   final VoidCallback onToggleHidden;
   final int? carModelYear;
+  final int? currentMileage;
   final VoidCallback? onExpand;
   final bool isForceCollapsed;
 
@@ -27,6 +28,7 @@ class ServiceCard extends StatefulWidget {
     required this.onRefresh,
     required this.onToggleHidden,
     this.carModelYear,
+    this.currentMileage,
     this.onExpand,
     this.isForceCollapsed = false,
   });
@@ -238,6 +240,7 @@ class _ServiceCardState extends State<ServiceCard>
                               serviceName: widget.service.serviceName,
                               onRefresh: widget.onRefresh,
                               carModelYear: widget.carModelYear,
+                              currentMileage: widget.currentMileage,
                             ),
                           ] else ...[
                             ServiceCardHeader(

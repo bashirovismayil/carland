@@ -19,6 +19,7 @@ class ServiceCardEditContent extends StatefulWidget {
   final int carId;
   final String serviceName;
   final int? carModelYear;
+  final int? currentMileage;
   final VoidCallback onRefresh;
 
   const ServiceCardEditContent({
@@ -26,6 +27,7 @@ class ServiceCardEditContent extends StatefulWidget {
     required this.carId,
     required this.serviceName,
     this.carModelYear,
+    this.currentMileage,
     required this.onRefresh,
   });
 
@@ -79,13 +81,20 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
       _mileageError = null;
 
       if (_dateController.text.trim().isEmpty) {
-        _dateError = AppTranslation.translate(AppStrings.lastServiceDateHint);
+        _dateError =  AppTranslation.translate(AppStrings.required);
         isValid = false;
       }
       if (_mileageController.text.trim().isEmpty) {
         _mileageError =
             AppTranslation.translate(AppStrings.lastServiceMileageHint);
         isValid = false;
+      } else if (widget.currentMileage != null) {
+        final enteredKm = int.tryParse(_mileageController.text.trim()) ?? 0;
+        if (enteredKm > widget.currentMileage!) {
+          _mileageError =
+              '${AppTranslation.translate(AppStrings.lastServiceMileageMustNotBeGreaterThan)} ${widget.currentMileage} km';
+          isValid = false;
+        }
       }
     });
     return isValid;
@@ -110,8 +119,8 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
       _isFetchingRecords = false;
 
       final matchingRecord = state.records.where(
-            (r) =>
-        r.serviceName.trim().toLowerCase() ==
+        (r) =>
+            r.serviceName.trim().toLowerCase() ==
             widget.serviceName.trim().toLowerCase(),
       );
 
@@ -151,7 +160,8 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
     late final String servicedStatus;
 
     if (_neverServiced) {
-      formattedDate = DateParserUtil.parseDateOrDefault('', widget.carModelYear);
+      formattedDate =
+          DateParserUtil.parseDateOrDefault('', widget.carModelYear);
       mileage = 0;
       servicedStatus = 'never_serviced';
     } else {
@@ -166,12 +176,12 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
     log('[ServiceCardEditContent] Submitting recordId: $recordId, date: $formattedDate, mileage: $mileage, servicedStatus: $servicedStatus');
 
     context.read<UpdateCarRecordCubit>().updateCarRecord(
-      carId: widget.carId,
-      recordId: recordId,
-      doneDate: formattedDate,
-      doneKm: mileage,
-      servicedStatus: servicedStatus,
-    );
+          carId: widget.carId,
+          recordId: recordId,
+          doneDate: formattedDate,
+          doneKm: mileage,
+          servicedStatus: servicedStatus,
+        );
   }
 
   Future<void> _selectDate() async {
@@ -292,8 +302,7 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
               child: Column(
                 children: [
                   _buildField(
-                    label:
-                    AppTranslation.translate(AppStrings.lastServiceDate),
+                    label: AppTranslation.translate(AppStrings.lastServiceDate),
                     controller: _dateController,
                     hint: AppTranslation.translate(
                         AppStrings.lastServiceDateHint),
@@ -304,8 +313,8 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
                   ),
                   const SizedBox(height: 12),
                   _buildField(
-                    label: AppTranslation.translate(
-                        AppStrings.lastServiceMileage),
+                    label:
+                        AppTranslation.translate(AppStrings.lastServiceMileage),
                     controller: _mileageController,
                     hint: AppTranslation.translate(
                         AppStrings.lastServiceMileageHint),
@@ -411,10 +420,10 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
                 inputFormatters: inputFormatters,
                 maxLength: maxLength,
                 buildCounter: (_,
-                    {required currentLength,
-                      required isFocused,
-                      maxLength}) =>
-                null,
+                        {required currentLength,
+                        required isFocused,
+                        maxLength}) =>
+                    null,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -480,21 +489,21 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
         ),
         child: _isSubmitting
             ? const SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Colors.white,
-          ),
-        )
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
             : Text(
-          AppTranslation.translate(AppStrings.addButton),
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+                AppTranslation.translate(AppStrings.addButton),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

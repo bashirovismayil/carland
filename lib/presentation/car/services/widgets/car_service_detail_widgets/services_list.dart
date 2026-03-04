@@ -6,6 +6,7 @@ import '../../../../../core/localization/app_translation.dart';
 import '../../../../../data/remote/models/remote/get_car_services_response.dart';
 import '../../../../../data/remote/services/local/hidden_services_local_service.dart';
 import '../../../../../utils/di/locator.dart';
+import '../../../../../utils/helper/service_edit_helper.dart';
 import '../../../../../utils/helper/service_percentage_calculator.dart';
 import 'service_card.dart';
 import 'services_list_header.dart';
@@ -40,8 +41,8 @@ class _ServicesListState extends State<ServicesList> {
   List<ResponseList> get _sortedServices {
     final sorted = List<ResponseList>.from(widget.services)
       ..sort((a, b) {
-        final aNeedsEdit = a.lastServiceKm == 0;
-        final bNeedsEdit = b.lastServiceKm == 0;
+        final aNeedsEdit = ServiceEditHelper.needsEdit(a);
+        final bNeedsEdit = ServiceEditHelper.needsEdit(b);
         if (aNeedsEdit != bNeedsEdit) {
           return aNeedsEdit ? 1 : -1;
         }
@@ -164,7 +165,7 @@ class _ServicesListState extends State<ServicesList> {
   }
 
   Widget _buildServiceCard(ResponseList service, {required bool isHidden}) {
-    final needsEdit = service.lastServiceKm == 0;
+    final needsEdit = ServiceEditHelper.needsEdit(service);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
       child: AnimatedOpacity(

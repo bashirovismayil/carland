@@ -3,6 +3,7 @@ import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
 import '../../../../../core/localization/app_translation.dart';
 import '../../../../../data/remote/models/remote/get_car_services_response.dart';
+import '../../../../../utils/helper/service_edit_helper.dart';
 import '../../../../../utils/helper/service_percentage_calculator.dart';
 import '../../../details/maintenance_widgets/service_card_edit_content.dart';
 import 'service_card_header.dart';
@@ -44,7 +45,7 @@ class _ServiceCardState extends State<ServiceCard>
   late Animation<double> _contentSize;
   late Animation<double> _contentOpacity;
 
-  bool get _needsEdit => widget.service.lastServiceKm == 0;
+  bool get _needsEdit => ServiceEditHelper.needsEdit(widget.service);
 
   @override
   void initState() {
@@ -90,7 +91,7 @@ class _ServiceCardState extends State<ServiceCard>
   void didUpdateWidget(covariant ServiceCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.service.percentageId != widget.service.percentageId) {
-      final needsEdit = widget.service.lastServiceKm == 0;
+      final needsEdit = ServiceEditHelper.needsEdit(widget.service);
       if (!needsEdit) {
         _isExpanded = true;
         _controller.value = 1.0;

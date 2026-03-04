@@ -16,6 +16,7 @@ class UpdateCarRecordCubit extends Cubit<UpdateCarRecordState> {
     required int recordId,
     required String doneDate,
     required int doneKm,
+    String? servicedStatus,
   }) async {
     try {
       emit(UpdateCarRecordLoading(recordId));
@@ -25,6 +26,7 @@ class UpdateCarRecordCubit extends Cubit<UpdateCarRecordState> {
         recordId: recordId,
         doneDate: doneDate,
         doneKm: doneKm,
+        servicedStatus: servicedStatus,
       );
 
       log("Update Car Record Success: Record ID $recordId updated");

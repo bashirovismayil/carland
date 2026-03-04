@@ -18,6 +18,7 @@ class UpdateCarRecordService {
     required int recordId,
     required String doneDate,
     required int doneKm,
+    String? servicedStatus,
   }) async {
     final token = _local.accessToken;
     final currentLanguage = _languageService.currentLanguage;
@@ -34,6 +35,7 @@ class UpdateCarRecordService {
       'recordId': recordId,
       'doneDate': doneDate,
       'doneKm': doneKm,
+      if (servicedStatus != null) 'servicedStatus': servicedStatus,
     };
 
     try {

@@ -148,25 +148,29 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
   void _submitWithRecordId(int recordId) {
     late final String formattedDate;
     late final int mileage;
+    late final String servicedStatus;
 
     if (_neverServiced) {
       formattedDate = DateParserUtil.parseDateOrDefault('', widget.carModelYear);
-      mileage = 1;
+      mileage = 0;
+      servicedStatus = 'never_serviced';
     } else {
       final dateText = _dateController.text.trim();
       final mileageText = _mileageController.text.trim();
       formattedDate =
           DateParserUtil.parseDateOrDefault(dateText, widget.carModelYear);
       mileage = DateParserUtil.parseMileageOrDefault(mileageText);
+      servicedStatus = 'serviced';
     }
 
-    log('[ServiceCardEditContent] Submitting recordId: $recordId, date: $formattedDate, mileage: $mileage, neverServiced: $_neverServiced');
+    log('[ServiceCardEditContent] Submitting recordId: $recordId, date: $formattedDate, mileage: $mileage, servicedStatus: $servicedStatus');
 
     context.read<UpdateCarRecordCubit>().updateCarRecord(
       carId: widget.carId,
       recordId: recordId,
       doneDate: formattedDate,
       doneKm: mileage,
+      servicedStatus: servicedStatus,
     );
   }
 
@@ -288,7 +292,8 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
               child: Column(
                 children: [
                   _buildField(
-                    label: AppTranslation.translate(AppStrings.lastServiceDate),
+                    label:
+                    AppTranslation.translate(AppStrings.lastServiceDate),
                     controller: _dateController,
                     hint: AppTranslation.translate(
                         AppStrings.lastServiceDateHint),
@@ -405,7 +410,11 @@ class _ServiceCardEditContentState extends State<ServiceCardEditContent> {
                 keyboardType: keyboardType,
                 inputFormatters: inputFormatters,
                 maxLength: maxLength,
-                buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
+                buildCounter: (_,
+                    {required currentLength,
+                      required isFocused,
+                      maxLength}) =>
+                null,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,

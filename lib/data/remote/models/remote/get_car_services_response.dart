@@ -30,10 +30,10 @@ class GetCarServicesResponse {
       );
 
   Map<String, dynamic> toJson() => {
-        'carId': carId,
-        'vin': vin,
-        'responseList': responseList.map((item) => item.toJson()).toList(),
-      };
+    'carId': carId,
+    'vin': vin,
+    'responseList': responseList.map((item) => item.toJson()).toList(),
+  };
 }
 
 class ResponseList {
@@ -51,6 +51,7 @@ class ResponseList {
   final String lastServiceDate;
   final int nextServiceKm;
   final String nextServiceDate;
+  final String servicedStatus;
 
   ResponseList({
     required this.percentageId,
@@ -67,7 +68,10 @@ class ResponseList {
     required this.lastServiceDate,
     required this.nextServiceKm,
     required this.nextServiceDate,
+    this.servicedStatus = '',
   });
+
+  bool get isNeverServiced => servicedStatus == 'never_serviced';
 
   ResponseList copyWith({
     int? percentageId,
@@ -84,6 +88,7 @@ class ResponseList {
     String? lastServiceDate,
     int? nextServiceKm,
     String? nextServiceDate,
+    String? servicedStatus,
   }) =>
       ResponseList(
         percentageId: percentageId ?? this.percentageId,
@@ -100,10 +105,10 @@ class ResponseList {
         lastServiceDate: lastServiceDate ?? this.lastServiceDate,
         nextServiceKm: nextServiceKm ?? this.nextServiceKm,
         nextServiceDate: nextServiceDate ?? this.nextServiceDate,
+        servicedStatus: servicedStatus ?? this.servicedStatus,
       );
 
   factory ResponseList.fromJson(Map<String, dynamic> json) {
-
     return ResponseList(
       percentageId: json['percentageId'] as int? ?? 0,
       serviceName: json['serviceName'] as String? ?? '',
@@ -119,24 +124,26 @@ class ResponseList {
       lastServiceDate: json['lastServiceDate'] as String? ?? '',
       nextServiceKm: json['nextServiceKm'] as int? ?? 0,
       nextServiceDate: json['nextServiceDate'] as String? ?? '',
+      servicedStatus: json['servicedStatus'] as String? ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'percentageId': percentageId,
-        'serviceName': serviceName,
-        'actionType': actionType,
-        'intervalKm': intervalKm,
-        'intervalMonth': intervalMonth,
-        'kmPercentage': kmPercentage,
-        'monthPercentage': monthPercentage,
-        'remainingKm': remainingKm,
-        'remainingMonths': remainingMonths,
-        'lastServiceKm': lastServiceKm,
-        'lastServiceDate': lastServiceDate,
-        'nextServiceKm': nextServiceKm,
-        'nextServiceDate': nextServiceDate,
-      };
+    'percentageId': percentageId,
+    'serviceName': serviceName,
+    'actionType': actionType,
+    'intervalKm': intervalKm,
+    'intervalMonth': intervalMonth,
+    'kmPercentage': kmPercentage,
+    'monthPercentage': monthPercentage,
+    'remainingKm': remainingKm,
+    'remainingMonths': remainingMonths,
+    'lastServiceKm': lastServiceKm,
+    'lastServiceDate': lastServiceDate,
+    'nextServiceKm': nextServiceKm,
+    'nextServiceDate': nextServiceDate,
+    'servicedStatus': servicedStatus,
+  };
 }
 
 class LastServiceDate {
@@ -169,10 +176,10 @@ class LastServiceDate {
       );
 
   Map<String, dynamic> toJson() => {
-        'year': year,
-        'month': month,
-        'day': day,
-      };
+    'year': year,
+    'month': month,
+    'day': day,
+  };
 
   String toFormattedString() {
     return '$day/${month.toString().padLeft(2, '0')}/$year';

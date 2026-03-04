@@ -13,12 +13,14 @@ class UpdateCarRecordRepository implements UpdateCarRecordContractor {
     required int recordId,
     required String doneDate,
     required int doneKm,
+    String? servicedStatus,
   }) {
     return _service.updateCarRecord(
       carId: carId,
       recordId: recordId,
       doneDate: doneDate,
       doneKm: doneKm,
+      servicedStatus: servicedStatus,
     );
   }
 }

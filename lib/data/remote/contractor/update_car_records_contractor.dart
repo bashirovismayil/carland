@@ -6,5 +6,6 @@ abstract class UpdateCarRecordContractor {
     required int recordId,
     required String doneDate,
     required int doneKm,
+    String? servicedStatus,
   });
 }

@@ -1510,6 +1510,11 @@ class Translations {
       'en': 'Please select next service date',
       'ru': 'Пожалуйста, выберите дату следующего обслуживания',
     },
+    AppStrings.lastServiceDateCannotBeInFuture: {
+      'az': 'Son servis tarixi növbəti servis tarixindən sonra ola bilməz',
+      'en': 'Last service date cannot be in the future',
+      'ru': 'Дата последнего обслуживания не может быть в будущем',
+    },
     AppStrings.thisFieldIsRequired: {
       'az': 'Bu xana mütləqdir',
       'en': 'This field is required',

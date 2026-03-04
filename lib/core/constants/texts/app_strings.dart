@@ -366,6 +366,7 @@ class AppStrings {
   static const String serviceDetailsUpdated = 'serviceDetailsUpdated';
   static const String pleaseSelectLastServiceDate = 'pleaseSelectLastServiceDate';
   static const String pleaseSelectNextServiceDate = 'pleaseSelectNextServiceDate';
+  static const String lastServiceDateCannotBeInFuture = 'lastServiceDateCannotBeInFuture';
   static const String thisFieldIsRequired = 'thisFieldIsRequired';
   static const String pleaseEnterValidMileage = 'pleaseEnterValidMileage';
   static const String selectDate = 'selectDate';

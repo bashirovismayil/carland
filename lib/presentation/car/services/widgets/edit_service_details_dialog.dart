@@ -121,6 +121,12 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
     _overlayEntry = null;
   }
 
+  void _dismissKeyboard() {
+    _lastKmFocusNode.unfocus();
+    _nextKmFocusNode.unfocus();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+  }
+
   void _showError(String message) {
     _removeOverlay();
 
@@ -331,12 +337,29 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
   }
 
   void _saveChanges() {
+
+    _dismissKeyboard();
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
+
     if (_lastServiceDate == null) {
       _showError(AppTranslation.translate(AppStrings.pleaseSelectLastServiceDate));
+      return;
+    }
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final lastDate = DateTime(
+      _lastServiceDate!.year,
+      _lastServiceDate!.month,
+      _lastServiceDate!.day,
+    );
+
+    if (lastDate.isAfter(today)) {
+      _showError(AppTranslation.translate(AppStrings.lastServiceDateCannotBeInFuture));
       return;
     }
 
@@ -375,9 +398,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
 
   void _closeDialog() {
     _removeOverlay();
-    _lastKmFocusNode.unfocus();
-    _nextKmFocusNode.unfocus();
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    _dismissKeyboard();
     Navigator.of(context).pop();
   }
 
@@ -387,9 +408,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
       listener: (context, state) {
         if (state is EditCarServicesSuccess) {
           _removeOverlay();
-          _lastKmFocusNode.unfocus();
-          _nextKmFocusNode.unfocus();
-          SystemChannels.textInput.invokeMethod('TextInput.hide');
+          _dismissKeyboard();
           Navigator.of(context).pop(true);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -407,30 +426,34 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 30),
-                  _buildLastServiceDateField(),
-                  const SizedBox(height: 14),
-                  _buildLastServiceKmField(),
-                  const SizedBox(height: 14),
-                  _buildNextServiceDateField(),
-                  const SizedBox(height: 14),
-                  _buildNextServiceKmField(),
-                  const SizedBox(height: 17),
-                  _buildButtons(),
-                ],
+        child: GestureDetector(
+          onTap: _dismissKeyboard,
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 30),
+                    _buildLastServiceDateField(),
+                    const SizedBox(height: 14),
+                    _buildLastServiceKmField(),
+                    const SizedBox(height: 14),
+                    _buildNextServiceDateField(),
+                    const SizedBox(height: 14),
+                    _buildNextServiceKmField(),
+                    const SizedBox(height: 17),
+                    _buildButtons(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -562,6 +585,13 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
             focusNode: _lastKmFocusNode,
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
+            onEditingComplete: () {
+              if (hasIntervalKm) {
+                FocusScope.of(context).requestFocus(_nextKmFocusNode);
+              } else {
+                _dismissKeyboard();
+              }
+            },
             buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
@@ -703,7 +733,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
               maxLength: 6,
               buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
               onEditingComplete: () {
-                _nextKmFocusNode.unfocus();
+                _dismissKeyboard();
               },
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,

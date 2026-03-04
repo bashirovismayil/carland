@@ -82,9 +82,9 @@ class EditCarDetailsPage extends HookWidget {
     );
     // Temporarily disabled
     // final colorController = useTextEditingController(text: initialColor ?? '');
-    // final mileageController = useTextEditingController(
-    //   text: initialMileage != null ? '$initialMileage' : '',
-    // );
+    final mileageController = useTextEditingController(
+      text: initialMileage != null ? '$initialMileage' : '',
+    );
     final bodyTypeController = useTextEditingController(text: initialBodyType ?? '');
 
     final formKey = useMemoized(() => GlobalKey<FormState>());
@@ -304,24 +304,24 @@ class EditCarDetailsPage extends HookWidget {
                       // const SizedBox(height: AppTheme.spacingMd),
 
                       // Temporarily disabled - Mileage
-                      // _buildTextField(
-                      //   controller: mileageController,
-                      //   label: AppTranslation.translate(AppStrings.currentMileage),
-                      //   hint: AppTranslation.translate(AppStrings.mileageHint),
-                      //   svgIcon: 'assets/svg/odometer_icon.svg',
-                      //   enabled: true,
-                      //   keyboardType: TextInputType.number,
-                      //   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      //   isRequired: true,
-                      //   maxLength: 6,
-                      //   validator: (value) {
-                      //     if (value == null || value.trim().isEmpty) {
-                      //       return AppTranslation.translate(AppStrings.mileageRequired);
-                      //     }
-                      //     return null;
-                      //   },
-                      // ),
-                      // const SizedBox(height: AppTheme.spacingLg),
+                      _buildTextField(
+                        controller: mileageController,
+                        label: AppTranslation.translate(AppStrings.currentMileage),
+                        hint: AppTranslation.translate(AppStrings.mileageHint),
+                        svgIcon: 'assets/svg/odometer_icon.svg',
+                        enabled: true,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        isRequired: true,
+                        maxLength: 6,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return AppTranslation.translate(AppStrings.mileageRequired);
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: AppTheme.spacingLg),
 
                       CarPhotoUploadWidget(
                         selectedImage: selectedImage.value,
@@ -889,7 +889,6 @@ class EditCarDetailsPage extends HookWidget {
           listener: (context, state) {
             if (state is UploadCarPhotoSuccess) {
               isSubmitting.value = false;
-              // Return updated data map with photoUpdated = true
               Navigator.of(context).pop<Map<String, dynamic>>({
                 'plateNumber': plateController.text.trim(),
                 'modelYear': int.tryParse(yearController.text.trim()),
@@ -914,14 +913,13 @@ class EditCarDetailsPage extends HookWidget {
                   behavior: SnackBarBehavior.floating,
                 ),
               );
-              // Still return data even if photo upload failed (car details were saved)
               Navigator.of(context).pop<Map<String, dynamic>>({
                 'plateNumber': plateController.text.trim(),
                 'modelYear': int.tryParse(yearController.text.trim()),
                 'engineType': engineTypeController.text.trim(),
                 'engineVolume': int.tryParse(engineController.text.trim()),
                 'bodyType': bodyTypeController.text.trim(),
-                'photoUpdated': false, // Photo failed but details were saved
+                'photoUpdated': false,
               });
             }
           },

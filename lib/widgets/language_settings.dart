@@ -263,8 +263,8 @@ class LanguageSettingsWidget extends HookWidget {
         return '🇦🇿';
       case AppLanguage.english:
         return '🇬🇧';
-      case AppLanguage.russian:
-        return '🇷🇺';
+      // case AppLanguage.russian:
+      //   return '🇷🇺';
     }
   }
 
@@ -274,8 +274,8 @@ class LanguageSettingsWidget extends HookWidget {
         return 'AZ';
       case AppLanguage.english:
         return 'EN';
-      case AppLanguage.russian:
-        return 'RU';
+      // case AppLanguage.russian:
+      //   return 'RU';
     }
   }
 

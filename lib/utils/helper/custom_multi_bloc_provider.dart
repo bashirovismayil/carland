@@ -41,9 +41,6 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
   CustomMultiBlocProviderHelper({super.key, required super.child})
       : super(
           providers: [
-            BlocProvider<DeviceTokenCubit>(
-              create: (_) => locator<DeviceTokenCubit>(),
-            ),
             BlocProvider<GetNotificationListCubit>(
               create: (_) => locator<GetNotificationListCubit>(),
             ),

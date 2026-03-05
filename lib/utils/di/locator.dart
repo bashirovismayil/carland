@@ -194,18 +194,11 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton<DeviceTokenService>(
     () => DeviceTokenService(),
   );
-
-  locator.registerLazySingleton<DeviceTokenContractor>(
-    () => DeviceTokenRepository(locator<DeviceTokenService>()),
-  );
-
-  locator.registerLazySingleton<DeviceTokenCubit>(() => DeviceTokenCubit());
-
   locator.registerLazySingleton<AuthManagerService>(
     () => AuthManagerService(
       locator<LoginLocalService>(),
       locator<PinLocalService>(),
-      locator<DeviceTokenCubit>(),
+      locator<DeviceTokenService>(),
     ),
   );
   locator.registerLazySingleton<UserLocalService>(

@@ -1,4 +1,7 @@
+import 'dart:developer';
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../../../core/constants/texts/app_strings.dart';
 import '../../../../core/dio/auth_dio.dart';
 import '../../../../core/localization/app_translation.dart';
@@ -10,11 +13,31 @@ import '../local/login_local_services.dart';
 import '../local/user_local_service.dart';
 import '../../../../core/extensions/status/status_code_extension.dart';
 
-
 class DeviceTokenService {
   final _userLocal = locator<UserLocalService>();
   final _local = locator<LoginLocalService>();
   final _languageService = locator<LanguageLocalService>();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  Future<void> registerDeviceToken() async {
+    final fcmToken = await _firebaseMessaging.getToken();
+    if (fcmToken == null) {
+      throw Exception('Failed to get FCM token');
+    }
+    log('FCM Token: $fcmToken');
+    final platform = Platform.isAndroid ? 'android' : 'ios';
+    await sendDeviceToken(
+      deviceToken: fcmToken,
+      platform: platform,
+    );
+    log('✅ Device token registered via service');
+  }
+  void listenToTokenRefresh() {
+    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      log('FCM Token refreshed: $newToken');
+      registerDeviceToken();
+    });
+  }
 
   Future<DeviceTokenResponse> sendDeviceToken({
     required String deviceToken,

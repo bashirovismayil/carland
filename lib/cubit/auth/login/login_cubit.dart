@@ -74,8 +74,8 @@ class LoginCubit extends Cubit<LoginState> {
       await _local.saveUserSurname(resp.surname);
       await _local.setRememberMe(rememberMe);
       debugPrint(rememberMe
-          ? "🟢 CUBIT: Remember Me AÇIK - Bilgiler KALICI kaydediliyor"
-          : "🟡 CUBIT: Remember Me KAPALI - Bilgiler GEÇİCİ (app kapanınca silinecek)");
+          ? "🟢 CUBIT: Remember Me Open - Login bilgisi save olundu"
+          : "🟡 CUBIT: Remember Me Close - Login state save edilmedi");
       final userId = resp.userId;
       if (userId != null) {
         await _userLocal.setUserId(userId);
@@ -83,7 +83,6 @@ class LoginCubit extends Cubit<LoginState> {
       } else {
         log('⚠️ User ID is null, skipping save');
       }
-      log('✅ User ID saved: ${resp.userId}');
       await _authManager.onLoginSuccess();
 
       log('✅ Login successful - Role: ${resp.role.displayName}');
@@ -143,6 +142,7 @@ class LoginCubit extends Cubit<LoginState> {
       await _local.saveLoginResponse(resp);
       await _local.saveUserName(resp.name);
       await _local.saveUserSurname(resp.surname);
+      await _local.setRememberMe(true);
       final userId = resp.userId;
       if (userId != null) {
         await _userLocal.setUserId(userId);

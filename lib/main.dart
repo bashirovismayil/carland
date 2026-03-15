@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:carcat/utils/di/locator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'data/remote/services/local/local_notification_service.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -19,10 +20,14 @@ Future<void> main() async {
     badge: true,
     sound: true,
   );
+
   await init();
   await setupLocator();
 
-  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  await LocalNotificationService.initialize();
+
+  RemoteMessage? initialMessage =
+  await FirebaseMessaging.instance.getInitialMessage();
   if (initialMessage != null) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigateToNotificationPage();

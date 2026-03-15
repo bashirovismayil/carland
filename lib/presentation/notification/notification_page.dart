@@ -10,6 +10,7 @@ import '../../cubit/notifications/notifications_list/get_notifications_state.dar
 import '../../cubit/notifications/notifications_list/get_notificatons_cubit.dart';
 import '../../cubit/notifications/read_unread/mark_read_notification_cubit.dart';
 import '../../data/remote/models/remote/get_notifications_list_response.dart';
+import '../../data/remote/services/local/local_notification_service.dart';
 
 const List<String> _monthKeys = [
   AppStrings.january,
@@ -38,6 +39,16 @@ class _NotificationPageState extends State<NotificationPage> {
   void initState() {
     super.initState();
     _loadNotifications();
+
+    LocalNotificationService.onForegroundMessage = (message) {
+      context.read<GetNotificationListCubit>().addNotificationFromPush(message);
+    };
+  }
+
+  @override
+  void dispose() {
+    LocalNotificationService.onForegroundMessage = null;
+    super.dispose();
   }
 
   void _loadNotifications() {
@@ -321,15 +332,15 @@ class _NotificationDetailSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15),
-             Center(
-                  child: Image.asset(
-                    _getIconForType(item.type),
-                    width: 45,
-                    height: 45,
-                    color: const Color(0xFF3C3C43),
-                    colorBlendMode: BlendMode.srcIn,
-                  ),
+              Center(
+                child: Image.asset(
+                  _getIconForType(item.type),
+                  width: 45,
+                  height: 45,
+                  color: const Color(0xFF3C3C43),
+                  colorBlendMode: BlendMode.srcIn,
                 ),
+              ),
               const SizedBox(height: 8),
               Text(
                 item.title,

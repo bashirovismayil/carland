@@ -36,7 +36,7 @@ android {
 
     defaultConfig {
         applicationId = "com.nematmirzayev.carcat"
-        minSdk = flutter.minSdkVersion
+        minSdk = 29
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName

@@ -68,31 +68,6 @@ class _LanguageSettingsPageState extends State<LanguageSettingsPage> {
           ),
         ),
         centerTitle: false,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 41,
-                  height: 41,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF1F1F1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.notifications,
-                      size: 20,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
       body: BlocBuilder<LanguageCubit, LanguageState>(
         builder: (context, state) {

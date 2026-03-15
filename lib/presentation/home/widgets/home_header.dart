@@ -161,7 +161,7 @@ class _NotificationIconWithBadge extends StatelessWidget {
 
         return _NotificationIcon(
           hasUnread: hasUnread,
-          unreadCount: unreadCount, // Pass count
+          unreadCount: unreadCount,
           onTap: onTap,
         );
       },

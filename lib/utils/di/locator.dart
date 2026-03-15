@@ -558,7 +558,7 @@ Future<void> setupLocator() async {
       locator<GetNotificationListService>(),
     ),
   );
-  locator.registerFactory<GetNotificationListCubit>(
+  locator.registerLazySingleton<GetNotificationListCubit>(
     () => GetNotificationListCubit(),
   );
 

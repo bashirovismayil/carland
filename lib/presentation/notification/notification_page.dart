@@ -39,16 +39,6 @@ class _NotificationPageState extends State<NotificationPage> {
   void initState() {
     super.initState();
     _loadNotifications();
-
-    LocalNotificationService.onForegroundMessage = (message) {
-      context.read<GetNotificationListCubit>().addNotificationFromPush(message);
-    };
-  }
-
-  @override
-  void dispose() {
-    LocalNotificationService.onForegroundMessage = null;
-    super.dispose();
   }
 
   void _loadNotifications() {

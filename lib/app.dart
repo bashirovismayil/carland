@@ -10,7 +10,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'core/constants/colors/app_colors.dart';
 import 'cubit/language/language_cubit.dart';
 import 'cubit/language/language_state.dart';
+import 'cubit/notifications/notifications_list/get_notificatons_cubit.dart';
 import 'data/remote/services/local/biometric_service.dart';
+import 'data/remote/services/local/local_notification_service.dart';
 import 'data/remote/services/local/onboard_local_services.dart';
 import 'data/remote/services/local/login_local_services.dart';
 import 'data/remote/services/remote/auth_manager_services.dart';
@@ -39,6 +41,10 @@ class _CarCatAppState extends State<CarCatApp> {
     _appRouter = AppRouter(_navigatorKey, pinService, biometricService);
     locator.registerSingleton<GlobalKey<NavigatorState>>(_navigatorKey);
     _initializationFuture = _initializeDependencies();
+    LocalNotificationService.onForegroundMessage = (message) {
+      print('🔔-- FOREGROUND PUSH GƏLDİ: ${message.notification?.title}');
+      locator<GetNotificationListCubit>().addNotificationFromPush(message);
+    };
   }
 
   Future<void> _initializeDependencies() async {
@@ -47,14 +53,14 @@ class _CarCatAppState extends State<CarCatApp> {
   }
 
   Future<void> _checkRememberMeOnStartup() async {
-    print("🚀 App achildi - 'remember me check edilir...");
+    print("--- App achildi - 'remember me check edilir...");
     await _loginLocalService.checkRememberMeOnStartup();
-    print("✅ remember me tamamlandı.");
+    print("--- remember me tamamlandı.");
   }
 
   void _setupAuthListener() {
     _authManager.authStateStream.listen((authState) {
-      print('📡 AuthState deyişdi: $authState');
+      print('--- AuthState deyişdi: $authState');
       _handleAuthStateChange(authState);
     });
   }
@@ -71,78 +77,87 @@ class _CarCatAppState extends State<CarCatApp> {
 
   Widget _getInitialPage() {
     if (!_onboardService.isOnboardSeen) {
-      print("📖 Onboarding görülmeyib - Onboarding page-e gedir");
+      print("--- Onboarding görülmeyib - Onboarding page-e gedir");
       return _appRouter.getOnboardPage();
     }
     final authState = _authManager.currentAuthState;
-    print("🔍 Mövcud state: $authState");
+    print("--- Mövcud state: $authState");
     return _appRouter.getPageWithPinGuard(authState);
   }
 
   @override
   Widget build(BuildContext context) {
     return CustomMultiBlocProviderHelper(
-      child: BlocBuilder<LanguageCubit, LanguageState>(
-        builder: (context, languageState) {
-          return FutureBuilder(
-            future: _initializationFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  home: Scaffold(
-                    body: Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primaryBlack,
-                      ),
-                    ),
-                  ),
-                );
-              }
+      child: Builder(
+        builder: (context) {
+          LocalNotificationService.onForegroundMessage = (message) {
+            context.read<GetNotificationListCubit>().addNotificationFromPush(message);
+          };
 
-              return MaterialApp(
-                navigatorKey: _navigatorKey,
-                debugShowCheckedModeBanner: false,
-                title: 'CarCat',
-                locale: languageState.locale,
-                supportedLocales: const [
-                  Locale('az', 'AZ'),
-                  Locale('en', 'US'),
-                  Locale('ru', 'RU'),
-                ],
-                localizationsDelegates: [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                localeResolutionCallback: (locale, supportedLocales) {
-                  if (locale != null) {
-                    for (var supportedLocale in supportedLocales) {
-                      if (supportedLocale.languageCode == locale.languageCode) {
-                        return supportedLocale;
-                      }
-                    }
+          return BlocBuilder<LanguageCubit, LanguageState>(
+            builder: (context, languageState) {
+              return FutureBuilder(
+                future: _initializationFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const MaterialApp(
+                      debugShowCheckedModeBanner: false,
+                      home: Scaffold(
+                        body: Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primaryBlack,
+                          ),
+                        ),
+                      ),
+                    );
                   }
-                  return supportedLocales.first;
-                },
-                theme: ThemeData(
-                  colorScheme: ColorScheme.fromSeed(
-                    seedColor: AppColors.primaryBlack,
-                  ),
-                  textTheme: GoogleFonts.poppinsTextTheme(
-                    ThemeData.light().textTheme,
-                  ),
-                  appBarTheme: const AppBarTheme(
-                    systemOverlayStyle: SystemUiOverlayStyle(
-                      statusBarColor: Colors.transparent,
-                      statusBarIconBrightness: Brightness.dark,
-                      statusBarBrightness: Brightness.light,
+
+                  return MaterialApp(
+                    navigatorKey: _navigatorKey,
+                    debugShowCheckedModeBanner: false,
+                    title: 'CarCat',
+                    locale: languageState.locale,
+                    supportedLocales: const [
+                      Locale('az', 'AZ'),
+                      Locale('en', 'US'),
+                      Locale('ru', 'RU'),
+                    ],
+                    localizationsDelegates: [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    localeResolutionCallback: (locale, supportedLocales) {
+                      if (locale != null) {
+                        for (var supportedLocale in supportedLocales) {
+                          if (supportedLocale.languageCode ==
+                              locale.languageCode) {
+                            return supportedLocale;
+                          }
+                        }
+                      }
+                      return supportedLocales.first;
+                    },
+                    theme: ThemeData(
+                      colorScheme: ColorScheme.fromSeed(
+                        seedColor: AppColors.primaryBlack,
+                      ),
+                      textTheme: GoogleFonts.poppinsTextTheme(
+                        ThemeData.light().textTheme,
+                      ),
+                      appBarTheme: const AppBarTheme(
+                        systemOverlayStyle: SystemUiOverlayStyle(
+                          statusBarColor: Colors.transparent,
+                          statusBarIconBrightness: Brightness.dark,
+                          statusBarBrightness: Brightness.light,
+                        ),
+                      ),
+                      useMaterial3: true,
                     ),
-                  ),
-                  useMaterial3: true,
-                ),
-                home: _getInitialPage(),
+                    home: _getInitialPage(),
+                  );
+                },
               );
             },
           );

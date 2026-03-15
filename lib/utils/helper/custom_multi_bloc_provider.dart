@@ -42,7 +42,10 @@ class CustomMultiBlocProviderHelper extends MultiBlocProvider {
       : super(
           providers: [
             BlocProvider<GetNotificationListCubit>(
-              create: (_) => locator<GetNotificationListCubit>(),
+              create: (_) {
+                final cubit = locator<GetNotificationListCubit>();
+                return cubit;
+              },
             ),
             BlocProvider<MarkNotificationAsReadCubit>(
               create: (_) => locator<MarkNotificationAsReadCubit>(),

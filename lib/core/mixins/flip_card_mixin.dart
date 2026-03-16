@@ -5,6 +5,7 @@ mixin FlipCardMixin<T extends StatefulWidget> on State<T>, TickerProvider {
   late final Animation<double> _flipAnimation;
 
   bool _isFlipped = false;
+
   bool get isFlipped => _isFlipped;
 
   @mustCallSuper
@@ -25,6 +26,7 @@ mixin FlipCardMixin<T extends StatefulWidget> on State<T>, TickerProvider {
   }
 
   Animation<double> get flipAnimation => _flipAnimation;
+
   AnimationController get flipController => _flipController;
 
   void _onFlipStatus(AnimationStatus status) {
@@ -41,7 +43,9 @@ mixin FlipCardMixin<T extends StatefulWidget> on State<T>, TickerProvider {
   }
 
   void unflipCard() {
-    if (_flipController.isAnimating) return;
+    if (_flipController.isDismissed ||
+        _flipController.isAnimating &&
+            _flipController.status == AnimationStatus.reverse) return;
     _flipController.reverse();
   }
 

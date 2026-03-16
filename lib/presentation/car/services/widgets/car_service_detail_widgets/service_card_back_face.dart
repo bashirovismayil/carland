@@ -2,15 +2,28 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
 import '../../../../../core/localization/app_translation.dart';
+import '../../../../../utils/helper/service_percentage_calculator.dart';
 
+/// Flip animasyonu sırasında gösterilen kartın arka yüzü.
+///
+/// [remainingKm], [remainingMonths] değerlerini ve her iki percentage'i
+/// gösterir. Ön yüzde hangisi efektif olarak seçildiyse [isTimeBased] ile
+/// belirlenir ve aktif olan vurgulanır.
+/// BLoC bağımlılığı yoktur — tüm veri constructor üzerinden enjekte edilir.
 class ServiceCardBackFace extends StatelessWidget {
   final int remainingKm;
   final String remainingMonths;
+  final int kmPercentage;
+  final int monthPercentage;
+  final bool isTimeBased;
 
   const ServiceCardBackFace({
     super.key,
     required this.remainingKm,
     required this.remainingMonths,
+    required this.kmPercentage,
+    required this.monthPercentage,
+    required this.isTimeBased,
   });
 
   @override
@@ -33,53 +46,38 @@ class ServiceCardBackFace extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 25),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               AppTranslation.translate(AppStrings.remainingService),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: Colors.black.withOpacity(0.6),
+                color: Colors.grey.shade700,
                 letterSpacing: 0.3,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
             _buildInfoTile(
               icon: Icons.route_rounded,
               value: _formatKm(remainingKm),
               label: AppTranslation.translate(AppStrings.remainingKm),
+              percentage: kmPercentage,
+              isActive: !isTimeBased,
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             _buildDivider(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             _buildInfoTile(
               icon: Icons.calendar_month_rounded,
               value: remainingMonths,
               label: AppTranslation.translate(AppStrings.remainingMonths),
+              percentage: monthPercentage,
+              isActive: isTimeBased,
             ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.touch_app_outlined,
-                  size: 16,
-                  color: Colors.grey.shade500,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  AppTranslation.translate(AppStrings.tapToFlipBack),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-              ],
-            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -90,32 +88,33 @@ class ServiceCardBackFace extends StatelessWidget {
     required IconData icon,
     required String value,
     required String label,
+    required int percentage,
+    required bool isActive,
   }) {
+    final color = ServicePercentageCalculator.getChartColor(percentage);
+
     return Row(
       children: [
         Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: isActive
+                ? color.withOpacity(0.1)
+                : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 20, color: AppColors.textPrimary),
+          child: Icon(
+            icon,
+            size: 20,
+            color: isActive ? color : Colors.grey.shade600,
+          ),
         ),
         const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 2),
               Text(
                 label,
                 style: TextStyle(
@@ -124,10 +123,49 @@ class ServiceCardBackFace extends StatelessWidget {
                   color: Colors.grey.shade600,
                 ),
               ),
+              const SizedBox(height: 2),
+
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: isActive
+                      ? AppColors.textPrimary
+                      : Colors.grey.shade600,
+                ),
+              ),
+
             ],
           ),
         ),
+        _buildPercentageBadge(percentage, color, isActive),
       ],
+    );
+  }
+
+  Widget _buildPercentageBadge(int percentage, Color color, bool isActive) {
+    return Container(
+      width: 52,
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: isActive
+            ? color.withOpacity(0.12)
+            : Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(20),
+        border: isActive
+            ? Border.all(color: color.withOpacity(0.3), width: 1)
+            : null,
+      ),
+      child: Text(
+        '$percentage%',
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+          color: isActive ? color : Colors.grey.shade600,
+        ),
+      ),
     );
   }
 
@@ -142,7 +180,7 @@ class ServiceCardBackFace extends StatelessWidget {
   String _formatKm(int km) {
     if (km.abs() >= 1000) {
       final formatted = (km / 1000).toStringAsFixed(km % 1000 == 0 ? 0 : 1);
-      return '${formatted} ${AppTranslation.translate(AppStrings.kText)} km';
+      return '$formatted ${AppTranslation.translate(AppStrings.kText)} km';
     }
     return '$km km';
   }

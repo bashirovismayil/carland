@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'package:carcat/presentation/car/services/widgets/car_service_detail_widgets/service_card_back_face.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
@@ -9,6 +8,7 @@ import '../../../../../data/remote/models/remote/get_car_services_response.dart'
 import '../../../../../utils/helper/service_edit_helper.dart';
 import '../../../../../utils/helper/service_percentage_calculator.dart';
 import '../../../details/maintenance_widgets/service_card_edit_content.dart';
+import 'service_card_back_face.dart';
 import 'service_card_header.dart';
 import 'service_info_row.dart';
 
@@ -56,6 +56,7 @@ class _ServiceCardState extends State<ServiceCard>
   void initState() {
     super.initState();
 
+    // --- Mevcut expand/collapse controller ---
     _controller = AnimationController(
       duration: const Duration(milliseconds: 280),
       vsync: this,
@@ -92,6 +93,7 @@ class _ServiceCardState extends State<ServiceCard>
       _controller.value = 1.0;
     }
 
+    // --- Flip controller başlatma ---
     initFlipController();
   }
 
@@ -161,46 +163,32 @@ class _ServiceCardState extends State<ServiceCard>
             final angle = flipAnimation.value * math.pi;
             final showBack = angle > math.pi / 2;
 
-            return Stack(
-              children: [
-                // --- 3D Transform ile flip ---
-                GestureDetector(
-                  onTap: () {
-                    if (isFlipped) {
-                      unflipCard();
-                    } else if (canFlip) {
-                      flipCard();
-                    }
-                  },
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
-                      ..rotateY(angle),
-                    child: showBack
-                        ? Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()..rotateY(math.pi),
-                      child: ServiceCardBackFace(
-                        remainingKm: widget.service.remainingKm,
-                        remainingMonths: widget.service.remainingMonths,
-                      ),
-                    )
-                        : _buildFrontFace(
-                      percentage: percentage,
-                      needsEdit: needsEdit,
-                    ),
+            return GestureDetector(
+              onLongPressStart: canFlip ? (_) => flipCard() : null,
+              onLongPressEnd: canFlip ? (_) => unflipCard() : null,
+              onLongPressCancel: canFlip ? () => unflipCard() : null,
+              child: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, 0.001)
+                  ..rotateY(angle),
+                child: showBack
+                    ? Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()..rotateY(math.pi),
+                  child: ServiceCardBackFace(
+                    remainingKm: widget.service.remainingKm,
+                    remainingMonths: widget.service.remainingMonths,
+                    kmPercentage: widget.service.kmPercentage,
+                    monthPercentage: widget.service.monthPercentageDigit,
+                    isTimeBased: ServicePercentageCalculator.isTimeBased(widget.service),
                   ),
+                )
+                    : _buildFrontFace(
+                  percentage: percentage,
+                  needsEdit: needsEdit,
                 ),
-
-                if (isFlipped)
-                  Positioned.fill(
-                    child: GestureDetector(
-                      onTap: unflipCard,
-                      behavior: HitTestBehavior.translucent,
-                    ),
-                  ),
-              ],
+              ),
             );
           },
         ),
@@ -208,6 +196,8 @@ class _ServiceCardState extends State<ServiceCard>
     );
   }
 
+  /// Kartın mevcut ön yüzü — orijinal expand/collapse yapısını
+  /// birebir korur, sadece ayrı bir metoda çıkarıldı.
   Widget _buildFrontFace({
     required int percentage,
     required bool needsEdit,

@@ -167,6 +167,7 @@ class CarPhotoUploadWidget extends StatelessWidget {
         MaterialPageRoute(
           builder: (context) => ImageCropWidget(
             imageFile: imageFile,
+            aspectRatio: 16 / 9,
           ),
         ),
       );

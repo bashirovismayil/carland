@@ -22,7 +22,7 @@ class ImageCropConfig {
   static const int jpegQuality = 85;
   static const double overlayOpacity = 0.65;
   static const double gridOpacity = 0.4;
-  static const double defaultAspectRatio = 4 / 3;
+  static const double defaultAspectRatio = 16 / 9;
 }
 
 Future<Uint8List> _processImageInIsolate(Map<String, dynamic> params) async {

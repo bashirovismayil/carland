@@ -20,12 +20,14 @@ configurations.all {
         force("androidx.core:core-ktx:1.15.0")
     }
 }
+
 android {
     namespace = "com.nematmirzayev.carcat"
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -36,7 +38,7 @@ android {
 
     defaultConfig {
         applicationId = "com.nematmirzayev.carcat"
-        minSdk = 29
+        minSdk = 28
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -64,6 +66,10 @@ android {
             )
         }
     }
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 
 flutter {

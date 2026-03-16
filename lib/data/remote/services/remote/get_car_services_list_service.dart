@@ -1,5 +1,3 @@
-// lib/data/remote/services/remote/get_car_services_service.dart
-
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/texts/app_strings.dart';

@@ -2201,6 +2201,30 @@ class Translations {
       'en': "You're all caught up! We'll notify you\nwhen something new arrives.",
       'ru': 'Вы всё прочитали! Мы уведомим вас,\nкогда появится что-то новое.',
     },
+    AppStrings.remainingService: {
+      'az': 'Servisə qaldı:',
+      'en': 'Remaining service',
+      'ru': 'Оставшееся обслуживание',
+    },
+    AppStrings.remainingKm: {
+      'az': 'Qalan kilometr',
+      'en': 'Remaining km',
+      'ru': 'Оставшиеся км',
+    },
+    AppStrings.remainingMonths: {
+      'az': 'Qalan aylar',
+      'en': 'Remaining months',
+      'ru': 'Оставшиеся месяцы',
+    },
+    AppStrings.tapToFlipBack: {
+      'az': 'Geri çevirmək üçün toxunun',
+      'en': 'Tap to flip back',
+      'ru': 'Нажмите, чтобы вернуть',
+    },AppStrings.kText: {
+      'az': 'min',
+      'en': 'k',
+      'ru': 'тыс',
+    },
   };
 
   static String translate(String key, String languageCode) {

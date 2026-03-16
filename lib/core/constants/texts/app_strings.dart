@@ -526,4 +526,10 @@ class AppStrings {
   static const String remove = 'remove';
   static const String noNewNotifications = 'no_new_notifications';
   static const String emptyStateSubtitle = 'empty_state_subtitle';
+
+  static const String remainingService = 'remainingService';
+  static const String remainingKm = 'remainingKm';
+  static const String remainingMonths = 'remainingMonths';
+  static const String tapToFlipBack = 'tapToFlipBack';
+  static const String kText = 'kText';
 }

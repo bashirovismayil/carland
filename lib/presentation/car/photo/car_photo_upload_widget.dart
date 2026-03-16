@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +15,8 @@ class CarPhotoUploadWidget extends StatelessWidget {
   final ValueChanged<File?> onImageChanged;
   final bool isRequired;
   final VoidCallback? onTap;
+  final Uint8List? initialPhotoBytes;
+  final VoidCallback? onInitialPhotoRemoved;
 
   const CarPhotoUploadWidget({
     super.key,
@@ -21,10 +24,15 @@ class CarPhotoUploadWidget extends StatelessWidget {
     required this.onImageChanged,
     this.isRequired = false,
     this.onTap,
+    this.initialPhotoBytes,
+    this.onInitialPhotoRemoved,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool hasSelectedImage = selectedImage != null;
+    final bool hasInitialPhoto = !hasSelectedImage && initialPhotoBytes != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -69,83 +77,109 @@ class CarPhotoUploadWidget extends StatelessWidget {
                 color: AppColors.lightGrey,
                 borderRadius: BorderRadius.circular(AppTheme.radiusXl),
               ),
-              child: selectedImage != null
-                  ? ClipRRect(
-                borderRadius: BorderRadius.circular(AppTheme.radiusMd - 2),
-                child: Stack(
-                  children: [
-                    Image.file(
-                      selectedImage!,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: GestureDetector(
-                        onTap: () => onImageChanged(null),
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+              child: hasSelectedImage
+                  ? _buildImagePreview(
+                child: Image.file(
+                  selectedImage!,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
                 ),
+                onRemove: () => onImageChanged(null),
               )
-                  : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 64,
-                    height: 64,
-                    child: Center(
-                      child: SvgPicture.asset(
-                        'assets/svg/add_or_drop.svg',
-                        width: 50,
-                        height: 50,
-                        color: AppColors.primaryBlack,
-                      ),
-                    ),
+                  : hasInitialPhoto
+                  ? _buildImagePreview(
+                child: Image.memory(
+                  initialPhotoBytes!,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  gaplessPlayback: true,
+                ),
+                onRemove: onInitialPhotoRemoved,
+              )
+                  : _buildEmptyState(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImagePreview({
+    required Widget child,
+    VoidCallback? onRemove,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppTheme.radiusMd - 2),
+      child: Stack(
+        children: [
+          child,
+          if (onRemove != null)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: GestureDetector(
+                onTap: onRemove,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(height: AppTheme.spacingMd),
-                  Text(
-                    AppTranslation.translate(AppStrings.addOrDrop),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                    ),
+                  child: const Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 18,
                   ),
-                  const SizedBox(height: AppTheme.spacingSm),
-                  Text(
-                    AppTranslation.translate(AppStrings.supportedFiles),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    AppTranslation.translate(AppStrings.maxFileSize),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary.withOpacity(0.7),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 64,
+          height: 64,
+          child: Center(
+            child: SvgPicture.asset(
+              'assets/svg/add_or_drop.svg',
+              width: 50,
+              height: 50,
+              color: AppColors.primaryBlack,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacingMd),
+        Text(
+          AppTranslation.translate(AppStrings.addOrDrop),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacingSm),
+        Text(
+          AppTranslation.translate(AppStrings.supportedFiles),
+          style: const TextStyle(
+            fontSize: 13,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          AppTranslation.translate(AppStrings.maxFileSize),
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary.withOpacity(0.7),
           ),
         ),
       ],

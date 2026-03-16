@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +26,7 @@ import '../../../cubit/transmission/type/transmission_type_cubit.dart';
 import '../../../cubit/year/list/get_year_list_cubit.dart';
 import '../../../cubit/year/list/get_year_list_state.dart';
 import '../../../widgets/custom_button.dart';
+import '../../../cubit/add/car/get_car_list_cubit.dart';
 import '../photo/car_photo_upload_widget.dart';
 
 class EditCarDetailsPage extends HookWidget {
@@ -91,6 +93,8 @@ class EditCarDetailsPage extends HookWidget {
     final isSubmitting = useState(false);
     final plateFormatter = useMemoized(() => AzerbaijanPlateNumberFormatter());
     final selectedImage = useState<File?>(null);
+    final existingPhotoBytes = useState<Uint8List?>(null);
+    final isExistingPhotoRemoved = useState(false);
 
     useEffect(() {
       final engineTypeCubit = context.read<GetEngineTypeListCubit>();
@@ -119,6 +123,13 @@ class EditCarDetailsPage extends HookWidget {
       // if (colorCubit.state is! GetColorListSuccess) {
       //   colorCubit.getColorList();
       // }
+
+      // Load existing car photo
+      context.read<GetCarListCubit>().getCarPhoto(carId).then((bytes) {
+        if (bytes != null) {
+          existingPhotoBytes.value = bytes;
+        }
+      });
 
       return null;
     }, []);
@@ -328,6 +339,12 @@ class EditCarDetailsPage extends HookWidget {
                         onImageChanged: (file) => selectedImage.value = file,
                         isRequired: false,
                         onTap: () => FocusScope.of(context).unfocus(),
+                        initialPhotoBytes: isExistingPhotoRemoved.value
+                            ? null
+                            : existingPhotoBytes.value,
+                        onInitialPhotoRemoved: () {
+                          isExistingPhotoRemoved.value = true;
+                        },
                       ),
                     ],
                   ),

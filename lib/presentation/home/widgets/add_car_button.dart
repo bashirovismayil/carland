@@ -1,3 +1,4 @@
+import 'package:carcat/presentation/vin/vin_info_page.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/localization/app_translation.dart';
@@ -30,7 +31,7 @@ class AddCarButton extends StatelessWidget {
 
   Future<void> _navigateToAddCar(BuildContext context) async {
     final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const AddYourCarVinPage()),
+      MaterialPageRoute(builder: (_) => const VinInfoPage()),
     );
     if (result == true && context.mounted) {
       onCarAdded();

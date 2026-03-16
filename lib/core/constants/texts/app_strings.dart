@@ -75,6 +75,8 @@ class AppStrings {
   //Onboard Buttons
   static const String skipButtonText = "skipButtonText";
   static const String letsGetStartedText = "letsGetStartedText";
+  static const String letsGetStartedText2 = "letsGetStartedText2";
+  static const String vinInfoPageDescription = "vinInfoPageDescription";
 
   // Welcome - Auth Page
   static const String welcomeTo = 'welcomeToCarCat';

@@ -110,6 +110,7 @@ import '../../data/remote/repository/upload_car_photo_repository.dart';
 import '../../data/remote/repository/user_add_details_repository.dart';
 import '../../data/remote/services/local/biometric_service.dart';
 import '../../data/remote/services/local/car_list_local_service.dart';
+import '../../data/remote/services/local/car_photo_cache_service.dart';
 import '../../data/remote/services/local/hidden_services_local_service.dart';
 import '../../data/remote/services/local/language_local_service.dart';
 import '../../data/remote/services/local/login_local_services.dart';
@@ -430,6 +431,9 @@ Future<void> setupLocator() async {
     () => GetCarPhotoRepository(
       locator<GetCarPhotoService>(),
     ),
+  );
+  locator.registerLazySingleton<CarPhotoCacheService>(
+        () => CarPhotoCacheService(),
   );
 
 // Cubit

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/colors/app_colors.dart';
@@ -10,7 +9,7 @@ import '../../../data/remote/models/remote/get_car_list_response.dart';
 import '../../../data/remote/services/local/car_list_local_service.dart';
 import '../../../presentation/car/services/car_services_detail_page.dart';
 import '../../../utils/di/locator.dart';
-import '../../../widgets/speedometer_loader.dart';
+import '../../../widgets/speedometer_refresh_indicator.dart';
 import 'car_card.dart';
 import 'delete_car_dialog.dart';
 
@@ -33,12 +32,7 @@ class _CarListViewState extends State<CarListView> {
   late List<GetCarListResponse> _orderedList;
   bool _isReorderMode = false;
   Timer? _autoDisableTimer;
-
-  bool _isRefreshing = false;
-  double _dragOffset = 0.0;
-  bool _isDraggingDown = false;
-  static const double _refreshTriggerOffset = 100.0;
-  static const double _minDragThreshold = 70.0;
+  Completer<void>? _refreshCompleter;
 
   @override
   void initState() {
@@ -56,11 +50,10 @@ class _CarListViewState extends State<CarListView> {
   void didUpdateWidget(CarListView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.carList != widget.carList) {
+      _refreshCompleter?.complete();
+      _refreshCompleter = null;
       setState(() {
         _orderedList = _getOrderedList(widget.carList);
-        _isRefreshing = false;
-        _dragOffset = 0.0;
-        _isDraggingDown = false;
       });
     }
   }
@@ -156,11 +149,9 @@ class _CarListViewState extends State<CarListView> {
   }
 
   Future<void> _handleRefresh() async {
-    setState(() {
-      _isRefreshing = true;
-      _isDraggingDown = false;
-    });
+    _refreshCompleter = Completer<void>();
     widget.onRefresh();
+    return _refreshCompleter!.future;
   }
 
   @override
@@ -174,94 +165,21 @@ class _CarListViewState extends State<CarListView> {
       },
       child: _isReorderMode
           ? _buildReorderableList()
-          : _buildCustomRefreshableList(),
+          : _buildRefreshableList(),
     );
   }
 
-  Widget _buildCustomRefreshableList() {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (_isRefreshing) return false;
-
-        if (notification is ScrollUpdateNotification) {
-          final pixels = notification.metrics.pixels;
-
-          if (pixels < 0) {
-            final absDrag = -pixels;
-            if (!_isDraggingDown && absDrag < _minDragThreshold) {
-              return false;
-            }
-            _isDraggingDown = true;
-            setState(() {
-              _dragOffset = absDrag;
-            });
-          } else if (_isDraggingDown && pixels >= 0) {
-            setState(() {
-              _dragOffset = 0.0;
-              _isDraggingDown = false;
-            });
-          }
-        }
-
-        if (notification is ScrollEndNotification) {
-          if (_isDraggingDown && _dragOffset >= _refreshTriggerOffset) {
-            _handleRefresh();
-          } else if (_isDraggingDown) {
-            setState(() {
-              _dragOffset = 0.0;
-              _isDraggingDown = false;
-            });
-          }
-        }
-
-        return false;
-      },
-      child: Stack(
-        children: [
-          if (_dragOffset > 0 || _isRefreshing)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: _isRefreshing ? 80 : _dragOffset.clamp(0, 120),
-                alignment: Alignment.center,
-                child: _isRefreshing
-                    ? const SpeedometerLoader(size: 50)
-                    : Opacity(
-                  opacity: (_dragOffset / _refreshTriggerOffset)
-                      .clamp(0.0, 1.0),
-                  child: Transform.scale(
-                    scale: (_dragOffset / _refreshTriggerOffset)
-                        .clamp(0.5, 1.0),
-                    child: SpeedometerLoader(
-                      size: 50,
-                      color: _dragOffset >= _refreshTriggerOffset
-                          ? AppColors.primaryBlack
-                          : AppColors.primaryBlack.withOpacity(0.5),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-          // Liste
-          Padding(
-            padding: EdgeInsets.only(
-              top: _isRefreshing ? 80 : 0,
-            ),
-            child: _buildNormalList(),
-          ),
-        ],
-      ),
+  Widget _buildRefreshableList() {
+    return SpeedometerRefreshIndicator(
+      onRefresh: _handleRefresh,
+      loaderSize: 35,
+      child: _buildNormalList(),
     );
   }
 
   Widget _buildNormalList() {
     return ListView.separated(
-      physics: const AlwaysScrollableScrollPhysics(
-        parent: BouncingScrollPhysics(),
-      ),
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: _orderedList.length,
       separatorBuilder: (_, __) => const SizedBox(height: 16),
       itemBuilder: (context, index) => _buildCarItem(context, index),

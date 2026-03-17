@@ -46,14 +46,35 @@ class CarImageSection extends StatelessWidget {
   }
 }
 
-class _CarImage extends StatelessWidget {
+class _CarImage extends StatefulWidget {
   final dynamic carId;
   const _CarImage({required this.carId});
 
   @override
+  State<_CarImage> createState() => _CarImageState();
+}
+
+class _CarImageState extends State<_CarImage> {
+  late Future<Uint8List?> _photoFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _photoFuture = context.read<GetCarListCubit>().getCarPhoto(widget.carId);
+  }
+
+  @override
+  void didUpdateWidget(_CarImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.carId != widget.carId) {
+      _photoFuture = context.read<GetCarListCubit>().getCarPhoto(widget.carId);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<Uint8List?>(
-      future: context.read<GetCarListCubit>().getCarPhoto(carId),
+      future: _photoFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildLoading();
@@ -65,6 +86,7 @@ class _CarImage extends StatelessWidget {
           snapshot.data!,
           fit: BoxFit.cover,
           width: double.infinity,
+          errorBuilder: (_, __, ___) => const NoImagePlaceholder(),
         );
       },
     );

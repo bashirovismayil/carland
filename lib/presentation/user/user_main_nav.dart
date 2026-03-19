@@ -12,6 +12,8 @@ import '../../cubit/navigation/user/user_nav_bar_state.dart';
 import '../home/home_page.dart';
 import '../reservation/reservation_list_page.dart';
 
+const bool _kNativeNavBarEnabled = false;
+
 final RouteObserver<ModalRoute<void>> navBarRouteObserver =
 RouteObserver<ModalRoute<void>>();
 
@@ -60,20 +62,22 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
     super.dispose();
   }
 
-  /// Başka sayfa push olunca → navbar'ı gizle
   @override
   void didPushNext() {
-    _navBarKey.currentState?.hide();
+    if (_kNativeNavBarEnabled) {
+      _navBarKey.currentState?.hide();
+    }
   }
 
-  /// Üstteki sayfa pop olunca → navbar'ı göster
   @override
   void didPopNext() {
-    Future.delayed(const Duration(milliseconds: 50), () {
-      if (mounted) {
-        _navBarKey.currentState?.show();
-      }
-    });
+    if (_kNativeNavBarEnabled) {
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (mounted) {
+          _navBarKey.currentState?.show();
+        }
+      });
+    }
   }
 
   @override
@@ -89,7 +93,8 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
             index: cubit.currentIndex,
             children: _pages,
           ),
-          bottomNavigationBar: NativeGlassNavBar(
+          bottomNavigationBar: _kNativeNavBarEnabled
+              ? NativeGlassNavBar(
             key: _navBarKey,
             currentIndex: cubit.currentIndex,
             onTap: (index) => cubit.changeTab(index),
@@ -100,7 +105,8 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
               NativeGlassNavBarItem(label: "", symbol: 'user_nav_icon'),
             ],
             fallback: _buildOriginalNavBar(context, cubit, bottomPadding),
-          ),
+          )
+              : _buildOriginalNavBar(context, cubit, bottomPadding),
         );
       },
     );

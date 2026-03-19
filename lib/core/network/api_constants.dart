@@ -147,4 +147,8 @@ class ApiConstants {
 
   static const deleteNotification =
       '$baseUrl/carland/server-carland/api/v1/notification/delete/byId?notificationId=';
+
+  static const deleteCarPhoto =
+      '$baseUrl/carland/server-carland/api/v1/photo/for/car/delete?carId=';
+
 }

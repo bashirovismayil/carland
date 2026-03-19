@@ -1,3 +1,4 @@
+import 'package:carcat/presentation/user/user_main_nav.dart';
 import 'package:carcat/utils/di/locator.dart';
 import 'package:carcat/utils/helper/app_localization.dart';
 import 'package:carcat/utils/helper/app_router.dart';
@@ -114,6 +115,7 @@ class _CarCatAppState extends State<CarCatApp> {
 
                   return MaterialApp(
                     navigatorKey: _navigatorKey,
+                    navigatorObservers: [navBarRouteObserver],
                     debugShowCheckedModeBanner: false,
                     title: 'CarCat',
                     locale: languageState.locale,

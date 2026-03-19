@@ -18,7 +18,7 @@ class CarPhotoWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: AspectRatio(
-        aspectRatio: 4 / 3,
+        aspectRatio: 16 / 9,
         child: FutureBuilder<Uint8List?>(
           key: ValueKey('photo_v$cacheVersion'),
           future: photoFuture,

@@ -182,6 +182,7 @@ class _ServiceCardState extends State<ServiceCard>
                     kmPercentage: widget.service.kmPercentage,
                     monthPercentage: widget.service.monthPercentageDigit,
                     isTimeBased: ServicePercentageCalculator.isTimeBased(widget.service),
+                    hasBoth: widget.service.intervalKm > 0 && widget.service.intervalMonth > 0,
                   ),
                 )
                     : _buildFrontFace(

@@ -345,6 +345,7 @@ class EditCarDetailsPage extends HookWidget {
                         onInitialPhotoRemoved: () {
                           isExistingPhotoRemoved.value = true;
                         },
+                        carId: carId,
                       ),
                     ],
                   ),

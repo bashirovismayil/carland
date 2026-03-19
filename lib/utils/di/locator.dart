@@ -19,6 +19,7 @@ import '../../cubit/car/brand/model/get_car_model_cubit.dart';
 import '../../cubit/color/get_color_list_cubit.dart';
 import '../../cubit/delete/account/delete_account_cubit.dart';
 import '../../cubit/delete/delete_car_cubit.dart';
+import '../../cubit/delete/photo/car/delete_car_photo_cubit.dart';
 import '../../cubit/edit/edit_car_details_cubit.dart';
 import '../../cubit/engine/type/get_engine_type_cubit.dart';
 import '../../cubit/feedback/send_feedback_cubit.dart';
@@ -43,6 +44,7 @@ import '../../data/remote/contractor/brand_list_contractor.dart';
 import '../../data/remote/contractor/check_vin_contractor.dart';
 import '../../data/remote/contractor/delete_account_contractor.dart';
 import '../../data/remote/contractor/delete_car_contractor.dart';
+import '../../data/remote/contractor/delete_car_photo_contractor.dart';
 import '../../data/remote/contractor/delete_notification_contractor.dart';
 import '../../data/remote/contractor/device_token_contractor.dart';
 import '../../data/remote/contractor/edit_car_details_contractor.dart';
@@ -77,6 +79,7 @@ import '../../data/remote/repository/add_car_repository.dart';
 import '../../data/remote/repository/brand_list_repository.dart';
 import '../../data/remote/repository/check_vin_repository.dart';
 import '../../data/remote/repository/delete_account_repository.dart';
+import '../../data/remote/repository/delete_car_photo_repository.dart';
 import '../../data/remote/repository/delete_car_repository.dart';
 import '../../data/remote/repository/delete_notification_repository.dart';
 import '../../data/remote/repository/device_token_repository.dart';
@@ -121,6 +124,7 @@ import '../../data/remote/services/remote/add_car_service.dart';
 import '../../data/remote/services/remote/auth_manager_services.dart';
 import '../../data/remote/services/remote/check_vin_service.dart';
 import '../../data/remote/services/remote/delete_account_service.dart';
+import '../../data/remote/services/remote/delete_car_photo_service.dart';
 import '../../data/remote/services/remote/delete_car_service.dart';
 import '../../data/remote/services/remote/delete_notification_service.dart';
 import '../../data/remote/services/remote/device_token_service.dart';
@@ -590,5 +594,17 @@ Future<void> setupLocator() async {
   );
   locator.registerFactory<DeleteNotificationCubit>(
     () => DeleteNotificationCubit(),
+  );
+  // Delete Car Photo
+  locator.registerLazySingleton<DeleteCarPhotoService>(
+        () => DeleteCarPhotoService(),
+  );
+  locator.registerLazySingleton<DeleteCarPhotoContractor>(
+        () => DeleteCarPhotoRepository(
+      locator<DeleteCarPhotoService>(),
+    ),
+  );
+  locator.registerFactory<DeleteCarPhotoCubit>(
+        () => DeleteCarPhotoCubit(),
   );
 }

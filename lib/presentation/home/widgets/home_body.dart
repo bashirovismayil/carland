@@ -30,18 +30,25 @@ class _HomeBodyState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const HomeHeader(),
-          const SizedBox(height: 24),
-          Expanded(child: _buildContent()),
-          const SizedBox(height: 5),
-          AddCarButton(onCarAdded: _loadCarList),
-        ],
-      ),
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const HomeHeader(),
+              const SizedBox(height: 24),
+              Expanded(child: _buildContent()),
+            ],
+          ),
+        ),
+        Positioned(
+          bottom: 24,
+          right: 25,
+          child: AddCarButton(onCarAdded: _loadCarList),
+        ),
+      ],
     );
   }
 

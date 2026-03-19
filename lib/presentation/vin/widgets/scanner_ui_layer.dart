@@ -24,7 +24,7 @@ class ScannerUILayer extends StatelessWidget {
           const SizedBox(height: AppTheme.spacingXl),
           const ScannerTitleSection(),
           const Spacer(),
-          if (state.isScanning) const ScanningIndicator(),
+          const ScanningIndicator(),
           const SizedBox(height: AppTheme.spacingLg),
           if (state.errorMessage != null)
             ScannerErrorMessage(message: state.errorMessage!),

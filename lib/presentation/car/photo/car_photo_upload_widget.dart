@@ -2,13 +2,16 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../../core/constants/colors/app_colors.dart';
-import '../../../core/constants/texts/app_strings.dart';
-import '../../../core/constants/values/app_theme.dart';
-import '../../../core/localization/app_translation.dart';
-import '../../../widgets/image_crop_widget.dart';
+import '../../../../../core/constants/colors/app_colors.dart';
+import '../../../../../core/constants/texts/app_strings.dart';
+import '../../../../../core/constants/values/app_theme.dart';
+import '../../../../../core/localization/app_translation.dart';
+import '../../../../../cubit/delete/photo/car/delete_car_photo_cubit.dart';
+import '../../../../../cubit/delete/photo/car/delete_car_photo_state.dart';
+import '../../../../../widgets/image_crop_widget.dart';
 
 class CarPhotoUploadWidget extends StatelessWidget {
   final File? selectedImage;
@@ -17,6 +20,7 @@ class CarPhotoUploadWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final Uint8List? initialPhotoBytes;
   final VoidCallback? onInitialPhotoRemoved;
+  final int? carId;
 
   const CarPhotoUploadWidget({
     super.key,
@@ -26,6 +30,7 @@ class CarPhotoUploadWidget extends StatelessWidget {
     this.onTap,
     this.initialPhotoBytes,
     this.onInitialPhotoRemoved,
+    this.carId,
   });
 
   @override
@@ -79,6 +84,7 @@ class CarPhotoUploadWidget extends StatelessWidget {
               ),
               child: hasSelectedImage
                   ? _buildImagePreview(
+                context: context,
                 child: Image.file(
                   selectedImage!,
                   width: double.infinity,
@@ -86,9 +92,11 @@ class CarPhotoUploadWidget extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
                 onRemove: () => onImageChanged(null),
+                isInitialPhoto: false,
               )
                   : hasInitialPhoto
                   ? _buildImagePreview(
+                context: context,
                 child: Image.memory(
                   initialPhotoBytes!,
                   width: double.infinity,
@@ -96,7 +104,8 @@ class CarPhotoUploadWidget extends StatelessWidget {
                   fit: BoxFit.cover,
                   gaplessPlayback: true,
                 ),
-                onRemove: onInitialPhotoRemoved,
+                onRemove: () => _showDeleteConfirmation(context),
+                isInitialPhoto: true,
               )
                   : _buildEmptyState(),
             ),
@@ -107,11 +116,13 @@ class CarPhotoUploadWidget extends StatelessWidget {
   }
 
   Widget _buildImagePreview({
+    required BuildContext context,
     required Widget child,
     VoidCallback? onRemove,
+    required bool isInitialPhoto,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(AppTheme.radiusMd - 2),
+      borderRadius: BorderRadius.circular(AppTheme.radiusLg + 11),
       child: Stack(
         children: [
           child,
@@ -139,6 +150,121 @@ class CarPhotoUploadWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          AppTranslation.translate(AppStrings.deleteCarPhoto),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          AppTranslation.translate(AppStrings.deletePhotoConfirmation),
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(
+              AppTranslation.translate(AppStrings.cancel),
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              // Call the API and then callback
+              if (carId != null) {
+                _deletePhotoFromAPI(context, carId!);
+              } else {
+                // If no carId, just remove from UI
+                onInitialPhotoRemoved?.call();
+              }
+            },
+            child: Text(
+              AppTranslation.translate(AppStrings.delete),
+              style: TextStyle(
+                color: AppColors.errorColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🆕 Delete Photo API Call
+  void _deletePhotoFromAPI(BuildContext context, int carId) async {
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primaryBlack,
+        ),
+      ),
+    );
+
+    try {
+      await context.read<DeleteCarPhotoCubit>().deleteCarPhoto(carId);
+      final state = context.read<DeleteCarPhotoCubit>().state;
+
+      if (context.mounted) {
+        Navigator.of(context).pop();
+
+        if (state is DeleteCarPhotoSuccess) {
+          onInitialPhotoRemoved?.call();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                AppTranslation.translate(AppStrings.photoDeletedSuccessfully),
+              ),
+              backgroundColor: AppColors.successColor,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        } else if (state is DeleteCarPhotoError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppTranslation.translate(AppStrings.errorOccurred)}: ${state.message}',
+              ),
+              backgroundColor: AppColors.errorColor,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppTranslation.translate(AppStrings.errorOccurred)}: $e',
+            ),
+            backgroundColor: AppColors.errorColor,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildEmptyState() {

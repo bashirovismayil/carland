@@ -47,7 +47,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
 
   final _formKey = GlobalKey<FormState>();
   OverlayEntry? _overlayEntry;
-
+  late final ScrollController _scrollController;
   bool get hasIntervalKm => widget.intervalKm > 0;
   bool get hasIntervalMonth => widget.intervalMonth > 0;
 
@@ -56,6 +56,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
     super.initState();
     _lastKmFocusNode = FocusNode();
     _nextKmFocusNode = FocusNode();
+    _scrollController = ScrollController();
     _lastServiceKmController = TextEditingController(
       text: widget.initialLastServiceKm?.toString() ?? '',
     );
@@ -65,6 +66,37 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
 
     _lastServiceDate = _parseBackendDate(widget.initialLastServiceDate);
     _nextServiceDate = _parseBackendDate(widget.initialNextServiceDate);
+    _lastKmFocusNode.addListener(() => _scrollToFocused(_lastKmFocusNode));
+    _nextKmFocusNode.addListener(() => _scrollToFocused(_nextKmFocusNode));
+  }
+
+  void _scrollToFocused(FocusNode node) {
+    if (!node.hasFocus) return;
+    double lastInset = 0;
+    int stableFrames = 0;
+
+    void checkAndScroll(Duration _) {
+      if (!mounted || !node.hasFocus) return;
+      final currentInset = MediaQuery.of(context).viewInsets.bottom;
+      if (currentInset == lastInset && currentInset > 0) {
+        stableFrames++;
+      } else {
+        stableFrames = 0;
+      }
+      lastInset = currentInset;
+      if (stableFrames >= 2) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback(checkAndScroll);
+      }
+    }
+    WidgetsBinding.instance.addPostFrameCallback(checkAndScroll);
   }
 
   DateTime? _parseBackendDate(String? dateString) {
@@ -106,6 +138,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
   @override
   void dispose() {
     _removeOverlay();
+    _scrollController.dispose();
     _lastKmFocusNode.unfocus();
     _nextKmFocusNode.unfocus();
     _lastServiceKmController.dispose();
@@ -436,6 +469,7 @@ class _EditServiceDetailsDialogState extends State<EditServiceDetailsDialog> {
               borderRadius: BorderRadius.circular(24),
             ),
             child: SingleChildScrollView(
+              controller: _scrollController,
               child: Form(
                 key: _formKey,
                 child: Column(

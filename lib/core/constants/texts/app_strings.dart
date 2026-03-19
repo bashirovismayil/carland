@@ -260,6 +260,7 @@ class AppStrings {
   static const String enterCarVin = "enterCarVin";
   static const String vinPlaceholder = "vinPlaceholder";
   static const String vinSearch = "vinSearch";
+  static const String typeVinManually = "typeVinManually";
   static const String or = "or";
   static const String scanCarVin = "scanCarVin";
   static const String scanCarVinNumber = "scanCarVinNumber";
@@ -311,6 +312,9 @@ class AppStrings {
   static const String failedToUpdateMileage = 'failedToUpdateMileage';
   static const String pleaseFillAllRequiredFields = 'pleaseFillAllRequiredFields';
   static const String invalidNumberFormat = 'invalidNumberFormat';
+  static const deleteCarPhoto = 'deletePhoto';
+  static const deletePhotoConfirmation = 'deletePhotoConfirmation';
+  static const photoDeletedSuccessfully = 'photoDeletedSuccessfully';
 
   // Image Crop Widget Strings
   static const String imageCropTitle = 'imageCropTitle';
@@ -392,6 +396,8 @@ class AppStrings {
   static const String delete = 'delete';
 
   static const String settings = 'settings';
+  static const String reservationList = 'reservationList';
+  static const String upcomingList = 'upcomingList';
 
   static const String carOptions = 'carOptions';
 
@@ -534,4 +540,7 @@ class AppStrings {
   static const String remainingMonths = 'remainingMonths';
   static const String tapToFlipBack = 'tapToFlipBack';
   static const String kText = 'kText';
+  static const String yearText = 'year_text';
+  static const String monthText = 'month_text';
+  static const String vinFormatHint     = 'vinFormatHint';
 }

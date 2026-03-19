@@ -5,11 +5,15 @@ import 'package:carcat/presentation/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:native_glass_navbar/native_glass_navbar.dart';
 import '../../core/constants/texts/app_strings.dart';
 import '../../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../../cubit/navigation/user/user_nav_bar_state.dart';
 import '../home/home_page.dart';
 import '../reservation/reservation_list_page.dart';
+
+final RouteObserver<ModalRoute<void>> navBarRouteObserver =
+RouteObserver<ModalRoute<void>>();
 
 class UserMainNavigationPage extends StatelessWidget {
   const UserMainNavigationPage({super.key});
@@ -23,15 +27,54 @@ class UserMainNavigationPage extends StatelessWidget {
   }
 }
 
-class UserMainNavigationView extends StatelessWidget {
+class UserMainNavigationView extends StatefulWidget {
   const UserMainNavigationView({super.key});
+
+  @override
+  State<UserMainNavigationView> createState() => _UserMainNavigationViewState();
+}
+
+class _UserMainNavigationViewState extends State<UserMainNavigationView>
+    with RouteAware {
+  final GlobalKey<NativeGlassNavBarState> _navBarKey = GlobalKey();
 
   static const List<Widget> _pages = [
     HomePage(),
     HistoryPage(),
-   // ReservationListPage(),
+    ReservationListPage(),
     SettingsPage(),
   ];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route != null) {
+      navBarRouteObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void dispose() {
+    navBarRouteObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  /// Başka sayfa push olunca → navbar'ı gizle
+  @override
+  void didPushNext() {
+    _navBarKey.currentState?.hide();
+  }
+
+  /// Üstteki sayfa pop olunca → navbar'ı göster
+  @override
+  void didPopNext() {
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (mounted) {
+        _navBarKey.currentState?.show();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,70 +82,90 @@ class UserMainNavigationView extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<UserNavBarCubit>();
         final bottomPadding = MediaQuery.of(context).padding.bottom;
+
         return Scaffold(
           backgroundColor: AppColors.primaryWhite,
           body: IndexedStack(
             index: cubit.currentIndex,
             children: _pages,
           ),
-          bottomNavigationBar: Container(
-            padding: EdgeInsets.only(
-              left: 2,
-              right: 2,
-              top: 10,
-              bottom: bottomPadding > 0 ? bottomPadding : 15,
-            ),
-            child: Container(
-              height: 70,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(
-                    context: context,
-                    index: 0,
-                    currentIndex: cubit.currentIndex,
-                    icon: 'assets/svg/home_nav_icon.svg',
-                    activeIcon: 'assets/svg/home_nav_icon_active.svg',
-                    label: context.currentLanguage(AppStrings.homePage),
-                    onTap: () => cubit.changeTab(0),
-                  ),
-                  _buildNavItem(
-                    context: context,
-                    index: 1,
-                    currentIndex: cubit.currentIndex,
-                    icon: 'assets/svg/settings_nav_icon.svg',
-                    activeIcon: 'assets/svg/settings_nav_active.svg',
-                    label: context.currentLanguage(AppStrings.settingsPage),
-                    onTap: () => cubit.changeTab(1),
-                  ),
-                  // _buildNavItem(
-                  //   context: context,
-                  //   index: 2,
-                  //   currentIndex: cubit.currentIndex,
-                  //   icon: 'assets/svg/calendar_nav_icon.svg',
-                  //   activeIcon: 'assets/svg/calendar_nav_icon_active.svg',
-                  //   label: context.currentLanguage(AppStrings.bookingPage),
-                  //   onTap: () => cubit.changeTab(2),
-                  // ),
-                  _buildNavItem(
-                    context: context,
-                    index: 2,
-                    currentIndex: cubit.currentIndex,
-                    icon: 'assets/svg/user_nav_icon.svg',
-                    activeIcon: 'assets/svg/user_nav_icon_active.svg',
-                    label: context.currentLanguage(AppStrings.profilePage),
-                    onTap: () => cubit.changeTab(2),
-                  ),
-                ],
-              ),
-            ),
+          bottomNavigationBar: NativeGlassNavBar(
+            key: _navBarKey,
+            currentIndex: cubit.currentIndex,
+            onTap: (index) => cubit.changeTab(index),
+            tabs: [
+              NativeGlassNavBarItem(label: "", symbol: 'home_nav_icon'),
+              NativeGlassNavBarItem(label: "", symbol: 'settings_nav_icon'),
+              NativeGlassNavBarItem(label: "", symbol: 'calendar_nav_icon'),
+              NativeGlassNavBarItem(label: "", symbol: 'user_nav_icon'),
+            ],
+            fallback: _buildOriginalNavBar(context, cubit, bottomPadding),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildOriginalNavBar(
+      BuildContext context,
+      UserNavBarCubit cubit,
+      double bottomPadding,
+      ) {
+    return Container(
+      padding: EdgeInsets.only(
+        left: 2,
+        right: 2,
+        top: 10,
+        bottom: bottomPadding > 0 ? bottomPadding : 15,
+      ),
+      child: Container(
+        height: 70,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(
+              context: context,
+              index: 0,
+              currentIndex: cubit.currentIndex,
+              icon: 'assets/svg/home_nav_icon.svg',
+              activeIcon: 'assets/svg/home_nav_icon_active.svg',
+              label: context.currentLanguage(AppStrings.homePage),
+              onTap: () => cubit.changeTab(0),
+            ),
+            _buildNavItem(
+              context: context,
+              index: 1,
+              currentIndex: cubit.currentIndex,
+              icon: 'assets/svg/settings_nav_icon.svg',
+              activeIcon: 'assets/svg/settings_nav_active.svg',
+              label: context.currentLanguage(AppStrings.settingsPage),
+              onTap: () => cubit.changeTab(1),
+            ),
+            _buildNavItem(
+              context: context,
+              index: 2,
+              currentIndex: cubit.currentIndex,
+              icon: 'assets/svg/calendar_nav_icon.svg',
+              activeIcon: 'assets/svg/calendar_nav_icon_active.svg',
+              label: context.currentLanguage(AppStrings.bookingPage),
+              onTap: () => cubit.changeTab(2),
+            ),
+            _buildNavItem(
+              context: context,
+              index: 3,
+              currentIndex: cubit.currentIndex,
+              icon: 'assets/svg/user_nav_icon.svg',
+              activeIcon: 'assets/svg/user_nav_icon_active.svg',
+              label: context.currentLanguage(AppStrings.profilePage),
+              onTap: () => cubit.changeTab(3),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -116,7 +179,6 @@ class UserMainNavigationView extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final isActive = index == currentIndex;
-
     final double iconOffset = (index == 1) ? 6.0 : 0.0;
 
     return Expanded(

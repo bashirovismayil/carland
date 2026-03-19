@@ -4,18 +4,13 @@ import '../../../../../core/constants/texts/app_strings.dart';
 import '../../../../../core/localization/app_translation.dart';
 import '../../../../../utils/helper/service_percentage_calculator.dart';
 
-/// Flip animasyonu sırasında gösterilen kartın arka yüzü.
-///
-/// [remainingKm], [remainingMonths] değerlerini ve her iki percentage'i
-/// gösterir. Ön yüzde hangisi efektif olarak seçildiyse [isTimeBased] ile
-/// belirlenir ve aktif olan vurgulanır.
-/// BLoC bağımlılığı yoktur — tüm veri constructor üzerinden enjekte edilir.
 class ServiceCardBackFace extends StatelessWidget {
   final int remainingKm;
   final String remainingMonths;
   final int kmPercentage;
   final int monthPercentage;
   final bool isTimeBased;
+  final bool hasBoth;
 
   const ServiceCardBackFace({
     super.key,
@@ -24,6 +19,7 @@ class ServiceCardBackFace extends StatelessWidget {
     required this.kmPercentage,
     required this.monthPercentage,
     required this.isTimeBased,
+    required this.hasBoth,
   });
 
   @override
@@ -50,39 +46,62 @@ class ServiceCardBackFace extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              AppTranslation.translate(AppStrings.remainingService),
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
-                letterSpacing: 0.3,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                AppTranslation.translate(AppStrings.remainingService),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade700,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
             const SizedBox(height: 18),
-            _buildInfoTile(
-              icon: Icons.route_rounded,
-              value: _formatKm(remainingKm),
-              label: AppTranslation.translate(AppStrings.remainingKm),
-              percentage: kmPercentage,
-              isActive: !isTimeBased,
-            ),
-            const SizedBox(height: 16),
-            _buildDivider(),
-            const SizedBox(height: 16),
-            _buildInfoTile(
-              icon: Icons.calendar_month_rounded,
-              value: remainingMonths,
-              label: AppTranslation.translate(AppStrings.remainingMonths),
-              percentage: monthPercentage,
-              isActive: isTimeBased,
-            ),
+            if (!hasBoth && isTimeBased)
+              _buildInfoTile(
+                icon: Icons.calendar_month_rounded,
+                value: _formatMonths(remainingMonths),
+                label: AppTranslation.translate(AppStrings.remainingMonths),
+                percentage: monthPercentage,
+                isActive: true,
+              )
+            else if (!hasBoth && !isTimeBased)
+              _buildInfoTile(
+                icon: Icons.route_rounded,
+                value: _formatKm(remainingKm),
+                label: AppTranslation.translate(AppStrings.remainingKm),
+                percentage: kmPercentage,
+                isActive: true,
+              )
+            else ...[
+                _buildInfoTile(
+                  icon: Icons.route_rounded,
+                  value: _formatKm(remainingKm),
+                  label: AppTranslation.translate(AppStrings.remainingKm),
+                  percentage: kmPercentage,
+                  isActive: !isTimeBased,
+                ),
+                const SizedBox(height: 16),
+                _buildDivider(),
+                const SizedBox(height: 16),
+                _buildInfoTile(
+                  icon: Icons.calendar_month_rounded,
+                  value: _formatMonths(remainingMonths),
+                  label: AppTranslation.translate(AppStrings.remainingMonths),
+                  percentage: monthPercentage,
+                  isActive: isTimeBased,
+                ),
+              ],
+            if (!hasBoth) const SizedBox(height: 78),
             const SizedBox(height: 10),
           ],
         ),
       ),
     );
   }
+
 
   Widget _buildInfoTile({
     required IconData icon,
@@ -99,9 +118,7 @@ class ServiceCardBackFace extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: isActive
-                ? color.withOpacity(0.1)
-                : Colors.grey.shade50,
+            color: isActive ? color.withOpacity(0.1) : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
@@ -124,18 +141,15 @@ class ServiceCardBackFace extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-
               Text(
                 value,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: isActive
-                      ? AppColors.textPrimary
-                      : Colors.grey.shade600,
+                  color:
+                      isActive ? AppColors.textPrimary : Colors.grey.shade600,
                 ),
               ),
-
             ],
           ),
         ),
@@ -150,9 +164,7 @@ class ServiceCardBackFace extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: isActive
-            ? color.withOpacity(0.12)
-            : Colors.grey.shade100,
+        color: isActive ? color.withOpacity(0.12) : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(20),
         border: isActive
             ? Border.all(color: color.withOpacity(0.3), width: 1)
@@ -183,5 +195,21 @@ class ServiceCardBackFace extends StatelessWidget {
       return '$formatted ${AppTranslation.translate(AppStrings.kText)} km';
     }
     return '$km km';
+  }
+  String _formatMonths(String rawMonths) {
+    final months = int.tryParse(rawMonths);
+    if (months == null) return rawMonths;
+
+    if (months.abs() >= 12) {
+      final years = months ~/ 12;
+      final remainingMonths = months % 12;
+
+      if (remainingMonths == 0) {
+        return '$years ${AppTranslation.translate(AppStrings.yearText)}';
+      }
+      return '$years ${AppTranslation.translate(AppStrings.yearText)} $remainingMonths ${AppTranslation.translate(AppStrings.monthText)}';
+    }
+
+    return '$months ${AppTranslation.translate(AppStrings.monthText)}';
   }
 }

@@ -1002,6 +1002,11 @@ class Translations {
       'en': 'Searching VIN...',
       'ru': 'Поиск VIN...',
     },
+    AppStrings.typeVinManually: {
+      'az': 'Əl ilə daxil edin',
+      'en': 'Typing VIN manually',
+      'ru': 'Ввод VIN вручную',
+    },
     AppStrings.vinSuccess: {
       'az': 'BAN uğurla skan edildi',
       'en': 'VIN Scanned Successfully',
@@ -1255,7 +1260,21 @@ class Translations {
       'en': 'Invalid number format',
       'ru': 'Неверный формат номера',
     },
-
+    AppStrings.deleteCarPhoto: {
+        'az': 'Sil',
+        'en': 'Delete',
+        'ru': 'Удалить',
+    },
+    AppStrings.deletePhotoConfirmation: {
+      'az': 'Bu fotoşəkili silmək istədiyinizə əminsinizmi?',
+      'en': 'Are you sure you want to delete this photo?',
+      'ru': 'Вы уверены, что хотите удалить это фото?',
+    },
+    AppStrings.photoDeletedSuccessfully: {
+      'az': 'Fotoşəkil uğurla silindi',
+      'en': 'Photo deleted successfully',
+      'ru': 'Фото успешно удалено',
+    },
     AppStrings.imageCropTitle: {
       'az': 'Şəkili Kəs',
       'en': 'Crop Image',
@@ -1642,6 +1661,16 @@ class Translations {
       'az': 'Parametrlər',
       'en': 'Settings',
       'ru': 'Настройки',
+    },
+    AppStrings.reservationList: {
+      'az': 'Rezervasiya Siyahısı',
+      'en': 'Reservation List',
+      'ru': 'Список бронирования',
+    },
+    AppStrings.upcomingList: {
+      'az': 'Gələcək Servislər',
+      'en': 'Upcoming List',
+      'ru': 'Список предстоящих услуг',
     },
     AppStrings.carOptions: {
       'az': 'Avtomobil Seçimləri',
@@ -2218,17 +2247,17 @@ class Translations {
       'ru': 'Вы всё прочитали! Мы уведомим вас,\nкогда появится что-то новое.',
     },
     AppStrings.remainingService: {
-      'az': 'Servisə qaldı:',
+      'az': 'Növbəti servis:',
       'en': 'Remaining service',
       'ru': 'Оставшееся обслуживание',
     },
     AppStrings.remainingKm: {
-      'az': 'Qalan kilometr',
+      'az': 'Yürüş üzrə',
       'en': 'Remaining km',
       'ru': 'Оставшиеся км',
     },
     AppStrings.remainingMonths: {
-      'az': 'Qalan aylar',
+      'az': 'Müddət üzrə',
       'en': 'Remaining months',
       'ru': 'Оставшиеся месяцы',
     },
@@ -2241,6 +2270,21 @@ class Translations {
       'az': 'min',
       'en': 'k',
       'ru': 'тыс',
+    },
+    AppStrings.yearText: {
+      'az': 'il',
+      'en': 'yr',
+      'ru': 'г',
+    },
+    AppStrings.monthText: {
+      'az': 'ay',
+      'en': 'month',
+      'ru': 'мес',
+    },
+    AppStrings.vinFormatHint: {
+      'az': 'Simvollar: 0–9, A–Z (I, O və Q hərfləri istisna olmaqla).',
+      'en': 'Characters: 0–9, A–Z (excluding the letters I, O, and Q).',
+      'ru': 'Символы: 0–9, A–Z (буквы I, O и Q исключены).',
     },
   };
 

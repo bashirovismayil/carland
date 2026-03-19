@@ -42,7 +42,7 @@ class CarCardContent extends StatelessWidget {
         Expanded(flex: 3, child: _buildCarDetails()),
         const SizedBox(width: 12),
         Expanded(
-          flex: 2,
+          flex: 3,
           child: CarPhotoWidget(
             photoFuture: photoFuture,
             cacheVersion: photoCacheVersion,
@@ -60,7 +60,7 @@ class CarCardContent extends StatelessWidget {
         Text(
           '${car.brand ?? 'Unknown'} ${car.model}',
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
@@ -70,7 +70,7 @@ class CarCardContent extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           car.plateNumber.toString(),
-          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 1, color: AppColors.textSecondary),
         ),
       ],
     );

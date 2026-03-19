@@ -1,8 +1,6 @@
-import 'package:carcat/presentation/vin/vin_scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/svg.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/values/app_theme.dart';
 import '../../core/constants/texts/app_strings.dart';
@@ -45,12 +43,10 @@ class AddYourCarVinPage extends HookWidget {
                     _buildTitle(),
                     const SizedBox(height: AppTheme.spacingSm),
                     _buildDescription(),
-                    const SizedBox(height: AppTheme.spacingXl),
+                    const SizedBox(height: AppTheme.spacingLg),
                     _buildVinInput(context, vinController),
-                    const SizedBox(height: AppTheme.spacingXl),
-                    _buildOrDivider(),
-                    const SizedBox(height: AppTheme.spacingXl),
-                    _buildScanButton(context, vinController),
+                    const SizedBox(height: AppTheme.spacingSm),
+                    _buildVinTutorialText(),
                   ],
                 ),
               ),
@@ -203,71 +199,13 @@ class AddYourCarVinPage extends HookWidget {
     );
   }
 
-  Widget _buildOrDivider() {
-    return Row(
-      children: [
-        Expanded(
-          child: Divider(
-            color: Colors.grey.shade300,
-            thickness: 1,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMd),
-          child: Text(
-            AppTranslation.translate(AppStrings.or),
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Divider(
-            color: Colors.grey.shade300,
-            thickness: 1,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildScanButton(
-      BuildContext context, TextEditingController controller) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: () => _navigateToScanner(context, controller),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryBlack,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/svg/scanner_icon.svg',
-              width: 20,
-              height: 20,
-              colorFilter:
-              const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-            ),
-            const SizedBox(width: AppTheme.spacingSm),
-            Text(
-              AppTranslation.translate(AppStrings.scanCarVin),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+  Widget _buildVinTutorialText() {
+    return Text(
+      AppTranslation.translate(AppStrings.vinFormatHint),
+      style: const TextStyle(
+        fontSize: 12,
+        color: AppColors.textSecondary,
+        height: 1.4,
       ),
     );
   }
@@ -349,20 +287,6 @@ class AddYourCarVinPage extends HookWidget {
         );
       },
     );
-  }
-
-  void _navigateToScanner(
-      BuildContext context, TextEditingController controller) async {
-    final scannedVin = await Navigator.of(context).push<String>(
-      MaterialPageRoute(
-        builder: (context) => const VinScannerScreen(),
-      ),
-    );
-
-    if (scannedVin != null && scannedVin.isNotEmpty && context.mounted) {
-      controller.text = scannedVin;
-      _checkVin(context, scannedVin);
-    }
   }
 
   void _checkVin(BuildContext context, String vin) {

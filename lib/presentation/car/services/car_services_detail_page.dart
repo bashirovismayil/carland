@@ -60,6 +60,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<GetCarListCubit>();
+
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       body: SafeArea(
@@ -76,8 +78,8 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
                 carList: _controller.carList,
                 currentCarIndex: _controller.currentCarIndex,
                 onPageChanged: _onPageChanged,
-                getCarPhoto: _controller.getCarPhoto,
-                getPhotoCacheVersion: (id) => _controller.photoCacheVersion[id] ?? 0,
+                watchCarPhoto: cubit.watchCarPhoto,
+                getCachedPhoto: cubit.getCachedPhoto,
                 onUpdateDetails: handleUpdateDetails,
                 onUpdateMileage: handleUpdateMileage,
               ),
@@ -91,13 +93,16 @@ class _CarServicesDetailPageState extends State<CarServicesDetailPage>
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
             ServicesSection(
-              isAddNewCarSelected: _controller.currentCarIndex >= _controller.carList.length,
+              isAddNewCarSelected: _controller.currentCarIndex >=
+                  _controller.carList.length,
               onRefresh: _onRefresh,
               scrollController: _scrollController,
-              carModelYear: _controller.currentCarIndex < _controller.carList.length
+              carModelYear: _controller.currentCarIndex <
+                  _controller.carList.length
                   ? _controller.carList[_controller.currentCarIndex].modelYear
                   : null,
-              currentMileage: _controller.currentCarIndex < _controller.carList.length
+              currentMileage: _controller.currentCarIndex <
+                  _controller.carList.length
                   ? _controller.carList[_controller.currentCarIndex].mileage
                   : null,
             ),

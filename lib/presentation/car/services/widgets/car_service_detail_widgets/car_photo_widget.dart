@@ -1,16 +1,15 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-
 import '../../../../../core/constants/colors/app_colors.dart';
 
 class CarPhotoWidget extends StatelessWidget {
-  final Future<Uint8List?> photoFuture;
-  final int cacheVersion;
+  final Stream<Uint8List?> photoStream;
+  final Uint8List? cachedPhoto;
 
   const CarPhotoWidget({
     super.key,
-    required this.photoFuture,
-    required this.cacheVersion,
+    required this.photoStream,
+    required this.cachedPhoto,
   });
 
   @override
@@ -19,14 +18,15 @@ class CarPhotoWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: AspectRatio(
         aspectRatio: 16 / 9,
-        child: FutureBuilder<Uint8List?>(
-          key: ValueKey('photo_v$cacheVersion'),
-          future: photoFuture,
+        child: StreamBuilder<Uint8List?>(
+          stream: photoStream,
+          initialData: cachedPhoto,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                snapshot.data == null) {
               return _buildLoadingState();
             }
-            if (snapshot.hasError || snapshot.data == null) {
+            if (snapshot.data == null) {
               return _buildPlaceholder();
             }
             return Image.memory(

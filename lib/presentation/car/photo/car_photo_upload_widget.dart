@@ -12,6 +12,7 @@ import '../../../../../core/localization/app_translation.dart';
 import '../../../../../cubit/delete/photo/car/delete_car_photo_cubit.dart';
 import '../../../../../cubit/delete/photo/car/delete_car_photo_state.dart';
 import '../../../../../widgets/image_crop_widget.dart';
+import '../../../cubit/add/car/get_car_list_cubit.dart';
 
 class CarPhotoUploadWidget extends StatelessWidget {
   final File? selectedImage;
@@ -229,6 +230,7 @@ class CarPhotoUploadWidget extends StatelessWidget {
         Navigator.of(context).pop();
 
         if (state is DeleteCarPhotoSuccess) {
+          context.read<GetCarListCubit>().invalidatePhotoCache(carId);
           onInitialPhotoRemoved?.call();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

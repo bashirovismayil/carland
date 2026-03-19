@@ -9,8 +9,8 @@ class CarCarousel extends StatelessWidget {
   final List<GetCarListResponse> carList;
   final int currentCarIndex;
   final ValueChanged<int> onPageChanged;
-  final Future<Uint8List?> Function(int carId) getCarPhoto;
-  final int Function(int carId) getPhotoCacheVersion;
+  final Stream<Uint8List?> Function(int carId) watchCarPhoto;
+  final Uint8List? Function(int carId) getCachedPhoto;
   final void Function(GetCarListResponse car) onUpdateDetails;
   final void Function(GetCarListResponse car) onUpdateMileage;
 
@@ -20,8 +20,8 @@ class CarCarousel extends StatelessWidget {
     required this.carList,
     required this.currentCarIndex,
     required this.onPageChanged,
-    required this.getCarPhoto,
-    required this.getPhotoCacheVersion,
+    required this.watchCarPhoto,
+    required this.getCachedPhoto,
     required this.onUpdateDetails,
     required this.onUpdateMileage,
   });
@@ -50,8 +50,8 @@ class CarCarousel extends StatelessWidget {
             child: CarCard(
               car: car,
               isActive: index == currentCarIndex,
-              photoFuture: getCarPhoto(car.carId),
-              photoCacheVersion: getPhotoCacheVersion(car.carId),
+              photoStream: watchCarPhoto(car.carId),
+              cachedPhoto: getCachedPhoto(car.carId),
               onUpdateDetails: () => onUpdateDetails(car),
               onUpdateMileage: () => onUpdateMileage(car),
             ),

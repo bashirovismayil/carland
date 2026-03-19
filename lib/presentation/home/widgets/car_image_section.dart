@@ -55,33 +55,45 @@ class _CarImage extends StatefulWidget {
 }
 
 class _CarImageState extends State<_CarImage> {
-  late Future<Uint8List?> _photoFuture;
+  late Stream<Uint8List?> _photoStream;
 
   @override
   void initState() {
     super.initState();
-    _photoFuture = context.read<GetCarListCubit>().getCarPhoto(widget.carId);
+    _photoStream =
+        context.read<GetCarListCubit>().watchCarPhoto(widget.carId);
   }
 
   @override
   void didUpdateWidget(_CarImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.carId != widget.carId) {
-      _photoFuture = context.read<GetCarListCubit>().getCarPhoto(widget.carId);
+      _photoStream =
+          context.read<GetCarListCubit>().watchCarPhoto(widget.carId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List?>(
-      future: _photoFuture,
+    // RAM cache-dəki mövcud dəyəri initialData kimi ver —
+    // fetch gözləmədən dərhal göstər, stream yeni event gətirəndə yenilənir
+    final cached =
+    context.read<GetCarListCubit>().getCachedPhoto(widget.carId);
+
+    return StreamBuilder<Uint8List?>(
+      stream: _photoStream,
+      initialData: cached,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        // İlk event gəlməmişdən əvvəl loading göstər (yalnız cache yoxdursa)
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            snapshot.data == null) {
           return _buildLoading();
         }
-        if (snapshot.hasError || snapshot.data == null) {
+        // null gəldisə (foto yox və ya silindi) — placeholder
+        if (snapshot.data == null) {
           return const NoImagePlaceholder();
         }
+        // Foto var — göstər
         return Image.memory(
           snapshot.data!,
           fit: BoxFit.cover,

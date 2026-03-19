@@ -7,8 +7,8 @@ import 'card_container.dart';
 class CarCard extends StatelessWidget {
   final GetCarListResponse car;
   final bool isActive;
-  final Future<Uint8List?> photoFuture;
-  final int photoCacheVersion;
+  final Stream<Uint8List?> photoStream;
+  final Uint8List? cachedPhoto;
   final VoidCallback onUpdateDetails;
   final VoidCallback onUpdateMileage;
 
@@ -16,8 +16,8 @@ class CarCard extends StatelessWidget {
     super.key,
     required this.car,
     required this.isActive,
-    required this.photoFuture,
-    required this.photoCacheVersion,
+    required this.photoStream,
+    required this.cachedPhoto,
     required this.onUpdateDetails,
     required this.onUpdateMileage,
   });
@@ -30,8 +30,8 @@ class CarCard extends StatelessWidget {
       child: CardContainer(
         child: CarCardContent(
           car: car,
-          photoFuture: photoFuture,
-          photoCacheVersion: photoCacheVersion,
+          photoStream: photoStream,
+          cachedPhoto: cachedPhoto,
           onUpdateDetails: onUpdateDetails,
           onUpdateMileage: onUpdateMileage,
         ),

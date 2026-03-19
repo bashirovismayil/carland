@@ -907,6 +907,7 @@ class EditCarDetailsPage extends HookWidget {
           listener: (context, state) {
             if (state is UploadCarPhotoSuccess) {
               isSubmitting.value = false;
+              context.read<GetCarListCubit>().refreshPhotoCache(carId);
               Navigator.of(context).pop<Map<String, dynamic>>({
                 'plateNumber': plateController.text.trim(),
                 'modelYear': int.tryParse(yearController.text.trim()),

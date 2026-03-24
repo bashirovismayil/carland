@@ -5,6 +5,7 @@ import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
 import '../../../core/localization/app_translation.dart';
 import '../../../cubit/add/car/get_car_list_cubit.dart';
+import '../../../cubit/delete/delete_car_cubit.dart';
 import '../../../data/remote/models/remote/get_car_list_response.dart';
 import '../../../data/remote/services/local/car_list_local_service.dart';
 import '../../../presentation/car/services/car_services_detail_page.dart';
@@ -31,8 +32,8 @@ class _CarListViewState extends State<CarListView> {
   final CarOrderLocalService _carOrderService = locator<CarOrderLocalService>();
   late List<GetCarListResponse> _orderedList;
   bool _isReorderMode = false;
-  Timer? _autoDisableTimer;
   Completer<void>? _refreshCompleter;
+  Timer? _inactivityTimer;
 
   @override
   void initState() {
@@ -42,7 +43,7 @@ class _CarListViewState extends State<CarListView> {
 
   @override
   void dispose() {
-    _cancelTimer();
+    _inactivityTimer?.cancel();
     super.dispose();
   }
 
@@ -88,32 +89,34 @@ class _CarListViewState extends State<CarListView> {
 
   void _enableReorderMode() {
     setState(() => _isReorderMode = true);
-    _startTimer();
     _showReorderSnackBar();
+    _resetInactivityTimer();
   }
 
-  void _disableReorderMode() {
-    _cancelTimer();
-    ScaffoldMessenger.of(context).clearSnackBars();
-    setState(() => _isReorderMode = false);
-  }
-
-  void _startTimer() {
-    _cancelTimer();
-    _autoDisableTimer = Timer(const Duration(seconds: 10), () {
-      if (_isReorderMode) {
+  void _resetInactivityTimer() {
+    _inactivityTimer?.cancel();
+    _inactivityTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted && _isReorderMode) {
         _disableReorderMode();
       }
     });
   }
 
-  void _resetTimer() {
-    _startTimer();
+  void _disableReorderMode() {
+    _inactivityTimer?.cancel();
+    _inactivityTimer = null;
+    ScaffoldMessenger.of(context).clearSnackBars();
+    setState(() => _isReorderMode = false);
   }
 
-  void _cancelTimer() {
-    _autoDisableTimer?.cancel();
-    _autoDisableTimer = null;
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _orderedList.removeAt(oldIndex);
+      _orderedList.insert(newIndex, item);
+    });
+    _saveOrder();
+    _disableReorderMode();
   }
 
   void _showReorderSnackBar() {
@@ -124,23 +127,8 @@ class _CarListViewState extends State<CarListView> {
         backgroundColor: AppColors.primaryBlack,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(days: 1),
-        action: SnackBarAction(
-          label: AppTranslation.translate(AppStrings.done),
-          textColor: Colors.white,
-          onPressed: _disableReorderMode,
-        ),
       ),
     );
-  }
-
-  void _onReorder(int oldIndex, int newIndex) {
-    setState(() {
-      if (newIndex > oldIndex) newIndex -= 1;
-      final item = _orderedList.removeAt(oldIndex);
-      _orderedList.insert(newIndex, item);
-    });
-    _saveOrder();
-    _resetTimer();
   }
 
   Future<void> _saveOrder() async {
@@ -257,21 +245,24 @@ class _CarListViewState extends State<CarListView> {
   }
 
   void _showDeleteDialog(BuildContext context, GetCarListResponse car) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (_) => DeleteCarDialog(
-        car: car,
-        onDeleted: () {
-          context.read<
-              GetCarListCubit>().removeCarLocally(car.carId);
-
-          setState(() {
-            _orderedList.removeWhere((c) => _getCarId(c) == _getCarId(car));
-          });
-          _saveOrder();
-          widget.onRefresh();
-        },
-        onCustomizeList: _enableReorderMode,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => BlocProvider.value(
+        value: context.read<DeleteCarCubit>(),
+        child: DeleteCarBottomSheet(
+          car: car,
+          onDeleted: () {
+            context.read<GetCarListCubit>().removeCarLocally(car.carId);
+            setState(() {
+              _orderedList.removeWhere((c) => _getCarId(c) == _getCarId(car));
+            });
+            _saveOrder();
+            widget.onRefresh();
+          },
+          onCustomizeList: _enableReorderMode,
+        ),
       ),
     );
   }

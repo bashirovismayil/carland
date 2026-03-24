@@ -63,12 +63,14 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
   }
 
   void _saveMileage() {
-    final mileage = int.tryParse(_mileageController.text.replaceAll(RegExp(r'\D'), ''));
+    final mileage =
+        int.tryParse(_mileageController.text.replaceAll(RegExp(r'\D'), ''));
 
     if (mileage == null || mileage <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppTranslation.translate(AppStrings.invalidMileageError)),
+          content:
+              Text(AppTranslation.translate(AppStrings.invalidMileageError)),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -79,7 +81,8 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
     if (mileage > _maxMileageValue) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${AppTranslation.translate(AppStrings.invalidMileageError)} (Max: $_maxMileageValue)'),
+          content: Text(
+              '${AppTranslation.translate(AppStrings.invalidMileageError)} (Max: $_maxMileageValue)'),
           backgroundColor: AppColors.errorColor,
           behavior: SnackBarBehavior.floating,
         ),
@@ -88,9 +91,9 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
     }
 
     context.read<UpdateCarMileageCubit>().updateCarMileage(
-      vin: widget.vin,
-      mileage: mileage,
-    );
+          vin: widget.vin,
+          mileage: mileage,
+        );
   }
 
   void _closeDialog() {
@@ -106,14 +109,16 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
         if (state is UpdateCarMileageSuccess) {
           _focusNode.unfocus();
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-          final updatedMileage = int.tryParse(_mileageController.text.replaceAll(RegExp(r'\D'), ''));
+          final updatedMileage = int.tryParse(
+              _mileageController.text.replaceAll(RegExp(r'\D'), ''));
           Navigator.of(context).pop<Map<String, dynamic>>({
             'mileage': updatedMileage,
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppTranslation.translate(AppStrings.mileageUpdatedSuccess)),
+              content: Text(
+                  AppTranslation.translate(AppStrings.mileageUpdatedSuccess)),
               backgroundColor: AppColors.successColor,
               behavior: SnackBarBehavior.floating,
             ),
@@ -128,29 +133,35 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
           );
         }
       },
-      child: Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 15),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
+      child: GestureDetector(
+        onTap: () {
+          _focusNode.unfocus();
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+        },
+        child: Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 15),
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 24),
-                _buildSpeedometerWithOdometer(),
-                const SizedBox(height: 15),
-                _buildMileageInput(),
-                const SizedBox(height: 15),
-                _buildButtons(),
-              ],
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 15),
+                  _buildSpeedometerWithOdometer(),
+                  const SizedBox(height: 7),
+                  _buildMileageInput(),
+                  const SizedBox(height: 15),
+                  _buildButtons(),
+                ],
+              ),
             ),
           ),
         ),
@@ -200,7 +211,6 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
             height: 170,
             fit: BoxFit.contain,
           ),
-
           Positioned(
             bottom: 80,
             child: OdometerAnimation(
@@ -257,7 +267,6 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
             },
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
-
               _MileageLengthFormatter(_maxMileageDigits),
             ],
             style: const TextStyle(
@@ -331,7 +340,6 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
                 ),
               ),
             ),
-
             const SizedBox(width: 10),
             Expanded(
               child: SizedBox(
@@ -342,28 +350,29 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
                     backgroundColor: AppColors.primaryBlack,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    disabledBackgroundColor: AppColors.primaryBlack.withOpacity(0.5),
+                    disabledBackgroundColor:
+                        AppColors.primaryBlack.withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppTheme.radiusXl),
                     ),
                   ),
                   child: isLoading
                       ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
                       : Text(
-                    AppTranslation.translate(AppStrings.saveMileage),
-                    textScaler: TextScaler.noScaling,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                          AppTranslation.translate(AppStrings.saveMileage),
+                          textScaler: TextScaler.noScaling,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -381,9 +390,9 @@ class _MileageLengthFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final cleanText = newValue.text.replaceAll(RegExp(r'\D'), '');
 
     if (cleanText.length > maxLength) {
@@ -392,7 +401,7 @@ class _MileageLengthFormatter extends TextInputFormatter {
 
     final formatted = cleanText.replaceAllMapped(
       RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-          (match) => '${match[1]}.',
+      (match) => '${match[1]}.',
     );
 
     return TextEditingValue(

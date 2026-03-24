@@ -12,20 +12,34 @@ class ScannerTitleSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            AppTranslation.translate(AppStrings.scanCarVinNumber),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryBlack,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: AppTheme.spacingSm),
+              Text(
+                AppTranslation.translate(AppStrings.scanCarVinNumber),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: AppTheme.spacingSm),
           Text(
             AppTranslation.translate(AppStrings.scannerPageSubtitle),
-            textAlign: TextAlign.center,
-            style: TextStyle(
+            textAlign: TextAlign.left,
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
               height: 1.5,

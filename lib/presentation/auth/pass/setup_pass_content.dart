@@ -467,11 +467,12 @@ class _SetupPassContentState extends State<SetupPassContent> {
       MaterialPageRoute(
         builder: (_) => SuccessPage(
           isRegister: widget.setupType == SetupPassType.registration,
-          isPasswordReset: widget.setupType == SetupPassType.resetPassword,
+          isPasswordReset: widget.setupType == SetupPassType.resetPassword ||
+              widget.setupType == SetupPassType.forgotPassword,
           onButtonPressed: () async {
             await context.performAutoLogin(
               password: savedPassword,
-              phoneNumber: isRegistration ? savedPhone : null,
+              phoneNumber: savedPhone,
             );
           },
         ),

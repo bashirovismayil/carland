@@ -62,15 +62,13 @@ class AddCarService {
       if (resp.statusCode.isSuccess) {
         return AddCarResponse.fromJson(resp.data as Map<String, dynamic>);
       } else {
-        final message = _getErrorMessage(resp.statusCode ?? 0);
-        throw Exception('Add car failed: $message');
+        throw _getErrorMessage(resp.statusCode ?? 0);
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        final message = _getErrorMessage(e.response?.statusCode ?? 0);
-        throw Exception('Add car failed: $message');
+        throw _getErrorMessage(e.response?.statusCode ?? 0);
       } else {
-        throw Exception('Add car failed: Şəbəkə xətası');
+        throw AppTranslation.translate(AppStrings.errorOccurred);
       }
     }
   }

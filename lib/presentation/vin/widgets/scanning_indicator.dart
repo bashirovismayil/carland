@@ -6,7 +6,8 @@ import '../../../../utils/helper/go.dart';
 import '../add_your_car_vin_screen.dart';
 
 class ScanningIndicator extends StatelessWidget {
-  const ScanningIndicator({super.key});
+  final VoidCallback? onManualEntryTap;
+  const ScanningIndicator({super.key, this.onManualEntryTap});
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +15,9 @@ class ScanningIndicator extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         TextButton(
-          onPressed: () => Go.to(context, const AddYourCarVinPage()),
+          onPressed: onManualEntryTap ?? () => Go.to(context, const AddYourCarVinPage()),
           child: Text(
-           AppTranslation.translate(AppStrings.typeVinManually),
+            AppTranslation.translate(AppStrings.typeVinManually),
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 17,

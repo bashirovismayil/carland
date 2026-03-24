@@ -277,28 +277,70 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
       _imageDisplaySize.height,
     );
 
-    double left = rect.left.clamp(
-        imageBounds.left, imageBounds.right - ImageCropConfig.minCropSize);
-    double top = rect.top.clamp(
-        imageBounds.top, imageBounds.bottom - ImageCropConfig.minCropSize);
-    double right = rect.right.clamp(
-        imageBounds.left + ImageCropConfig.minCropSize, imageBounds.right);
-    double bottom = rect.bottom.clamp(
-        imageBounds.top + ImageCropConfig.minCropSize, imageBounds.bottom);
+    double left = rect.left;
+    double top = rect.top;
+    double right = rect.right;
+    double bottom = rect.bottom;
+    double width = right - left;
+    double height = bottom - top;
 
-    if (right - left < ImageCropConfig.minCropSize) {
-      if (left == imageBounds.left) {
-        right = left + ImageCropConfig.minCropSize;
-      } else {
-        left = right - ImageCropConfig.minCropSize;
-      }
+    if (left < imageBounds.left) {
+      left = imageBounds.left;
+      width = right - left;
+      height = width / widget.aspectRatio;
+      final centerY = (rect.top + rect.bottom) / 2;
+      top = centerY - height / 2;
+      bottom = centerY + height / 2;
     }
-    if (bottom - top < ImageCropConfig.minCropSize) {
-      if (top == imageBounds.top) {
-        bottom = top + ImageCropConfig.minCropSize;
-      } else {
-        top = bottom - ImageCropConfig.minCropSize;
-      }
+
+    if (right > imageBounds.right) {
+      right = imageBounds.right;
+      width = right - left;
+      height = width / widget.aspectRatio;
+      final centerY = (top + bottom) / 2;
+      top = centerY - height / 2;
+      bottom = centerY + height / 2;
+    }
+
+    if (top < imageBounds.top) {
+      top = imageBounds.top;
+      height = bottom - top;
+      width = height * widget.aspectRatio;
+      final centerX = (left + right) / 2;
+      left = centerX - width / 2;
+      right = centerX + width / 2;
+    }
+
+    if (bottom > imageBounds.bottom) {
+      bottom = imageBounds.bottom;
+      height = bottom - top;
+      width = height * widget.aspectRatio;
+      final centerX = (left + right) / 2;
+      left = centerX - width / 2;
+      right = centerX + width / 2;
+    }
+
+    width = right - left;
+    height = bottom - top;
+
+    if (left < imageBounds.left) {
+      left = imageBounds.left;
+      right = left + width;
+    }
+    if (right > imageBounds.right) {
+      right = imageBounds.right;
+      left = right - width;
+    }
+    if (top < imageBounds.top) {
+      top = imageBounds.top;
+      bottom = top + height;
+    }
+    if (bottom > imageBounds.bottom) {
+      bottom = imageBounds.bottom;
+      top = bottom - height;
+    }
+    if (width < ImageCropConfig.minCropSize || height < ImageCropConfig.minCropSize) {
+      return _cropRect;
     }
 
     return Rect.fromLTRB(left, top, right, bottom);
@@ -467,7 +509,6 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
         bottom += delta;
       }
 
-      // Maintain aspect ratio
       final height = (bottom - top).abs();
       final width = height * widget.aspectRatio;
       final center = (left + right) / 2;
@@ -519,7 +560,6 @@ class _ImageCropWidgetState extends State<ImageCropWidget> {
       return HandleCropType.bottomRight;
     }
 
-    // Edge handles
     final topCenter =
     Offset((cropRect.left + cropRect.right) / 2, cropRect.top);
     final bottomCenter =

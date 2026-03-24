@@ -7,6 +7,8 @@ import '../../core/constants/colors/app_colors.dart';
 import '../../core/constants/values/app_theme.dart';
 import '../../cubit/vin/check/check_vin_cubit.dart';
 import '../../cubit/vin/check/check_vin_state.dart';
+import '../../data/remote/services/local/language_local_service.dart';
+import '../../utils/di/locator.dart';
 import '../car/details/car_details_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -51,7 +53,7 @@ class VinInfoPage extends StatelessWidget {
                     _buildTitle(),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 40),
                 _buildDescription(),
                 const Spacer(),
                 _buildCenterImage(),
@@ -94,7 +96,7 @@ class VinInfoPage extends StatelessWidget {
 
   Widget _buildTitle() {
     return Text(
-      AppTranslation.translate(AppStrings.letsGetStartedText2),
+      AppTranslation.translate(AppStrings.addYourCarVin),
       style: TextStyle(
         fontSize: 21,
         fontWeight: FontWeight.w800,
@@ -117,11 +119,28 @@ class VinInfoPage extends StatelessWidget {
   }
 
   Widget _buildCenterImage() {
+    String imagePath;
+    try {
+      final currentLang = locator<LanguageLocalService>().currentLanguage;
+      switch (currentLang) {
+        case 'az':
+          imagePath = 'assets/png/vin_info_page_image_aze.png';
+          break;
+        case 'ru':
+          imagePath = 'assets/png/vin_info_page_image_ru.png';
+          break;
+        default:
+          imagePath = 'assets/png/vin_info_page_image.png';
+      }
+    } catch (e) {
+      imagePath = 'assets/png/vin_info_page_image.png';
+    }
+
     return Center(
       child: AspectRatio(
         aspectRatio: 1.1,
         child: Image.asset(
-          'assets/png/vin_info_page_image.png',
+          imagePath,
           fit: BoxFit.contain,
         ),
       ),

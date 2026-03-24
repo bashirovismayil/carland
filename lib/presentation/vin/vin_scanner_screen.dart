@@ -4,6 +4,7 @@ import '../../../utils/helper/vin/vin_scanner_service.dart';
 import '../../utils/helper/config/vin_scanner_config.dart';
 import '../../utils/helper/controllers/vin_scanner_controller.dart';
 import '../../utils/helper/vin_navigation_helper.dart';
+import 'add_your_car_vin_screen.dart';
 import 'widgets/camera_layer.dart';
 import 'widgets/scanner_ui_layer.dart';
 
@@ -76,6 +77,20 @@ class _VinScannerScreenState extends State<VinScannerScreen>
     _controller?.handleTapToFocus(details.localPosition, size);
   }
 
+  void _navigateToManualEntry() async {
+    _controller!.stopCamera();
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AddYourCarVinPage(),
+      ),
+    );
+
+    if (mounted) {
+      await _controller!.reinitializeCamera();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_isConfigReady || _controller == null) {
@@ -101,7 +116,10 @@ class _VinScannerScreenState extends State<VinScannerScreen>
               onToggleFlash: _controller!.toggleFlash,
               onRequestPermission: _controller!.checkPermissionAndInitialize,
             ),
-            ScannerUILayer(state: _controller!.state),
+            ScannerUILayer(
+              state: _controller!.state,
+              onManualEntryTap: _navigateToManualEntry,
+            ),
           ],
         ),
       ),

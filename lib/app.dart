@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/constants/colors/app_colors.dart';
 import 'cubit/language/language_cubit.dart';
@@ -51,6 +52,7 @@ class _CarCatAppState extends State<CarCatApp> {
   Future<void> _initializeDependencies() async {
     await _checkRememberMeOnStartup();
     _setupAuthListener();
+    FlutterNativeSplash.remove();
   }
 
   Future<void> _checkRememberMeOnStartup() async {

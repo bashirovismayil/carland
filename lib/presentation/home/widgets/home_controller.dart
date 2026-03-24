@@ -39,7 +39,7 @@ mixin HomeController<T extends StatefulWidget> on State<T> {
   void showDeleteDialog(GetCarListResponse car) {
     showDialog(
       context: context,
-      builder: (_) => DeleteCarDialog(car: car, onDeleted: loadCarList),
+      builder: (_) => DeleteCarBottomSheet(car: car, onDeleted: loadCarList),
     );
   }
 }

@@ -12,7 +12,7 @@ import '../../cubit/navigation/user/user_nav_bar_state.dart';
 import '../home/home_page.dart';
 import '../reservation/reservation_list_page.dart';
 
-const bool _kNativeNavBarEnabled = false;
+const bool _kNativeNavBarEnabled = true;
 
 final RouteObserver<ModalRoute<void>> navBarRouteObserver =
 RouteObserver<ModalRoute<void>>();

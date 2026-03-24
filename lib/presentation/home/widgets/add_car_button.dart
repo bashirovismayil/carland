@@ -8,13 +8,31 @@ class AddCarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () => _navigateToAddCar(context),
-      backgroundColor: Colors.black87,
-      foregroundColor: Colors.white,
-      elevation: 6,
-      shape: const CircleBorder(),
-      child: const Icon(Icons.add, size: 28),
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withOpacity(0.6),
+            blurRadius: 5,
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 4,
+            spreadRadius: 1,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: FloatingActionButton(
+        onPressed: () => _navigateToAddCar(context),
+        backgroundColor: Colors.black87,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, size: 28),
+      ),
     );
   }
 

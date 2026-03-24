@@ -29,7 +29,7 @@ class CarImageSection extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: AspectRatio(
-              aspectRatio: 7 / 3.5,
+              aspectRatio: 16 / 9,
               child: _hasValidCarId
                   ? _CarImage(carId: car.carId)
                   : const NoImagePlaceholder(),

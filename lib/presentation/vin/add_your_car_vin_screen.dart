@@ -39,7 +39,7 @@ class AddYourCarVinPage extends HookWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: AppTheme.spacingMd),
+                    const SizedBox(height: AppTheme.spacingSm10),
                     _buildTitle(),
                     const SizedBox(height: AppTheme.spacingSm),
                     _buildDescription(),
@@ -91,7 +91,7 @@ class AddYourCarVinPage extends HookWidget {
             child: Text(
               AppTranslation.translate(AppStrings.addYourCarVin),
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),

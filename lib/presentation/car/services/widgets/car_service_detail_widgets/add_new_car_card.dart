@@ -1,8 +1,8 @@
+import 'package:carcat/presentation/vin/vin_info_page.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
 import '../../../../../core/localization/app_translation.dart';
-import '../../../../vin/add_your_car_vin_screen.dart';
 
 class AddNewCarCard extends StatelessWidget {
   final bool isActive;
@@ -47,7 +47,7 @@ class AddNewCarCard extends StatelessWidget {
 
   void _navigateToAddCar(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => AddYourCarVinPage()),
+      MaterialPageRoute(builder: (context) => VinInfoPage()),
     );
   }
 

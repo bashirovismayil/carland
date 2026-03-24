@@ -9,10 +9,11 @@ import 'scanning_indicator.dart';
 
 class ScannerUILayer extends StatelessWidget {
   final VinScannerState state;
-
+  final VoidCallback? onManualEntryTap;
   const ScannerUILayer({
     super.key,
     required this.state,
+    this.onManualEntryTap,
   });
 
   @override
@@ -24,7 +25,7 @@ class ScannerUILayer extends StatelessWidget {
           const SizedBox(height: AppTheme.spacingXl),
           const ScannerTitleSection(),
           const Spacer(),
-          const ScanningIndicator(),
+          ScanningIndicator(onManualEntryTap: onManualEntryTap),
           const SizedBox(height: AppTheme.spacingLg),
           if (state.errorMessage != null)
             ScannerErrorMessage(message: state.errorMessage!),

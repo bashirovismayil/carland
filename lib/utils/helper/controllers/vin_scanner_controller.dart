@@ -94,6 +94,18 @@ class VinScannerController {
     });
   }
 
+  void stopCamera() {
+    if (!_state.isInitialized) return;
+    scannerService.stopContinuousScanning();
+    scannerService.dispose();
+    _updateState(_state.copyWith(isInitialized: false, isScanning: false));
+  }
+
+  Future<void> reinitializeCamera() async {
+    scannerService.resetDisposedState();
+    await _initializeScanner();
+  }
+
   Future<void> toggleFlash() async {
     final isOn = await scannerService.toggleFlash();
     _updateState(_state.copyWith(isFlashOn: isOn));

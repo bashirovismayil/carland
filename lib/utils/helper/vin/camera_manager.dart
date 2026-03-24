@@ -248,6 +248,10 @@ class CameraManager {
     }
   }
 
+  void resetDisposedState() {
+    _isDisposed = false;
+  }
+
   Future<bool> toggleFlash() async {
     if (_isDisposed) return false;
     if (_cameraController == null || !_cameraController!.value.isInitialized) {

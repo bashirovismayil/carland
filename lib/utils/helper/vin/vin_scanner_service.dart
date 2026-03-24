@@ -757,6 +757,13 @@ class VinScannerService {
     return candidates.toList();
   }
 
+  void resetDisposedState() {
+    _isDisposed = false;
+    _isProcessing = false;
+    _isStreaming = false;
+    _cameraManager.resetDisposedState();
+  }
+
   Future<bool> toggleFlash() => _cameraManager.toggleFlash();
 
   Future<void> setZoom(double normalizedLevel) =>

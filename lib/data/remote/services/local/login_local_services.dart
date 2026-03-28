@@ -17,6 +17,7 @@ class LoginLocalService {
     await saveUserName(resp.name);
     await saveUserSurname(resp.surname);
     await saveUserRole(resp.role);
+    await savePhoneNumber(resp.phoneNumber);
   }
 
   LoginResponse? get loginResponse {
@@ -53,6 +54,13 @@ class LoginLocalService {
   }
 
   String? get surname => _box.get('surname');
+
+  // Phone Number Operations
+  Future<void> savePhoneNumber(String phoneNumber) async {
+    if (phoneNumber.isNotEmpty) await _box.put('phoneNumber', phoneNumber);
+  }
+
+  String? get phoneNumber => _box.get('phoneNumber');
 
   // Role Operations
   Future<void> saveUserRole(UserRole role) async {

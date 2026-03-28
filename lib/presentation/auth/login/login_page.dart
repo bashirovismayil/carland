@@ -28,6 +28,7 @@ class _LoginPageState extends State<LoginPage> with LoginStateHandler {
   void initState() {
     super.initState();
     _cubit = context.read<LoginCubit>();
+    _cubit.reset();
   }
 
   @override

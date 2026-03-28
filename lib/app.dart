@@ -159,6 +159,23 @@ class _CarCatAppState extends State<CarCatApp> {
                       ),
                       useMaterial3: true,
                     ),
+                    builder: (context, child) {
+                      return AnnotatedRegion<SystemUiOverlayStyle>(
+                        value: const SystemUiOverlayStyle(
+                          statusBarColor: Colors.transparent,
+                          statusBarIconBrightness: Brightness.dark,
+                          statusBarBrightness: Brightness.light,
+                          systemNavigationBarColor: Colors.transparent,
+                          systemNavigationBarIconBrightness: Brightness.dark,
+                        ),
+                        child: MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            platformBrightness: Brightness.light,
+                          ),
+                          child: child!,
+                        ),
+                      );
+                    },
                     home: _getInitialPage(),
                   );
                 },

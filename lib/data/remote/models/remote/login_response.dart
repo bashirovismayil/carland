@@ -5,6 +5,7 @@ class LoginResponse {
   final String refreshToken;
   final String name;
   final String surname;
+  final String phoneNumber;
   final UserRole role;
   final String? message;
   final int? userId;
@@ -14,6 +15,7 @@ class LoginResponse {
     required this.refreshToken,
     required this.name,
     required this.surname,
+    required this.phoneNumber,
     required this.role,
     this.userId,
     this.message,
@@ -24,6 +26,7 @@ class LoginResponse {
         refreshToken: json['refreshToken'] ?? '',
         name: json['name'] ?? '',
         surname: json['surname'] ?? '',
+        phoneNumber: json['phoneNumber'] ?? '',
         role: UserRole.fromString(json['role'] ?? 'GUEST'),
         userId: json['userId'] ?? 0,
         message: json['message'],
@@ -34,6 +37,7 @@ class LoginResponse {
         'refreshToken': refreshToken,
         'name': name,
         'surname': surname,
+        'phoneNumber': phoneNumber,
         'role': role.value,
         'userId': userId,
         'message': message,

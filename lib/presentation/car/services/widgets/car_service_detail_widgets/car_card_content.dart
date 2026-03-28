@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:carcat/utils/helper/mileage_number_formatter.dart';
 import 'package:flutter/material.dart';
@@ -24,14 +25,47 @@ class CarCardContent extends StatelessWidget {
     required this.onUpdateMileage,
   });
 
+  ({String asset, String text})? get _verifyBadgeInfo {
+    final brand = car.brand.toLowerCase();
+    if (brand == 'toyota') {
+      return (
+      asset: 'assets/png/toyota_verify.png',
+      text: AppStrings.toyotaVerifyText,
+      );
+    }
+    if (brand == 'lexus') {
+      return (
+      asset: 'assets/png/lexus_verify.png',
+      text: AppStrings.lexusVerifyText,
+      );
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final badgeInfo = _verifyBadgeInfo;
+
+    return Stack(
+      clipBehavior: Clip.none,
       children: [
-        Expanded(child: _buildCarInfo()),
-        const SizedBox(height: 16),
-        _buildActionButtons(),
-        const SizedBox(height: 8),
+        Column(
+          children: [
+            Expanded(child: _buildCarInfo()),
+            const SizedBox(height: 16),
+            _buildActionButtons(),
+            const SizedBox(height: 8),
+          ],
+        ),
+        if (badgeInfo != null)
+          Positioned(
+            top: -5,
+            left: -5,
+            child: _VerifyBadge(
+              assetPath: badgeInfo.asset,
+              verifyTextKey: badgeInfo.text,
+            ),
+          ),
       ],
     );
   }
@@ -94,6 +128,110 @@ class CarCardContent extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _VerifyBadge extends StatefulWidget {
+  final String assetPath;
+  final String verifyTextKey;
+
+  const _VerifyBadge({
+    required this.assetPath,
+    required this.verifyTextKey,
+  });
+
+  @override
+  State<_VerifyBadge> createState() => _VerifyBadgeState();
+}
+
+class _VerifyBadgeState extends State<_VerifyBadge> {
+  static const double _badgeSize = 30.0;
+
+  final _overlayController = OverlayPortalController();
+  final _link = LayerLink();
+  Timer? _autoDismissTimer;
+
+  @override
+  void dispose() {
+    _autoDismissTimer?.cancel();
+    super.dispose();
+  }
+
+  void _showTooltip() {
+    _autoDismissTimer?.cancel();
+    _overlayController.show();
+    _autoDismissTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted) _overlayController.hide();
+    });
+  }
+
+  void _hideTooltip() {
+    _autoDismissTimer?.cancel();
+    _overlayController.hide();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _link,
+      child: OverlayPortal(
+        controller: _overlayController,
+        overlayChildBuilder: (_) => _buildTooltipOverlay(),
+        child: GestureDetector(
+          onTap: _showTooltip,
+          child: SizedBox(
+            width: _badgeSize,
+            height: _badgeSize,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Image.asset(widget.assetPath),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTooltipOverlay() {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => _hideTooltip(),
+      child: Stack(
+        children: [
+          CompositedTransformFollower(
+            link: _link,
+            offset: const Offset(0, 30),
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 240),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.textPrimary,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  AppTranslation.translate(widget.verifyTextKey),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -62,7 +62,7 @@ class ServiceCardBackFace extends StatelessWidget {
             if (!hasBoth && isTimeBased)
               _buildInfoTile(
                 icon: Icons.calendar_month_rounded,
-                value: _formatMonths(remainingMonths),
+                value: _formatDays(remainingMonths),
                 label: AppTranslation.translate(AppStrings.remainingMonths),
                 percentage: monthPercentage,
                 isActive: true,
@@ -88,7 +88,7 @@ class ServiceCardBackFace extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildInfoTile(
                   icon: Icons.calendar_month_rounded,
-                  value: _formatMonths(remainingMonths),
+                  value: _formatDays(remainingMonths),
                   label: AppTranslation.translate(AppStrings.remainingMonths),
                   percentage: monthPercentage,
                   isActive: isTimeBased,
@@ -190,26 +190,39 @@ class ServiceCardBackFace extends StatelessWidget {
   }
 
   String _formatKm(int km) {
-    if (km.abs() >= 1000) {
-      final formatted = (km / 1000).toStringAsFixed(km % 1000 == 0 ? 0 : 1);
-      return '$formatted ${AppTranslation.translate(AppStrings.kText)} km';
-    }
-    return '$km km';
-  }
-  String _formatMonths(String rawMonths) {
-    final months = int.tryParse(rawMonths);
-    if (months == null) return rawMonths;
+    final abs = km.abs().toString();
+    final buffer = StringBuffer();
 
-    if (months.abs() >= 12) {
-      final years = months ~/ 12;
-      final remainingMonths = months % 12;
-
-      if (remainingMonths == 0) {
-        return '$years ${AppTranslation.translate(AppStrings.yearText)}';
+    for (var i = 0; i < abs.length; i++) {
+      if (i > 0 && (abs.length - i) % 3 == 0) {
+        buffer.write('.');
       }
-      return '$years ${AppTranslation.translate(AppStrings.yearText)} $remainingMonths ${AppTranslation.translate(AppStrings.monthText)}';
+      buffer.write(abs[i]);
     }
 
-    return '$months ${AppTranslation.translate(AppStrings.monthText)}';
+    return '${km < 0 ? '-' : ''}${buffer.toString()} km';
+  }
+  String _formatDays(String rawDays) {
+    final totalDays = int.tryParse(rawDays);
+    if (totalDays == null) return rawDays;
+
+    final years = totalDays.abs() ~/ 365;
+    final remainingDays = totalDays.abs() % 365;
+    final months = remainingDays ~/ 30;
+    final days = remainingDays % 30;
+
+    final parts = <String>[];
+
+    if (years > 0) {
+      parts.add('$years ${AppTranslation.translate(AppStrings.yearText)}');
+    }
+    if (months > 0) {
+      parts.add('$months ${AppTranslation.translate(AppStrings.monthText)}');
+    }
+    if (days > 0) {
+      parts.add('$days ${AppTranslation.translate(AppStrings.dayText)}');
+    }
+
+    return parts.isEmpty ? '0 ${AppTranslation.translate(AppStrings.dayText)}' : parts.join(' ');
   }
 }

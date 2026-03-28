@@ -289,6 +289,15 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  void reset() {
+    state.phoneController.clear();
+    state.passwordController.clear();
+    emit(LoginState.initial().copyWith(
+      phoneController: state.phoneController,
+      passwordController: state.passwordController,
+    ));
+  }
+
   @override
   Future<void> close() {
     state.phoneController.dispose();

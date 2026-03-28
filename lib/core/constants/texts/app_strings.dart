@@ -356,6 +356,8 @@ class AppStrings {
   static const String updateMileage = 'updateMileage';
   static const String updateDetails = 'updateDetails';
   static const String noServicesFound = 'noServicesFound';
+  static const String toyotaVerifyText = 'toyota_verify_text';
+  static const String lexusVerifyText = 'lexus_verify_text';
   static const String schedule = 'schedule';
   static const String seeAll = 'seeAll';
   static const String lastService = 'lastService';
@@ -542,5 +544,6 @@ class AppStrings {
   static const String kText = 'kText';
   static const String yearText = 'year_text';
   static const String monthText = 'month_text';
+  static const String dayText = 'day_text';
   static const String vinFormatHint     = 'vinFormatHint';
 }

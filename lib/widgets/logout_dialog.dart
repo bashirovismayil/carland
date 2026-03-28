@@ -7,6 +7,7 @@ import 'package:carcat/utils/di/locator.dart';
 import 'package:carcat/utils/helper/go.dart';
 import 'package:carcat/data/remote/services/local/login_local_services.dart';
 
+import '../cubit/photo/profile/profile_photo_cubit.dart';
 import '../data/remote/services/local/biometric_service.dart';
 import '../data/remote/services/remote/pin_local_service.dart';
 
@@ -51,6 +52,7 @@ class LogoutDialog extends StatelessWidget {
             await locator<LoginLocalService>().logout();
             await locator<PinLocalService>().clearPin();
             await locator<BiometricService>().disable();
+            locator<ProfilePhotoCubit>().clearCache();
             if (context.mounted) {
               Go.replaceAndRemove(context, AuthPage());
             }

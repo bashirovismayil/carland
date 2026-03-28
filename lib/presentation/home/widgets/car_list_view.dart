@@ -228,7 +228,8 @@ class _CarListViewState extends State<CarListView> {
       onTap: () => _navigateToDetail(context, index),
       child: CarCard(
         car: car,
-        onDelete: () => _showDeleteDialog(context, car),
+        onDelete: () => _showDeleteConfirmation(context, car),
+        onCustomizeList: _enableReorderMode,
       ),
     );
   }
@@ -244,24 +245,26 @@ class _CarListViewState extends State<CarListView> {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, GetCarListResponse car) {
+  void _showDeleteConfirmation(
+      BuildContext context, GetCarListResponse car) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+      useRootNavigator: true,
       builder: (_) => BlocProvider.value(
         value: context.read<DeleteCarCubit>(),
-        child: DeleteCarBottomSheet(
+        child: DeleteCarConfirmationSheet(
           car: car,
           onDeleted: () {
             context.read<GetCarListCubit>().removeCarLocally(car.carId);
             setState(() {
-              _orderedList.removeWhere((c) => _getCarId(c) == _getCarId(car));
+              _orderedList
+                  .removeWhere((c) => _getCarId(c) == _getCarId(car));
             });
             _saveOrder();
             widget.onRefresh();
           },
-          onCustomizeList: _enableReorderMode,
         ),
       ),
     );

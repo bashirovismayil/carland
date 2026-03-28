@@ -7,15 +7,25 @@ import 'car_image_section.dart';
 class CarCard extends StatelessWidget {
   final GetCarListResponse car;
   final VoidCallback onDelete;
+  final VoidCallback? onCustomizeList;
 
-  const CarCard({super.key, required this.car, required this.onDelete});
+  const CarCard({
+    super.key,
+    required this.car,
+    required this.onDelete,
+    this.onCustomizeList,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CarImageSection(car: car, onDelete: onDelete),
+        CarImageSection(
+          car: car,
+          onDelete: onDelete,
+          onCustomizeList: onCustomizeList,
+        ),
         _buildCarInfo(),
       ],
     );

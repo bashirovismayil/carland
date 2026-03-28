@@ -56,7 +56,6 @@ class _ServiceCardState extends State<ServiceCard>
   void initState() {
     super.initState();
 
-    // --- Mevcut expand/collapse controller ---
     _controller = AnimationController(
       duration: const Duration(milliseconds: 280),
       vsync: this,
@@ -93,7 +92,6 @@ class _ServiceCardState extends State<ServiceCard>
       _controller.value = 1.0;
     }
 
-    // --- Flip controller başlatma ---
     initFlipController();
   }
 
@@ -101,7 +99,6 @@ class _ServiceCardState extends State<ServiceCard>
   void didUpdateWidget(covariant ServiceCard oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // percentageId değişirse flip'i sıfırla
     if (oldWidget.service.percentageId != widget.service.percentageId) {
       if (isFlipped) {
         flipController.value = 0.0;
@@ -118,7 +115,6 @@ class _ServiceCardState extends State<ServiceCard>
       return;
     }
 
-    // Mevcut forceCollapsed mantığı — değiştirilmedi
     if (_needsEdit &&
         widget.isForceCollapsed != oldWidget.isForceCollapsed &&
         widget.isForceCollapsed &&
@@ -197,8 +193,6 @@ class _ServiceCardState extends State<ServiceCard>
     );
   }
 
-  /// Kartın mevcut ön yüzü — orijinal expand/collapse yapısını
-  /// birebir korur, sadece ayrı bir metoda çıkarıldı.
   Widget _buildFrontFace({
     required int percentage,
     required bool needsEdit,
@@ -206,161 +200,182 @@ class _ServiceCardState extends State<ServiceCard>
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: _controller.value > 0.3
-                  ? AppColors.primaryBlack.withOpacity(0.08)
-                  : Colors.grey.shade200,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: _controller.value > 0.3
+                      ? AppColors.primaryBlack.withOpacity(0.08)
+                      : Colors.grey.shade200,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-            ],
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: _toggle,
-                behavior: HitTestBehavior.opaque,
-                child: SizeTransition(
-                  sizeFactor: _headerHeight,
-                  axisAlignment: -1.0,
-                  child: Opacity(
-                    opacity: _headerOpacity.value,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.service.serviceName,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: _toggle,
+                    behavior: HitTestBehavior.opaque,
+                    child: SizeTransition(
+                      sizeFactor: _headerHeight,
+                      axisAlignment: -1.0,
+                      child: Opacity(
+                        opacity: _headerOpacity.value,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.service.serviceName,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                size: 22,
+                                color: Colors.grey.shade500,
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: 22,
-                            color: Colors.grey.shade500,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  SizeTransition(
+                    sizeFactor: _contentSize,
+                    axisAlignment: -1.0,
+                    child: Opacity(
+                      opacity: _contentOpacity.value,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (needsEdit) ...[
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: GestureDetector(
+                                  onTap: _toggle,
+                                  behavior: HitTestBehavior.opaque,
+                                  child: Text(
+                                    widget.service.serviceName,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ServiceCardEditContent(
+                                key: ValueKey(
+                                    'edit_${widget.service.percentageId}'),
+                                carId: widget.carId,
+                                serviceName: widget.service.serviceName,
+                                onRefresh: widget.onRefresh,
+                                carModelYear: widget.carModelYear,
+                                currentMileage: widget.currentMileage,
+                              ),
+                            ] else ...[
+                              ServiceCardHeader(
+                                service: widget.service,
+                                carId: widget.carId,
+                                percentage: percentage,
+                                isHidden: widget.isHidden,
+                                onRefresh: widget.onRefresh,
+                                onToggleHidden: widget.onToggleHidden,
+                              ),
+                              const SizedBox(height: 16),
+                              ServiceInfoRow(
+                                title: AppTranslation.translate(
+                                    AppStrings.lastService),
+                                km: widget.service.lastServiceKm,
+                                date: widget.service.lastServiceDate,
+                              ),
+                              const SizedBox(height: 10),
+                              ServiceInfoRow(
+                                title: AppTranslation.translate(
+                                    AppStrings.nextService),
+                                km: widget.service.nextServiceKm,
+                                date: widget.service.nextServiceDate,
+                                isForNextService: true,
+                                hasIntervalKm: widget.service.intervalKm > 0,
+                                hasIntervalMonth:
+                                widget.service.intervalMonth > 0,
+                              ),
+                            ],
+                            if (needsEdit) ...[
+                              const SizedBox(height: 11),
+                              GestureDetector(
+                                onTap: _toggle,
+                                behavior: HitTestBehavior.opaque,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 5.0, right: 1, left: 12),
+                                    child: Icon(
+                                      Icons.keyboard_arrow_up,
+                                      color: Colors.grey.shade600,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              SizeTransition(
-                sizeFactor: _contentSize,
-                axisAlignment: -1.0,
-                child: Opacity(
-                  opacity: _contentOpacity.value,
+            ),
+            if (!needsEdit)
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (needsEdit) ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: GestureDetector(
-                              onTap: _toggle,
-                              behavior: HitTestBehavior.opaque,
-                              child: Text(
-                                widget.service.serviceName,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
-                                ),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          ServiceCardEditContent(
-                            key: ValueKey(
-                                'edit_${widget.service.percentageId}'),
-                            carId: widget.carId,
-                            serviceName: widget.service.serviceName,
-                            onRefresh: widget.onRefresh,
-                            carModelYear: widget.carModelYear,
-                            currentMileage: widget.currentMileage,
-                          ),
-                        ] else ...[
-                          ServiceCardHeader(
-                            service: widget.service,
-                            carId: widget.carId,
-                            percentage: percentage,
-                            isHidden: widget.isHidden,
-                            onRefresh: widget.onRefresh,
-                            onToggleHidden: widget.onToggleHidden,
-                          ),
-                          const SizedBox(height: 16),
-                          ServiceInfoRow(
-                            title: AppTranslation.translate(
-                                AppStrings.lastService),
-                            km: widget.service.lastServiceKm,
-                            date: widget.service.lastServiceDate,
-                          ),
-                          const SizedBox(height: 10),
-                          ServiceInfoRow(
-                            title: AppTranslation.translate(
-                                AppStrings.nextService),
-                            km: widget.service.nextServiceKm,
-                            date: widget.service.nextServiceDate,
-                            isForNextService: true,
-                            hasIntervalKm: widget.service.intervalKm > 0,
-                            hasIntervalMonth:
-                            widget.service.intervalMonth > 0,
-                          ),
-                        ],
-                        if (needsEdit) ...[
-                          const SizedBox(height: 11),
-                          GestureDetector(
-                            onTap: _toggle,
-                            behavior: HitTestBehavior.opaque,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 5.0, right: 1, left: 12),
-                                child: Icon(
-                                  Icons.keyboard_arrow_up,
-                                  color: Colors.grey.shade600,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Icon(
+                      Icons.touch_app_rounded,
+                      size: 16,
+                      color: Colors.grey.shade400,
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+          ],
         );
       },
     );

@@ -97,9 +97,9 @@ class Translations {
       'ru': 'Пропустить',
     },
     AppStrings.letsGetStartedText: {
-      'az': 'Başlayaq!',
-      'en': "Let's Get Started!",
-      'ru': 'Давайте начнем!',
+      'az': 'Başlayaq',
+      'en': "Let's Get Started",
+      'ru': 'Давайте начнем',
     },
     AppStrings.letsGetStartedText2: {
       'az': 'Başlayaq',
@@ -108,11 +108,11 @@ class Translations {
     },
     AppStrings.vinInfoPageDescription: {
       'az':
-          "Sürücü qapısının çərçivəsində yerləşən\nbarkodu və ya QR kodunu skan edin.",
+          "Sürücü və ya sərnişin qapısının çərçivəsində\nyerləşən BAN kodu skan edin.",
       'en':
-          "Scan the barcode or QR code, which\nis located on the driver's side door\nframe.",
+          "Scan the VIN code on the driver or\npassenger door frame.",
       'ru':
-          "Сканируйте штрих-код или QR-код, который\nнаходится на дверной раме со стороны водителя.",
+          "Сканируйте VIN-код на двери водителя или пассажира.",
     },
     AppStrings.closeButton: {
       'az': 'Bağla',
@@ -153,13 +153,13 @@ class Translations {
     // Language Selection
     AppStrings.selectLanguageToContinue: {
       'az': 'Davam edəcəyiniz dili seçin',
-      'en': 'Select language to continue',
-      'ru': 'Выберите язык для продолжения',
+      'en': 'Choose a language',
+      'ru': 'Выберите язык',
     },
     AppStrings.useAppInYourLanguage: {
       'az': 'Tətbiqi istədiyiniz dildə istifadə edin',
-      'en': 'Use the app in your preferred language',
-      'ru': 'Используйте приложение на удобном языке',
+      'en': 'Use your language.',
+      'ru': 'Используйте свой язык.',
     },
 
     // User Roles
@@ -169,22 +169,22 @@ class Translations {
       'ru': 'Админ',
     },
     AppStrings.superAdmin: {
-      'az': 'Super Admin',
-      'en': 'Super Admin',
-      'ru': 'Супер Админ',
+      'az': 'Super admin',
+      'en': 'Super admin',
+      'ru': 'Супер aдмин',
     },
 
     // Onboarding
     AppStrings.onboardTitle_1: {
       'az': 'Avtomobiliniz – Bizim prioritetimiz',
-      'en': 'Your car – Our priority',
+      'en': 'Your car is our priority',
       'ru': 'Ваш автомобиль – Наш приоритет',
     },
     AppStrings.onboardSubtext_1: {
       'az':
           'Geniş avtoservis xidmətlərinə çıxış əldə edin və avtomobilinizin qayğısını bizə həvalə edin',
       'en':
-          'Get access to wide range of auto services\nand leave your car care to us',
+          'Access a range of car services and let us\ntake care of your vehicle.',
       'ru':
           'Получите доступ к широкому спектру автосервисов и доверьте заботу\nо машине нам',
     },
@@ -195,9 +195,9 @@ class Translations {
     },
     AppStrings.onboardSubtext_2: {
       'az':
-          'Ustalarla randevu təyin edin,\nmövcudluğu görün və xatırlatmalar alın',
+          'Servislərə randevu təyin edin,\nmövcudluğu görün və xatırlatmalar alın',
       'en':
-          'Schedule appointments with mechanics,\ncheck availability and get reminders',
+          'Book service appointments,\ncheck availability, and get reminders.',
       'ru':
           'Назначайте встречи с мастерами,\nпроверяйте доступность и получайте напоминания',
     },
@@ -208,9 +208,9 @@ class Translations {
     },
     AppStrings.onboardSubtext_3: {
       'az':
-          'Təmir qeydləri, texniki baxış tarixçəsi\nvə ehtiyat hissələrinə bir yerdən baxın',
+          'Avtomobilinizin bütün keçmiş servis və\ntəmir işlərini bir yerdə idarə edin və izləyin.',
       'en':
-          'View repair records, maintenance history\nand spare parts in one place',
+          'Manage and view all past maintenance and\nrepairs for your vehicle in one place.',
       'ru':
           'Просматривайте записи ремонта, историю ТО и запчасти в одном месте',
     },
@@ -230,7 +230,7 @@ class Translations {
       'az':
           'Avtomobillərini əlavə etməklə, texniki\nbaxım tarixlərini izlə və təhlükəsiz sür.',
       'en':
-          'Your smart companion for hassle-free car maintenance. Track, schedule, and book services all in one place.',
+          'Add your vehicles, track maintenance history, and drive safely.',
       'ru':
           'Ваш умный помощник для беспроблемного обслуживания автомобиля. Отслеживайте, планируйте и бронируйте услуги в одном месте.',
     },
@@ -251,7 +251,7 @@ class Translations {
     },
     AppStrings.cannotLogin: {
       'az': 'Daxil ola bilmirəm',
-      'en': "I can't login",
+      'en': "I can't log in",
       'ru': 'Не могу войти',
     },
     AppStrings.helpInfoText: {
@@ -269,7 +269,7 @@ class Translations {
     },
     AppStrings.iCannotLogin: {
       'az': 'Daxil ola bilmirəm',
-      'en': "I can't login",
+      'en': "I can't log in",
       'ru': 'Не могу войти',
     },
     AppStrings.signUpButton: {
@@ -296,17 +296,17 @@ class Translations {
     },
     AppStrings.forgotPassword: {
       'az': 'Şifrəni unutmusan?',
-      'en': 'Forgot Password?',
+      'en': 'Forgot password?',
       'ru': 'Забыли пароль?',
     },
     AppStrings.forgotPasswordPageHeader: {
       'az': 'Şifrəni unutmuşam',
-      'en': 'Forgot Password',
+      'en': 'Forgot password',
       'ru': 'Забыли пароль',
     },
     AppStrings.resetPasswordHeader: {
       'az': 'Şifrəni dəyişdir',
-      'en': 'Reset Password',
+      'en': 'Reset password',
       'ru': 'Сбросить пароль',
     },
     AppStrings.rememberMe: {
@@ -353,18 +353,18 @@ class Translations {
       'ru': 'Пожалуйста, введите 9 цифр',
     },
     AppStrings.supportSuccessTitle: {
-      'az': 'Göndərildi!',
-      'en': 'Submitted!',
-      'ru': 'Отправлено!',
+      'az': 'Göndərildi',
+      'en': 'Submitted',
+      'ru': 'Отправлено',
     },
     AppStrings.supportSuccessSubtitle: {
-      'az': 'Dəstək xidmətimiz 24-48 saat içində geri dönüş edəcək.',
-      'en': 'Our support team will get back to you within 24-48 hours.',
-      'ru': 'Наша служба поддержки свяжется с вами в течение 24-48 часов.',
+      'az': 'Dəstək xidmətimiz 48 saat içində geri dönüş edəcək.',
+      'en': 'Our support team will get back to you within 48 hours.',
+      'ru': 'Наша служба поддержки свяжется с вами в течение 48 часов.',
     },
     AppStrings.feedbackSuccessSubtitle: {
-      'az': 'Düşüncələrin bizim üçün əhəmiyyətlidir.',
-      'en': 'Your thoughts are important to us.',
+      'az': 'Fikirlərin bizim üçün əhəmiyyətlidir.',
+      'en': 'Your feedbacks are important to us.',
       'ru': 'Ваши мысли важны для нас.',
     },
     // Validation Messages - Password
@@ -390,14 +390,14 @@ class Translations {
     },
     AppStrings.passwordsMustMatch: {
       'az': 'Şifrələr eyni olmalıdır',
-      'en': 'Both Password should be match (same)',
+      'en': 'Both password should be match (same)',
       'ru': 'Пароли должны совпадать',
     },
 
     // Register Page
     AppStrings.createAnAccount: {
       'az': 'Hesabın yaradılması',
-      'en': 'Create An Account',
+      'en': 'Create an Account',
       'ru': 'Создать аккаунт',
     },
     AppStrings.nameLabel: {
@@ -422,12 +422,12 @@ class Translations {
     },
     AppStrings.countryCodeLabel: {
       'az': 'Ölkə kodu',
-      'en': 'Country Code',
+      'en': 'Country code',
       'ru': 'Код страны',
     },
     AppStrings.phoneNumberLabel: {
       'az': 'Mobil nömrə',
-      'en': 'Phone Number',
+      'en': 'Phone number',
       'ru': 'Номер телефона',
     },
     AppStrings.selectCountryCode: {
@@ -527,20 +527,20 @@ class Translations {
     },
     AppStrings.sendOtpDescription: {
       'az': '4 rəqəmli OTP kodu telefon\nnömrəsinə göndərin',
-      'en': 'Send an 4 - digits OTP code\nto phone number',
-      'ru': 'Отправить 4-значный OTP код\nна номер телефона',
+      'en': 'Send an 4 digits OTP code\nto phone number',
+      'ru': 'Отправить 4 значный OTP код\nна номер телефона',
     },
 
     // OTP Page
     AppStrings.otpVerification: {
       'az': 'Birdəfəlik kod ilə təsdiqləmə',
-      'en': 'OTP Verification',
+      'en': 'OTP verification',
       'ru': 'OTP Верификация',
     },
     AppStrings.otpSubtitle: {
       'az':
           'Təqdim etdiyiniz telefon nömrəsinə təsdiq (avtorizasiya) kodu göndərildi',
-      'en': 'An authorization code has been sent to your provided Phone Number',
+      'en': 'An authorization code has been sent to your provided phone number',
       'ru': 'Код подтверждения был отправлен на указанный номер телефона',
     },
     AppStrings.secLeft: {
@@ -555,7 +555,7 @@ class Translations {
     },
     AppStrings.resendCode: {
       'az': 'Yenidən kod göndər',
-      'en': 'Resend Code',
+      'en': 'Resend code',
       'ru': 'Отправить повторно',
     },
     AppStrings.enterCompleteOtp: {
@@ -582,17 +582,17 @@ class Translations {
     // Setup Password Page
     AppStrings.createPassword: {
       'az': 'Şifrənin yaradılması',
-      'en': 'Create Password',
+      'en': 'Create password',
       'ru': 'Создать Пароль',
     },
     AppStrings.enterNewPassword: {
       'az': 'Yeni şifrəni daxil et',
-      'en': 'Enter New Password',
+      'en': 'Enter new password',
       'ru': 'Введите Новый Пароль',
     },
     AppStrings.confirmNewPassword: {
       'az': 'Yeni şifrəni təkrar daxil et',
-      'en': 'Confirm New Password',
+      'en': 'Confirm new password',
       'ru': 'Подтвердите Новый Пароль',
     },
     AppStrings.registerButton: {
@@ -607,7 +607,7 @@ class Translations {
     },
     AppStrings.changePassTitle: {
       'az': 'Şifrənin dəyişdirilməsi',
-      'en': 'Reset Password',
+      'en': 'Reset password',
       'ru': 'Сброс Пароля',
     },
     AppStrings.changePassFinish: {
@@ -617,7 +617,7 @@ class Translations {
     },
     AppStrings.setupPasswordText: {
       'az': 'Şifrə qurulması',
-      'en': 'Set Up Password',
+      'en': 'Set up password',
       'ru': 'Настройка пароля',
     },
     AppStrings.setupPasswordHintText: {
@@ -627,7 +627,7 @@ class Translations {
     },
     AppStrings.confirmPassword: {
       'az': 'Şifrəni təsdiqlə',
-      'en': 'Confirm Password',
+      'en': 'Confirm password',
       'ru': 'Подтвердите пароль',
     },
     AppStrings.confirmPasswordHint: {
@@ -637,7 +637,7 @@ class Translations {
     },
     AppStrings.passwordRulesText: {
       'az': 'Şifrə tələbləri',
-      'en': 'Password Rules',
+      'en': 'Password rules',
       'ru': 'Правила пароля',
     },
 
@@ -754,17 +754,17 @@ class Translations {
     // Success Messages
     AppStrings.registrationSuccessful: {
       'az': 'Qeydiyyat uğurla\ntamamlandı',
-      'en': 'Registration Successful',
+      'en': 'Registration successful',
       'ru': 'Регистрация Успешна',
     },
     AppStrings.passwordResetSuccessful: {
       'az': 'Şifrən yeniləndi',
-      'en': 'Password Reset Successful',
+      'en': 'Password reset successful',
       'ru': 'Сброс Пароля Успешен',
     },
     AppStrings.carAdded: {
-      'az': 'Avtomobil Əlavə Edildi',
-      'en': 'Car Added',
+      'az': 'Avtomobil əlavə edildi',
+      'en': 'Car added',
       'ru': 'Автомобиль Добавлен',
     },
     AppStrings.registrationSuccessSubtext: {
@@ -784,23 +784,23 @@ class Translations {
           'Ваш пароль успешно обновлен. Теперь вы можете войти с новым паролем.',
     },
     AppStrings.carAddedSubtext: {
-      'az': 'Yeni Kart Əlavə Edildi BMW M4 Sports 2024',
-      'en': 'New Card Added BMW M4 Sports 2024',
+      'az': 'Yeni kart əlavə edildi BMW M4 Sports 2024',
+      'en': 'New card added BMW M4 Sports 2024',
       'ru': 'Новая Карта Добавлена BMW M4 Sports 2024',
     },
     AppStrings.checkMyCars: {
       'az': 'Avtomobillərə keçid et',
-      'en': 'Check My Cars',
+      'en': 'Check my cars',
       'ru': 'Проверить Мои Автомобили',
     },
     AppStrings.newCarAdded: {
-      'az': 'Yeni Kart Əlavə Edildi',
-      'en': 'New Card Added',
+      'az': 'Yeni kart əlavə edildi',
+      'en': 'New card added',
       'ru': 'Новая Карта Добавлена',
     },
     AppStrings.vinText: {
       'az': 'BAN nömrəsi',
-      'en': 'VIN Number',
+      'en': 'VIN number',
       'ru': 'VIN Номер',
     },
     AppStrings.initCam: {
@@ -810,12 +810,12 @@ class Translations {
     },
     AppStrings.cameraAccessDenied: {
       'az': 'Kamera girişi rədd edildi',
-      'en': 'Camera Access Denied',
+      'en': 'Camera access denied',
       'ru': 'Доступ к камере запрещен',
     },
     AppStrings.cameraPermissionRequired: {
       'az': 'Kamera icazəsi tələb olunur',
-      'en': 'Camera Permission Required',
+      'en': 'Camera permission required',
       'ru': 'Требуется разрешение камеры',
     },
     AppStrings.enableCameraAccessInSettings: {
@@ -829,35 +829,35 @@ class Translations {
       'ru': 'Нам нужен доступ к камере для сканирования VIN-кодов',
     },
     AppStrings.openSettings: {
-      'az': 'Parametrləri Aç',
-      'en': 'Open Settings',
+      'az': 'Parametrləri aç',
+      'en': 'Open settings',
       'ru': 'Открыть настройки',
     },
     AppStrings.grantPermission: {
-      'az': 'İcazə Ver',
-      'en': 'Grant Permission',
+      'az': 'İcazə ver',
+      'en': 'Grant permission',
       'ru': 'Предоставить разрешение',
     },
 
     // Navigation Pages
     AppStrings.homePage: {
-      'az': 'Əsas Səhifə',
-      'en': 'Home Page',
+      'az': 'Əsas səhifə',
+      'en': 'Home page',
       'ru': 'Главная Страница',
     },
     AppStrings.settingsPage: {
       'az': 'Parametrlər',
-      'en': 'Settings Page',
+      'en': 'Settings page',
       'ru': 'Страница Настроек',
     },
     AppStrings.bookingPage: {
       'az': 'Rezervasiya',
-      'en': 'Booking Page',
+      'en': 'Booking page',
       'ru': 'Страница Бронирования',
     },
     AppStrings.profilePage: {
-      'az': 'Profil Səhifəsi',
-      'en': 'Profile Page',
+      'az': 'Profil səhifəsi',
+      'en': 'Profile page',
       'ru': 'Страница Профиля',
     },
     // Home Page Strings
@@ -868,12 +868,12 @@ class Translations {
     },
     AppStrings.bookYourCarServices: {
       'az': 'Avtomobilini idarə et',
-      'en': 'Book your Car Services',
+      'en': 'Book your car services',
       'ru': 'Забронируйте автосервис',
     },
     AppStrings.noCarsAddedYet: {
       'az': 'Avtomobil əlavə edilməyib',
-      'en': 'No Cars Added Yet',
+      'en': 'No cars added yet',
       'ru': 'Автомобили еще не добавлены',
     },
     AppStrings.noCarsAddedDescription: {
@@ -885,8 +885,8 @@ class Translations {
           'Вы еще не добавили автомобили. Добавьте свой первый автомобиль, чтобы начать отслеживать график обслуживания, историю сервиса и бронирования.',
     },
     AppStrings.addCarButton: {
-      'az': 'Avtomobil Əlavə Et',
-      'en': 'Add Car',
+      'az': 'Avtomobil əlavə et',
+      'en': 'Add car',
       'ru': 'Добавить Автомобиль',
     },
 
@@ -973,7 +973,7 @@ class Translations {
 
     AppStrings.enterOrScanVin: {
       'az': 'BAN nömrəni əlavə etmə',
-      'en': 'Enter or Scan VIN',
+      'en': 'Enter or scan VIN',
       'ru': 'Введите или отсканируйте VIN',
     },
 
@@ -988,7 +988,7 @@ class Translations {
 
     AppStrings.enterCarVin: {
       'az': 'BAN nömrəni daxil edin',
-      'en': 'Enter Car Vin',
+      'en': 'Enter car Vin',
       'ru': 'Введите VIN автомобиля',
     },
 
@@ -1009,7 +1009,7 @@ class Translations {
     },
     AppStrings.vinSuccess: {
       'az': 'BAN uğurla skan edildi',
-      'en': 'VIN Scanned Successfully',
+      'en': 'VIN scanned successfully',
       'ru': 'VIN успешно отсканирован',
     },
     AppStrings.vinDetectInfo: {
@@ -1024,19 +1024,19 @@ class Translations {
     },
 
     AppStrings.or: {
-      'az': 'VƏ YA',
-      'en': 'OR',
-      'ru': 'ИЛИ',
+      'az': 'və ya',
+      'en': 'or',
+      'ru': 'или',
     },
 
     AppStrings.scanCarVin: {
       'az': 'BAN nömrə skan et',
-      'en': 'Scan Car Vin',
+      'en': 'Scan car Vin',
       'ru': 'Сканировать VIN автомобиля',
     },
     AppStrings.scanCarVinNumber: {
       'az': 'BAN nömrə skan et',
-      'en': 'Scan Car VIN number',
+      'en': 'Scan car VIN number',
       'ru': 'Сканировать VIN автомобиля',
     },
     AppStrings.scannerPageSubtitle: {
@@ -1056,28 +1056,28 @@ class Translations {
 
     AppStrings.vinVerified: {
       'az': 'VIN təsdiqləndi',
-      'en': 'VIN Verified',
+      'en': 'VIN verified',
       'ru': 'VIN подтвержден',
     },
 
     AppStrings.carDetails: {
       'az': 'Avtomobil Məlumatları',
-      'en': 'Car Details',
+      'en': 'Car details',
       'ru': 'Детали автомобиля',
     },
     AppStrings.addCarDetails: {
-      'az': 'Avtomobil Məlumatları Əlavə Et',
-      'en': 'Add Car Details',
+      'az': 'Avtomobil məlumatları əlavə et',
+      'en': 'Add car details',
       'ru': 'Добавить детали автомобиля',
     },
     AppStrings.addButton: {
-      'az': 'Əlavə Et',
+      'az': 'Əlavə et',
       'en': 'Add',
       'ru': 'Добавить',
     },
     AppStrings.plateNumber: {
       'az': 'Dövlət Qeydiyyat Nişanı',
-      'en': 'Plate Number',
+      'en': 'Plate number',
       'ru': 'Номерной знак',
     },
     AppStrings.plateNumberHint: {
@@ -1121,8 +1121,8 @@ class Translations {
       'ru': 'напр., LAND CRUISER PRADO',
     },
     AppStrings.engineVolume: {
-      'az': 'Mühərrik Həcmi',
-      'en': 'Engine Volume',
+      'az': 'Mühərrik həcmi',
+      'en': 'Engine volume',
       'ru': 'Объём двигателя',
     },
     AppStrings.engineVolumeHint: {
@@ -1132,12 +1132,12 @@ class Translations {
     },
     AppStrings.bodyType: {
       'az': 'BAN növü',
-      'en': 'Body Type',
+      'en': 'Body type',
       'ru': 'Тип кузова',
     },
     AppStrings.selectBodyType: {
-      'az': 'Kuzov Tipini Seçin',
-      'en': 'Select Body Type',
+      'az': 'Kuzov tipini seçin',
+      'en': 'Select body type',
       'ru': 'Выберите тип кузова',
     },
     AppStrings.transmission: {
@@ -1146,13 +1146,13 @@ class Translations {
       'ru': 'Трансмиссия',
     },
     AppStrings.selectType: {
-      'az': 'Tipi Seçin',
-      'en': 'Select Type',
+      'az': 'Tipi seçin',
+      'en': 'Select type',
       'ru': 'Выберите тип',
     },
     AppStrings.engineType: {
       'az': 'Yanacaq növü',
-      'en': 'Engine Type',
+      'en': 'Engine type',
       'ru': 'Тип двигателя',
     },
     AppStrings.year: {
@@ -1161,7 +1161,7 @@ class Translations {
       'ru': 'Год',
     },
     AppStrings.selectYear: {
-      'az': 'İli Seçin',
+      'az': 'İli seçin',
       'en': 'Select Year',
       'ru': 'Выберите год',
     },
@@ -1176,8 +1176,8 @@ class Translations {
       'ru': 'Песочно-серый',
     },
     AppStrings.currentMileage: {
-      'az': 'Cari Yürüş',
-      'en': 'Current Mileage',
+      'az': 'Cari yürüş',
+      'en': 'Current mileage',
       'ru': 'Текущий пробег',
     },
     AppStrings.mileageHint: {
@@ -1192,12 +1192,12 @@ class Translations {
     },
     AppStrings.uploadPhoto: {
       'az': 'Avtomobilin şəklini yüklə',
-      'en': 'Upload Photo',
+      'en': 'Upload photo',
       'ru': 'Загрузить фото',
     },
     AppStrings.addOrDrop: {
       'az': 'Çək və ya əlavə et',
-      'en': 'Add or Drop',
+      'en': 'Add or drop',
       'ru': 'Добавить или перетащить',
     },
     AppStrings.supportedFiles: {
@@ -1276,8 +1276,8 @@ class Translations {
       'ru': 'Фото успешно удалено',
     },
     AppStrings.imageCropTitle: {
-      'az': 'Şəkili Kəs',
-      'en': 'Crop Image',
+      'az': 'Şəkili kəs',
+      'en': 'Crop image',
       'ru': 'Обрезать изображение',
     },
     AppStrings.okButton: {
@@ -1302,22 +1302,22 @@ class Translations {
     },
     AppStrings.noImage: {
       'az': 'Foto yoxdur',
-      'en': 'No Image',
+      'en': 'No image',
       'ru': 'Нет изображения',
     },
     AppStrings.choosePhoto: {
       'az': 'Şəkil seçin',
-      'en': 'Choose Photo',
+      'en': 'Choose photo',
       'ru': 'Выберите фото',
     },
     AppStrings.selectFromGallery: {
       'az': 'Qalereyadan seç',
-      'en': 'Select from Gallery',
+      'en': 'Select from gallery',
       'ru': 'Выбрать из галереи',
     },
     AppStrings.useCamera: {
       'az': 'Kameradan istifadə et',
-      'en': 'Use Camera',
+      'en': 'Use camera',
       'ru': 'Использовать камеру',
     },
     AppStrings.uploadSuccess: {
@@ -1382,7 +1382,7 @@ class Translations {
     },
     AppStrings.maintenanceHistory: {
       'az': 'Texniki servis tarixçəsi',
-      'en': 'Maintenance History',
+      'en': 'Maintenance history',
       'ru': 'История обслуживания',
     },
     AppStrings.saved: {
@@ -1391,8 +1391,8 @@ class Translations {
       'ru': 'Сохранено',
     },
     AppStrings.saveChanges: {
-      'az': 'Dəyişiklikləri Saxla',
-      'en': 'Save Changes',
+      'az': 'Dəyişiklikləri saxla',
+      'en': 'Save changes',
       'ru': 'Сохранить изменения',
     },
     AppStrings.lastServiceDate: {
@@ -1436,27 +1436,27 @@ class Translations {
     },
     AppStrings.neverServicedLabel: {
       'az': 'Bu xidmət üzrə servisdə olmamışam',
-      'en': 'Never Serviced',
+      'en': 'Never serviced',
       'ru': 'Никогда не обслуживался',
     },
     AppStrings.myCars: {
       'az': 'Avtomobillərim',
-      'en': 'My Cars',
+      'en': 'My cars',
       'ru': 'Мои автомобили',
     },
     AppStrings.addNewCar: {
       'az': 'Yeni avtomobil əlavə et',
-      'en': 'Add New Car',
+      'en': 'Add new car',
       'ru': 'Добавить новый автомобиль',
     },
     AppStrings.updateMileage: {
-      'az': 'Yürüşü Yenilə',
-      'en': 'Update Mileage',
+      'az': 'Yürüşü yenilə',
+      'en': 'Update mileage',
       'ru': 'Обновить пробег',
     },
     AppStrings.updateDetails: {
-      'az': 'Detalları Yenilə',
-      'en': 'Update Details',
+      'az': 'Detalları yenilə',
+      'en': 'Update details',
       'ru': 'Обновить детали',
     },
     AppStrings.noServicesFound: {
@@ -1464,24 +1464,34 @@ class Translations {
       'en': 'No services found',
       'ru': 'Услуги не найдены',
     },
+    AppStrings.toyotaVerifyText: {
+      'az': 'Texniki servis cədvəli "Toyota Baku" tərəfindən rəsmi olaraq təsdiq edilmişdir.',
+      'en': 'The technical service schedule has been officially approved by Toyota Baku.',
+      'ru': 'График технического обслуживания был официально утверждён Toyota Baku.',
+    },
+    AppStrings.lexusVerifyText: {
+      'az': 'Texniki servis cədvəli "Lexus Baku" tərəfindən rəsmi olaraq təsdiq edilmişdir.',
+      'en': 'The technical service schedule has been officially approved by Lexus Baku.',
+      'ru': 'График технического обслуживания был официально утверждён Lexus Baku.',
+    },
     AppStrings.schedule: {
       'az': 'Cədvəl',
       'en': 'Schedule',
       'ru': 'График',
     },
     AppStrings.seeAll: {
-      'az': 'Hamısını Gör',
-      'en': 'See All',
+      'az': 'Hamısını gör',
+      'en': 'See all',
       'ru': 'Показать все',
     },
     AppStrings.lastService: {
-      'az': 'Son Servis',
-      'en': 'Last Service',
+      'az': 'Son servis',
+      'en': 'Last service',
       'ru': 'Последнее обслуживание',
     },
     AppStrings.nextService: {
-      'az': 'Növbəti Servis',
-      'en': 'Next Service',
+      'az': 'Növbəti servis',
+      'en': 'Next service',
       'ru': 'Следующее обслуживание',
     },
     AppStrings.vinNotFound: {
@@ -1496,12 +1506,12 @@ class Translations {
     },
     AppStrings.enterMileage: {
       'az': 'Yürüşü yenilə',
-      'en': 'Enter Mileage',
+      'en': 'Enter mileage',
       'ru': 'Введите пробег',
     },
     AppStrings.enterCurrentMileage: {
-      'az': 'Cari Yürüşü Daxil Edin',
-      'en': 'Enter Current Mileage',
+      'az': 'Cari yürüşü daxil edin',
+      'en': 'Enter current mileage',
       'ru': 'Введите текущий пробег',
     },
     AppStrings.invalidMileageError: {
@@ -1516,22 +1526,22 @@ class Translations {
     },
     AppStrings.saveMileage: {
       'az': 'Yürüşü yenilə',
-      'en': 'Save Mileage',
+      'en': 'Save mileage',
       'ru': 'Сохранить пробег',
     },
     AppStrings.mileageAtLastService: {
       'az': 'Son servis yürüşü',
-      'en': 'Mileage at Last Service',
+      'en': 'Mileage at last service',
       'ru': 'Пробег при Последнем Обслуживании',
     },
     AppStrings.nextServiceDueDate: {
       'az': 'Növbəti servis tarixi',
-      'en': 'Next Service Due Date',
+      'en': 'Next service due date',
       'ru': 'Дата Следующего Обслуживания',
     },
     AppStrings.nextServiceMileage: {
       'az': 'Növbəti servis yürüşü',
-      'en': 'Next Service Mileage',
+      'en': 'Next service mileage',
       'ru': 'Пробег Следующего Обслуживания',
     },
     AppStrings.serviceDetailsUpdated: {
@@ -1566,7 +1576,7 @@ class Translations {
     },
     AppStrings.selectDate: {
       'az': 'Tarixi seçin',
-      'en': 'Select Date',
+      'en': 'Select date',
       'ru': 'Выберите дату',
     },
     AppStrings.nextServiceDateMustBeAfterLastService: {
@@ -1595,8 +1605,8 @@ class Translations {
       'ru': 'Свернуть',
     },
     AppStrings.editCarDetails: {
-      'az': 'Avtomobil Detallarını Redaktə Et',
-      'en': 'Edit Car Details',
+      'az': 'Avtomobil detallarını redaktə et',
+      'en': 'Edit car details',
       'ru': 'Редактировать детали автомобиля',
     },
     AppStrings.hideService: {
@@ -1610,14 +1620,14 @@ class Translations {
       'ru': 'Показать',
     },
     AppStrings.hiddenServices: {
-      'az': 'Gizli Servislər',
-      'en': 'Hidden Services',
+      'az': 'Gizli servislər',
+      'en': 'Hidden services',
       'ru': 'Скрытые услуги',
     },
 
     AppStrings.updateCarInformation: {
-      'az': 'Avtomobil Məlumatlarını Yenilə',
-      'en': 'Update Car Information',
+      'az': 'Avtomobil məlumatlarını yenilə',
+      'en': 'Update car information',
       'ru': 'Обновить информацию об автомобиле',
     },
 
@@ -1638,8 +1648,8 @@ class Translations {
       'ru': 'Автомобиль успешно удалён',
     },
     AppStrings.deleteCar: {
-      'az': 'Avtomobili Sil',
-      'en': 'Delete Car',
+      'az': 'Avtomobili sil',
+      'en': 'Delete car',
       'ru': 'Удалить автомобиль',
     },
     AppStrings.deleteCarConfirmation: {
@@ -1653,8 +1663,8 @@ class Translations {
       'ru': 'Удалить',
     },
     AppStrings.termsAndConditions: {
-      'az': 'İstifadə Şərtləri',
-      'en': 'Terms and Conditions',
+      'az': 'İstifadə şərtləri',
+      'en': 'Terms and conditions',
       'ru': 'Условия использования',
     },
     AppStrings.settings: {
@@ -1663,23 +1673,23 @@ class Translations {
       'ru': 'Настройки',
     },
     AppStrings.reservationList: {
-      'az': 'Rezervasiya Siyahısı',
-      'en': 'Reservation List',
+      'az': 'Rezervasiya siyahısı',
+      'en': 'Reservation list',
       'ru': 'Список бронирования',
     },
     AppStrings.upcomingList: {
-      'az': 'Gələcək Servislər',
-      'en': 'Upcoming List',
+      'az': 'Gələcək servislər',
+      'en': 'Upcoming list',
       'ru': 'Список предстоящих услуг',
     },
     AppStrings.carOptions: {
-      'az': 'Avtomobil Seçimləri',
-      'en': 'Car Options',
+      'az': 'Avtomobil seçimləri',
+      'en': 'Car options',
       'ru': 'Опции автомобиля',
     },
     AppStrings.customizeList: {
-      'az': 'Siyahını Fərdiləşdir',
-      'en': 'Customize List',
+      'az': 'Siyahını fərdiləşdir',
+      'en': 'Customize list',
       'ru': 'Настроить список',
     },
     AppStrings.reorderHint: {
@@ -1789,38 +1799,38 @@ class Translations {
     },
     AppStrings.changeAppLanguage: {
       'az': 'Tətbiq dilini dəyişin',
-      'en': 'Change App Language',
+      'en': 'Change app language',
       'ru': 'Изменить язык приложения',
     },
     AppStrings.changeTheLanguage: {
       'az': 'Dili dəyişin',
-      'en': 'Change the Language',
+      'en': 'Change the language',
       'ru': 'Изменить язык приложения',
     },
     AppStrings.resetPassText: {
       'az': 'Hesab şifrəsi',
-      'en': 'Account Password',
+      'en': 'Account password',
       'ru': 'Пароль учетной записи',
     },
     AppStrings.resetPassSubText: {
       'az': 'Hesab şifrəsini dəyişin',
-      'en': 'Change Account Password',
+      'en': 'Change account password',
       'ru': 'Изменить пароль учетной записи',
     },
     AppStrings.password: {
       'az': 'Tətbiq kilidi',
-      'en': 'App Password',
+      'en': 'App password',
       'ru': 'Пароль приложения',
     },
     AppStrings.setAppPassword: {
       'az': 'Tətbiq üçün PIN təyin edin',
-      'en': 'Set App Password',
+      'en': 'Set app password',
       'ru': 'Установить пароль приложения',
     },
 
     AppStrings.faceRecognition: {
       'az': 'Üz tanıma',
-      'en': 'Face Recognition',
+      'en': 'Face recognition',
       'ru': 'Распознавание лица',
     },
     AppStrings.faceRecognitionSubtitle: {
@@ -1875,8 +1885,8 @@ class Translations {
     },
     AppStrings.biometricNotEnrolledMessageIos: {
       'az':
-          'Parametrlər → Face ID və Şifrə bölməsinə keçib Face ID-ni quraşdırın.',
-      'en': 'Go to Settings → Face ID & Passcode to set up Face ID.',
+          'Parametrlər → Face ID və şifrə bölməsinə keçib Face ID-ni quraşdırın.',
+      'en': 'Go to Settings → Face ID & passcode to set up Face ID.',
       'ru':
           'Перейдите в Настройки → Face ID и код-пароль, чтобы настроить Face ID.',
     },
@@ -1903,7 +1913,7 @@ class Translations {
     // Feedback Section
     AppStrings.appFeedback: {
       'az': 'Geri bildiriş',
-      'en': 'App Feedback',
+      'en': 'App feedback',
       'ru': 'Отзыв о приложении',
     },
     AppStrings.addFeedbackAboutApp: {
@@ -1913,7 +1923,7 @@ class Translations {
     },
     AppStrings.bugReport: {
       'az': 'Xətanı bildirmə',
-      'en': 'Bug Report',
+      'en': 'Bug report',
       'ru': 'Отчет об ошибке',
     },
     AppStrings.supportText: {
@@ -1952,7 +1962,7 @@ class Translations {
     },
     AppStrings.deleteMyAccount: {
       'az': 'Hesabımı sil',
-      'en': 'Delete My Account',
+      'en': 'Delete my account',
       'ru': 'Удалить мой аккаунт',
     },
     AppStrings.accountDeletedSuccessfully: {
@@ -2027,16 +2037,16 @@ class Translations {
     },
     AppStrings.enterOldPin: {
       'az': 'Köhnə PIN-i daxil et',
-      'en': 'Enter Old PIN',
+      'en': 'Enter old PIN',
       'ru': 'Введите старый PIN',
     },
     AppStrings.createNewPin: {
       'az': 'Yeni PIN təyin et',
-      'en': 'Create New PIN',
+      'en': 'Create new PIN',
       'ru': 'Создайте новый PIN',
     },
     AppStrings.confirmPin: {
-      'az': 'PIN-i Təsdiqlə',
+      'az': 'PIN-i təsdiqlə',
       'en': 'Confirm PIN',
       'ru': 'Подтвердите PIN',
     },
@@ -2280,6 +2290,11 @@ class Translations {
       'az': 'ay',
       'en': 'month',
       'ru': 'мес',
+    },
+    AppStrings.dayText: {
+      'az': 'gün',
+      'en': 'day',
+      'ru': 'день',
     },
     AppStrings.vinFormatHint: {
       'az': 'Simvollar: 0–9, A–Z (I, O və Q hərfləri istisna olmaqla).',

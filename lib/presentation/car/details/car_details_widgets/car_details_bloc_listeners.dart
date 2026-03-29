@@ -5,6 +5,7 @@ import '../../../../core/constants/texts/app_strings.dart';
 import '../../../../core/localization/app_translation.dart';
 import '../../../../cubit/add/car/add_car_cubit.dart';
 import '../../../../cubit/add/car/add_car_state.dart';
+import '../../../../cubit/add/car/get_car_list_cubit.dart';
 import '../../../../cubit/mileage/update/update_car_mileage_cubit.dart';
 import '../../../../cubit/mileage/update/update_milage_state.dart';
 import '../../../../cubit/photo/car/upload_car_photo_cubit.dart';
@@ -66,7 +67,9 @@ class CarDetailsBlocListeners extends StatelessWidget {
     if (state is UploadCarPhotoSuccess) {
       final addCarState = context.read<AddCarCubit>().state;
       if (addCarState is AddCarSuccess && addCarState.response.carId != null) {
-        _navigateToMaintenance(context, addCarState.response.carId!);
+        final carId = addCarState.response.carId!;
+        context.read<GetCarListCubit>().refreshPhotoCache(carId);
+        _navigateToMaintenance(context, carId);
       }
     } else if (state is UploadCarPhotoError) {
       _showError(context,

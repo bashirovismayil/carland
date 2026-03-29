@@ -94,6 +94,15 @@ class GetCarListCubit extends Cubit<GetCarListState> {
       final List<GetCarListResponse> carList = await _carListRepo.getCarList();
       log("Get Car List Success: ${carList.length} cars found");
       emit(GetCarListSuccess(carList));
+      final activeCarIds = carList.map((c) => c.carId).whereType<int>().toSet();
+      _photoSlots.keys
+          .where((id) => !activeCarIds.contains(id))
+          .toList()
+          .forEach((id) {
+        _photoSlots[id]?.close();
+        _photoSlots.remove(id);
+      });
+
     } catch (e) {
       emit(GetCarListError(e.toString()));
       log("Get Car List Error: $e");
@@ -103,6 +112,10 @@ class GetCarListCubit extends Cubit<GetCarListState> {
   Future<void> refreshCarList() async {
     try {
       _carPhotosCache.clear();
+      for (final slot in _photoSlots.values) {
+        slot.close();
+      }
+      _photoSlots.clear();
       final List<GetCarListResponse> carList = await _carListRepo.getCarList();
       log("Refresh Car List Success: ${carList.length} cars found");
       emit(GetCarListSuccess(carList));
@@ -256,9 +269,12 @@ class GetCarListCubit extends Cubit<GetCarListState> {
   Future<void> refreshPhotoCache(int carId) async {
     _carPhotosCache.remove(carId);
     _diskCache.deletePhoto(carId);
+    _photoSlots[carId]?.close();
+    _photoSlots.remove(carId);
     log("[PhotoLoad] Refreshing photo after upload → carId: $carId");
     final data = await _fetchPhotoWithCache(carId);
-    _pushToSlot(carId, data);
+    final slot = _photoSlots.putIfAbsent(carId, () => _PhotoSlot());
+    slot.add(data);
   }
 
   void clearCache() {

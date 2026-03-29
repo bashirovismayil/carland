@@ -16,7 +16,7 @@ class MaintenanceHistoryPage extends HookWidget {
   final int? carModelYear;
   final bool isInvisible;
 
-  const MaintenanceHistoryPage({
+  const  MaintenanceHistoryPage({
     super.key,
     required this.carId,
     this.carModelYear,

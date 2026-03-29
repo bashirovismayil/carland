@@ -314,69 +314,82 @@ class _UpdateMileageDialogState extends State<UpdateMileageDialog> {
       builder: (context, state) {
         final isLoading = state is UpdateCarMileageLoading;
 
-        return Row(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: 50,
-                child: TextButton(
-                  onPressed: isLoading ? null : _closeDialog,
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.textSecondary,
-                    backgroundColor: AppColors.lightGrey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-                    ),
-                  ),
-                  child: Text(
-                    AppTranslation.translate(AppStrings.cancel),
-                    textScaler: TextScaler.noScaling,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryBlack,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: SizedBox(
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : _saveMileage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlack,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    disabledBackgroundColor:
-                        AppColors.primaryBlack.withOpacity(0.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-                    ),
-                  ),
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          AppTranslation.translate(AppStrings.saveMileage),
-                          textScaler: TextScaler.noScaling,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final availableWidth = constraints.maxWidth;
+
+            final buttonHeight = availableWidth * 0.145;
+            final fontSize = availableWidth * 0.043;
+            final borderRadius = availableWidth * 0.07;
+            final spacing = availableWidth * 0.03;
+            final loaderSize = availableWidth * 0.065;
+            final loaderStroke = availableWidth * 0.006;
+
+            return Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: buttonHeight,
+                    child: TextButton(
+                      onPressed: isLoading ? null : _closeDialog,
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary,
+                        backgroundColor: AppColors.lightGrey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(borderRadius),
                         ),
+                      ),
+                      child: Text(
+                        AppTranslation.translate(AppStrings.cancel),
+                        textScaler: TextScaler.noScaling,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryBlack,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ],
+                SizedBox(width: spacing),
+                Expanded(
+                  child: SizedBox(
+                    height: buttonHeight,
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : _saveMileage,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryBlack,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        disabledBackgroundColor:
+                        AppColors.primaryBlack.withOpacity(0.5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(borderRadius),
+                        ),
+                      ),
+                      child: isLoading
+                          ? SizedBox(
+                        width: loaderSize,
+                        height: loaderSize,
+                        child: CircularProgressIndicator(
+                          strokeWidth: loaderStroke,
+                          color: Colors.white,
+                        ),
+                      )
+                          : Text(
+                        AppTranslation.translate(AppStrings.saveMileage),
+                        textScaler: TextScaler.noScaling,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

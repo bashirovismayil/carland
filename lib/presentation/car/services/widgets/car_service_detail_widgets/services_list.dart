@@ -3,6 +3,7 @@ import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
 import '../../../../../core/constants/values/app_theme.dart';
 import '../../../../../core/localization/app_translation.dart';
+import '../../../../../core/mixins/animated_list_mixin.dart';
 import '../../../../../data/remote/models/remote/get_car_services_response.dart';
 import '../../../../../data/remote/services/local/hidden_services_local_service.dart';
 import '../../../../../utils/di/locator.dart';
@@ -35,10 +36,36 @@ class ServicesList extends StatefulWidget {
   State<ServicesList> createState() => _ServicesListState();
 }
 
-class _ServicesListState extends State<ServicesList> {
+class _ServicesListState extends State<ServicesList>
+    with TickerProviderStateMixin, AnimatedListReorderMixin {
   final _hiddenServicesService = locator<HiddenServicesLocalService>();
   bool _hiddenSectionExpanded = false;
   int? _expandedPercentageId;
+
+  @override
+  void initState() {
+    super.initState();
+    initReorderAnimation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final keys = _visibleServices.map((s) => s.percentageId).toList();
+      handleReorder(keys);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant ServicesList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.services != widget.services) {
+      final newVisibleKeys = _visibleServices.map((s) => s.percentageId).toList();
+      handleReorder(newVisibleKeys);
+    }
+  }
+
+  @override
+  void dispose() {
+    disposeReorderAnimation();
+    super.dispose();
+  }
 
   List<ResponseList> get _sortedServices {
     final sorted = List<ResponseList>.from(widget.services)
@@ -148,7 +175,10 @@ class _ServicesListState extends State<ServicesList> {
         ServicesListHeader(isLoading: widget.isLoading),
         const SizedBox(height: 12),
         ...visibleServices.expand((service) => [
-          _buildServiceCard(service, isHidden: false),
+          buildAnimatedItem(
+            itemKey: service.percentageId,
+            child: _buildServiceCard(service, isHidden: false),
+          ),
           if (service != visibleServices.last || hiddenServices.isNotEmpty)
             const SizedBox(height: 16),
         ]),

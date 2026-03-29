@@ -145,7 +145,7 @@ class _ServiceCardState extends State<ServiceCard>
   @override
   Widget build(BuildContext context) {
     final percentage =
-    ServicePercentageCalculator.getEffectivePercentage(widget.service);
+        ServicePercentageCalculator.getEffectivePercentage(widget.service);
     final needsEdit = _needsEdit;
     final bool canFlip = !needsEdit;
 
@@ -160,9 +160,18 @@ class _ServiceCardState extends State<ServiceCard>
             final showBack = angle > math.pi / 2;
 
             return GestureDetector(
-              onLongPressStart: canFlip ? (_) => flipCard() : null,
-              onLongPressEnd: canFlip ? (_) => unflipCard() : null,
-              onLongPressCancel: canFlip ? () => unflipCard() : null,
+              // onLongPressStart: canFlip ? (_) => flipCard() : null,
+              // onLongPressEnd: canFlip ? (_) => unflipCard() : null,
+              // onLongPressCancel: canFlip ? () => unflipCard() : null,
+              onTap: canFlip
+                  ? () {
+                      if (isFlipped) {
+                        unflipCard();
+                      } else {
+                        flipCard();
+                      }
+                    }
+                  : null,
               child: Transform(
                 alignment: Alignment.center,
                 transform: Matrix4.identity()
@@ -170,21 +179,23 @@ class _ServiceCardState extends State<ServiceCard>
                   ..rotateY(angle),
                 child: showBack
                     ? Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()..rotateY(math.pi),
-                  child: ServiceCardBackFace(
-                    remainingKm: widget.service.remainingKm,
-                    remainingMonths: widget.service.remainingMonths,
-                    kmPercentage: widget.service.kmPercentage,
-                    monthPercentage: widget.service.monthPercentageDigit,
-                    isTimeBased: ServicePercentageCalculator.isTimeBased(widget.service),
-                    hasBoth: widget.service.intervalKm > 0 && widget.service.intervalMonth > 0,
-                  ),
-                )
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()..rotateY(math.pi),
+                        child: ServiceCardBackFace(
+                          remainingKm: widget.service.remainingKm,
+                          remainingMonths: widget.service.remainingMonths,
+                          kmPercentage: widget.service.kmPercentage,
+                          monthPercentage: widget.service.monthPercentageDigit,
+                          isTimeBased: ServicePercentageCalculator.isTimeBased(
+                              widget.service),
+                          hasBoth: widget.service.intervalKm > 0 &&
+                              widget.service.intervalMonth > 0,
+                        ),
+                      )
                     : _buildFrontFace(
-                  percentage: percentage,
-                  needsEdit: needsEdit,
-                ),
+                        percentage: percentage,
+                        needsEdit: needsEdit,
+                      ),
               ),
             );
           },
@@ -329,7 +340,7 @@ class _ServiceCardState extends State<ServiceCard>
                                 isForNextService: true,
                                 hasIntervalKm: widget.service.intervalKm > 0,
                                 hasIntervalMonth:
-                                widget.service.intervalMonth > 0,
+                                    widget.service.intervalMonth > 0,
                               ),
                             ],
                             if (needsEdit) ...[
@@ -361,7 +372,7 @@ class _ServiceCardState extends State<ServiceCard>
             ),
             if (!needsEdit)
               Positioned(
-                right: 0,
+                right: 4,
                 top: 0,
                 bottom: 0,
                 child: Center(
@@ -369,7 +380,7 @@ class _ServiceCardState extends State<ServiceCard>
                     padding: const EdgeInsets.only(right: 6),
                     child: Icon(
                       Icons.touch_app_rounded,
-                      size: 16,
+                      size: 17,
                       color: Colors.grey.shade400,
                     ),
                   ),

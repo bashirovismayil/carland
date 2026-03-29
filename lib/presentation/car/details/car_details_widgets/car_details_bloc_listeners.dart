@@ -48,24 +48,13 @@ class CarDetailsBlocListeners extends StatelessWidget {
         return;
       }
 
-      final carIdStr = carId.toString();
-      final modelYear = int.tryParse(controllers.year.text.trim());
-
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => MaintenanceHistoryPage(
-          carId: carIdStr,
-          carModelYear: modelYear,
-          isInvisible: true,
-        ),
-      ));
-
       if (controllers.selectedImage.value != null) {
         context.read<UploadCarPhotoCubit>().uploadCarPhoto(
-          carId: carIdStr,
+          carId: carId.toString(),
           imageFile: controllers.selectedImage.value!,
         );
       } else {
-        _updateMileage(context);
+        _navigateToMaintenance(context, carId);
       }
     } else if (state is AddCarError) {
       _fail(context,
@@ -75,13 +64,33 @@ class CarDetailsBlocListeners extends StatelessWidget {
 
   void _onUploadPhoto(BuildContext context, UploadCarPhotoState state) {
     if (state is UploadCarPhotoSuccess) {
-      _updateMileage(context);
+      final addCarState = context.read<AddCarCubit>().state;
+      if (addCarState is AddCarSuccess && addCarState.response.carId != null) {
+        _navigateToMaintenance(context, addCarState.response.carId!);
+      }
     } else if (state is UploadCarPhotoError) {
-      controllers.isSubmitting.value = false;
       _showError(context,
           '${AppTranslation.translate(AppStrings.errorOccurred)}: ${state.message}');
-      _updateMileage(context);
+      final addCarState = context.read<AddCarCubit>().state;
+      if (addCarState is AddCarSuccess && addCarState.response.carId != null) {
+        _navigateToMaintenance(context, addCarState.response.carId!);
+      }
     }
+  }
+
+  void _navigateToMaintenance(BuildContext context, int carId) {
+    final carIdStr = carId.toString();
+    final modelYear = int.tryParse(controllers.year.text.trim());
+
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => MaintenanceHistoryPage(
+        carId: carIdStr,
+        carModelYear: modelYear,
+        isInvisible: true,
+      ),
+    ));
+
+    _updateMileage(context);
   }
 
   void _onUpdateMileage(BuildContext context, UpdateCarMileageState state) {

@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/colors/app_colors.dart';
 import '../../core/constants/texts/app_strings.dart';
 import '../../core/localization/app_translation.dart';
 import '../history/history_page.dart';
+
+// ============================================================
+// MAP NAVIGATION MIXIN
+// ============================================================
+
+mixin MapNavigationMixin {
+  static const _centerMapLinks = {
+    'toyota': 'https://maps.app.goo.gl/X2h4wMDLEei7afFPA',
+    'lexus': 'https://maps.app.goo.gl/82yz8abn1AVeMxAv9',
+  };
+
+  /// Returns the Google Maps URL for the given center name, or null if not found.
+  String? getMapUrl(String centerName) {
+    final nameLower = centerName.toLowerCase();
+    for (final entry in _centerMapLinks.entries) {
+      if (nameLower.contains(entry.key)) {
+        return entry.value;
+      }
+    }
+    return null;
+  }
+
+  /// Opens Google Maps for the given center name.
+  Future<void> navigateToCenter(String centerName) async {
+    final url = getMapUrl(centerName);
+    if (url == null) return;
+
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+}
 
 class ReservationListPage extends StatefulWidget {
   const ReservationListPage({super.key});
@@ -18,8 +52,8 @@ class _ReservationListPageState extends State<ReservationListPage> {
       title: 'Brakes changes',
       time: '06 : 30 PM',
       dateRange: '26/06/2025 - 10:00pm',
-      centerName: 'Toyota Absheron',
-      centerImagePath: 'assets/png/toyota_absheron.png',
+      centerName: 'Toyota Baku Center',
+      centerImagePath: 'assets/png/mock/toyota.jpeg',
       distance: '13 Km away from you',
     ),
   ];
@@ -411,7 +445,7 @@ class MenuDotsButton extends StatelessWidget {
 // SERVICE CENTER ROW
 // ============================================================
 
-class ServiceCenterRow extends StatelessWidget {
+class ServiceCenterRow extends StatelessWidget with MapNavigationMixin {
   final String centerName;
   final String centerImagePath;
   final String distance;
@@ -425,20 +459,26 @@ class ServiceCenterRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mapUrl = getMapUrl(centerName);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
           CenterAvatar(imagePath: centerImagePath),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CenterNameText(name: centerName),
-              const SizedBox(height: 2),
-              CenterDistanceRow(distance: distance),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CenterNameText(name: centerName),
+                const SizedBox(height: 2),
+                CenterDistanceRow(distance: distance),
+              ],
+            ),
           ),
+          if (mapUrl != null)
+            NavigateButton(onTap: () => navigateToCenter(centerName)),
         ],
       ),
     );
@@ -519,6 +559,36 @@ class CenterDistanceRow extends StatelessWidget {
                 fontWeight: FontWeight.w400,
                 color: Color(0xFF999999))),
       ],
+    );
+  }
+}
+
+// ============================================================
+// NAVIGATE BUTTON
+// ============================================================
+
+class NavigateButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const NavigateButton({super.key, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1A1A),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.map_outlined, size: 16, color: Colors.white),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -17,7 +17,13 @@ class TokenRefreshInterceptor extends Interceptor {
       this._loginLocalService,
       this._registerLocalService,{
         this.onTokenExpired,
-      }) : _refreshDio = Dio();
+      }) : _refreshDio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 15),
+      sendTimeout: const Duration(seconds: 15),
+    ),
+  );
 
   LoginLocalService get loginLocalService => _loginLocalService;
   RegisterLocalService get registerLocalService => _registerLocalService;

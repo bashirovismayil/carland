@@ -383,6 +383,7 @@ class AppStrings {
   static const String nextServiceKmMustBeGreaterThanLastService = 'nextServiceKmMustBeGreaterThanLastService';
   static const String serviceInfoWillAppear = 'serviceInfoWillAppear';
   static const String collapseText = 'collapseText';
+  static const String bookServiceSlot = 'Book service slot';
 
   static const String hideService = 'hideService';
   static const String unhideService = 'unhideService';

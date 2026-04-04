@@ -1,4 +1,6 @@
 import 'dart:math' as math;
+import 'package:carcat/presentation/history/history_page.dart';
+import 'package:carcat/utils/helper/go.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
@@ -145,7 +147,7 @@ class _ServiceCardState extends State<ServiceCard>
   @override
   Widget build(BuildContext context) {
     final percentage =
-        ServicePercentageCalculator.getEffectivePercentage(widget.service);
+    ServicePercentageCalculator.getEffectivePercentage(widget.service);
     final needsEdit = _needsEdit;
     final bool canFlip = !needsEdit;
 
@@ -165,12 +167,12 @@ class _ServiceCardState extends State<ServiceCard>
               // onLongPressCancel: canFlip ? () => unflipCard() : null,
               onTap: canFlip
                   ? () {
-                      if (isFlipped) {
-                        unflipCard();
-                      } else {
-                        flipCard();
-                      }
-                    }
+                if (isFlipped) {
+                  unflipCard();
+                } else {
+                  flipCard();
+                }
+              }
                   : null,
               child: Transform(
                 alignment: Alignment.center,
@@ -179,23 +181,23 @@ class _ServiceCardState extends State<ServiceCard>
                   ..rotateY(angle),
                 child: showBack
                     ? Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()..rotateY(math.pi),
-                        child: ServiceCardBackFace(
-                          remainingKm: widget.service.remainingKm,
-                          remainingMonths: widget.service.remainingMonths,
-                          kmPercentage: widget.service.kmPercentage,
-                          monthPercentage: widget.service.monthPercentageDigit,
-                          isTimeBased: ServicePercentageCalculator.isTimeBased(
-                              widget.service),
-                          hasBoth: widget.service.intervalKm > 0 &&
-                              widget.service.intervalMonth > 0,
-                        ),
-                      )
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()..rotateY(math.pi),
+                  child: ServiceCardBackFace(
+                    remainingKm: widget.service.remainingKm,
+                    remainingMonths: widget.service.remainingMonths,
+                    kmPercentage: widget.service.kmPercentage,
+                    monthPercentage: widget.service.monthPercentageDigit,
+                    isTimeBased: ServicePercentageCalculator.isTimeBased(
+                        widget.service),
+                    hasBoth: widget.service.intervalKm > 0 &&
+                        widget.service.intervalMonth > 0,
+                  ),
+                )
                     : _buildFrontFace(
-                        percentage: percentage,
-                        needsEdit: needsEdit,
-                      ),
+                  percentage: percentage,
+                  needsEdit: needsEdit,
+                ),
               ),
             );
           },
@@ -340,8 +342,12 @@ class _ServiceCardState extends State<ServiceCard>
                                 isForNextService: true,
                                 hasIntervalKm: widget.service.intervalKm > 0,
                                 hasIntervalMonth:
-                                    widget.service.intervalMonth > 0,
+                                widget.service.intervalMonth > 0,
                               ),
+                              if (percentage <= 10) ...[
+                                const SizedBox(height: 16),
+                                _buildBookServiceButton(),
+                              ],
                             ],
                             if (needsEdit) ...[
                               const SizedBox(height: 11),
@@ -389,6 +395,36 @@ class _ServiceCardState extends State<ServiceCard>
           ],
         );
       },
+    );
+  }
+
+  Widget _buildBookServiceButton() {
+    return GestureDetector(
+      onTap: () {
+        Go.to(context, HistoryPage());
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            AppTranslation.translate(AppStrings.bookServiceSlot),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

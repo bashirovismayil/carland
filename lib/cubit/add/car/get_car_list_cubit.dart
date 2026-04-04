@@ -11,15 +11,6 @@ import '../../../utils/di/locator.dart';
 import 'get_car_list_state.dart';
 
 // ─── Replay-1 stream slot ──────────────────────────────────────────────────
-//
-// StreamController.broadcast() keçmişi yadda saxlamır.
-// async* generator isə lazy-dir — subscribe anında deyil, yield-ə çatanda emit edir,
-// bu da broadcast stream ilə birləşdirildikdə event itirilməsinə səbəb olur.
-//
-// Həll: hər yeni subscriber üçün ayrı StreamController açırıq.
-// onListen callback-i dərhal son dəyəri push edir, sonra broadcast
-// stream-ə qoşulur və gələcək event-ləri ötürür. Subscriber disconnect
-// olanda hər şey təmizlənir.
 
 class _PhotoSlot {
   Uint8List? _lastValue;
@@ -30,7 +21,6 @@ class _PhotoSlot {
     late StreamController<Uint8List?> ctrl;
     ctrl = StreamController<Uint8List?>(
       onListen: () {
-        // Subscriber qoşulduğu anda son dəyəri dərhal göndər
         if (_hasValue) ctrl.add(_lastValue);
       },
       onCancel: () {
@@ -86,15 +76,23 @@ class GetCarListCubit extends Cubit<GetCarListState> {
   static const int _maxRetries = 2;
   static const Duration _retryDelay = Duration(milliseconds: 500);
 
-  // ─── Car List ───────────────────────────────────────
+  bool _isLoadingCarList = false;
 
   Future<void> getCarList() async {
+    if (_isLoadingCarList) {
+      log("[CarList] getCarList() ignored — already loading");
+      return;
+    }
+    _isLoadingCarList = true;
+
     try {
       emit(GetCarListLoading());
       final List<GetCarListResponse> carList = await _carListRepo.getCarList();
       log("Get Car List Success: ${carList.length} cars found");
       emit(GetCarListSuccess(carList));
-      final activeCarIds = carList.map((c) => c.carId).whereType<int>().toSet();
+
+      final activeCarIds =
+      carList.map((c) => c.carId).whereType<int>().toSet();
       _photoSlots.keys
           .where((id) => !activeCarIds.contains(id))
           .toList()
@@ -102,14 +100,23 @@ class GetCarListCubit extends Cubit<GetCarListState> {
         _photoSlots[id]?.close();
         _photoSlots.remove(id);
       });
-
     } catch (e) {
       emit(GetCarListError(e.toString()));
       log("Get Car List Error: $e");
+    } finally {
+      // ── GUARD sıfırla ──
+      _isLoadingCarList = false;
     }
   }
 
   Future<void> refreshCarList() async {
+    // refresh zamanı da guard-ı nəzərə al
+    if (_isLoadingCarList) {
+      log("[CarList] refreshCarList() ignored — already loading");
+      return;
+    }
+    _isLoadingCarList = true;
+
     try {
       _carPhotosCache.clear();
       for (final slot in _photoSlots.values) {
@@ -125,13 +132,13 @@ class GetCarListCubit extends Cubit<GetCarListState> {
       if (currentState is GetCarListSuccess) {
         emit(GetCarListSuccess(currentState.carList));
       }
+    } finally {
+      _isLoadingCarList = false;
     }
   }
 
   // ─── Car Photo — Stream API ──────────────────────────
 
-  /// Widget-lərin dinləməsi üçün stream qaytarır.
-  /// Subscribe anında son bilinən dəyər dərhal (onListen callback-i ilə) emit edilir.
   Stream<Uint8List?> watchCarPhoto(int carId) {
     final slot = _photoSlots.putIfAbsent(carId, () {
       final s = _PhotoSlot();
@@ -146,20 +153,17 @@ class GetCarListCubit extends Cubit<GetCarListState> {
   }
 
   Future<Uint8List?> _fetchPhotoWithCache(int carId) async {
-    // 1) Eyni carId üçün artıq request gedirsə ona qoşul
     if (_pendingRequests.containsKey(carId)) {
       log("[PhotoLoad] Joining pending request → carId: $carId");
       return _pendingRequests[carId]!.future;
     }
 
-    // 2) RAM cache — dərhal qaytar, arxada yenilə
     if (_carPhotosCache.containsKey(carId)) {
       log("[PhotoLoad] RAM cache hit → carId: $carId");
       _revalidateInBackground(carId);
       return _carPhotosCache[carId];
     }
 
-    // 3) Yeni request başlat
     final completer = Completer<Uint8List?>();
     _pendingRequests[carId] = completer;
 
@@ -193,7 +197,6 @@ class GetCarListCubit extends Cubit<GetCarListState> {
     }
   }
 
-  /// Stale-while-revalidate
   void _revalidateInBackground(int carId) {
     if (_revalidatingIds.contains(carId)) return;
     _revalidatingIds.add(carId);
@@ -216,7 +219,6 @@ class GetCarListCubit extends Cubit<GetCarListState> {
     });
   }
 
-  /// Retry mexanizması
   Future<Uint8List?> _fetchWithRetry(int carId) async {
     for (int attempt = 1; attempt <= _maxRetries; attempt++) {
       try {
@@ -233,10 +235,8 @@ class GetCarListCubit extends Cubit<GetCarListState> {
     return null;
   }
 
-  /// Widget initialData üçün: RAM cache-dəki mövcud fotoğrafı qaytarır.
   Uint8List? getCachedPhoto(int carId) => _carPhotosCache[carId];
 
-  /// Geriye dönük uyumluluk üçün saxlanıldı.
   Future<Uint8List?> getCarPhoto(int carId) async {
     if (_carPhotosCache.containsKey(carId)) {
       _revalidateInBackground(carId);
@@ -264,8 +264,6 @@ class GetCarListCubit extends Cubit<GetCarListState> {
     log("[PhotoLoad] Cache invalidated → carId: $carId");
   }
 
-  /// Yeni foto yüklənəndən sonra çağır.
-  /// Cache-i təmizləyib API-dən yeni fotoğrafı çəkir və bütün widget-lərə push edir.
   Future<void> refreshPhotoCache(int carId) async {
     _carPhotosCache.remove(carId);
     _diskCache.deletePhoto(carId);

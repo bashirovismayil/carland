@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:carcat/presentation/user/user_main_nav.dart';
 import 'package:carcat/utils/di/locator.dart';
 import 'package:carcat/utils/helper/app_localization.dart';
@@ -34,6 +35,7 @@ class _CarCatAppState extends State<CarCatApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final AppRouter _appRouter;
   late Future<void> _initializationFuture;
+  StreamSubscription<AuthState>? _authSubscription;
 
   @override
   void initState() {
@@ -62,7 +64,8 @@ class _CarCatAppState extends State<CarCatApp> {
   }
 
   void _setupAuthListener() {
-    _authManager.authStateStream.listen((authState) {
+    _authSubscription?.cancel();
+    _authSubscription = _authManager.authStateStream.listen((authState) {
       print('--- AuthState deyişdi: $authState');
       _handleAuthStateChange(authState);
     });
@@ -86,6 +89,12 @@ class _CarCatAppState extends State<CarCatApp> {
     final authState = _authManager.currentAuthState;
     print("--- Mövcud state: $authState");
     return _appRouter.getPageWithPinGuard(authState);
+  }
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    _authSubscription = null;
+    super.dispose();
   }
 
   @override

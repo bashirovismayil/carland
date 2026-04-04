@@ -7,14 +7,19 @@ import '../../data/remote/services/local/register_local_service.dart';
 import '../../utils/di/locator.dart';
 import '../../utils/helper/go.dart';
 
-final authDio = Dio()
-  ..interceptors.addAll([
-    TokenRefreshInterceptor(
-      locator<LoginLocalService>(),
-      locator<RegisterLocalService>(),
-      onTokenExpired: () {
-        Go.replaceAndRemoveWithoutContext(LoginPage());
-      },
-    ),
-    AwesomeDioInterceptor(logResponseHeaders: false),
-  ]);
+final authDio = Dio(
+  BaseOptions(
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 15),
+    sendTimeout: const Duration(seconds: 15),
+  ),
+)..interceptors.addAll([
+  TokenRefreshInterceptor(
+    locator<LoginLocalService>(),
+    locator<RegisterLocalService>(),
+    onTokenExpired: () {
+      Go.replaceAndRemoveWithoutContext(LoginPage());
+    },
+  ),
+  AwesomeDioInterceptor(logResponseHeaders: false),
+]);

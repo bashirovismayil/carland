@@ -1,4 +1,7 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+
+import '../../core/constants/colors/app_colors.dart';
 
 class ServiceCenter {
   final String id;
@@ -26,7 +29,7 @@ class TimeSlot {
   });
 }
 
-enum DayStatus { available, booked, holiday, normal }
+enum DayStatus { available, booked, normal }
 
 class CalendarDay {
   final int day;
@@ -110,7 +113,8 @@ class BookingResult {
 abstract interface class IBookingRepository {
   Future<List<ServiceCenter>> getServiceCenters();
 
-  Future<List<CalendarDay>> getCalendarDays(int year, int month);
+  Future<List<CalendarDay>> getCalendarDays(
+      int year, int month, String centerId);
 
   Future<List<TimeSlot>> getAvailableTimeSlots(String centerId, DateTime date);
 
@@ -134,7 +138,8 @@ abstract interface class IBookingRepository {
 // ============================================================
 
 class MockBookingRepository implements IBookingRepository {
-  /// Simulates network latency
+  final Random _random = Random();
+
   Future<T> _simulate<T>(T data, [int ms = 400]) async {
     await Future.delayed(Duration(milliseconds: ms));
     return data;
@@ -142,51 +147,247 @@ class MockBookingRepository implements IBookingRepository {
 
   @override
   Future<List<ServiceCenter>> getServiceCenters() => _simulate([
-        const ServiceCenter(
-          id: 'sc_1',
-          name: 'Toyota Absheron',
-          imagePath: 'assets/png/toyota_absheron.png',
-          distance: '13 Km away from you',
-        ),
-        const ServiceCenter(
-          id: 'sc_2',
-          name: 'Toyota Ganja',
-          imagePath: 'assets/png/toyota_ganja.png',
-          distance: '06 Km away from you',
-        ),
-      ]);
+    const ServiceCenter(
+      id: 'sc_1',
+      name: 'Toyota Baku Center',
+      imagePath: 'assets/png/mock/toyota.jpeg',
+      distance: '12 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_2',
+      name: 'Toyota Absheron Center',
+      imagePath: 'assets/png/mock/toyota.jpeg',
+      distance: '5 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_3',
+      name: 'Toyota Ganja Center',
+      imagePath: 'assets/png/mock/toyota.jpeg',
+      distance: '250 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_4',
+      name: 'Lexus Azerbaijan',
+      imagePath: 'assets/png/mock/lexus.jpeg',
+      distance: '7 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_5',
+      name: 'BYD Motors Baku',
+      imagePath: 'assets/png/mock/byd.jpeg',
+      distance: '21 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_6',
+      name: 'Peugeot Azerbaijan',
+      imagePath: 'assets/png/mock/peugeot.jpeg',
+      distance: '9 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_7',
+      name: 'Honda Automobile Center',
+      imagePath: 'assets/png/mock/honda.jpeg',
+      distance: '14 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_8',
+      name: 'Subaru Azerbaijan',
+      imagePath: 'assets/png/mock/subaru.jpeg',
+      distance: '6 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_9',
+      name: 'Mitsubishi Motors Azerbaijan',
+      imagePath: 'assets/png/mock/mitsubishi.png',
+      distance: '11 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_10',
+      name: 'Mazda Azerbaijan',
+      imagePath: 'assets/png/mock/mazda.jpeg',
+      distance: '4 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_11',
+      name: 'Changan Azerbaijan',
+      imagePath: 'assets/png/mock/changan.jpeg',
+      distance: '16 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_12',
+      name: 'Lynk & Co Azerbaijan',
+      imagePath: 'assets/png/mock/lynk_co.png',
+      distance: '8 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_13',
+      name: 'ZEEKR Azerbaijan',
+      imagePath: 'assets/png/mock/zeekr.png',
+      distance: '19 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_14',
+      name: 'Kia Babek',
+      imagePath: 'assets/png/mock/kia.jpeg',
+      distance: '3 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_15',
+      name: 'Kia Bakikhanov',
+      imagePath: 'assets/png/mock/kia.jpeg',
+      distance: '10 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_16',
+      name: 'Kia Sumgait',
+      imagePath: 'assets/png/mock/kia.jpeg',
+      distance: '40 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_17',
+      name: 'Kia Inqilab',
+      imagePath: 'assets/png/mock/kia.jpeg',
+      distance: '6 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_18',
+      name: 'Kia Ahmadli',
+      imagePath: 'assets/png/mock/kia.jpeg',
+      distance: '13 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_19',
+      name: 'Hyundai Yasamal',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '9 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_20',
+      name: 'Hyundai Goranboy',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '25 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_21',
+      name: 'Hyundai Nakhchivan',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '450 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_22',
+      name: 'Hyundai Badamdar',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '7 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_23',
+      name: 'Hyundai Ganjlik',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '5 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_24',
+      name: 'Hyundai Absheron',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '11 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_25',
+      name: 'Hyundai Darnagul',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '8 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_26',
+      name: 'Otoplaza Mall Babek',
+      imagePath: 'assets/png/mock/otoplaza.jpeg',
+      distance: '6 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_27',
+      name: 'Hyundai Hokmeli',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '15 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_28',
+      name: 'Hyundai Ganja',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '250 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_29',
+      name: 'Hyundai Lankaran',
+      imagePath: 'assets/png/mock/hyundai.jpg',
+      distance: '120 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_30',
+      name: 'Improtex Motors',
+      imagePath: 'assets/png/mock/improtex.jpeg',
+      distance: '9 Km away from you',
+    ),
+    const ServiceCenter(
+      id: 'sc_31',
+      name: 'Mercedes-Benz Azerbaijan',
+      imagePath: 'assets/png/mock/mercedes.jpeg',
+      distance: '17 Km away from you',
+    ),
+  ]);
 
   @override
-  Future<List<CalendarDay>> getCalendarDays(int year, int month) {
-    // Mock: some days are available (green), some booked (red), some holiday
-    final List<CalendarDay> days = [];
+  Future<List<CalendarDay>> getCalendarDays(
+      int year, int month, String centerId) {
+    final seed = centerId.hashCode ^ (year * 100 + month);
+    final rng = Random(seed);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
     final daysInMonth = DateUtils.getDaysInMonth(year, month);
+
+    // Collect indices of future weekdays (non-weekend, non-past)
+    final List<int> futureWeekdays = [];
     for (int i = 1; i <= daysInMonth; i++) {
-      DayStatus status;
-      if ([1, 7, 22].contains(i)) {
-        status = DayStatus.available;
-      } else if ([6, 13, 21, 23, 24, 26].contains(i)) {
-        status = DayStatus.available;
-      } else if ([10].contains(i)) {
-        status = DayStatus.holiday;
-      } else {
-        status = DayStatus.normal;
+      final date = DateTime(year, month, i);
+      final isWeekend = date.weekday == DateTime.saturday ||
+          date.weekday == DateTime.sunday;
+      if (!isWeekend && !date.isBefore(today)) {
+        futureWeekdays.add(i);
       }
-      days.add(CalendarDay(day: i, status: status));
+    }
+
+    // Pick 2-3 random weekdays to be booked (red)
+    final bookedCount = futureWeekdays.length >= 3 ? (2 + rng.nextInt(2)) : futureWeekdays.length.clamp(0, 2);
+    final shuffled = List<int>.from(futureWeekdays)..shuffle(rng);
+    final bookedDays = shuffled.take(bookedCount).toSet();
+
+    final List<CalendarDay> days = [];
+    for (int i = 1; i <= daysInMonth; i++) {
+      final date = DateTime(year, month, i);
+      final isWeekend = date.weekday == DateTime.saturday ||
+          date.weekday == DateTime.sunday;
+
+      if (isWeekend || date.isBefore(today)) {
+        days.add(CalendarDay(day: i, status: DayStatus.normal));
+      } else if (bookedDays.contains(i)) {
+        days.add(CalendarDay(day: i, status: DayStatus.booked));
+      } else {
+        days.add(CalendarDay(day: i, status: DayStatus.available));
+      }
     }
     return _simulate(days, 300);
   }
 
   @override
   Future<List<TimeSlot>> getAvailableTimeSlots(
-          String centerId, DateTime date) =>
+      String centerId, DateTime date) =>
       _simulate([
-        const TimeSlot(id: 'ts_1', label: '9:30 am - 10:00 am'),
-        const TimeSlot(id: 'ts_2', label: '10:00 am - 10:30 am'),
-        const TimeSlot(id: 'ts_3', label: '2:30 pm - 3:00 pm'),
-        const TimeSlot(id: 'ts_4', label: '3:00 pm - 4:00 pm'),
-        const TimeSlot(id: 'ts_5', label: '4:00 pm - 4:30 pm'),
-        const TimeSlot(id: 'ts_6', label: '4:30 pm - 5:00 pm'),
+        const TimeSlot(id: 'ts_1', label: '09:30 - 10:00'),
+        const TimeSlot(id: 'ts_2', label: '10:00 - 10:30'),
+        const TimeSlot(id: 'ts_3', label: '14:30 - 15:00'),
+        const TimeSlot(id: 'ts_4', label: '15:00 - 16:00'),
+        const TimeSlot(id: 'ts_5', label: '16:00 - 16:30'),
+        const TimeSlot(id: 'ts_6', label: '16:30 - 17:00'),
       ], 350);
 
   @override
@@ -194,70 +395,70 @@ class MockBookingRepository implements IBookingRepository {
       _simulate([
         const ServiceOption(
           id: 'svc_1',
-          name: 'Brake Check',
-          description: 'Breaks Pads Replacement & Cleaning',
-          price: 32,
-          icon: Icons.settings,
-        ),
-        const ServiceOption(
-          id: 'svc_2',
-          name: 'General Inspection / Safety Check',
-          description: 'Full vehicle safety inspection',
-          price: 25,
-          icon: Icons.verified_user_outlined,
-        ),
-        const ServiceOption(
-          id: 'svc_3',
-          name: 'Tire Rotation',
-          description: 'Rotate and balance all 4 tires',
-          price: 20,
-          icon: Icons.tire_repair,
-        ),
-        const ServiceOption(
-          id: 'svc_4',
-          name: 'Wheel Alignment / Balancing',
-          description: 'Front & rear wheel alignment',
-          price: 40,
-          icon: Icons.sync_alt,
-        ),
-        const ServiceOption(
-          id: 'svc_5',
-          name: 'Air Filter / Fuel Filter Replacement',
-          description: 'Replace air & fuel filters',
-          price: 35,
-          icon: Icons.air,
-        ),
-        const ServiceOption(
-          id: 'svc_6',
-          name: 'Oil Change',
-          description: 'Full synthetic oil change',
-          price: 95,
+          name: 'Oil and filter',
+          description: 'Full synthetic oil & filter change',
+          price: 90,
           icon: Icons.water_drop_outlined,
         ),
         const ServiceOption(
-          id: 'svc_7',
-          name: 'Transmission Service',
+          id: 'svc_2',
+          name: 'Cabin filter',
+          description: 'Cabin air filter replacement',
+          price: 30,
+          icon: Icons.filter_alt_outlined,
+        ),
+        const ServiceOption(
+          id: 'svc_3',
+          name: 'Air filter',
+          description: 'Engine air filter replacement',
+          price: 30,
+          icon: Icons.air,
+        ),
+        const ServiceOption(
+          id: 'svc_4',
+          name: 'Balance',
+          description: 'Wheel balancing for all 4 tires',
+          price: 25,
+          icon: Icons.tire_repair,
+        ),
+        const ServiceOption(
+          id: 'svc_5',
+          name: 'Wheel alignment',
+          description: 'Front & rear wheel alignment',
+          price: 45,
+          icon: Icons.sync_alt,
+        ),
+        const ServiceOption(
+          id: 'svc_6',
+          name: 'Transmission oil',
           description: 'Transmission fluid flush & filter',
-          price: 80,
+          price: 135,
           icon: Icons.miscellaneous_services,
         ),
         const ServiceOption(
+          id: 'svc_7',
+          name: 'Brake fluid',
+          description: 'Brake fluid replacement',
+          price: 88,
+          icon: Icons.settings,
+        ),
+        const ServiceOption(
           id: 'svc_8',
-          name: 'Filter Change',
-          description: 'Cabin & engine filter replacement',
-          price: 18,
-          icon: Icons.filter_alt_outlined,
+          name: 'General inspection',
+          description: 'Full vehicle safety inspection',
+          price: 55,
+          icon: Icons.verified_user_outlined,
         ),
       ]);
 
   @override
   Future<CarInfo> getUserCar() => _simulate(
-        const CarInfo(
-          name: 'Toyota Highlander',
-          plateNumber: '77-AA-509',
-          imagePath: 'assets/highlander.png',
-        ),
-      );
+    const CarInfo(
+      name: 'Toyota Prado',
+      plateNumber: '77-AA-509',
+      imagePath: 'assets/png/mock/toyota_prado.jpg',
+    ),
+  );
 
   @override
   Future<CouponResult> applyCoupon(String code, double totalPrice) {
@@ -311,14 +512,12 @@ class MockBookingRepository implements IBookingRepository {
 // ============================================================
 // PART 4: IN-MEMORY BOOKING STORE
 // ============================================================
-// ReservationListPage listens to this ValueNotifier.
-// When a booking is confirmed, we add it here → list rebuilds.
 
 class BookingStore {
   BookingStore._();
 
   static final ValueNotifier<List<BookingResult>> bookings =
-      ValueNotifier<List<BookingResult>>([]);
+  ValueNotifier<List<BookingResult>>([]);
 
   static void addBooking(BookingResult booking) {
     bookings.value = [...bookings.value, booking];
@@ -332,7 +531,6 @@ class BookingStore {
 // ============================================================
 // PART 5: BOOKING FLOW ORCHESTRATOR
 // ============================================================
-// Call: Navigator.push(context, MaterialPageRoute(builder: (_) => BookingFlowPage()));
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -342,50 +540,51 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  // DI: swap MockBookingRepository → RemoteBookingRepository here
   final IBookingRepository _repo = MockBookingRepository();
-
-  // Flow state
-  ServiceCenter? _selectedCenter;
-  DateTime? _selectedDate;
-  TimeSlot? _selectedTimeSlot;
-  List<ServiceOption> _selectedServices = [];
 
   @override
   Widget build(BuildContext context) {
-    return DateTimeSelectionScreen(
+    // First page: Choose your service (center selection only)
+    return ChooseServiceScreen(
       repo: _repo,
-      onContinue: (center, date, slot) {
-        _selectedCenter = center;
-        _selectedDate = date;
-        _selectedTimeSlot = slot;
+      onCenterSelected: (center) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ServiceDetailScreen(
+            builder: (_) => DateTimeSelectionScreen(
               repo: _repo,
-              centerId: center.id,
-              onContinue: (services) {
-                _selectedServices = services;
+              center: center,
+              onContinue: (date, slot) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => SummaryScreen(
+                    builder: (_) => ServiceDetailScreen(
                       repo: _repo,
-                      center: _selectedCenter!,
-                      date: _selectedDate!,
-                      timeSlot: _selectedTimeSlot!,
-                      selectedServices: _selectedServices,
-                      onBookingConfirmed: (result) {
-                        BookingStore.addBooking(result);
+                      centerId: center.id,
+                      onContinue: (services) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BookingConfirmedScreen(
-                              booking: result,
-                              onGoHome: () {
-                                Navigator.of(context)
-                                    .popUntil((r) => r.isFirst);
+                            builder: (_) => SummaryScreen(
+                              repo: _repo,
+                              center: center,
+                              date: date,
+                              timeSlot: slot,
+                              selectedServices: services,
+                              onBookingConfirmed: (result) {
+                                BookingStore.addBooking(result);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BookingConfirmedScreen(
+                                      booking: result,
+                                      onGoHome: () {
+                                        Navigator.of(context)
+                                            .popUntil((r) => r.isFirst);
+                                      },
+                                    ),
+                                  ),
+                                );
                               },
                             ),
                           ),
@@ -404,17 +603,102 @@ class _HistoryPageState extends State<HistoryPage> {
 }
 
 // ============================================================
-// PART 6: SCREEN 1 — TIME & DATE SELECTION
+// SCREEN 0 — CHOOSE YOUR SERVICE (center selection)
+// ============================================================
+
+class ChooseServiceScreen extends StatefulWidget {
+  final IBookingRepository repo;
+  final void Function(ServiceCenter center) onCenterSelected;
+
+  const ChooseServiceScreen({
+    super.key,
+    required this.repo,
+    required this.onCenterSelected,
+  });
+
+  @override
+  State<ChooseServiceScreen> createState() => _ChooseServiceScreenState();
+}
+
+class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
+  List<ServiceCenter> _centers = [];
+  ServiceCenter? _selectedCenter;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCenters();
+  }
+
+  Future<void> _loadCenters() async {
+    final centers = await widget.repo.getServiceCenters();
+    setState(() {
+      _centers = centers;
+      _loading = false;
+    });
+  }
+
+  void _onContinue() {
+    if (_selectedCenter == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please select a service center'),
+            backgroundColor: Colors.red),
+      );
+      return;
+    }
+    widget.onCenterSelected(_selectedCenter!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const _LoadingScaffold(title: 'Choose your service');
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: _BookingAppBar(title: 'Choose your service'),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 12),
+                  ..._centers.map((c) => _ServiceCenterTile(
+                    center: c,
+                    isSelected: c.id == _selectedCenter?.id,
+                    onTap: () => setState(() => _selectedCenter = c),
+                  )),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ),
+          _BottomButton(label: 'Continue', onTap: _onContinue),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// SCREEN 1 — TIME & DATE SELECTION (second page, after center)
 // ============================================================
 
 class DateTimeSelectionScreen extends StatefulWidget {
   final IBookingRepository repo;
-  final void Function(ServiceCenter center, DateTime date, TimeSlot slot)
-      onContinue;
+  final ServiceCenter center;
+  final void Function(DateTime date, TimeSlot slot) onContinue;
 
   const DateTimeSelectionScreen({
     super.key,
     required this.repo,
+    required this.center,
     required this.onContinue,
   });
 
@@ -424,30 +708,25 @@ class DateTimeSelectionScreen extends StatefulWidget {
 }
 
 class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
-  List<ServiceCenter> _centers = [];
-  ServiceCenter? _selectedCenter;
   List<CalendarDay> _calendarDays = [];
-  List<TimeSlot> _timeSlots = [];
   int? _selectedDay;
   TimeSlot? _selectedSlot;
   bool _loading = true;
 
-  int _calendarYear = 2025;
-  int _calendarMonth = 9; // September
+  // Default: April 2026
+  int _calendarYear = 2026;
+  int _calendarMonth = 4;
 
   @override
   void initState() {
     super.initState();
-    _loadInitial();
+    _loadCalendar();
   }
 
-  Future<void> _loadInitial() async {
-    final centers = await widget.repo.getServiceCenters();
-    final days =
-        await widget.repo.getCalendarDays(_calendarYear, _calendarMonth);
+  Future<void> _loadCalendar() async {
+    final days = await widget.repo.getCalendarDays(
+        _calendarYear, _calendarMonth, widget.center.id);
     setState(() {
-      _centers = centers;
-      _selectedCenter = centers.first;
       _calendarDays = days;
       _loading = false;
     });
@@ -458,12 +737,24 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
       _selectedDay = day;
       _selectedSlot = null;
     });
-    if (_selectedCenter != null) {
-      final date = DateTime(_calendarYear, _calendarMonth, day);
-      final slots =
-          await widget.repo.getAvailableTimeSlots(_selectedCenter!.id, date);
-      setState(() => _timeSlots = slots);
-    }
+    _showTimePickerSheet();
+  }
+
+  void _showTimePickerSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _ClockTimePickerSheet(
+        repo: widget.repo,
+        centerId: widget.center.id,
+        selectedDate: DateTime(_calendarYear, _calendarMonth, _selectedDay!),
+        onTimeSelected: (slot) {
+          setState(() => _selectedSlot = slot);
+          Navigator.pop(ctx);
+        },
+      ),
+    );
   }
 
   Future<void> _changeMonth(int delta) async {
@@ -476,30 +767,35 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
       m = 12;
       y--;
     }
+
+    // Prevent navigating to months fully in the past
+    final now = DateTime.now();
+    final lastDayOfTarget = DateTime(y, m, DateUtils.getDaysInMonth(y, m));
+    if (lastDayOfTarget.isBefore(DateTime(now.year, now.month, now.day))) {
+      return;
+    }
+
     setState(() {
       _calendarMonth = m;
       _calendarYear = y;
       _selectedDay = null;
       _selectedSlot = null;
-      _timeSlots = [];
+      _calendarDays = [];
     });
-    final days = await widget.repo.getCalendarDays(y, m);
+    final days = await widget.repo.getCalendarDays(y, m, widget.center.id);
     setState(() => _calendarDays = days);
   }
 
   void _onContinue() {
-    if (_selectedCenter == null ||
-        _selectedDay == null ||
-        _selectedSlot == null) {
+    if (_selectedDay == null || _selectedSlot == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Please select center, date & time'),
+            content: Text('Please select date & time'),
             backgroundColor: Colors.red),
       );
       return;
     }
     widget.onContinue(
-      _selectedCenter!,
       DateTime(_calendarYear, _calendarMonth, _selectedDay!),
       _selectedSlot!,
     );
@@ -521,16 +817,9 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  // -- Select Service Center --
-                  const _SectionTitle(text: 'Select Service Center'),
-                  const SizedBox(height: 12),
-                  ..._centers.map((c) => _ServiceCenterTile(
-                        center: c,
-                        isSelected: c.id == _selectedCenter?.id,
-                        onTap: () => setState(() => _selectedCenter = c),
-                      )),
+                  // Selected center info banner
+                  _SelectedCenterBanner(center: widget.center),
                   const SizedBox(height: 24),
-                  // -- Select Date --
                   const _SectionTitle(text: 'Select Date'),
                   const SizedBox(height: 12),
                   _CalendarWidget(
@@ -545,28 +834,305 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
                   const SizedBox(height: 8),
                   const _CalendarLegend(),
                   const SizedBox(height: 24),
-                  // -- Select Time --
-                  if (_timeSlots.isNotEmpty) ...[
-                    const _SectionTitle(text: 'Select Time'),
+                  // Show selected time if picked
+                  if (_selectedSlot != null) ...[
+                    const _SectionTitle(text: 'Selected Ttime'),
                     const SizedBox(height: 12),
-                    ..._timeSlots.map((slot) => _TimeSlotTile(
-                          slot: slot,
-                          isSelected: slot.id == _selectedSlot?.id,
-                          onTap: () => setState(() => _selectedSlot = slot),
-                        )),
+                    _SelectedTimeBanner(slot: _selectedSlot!),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed:
+                        _selectedDay != null ? _showTimePickerSheet : null,
+                        child: const Text('Change time',
+                            style: TextStyle(
+                                color: Color(0xFF1A1A1A),
+                                fontWeight: FontWeight.w600)),
+                      ),
+                    ),
                   ],
                   const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
-          // -- Continue Button --
-          _BottomButton(label: 'Continue', onTap: _onContinue),
+          _BottomButton(
+            label: 'Continue',
+            onTap: (_selectedDay != null && _selectedSlot != null)
+                ? _onContinue
+                : null,
+          ),
         ],
       ),
     );
   }
 }
+
+// -- Selected Center Banner --
+class _SelectedCenterBanner extends StatelessWidget {
+  final ServiceCenter center;
+  const _SelectedCenterBanner({required this.center});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F7F7),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF1A1A1A), width: 1.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFE0E0E0),
+              border: Border.all(color: const Color(0xFFEEEEEE)),
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                center.imagePath,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.store,
+                    size: 20, color: Color(0xFF999999)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(center.name,
+                    style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1A1A1A))),
+                const SizedBox(height: 2),
+                Text(center.distance,
+                    style: const TextStyle(
+                        fontSize: 12, color: Color(0xFF999999))),
+              ],
+            ),
+          ),
+          const Icon(Icons.check_circle, color: Color(0xFF4CAF50), size: 22),
+        ],
+      ),
+    );
+  }
+}
+
+// -- Selected Time Banner --
+class _SelectedTimeBanner extends StatelessWidget {
+  final TimeSlot slot;
+  const _SelectedTimeBanner({required this.slot});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF1A1A1A), width: 1.5),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.access_time, size: 20, color: Color(0xFF1A1A1A)),
+          const SizedBox(width: 10),
+          Text(slot.label,
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A1A))),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// CLOCK TIME PICKER BOTTOM SHEET
+// ============================================================
+
+class _ClockTimePickerSheet extends StatefulWidget {
+  final IBookingRepository repo;
+  final String centerId;
+  final DateTime selectedDate;
+  final void Function(TimeSlot slot) onTimeSelected;
+
+  const _ClockTimePickerSheet({
+    required this.repo,
+    required this.centerId,
+    required this.selectedDate,
+    required this.onTimeSelected,
+  });
+
+  @override
+  State<_ClockTimePickerSheet> createState() => _ClockTimePickerSheetState();
+}
+
+class _ClockTimePickerSheetState extends State<_ClockTimePickerSheet> {
+  List<TimeSlot> _slots = [];
+  bool _loading = true;
+  TimeSlot? _selected;
+  late FixedExtentScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = FixedExtentScrollController();
+    _loadSlots();
+  }
+
+  Future<void> _loadSlots() async {
+    final slots = await widget.repo
+        .getAvailableTimeSlots(widget.centerId, widget.selectedDate);
+    setState(() {
+      _slots = slots;
+      _loading = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          // Handle bar
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: const Color(0xFFDDDDDD),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text('Select Time',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1A1A1A))),
+          const SizedBox(height: 8),
+          if (_loading)
+            const Padding(
+              padding: EdgeInsets.all(40),
+              child: CircularProgressIndicator(color: Color(0xFF1A1A1A)),
+            )
+          else ...[
+            // Clock animation + wheel picker
+            SizedBox(
+              height: 260,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Selection highlight lines
+                  Container(
+                    height: 52,
+                    margin: const EdgeInsets.symmetric(horizontal: 40),
+                    decoration: BoxDecoration(
+                      border: Border.symmetric(
+                        horizontal: BorderSide(
+                          color: const Color(0xFF1A1A1A).withOpacity(0.15),
+                          width: 1.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Distorted circular wheel scroll
+                  SizedBox(
+                    height: 260,
+                    child: ListWheelScrollView.useDelegate(
+                      controller: _scrollController,
+                      itemExtent: 52,
+                      perspective: 0.005,
+                      diameterRatio: 1.5,
+                      physics: const FixedExtentScrollPhysics(),
+                      onSelectedItemChanged: (index) {
+                        setState(() => _selected = _slots[index]);
+                      },
+                      childDelegate: ListWheelChildBuilderDelegate(
+                        childCount: _slots.length,
+                        builder: (context, index) {
+                          final slot = _slots[index];
+                          final isSelected = _selected?.id == slot.id;
+                          return Center(
+                            child: AnimatedDefaultTextStyle(
+                              duration: const Duration(milliseconds: 200),
+                              style: TextStyle(
+                                fontSize: isSelected ? 22 : 17,
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.w400,
+                                color: isSelected
+                                    ? const Color(0xFF1A1A1A)
+                                    : const Color(0xFF999999),
+                              ),
+                              child: Text(slot.label),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          // Continue button — disabled until time selected
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 8, 20, 12 + bottomPadding),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: _selected != null
+                    ? () => widget.onTimeSelected(_selected!)
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1A1A1A),
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: const Color(0xFFCCCCCC),
+                  disabledForegroundColor: const Color(0xFF999999),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28)),
+                ),
+                child: const Text('Continue',
+                    style:
+                    TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 // -- Service Center Tile --
 class _ServiceCenterTile extends StatelessWidget {
@@ -590,9 +1156,10 @@ class _ServiceCenterTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFF7F7F7),
           borderRadius: BorderRadius.circular(14),
-          border: isSelected
-              ? Border.all(color: const Color(0xFF1A1A1A), width: 1.5)
-              : null,
+          border: Border.all(
+            color: isSelected ? const Color(0xFF1A1A1A) : Colors.transparent,
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
@@ -610,10 +1177,8 @@ class _ServiceCenterTile extends StatelessWidget {
                   width: 44,
                   height: 44,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.store,
-                      size: 22,
-                      color: Color(0xFF999999)),
+                  errorBuilder: (_, __, ___) => const Icon(Icons.store,
+                      size: 22, color: Color(0xFF999999)),
                 ),
               ),
             ),
@@ -655,7 +1220,7 @@ class _ServiceCenterTile extends StatelessWidget {
   }
 }
 
-// -- Calendar Widget --
+// -- Calendar Widget (Monday-first, vertical day labels) --
 class _CalendarWidget extends StatelessWidget {
   final int year, month;
   final List<CalendarDay> days;
@@ -673,7 +1238,16 @@ class _CalendarWidget extends StatelessWidget {
     required this.onNext,
   });
 
-  static const _dayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  static const _dayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  static const _dayFullLabels = [
+    'MON',
+    'TUE',
+    'WED',
+    'THU',
+    'FRI',
+    'SAT',
+    'SUN'
+  ];
   static const _monthNames = [
     '',
     'January',
@@ -692,7 +1266,9 @@ class _CalendarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firstWeekday = DateTime(year, month, 1).weekday % 7; // 0=Sun
+    final firstWeekday = DateTime(year, month, 1).weekday;
+    final offset = firstWeekday - 1;
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -701,7 +1277,7 @@ class _CalendarWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Month header with arrows
+          // Month header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -711,8 +1287,8 @@ class _CalendarWidget extends StatelessWidget {
               ),
               Text(
                 '${_monthNames[month]} $year',
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w600),
               ),
               GestureDetector(
                 onTap: onNext,
@@ -721,51 +1297,82 @@ class _CalendarWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          // Day labels
+          // Vertical day labels (letter + abbreviation stacked)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: _dayLabels
-                .map((d) => SizedBox(
-                      width: 40,
-                      child: Text(d,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF999999))),
-                    ))
-                .toList(),
+            children: List.generate(7, (i) {
+              final isWeekend = i == 5 || i == 6; // Saturday or Sunday
+              return SizedBox(
+                width: 40,
+                height: 40,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _dayLetters[i],
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: isWeekend
+                            ? const Color(0xFFE53935)
+                            : const Color(0xFF999999),
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      _dayFullLabels[i],
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 7,
+                        fontWeight: FontWeight.w500,
+                        color: isWeekend
+                            ? const Color(0xFFE53935).withOpacity(0.6)
+                            : const Color(0xFFBBBBBB),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
           ),
           const SizedBox(height: 8),
-          // Day grid
-          _buildGrid(firstWeekday),
+          _buildGrid(offset),
         ],
       ),
     );
   }
 
-  Widget _buildGrid(int firstWeekday) {
+  Widget _buildGrid(int firstWeekdayOffset) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     final cells = <Widget>[];
-    // Empty leading cells
-    for (int i = 0; i < firstWeekday; i++) {
+
+    for (int i = 0; i < firstWeekdayOffset; i++) {
       cells.add(const SizedBox(width: 40, height: 44));
     }
+
     for (final day in days) {
+      final date = DateTime(year, month, day.day);
+      final isWeekend = date.weekday == DateTime.saturday ||
+          date.weekday == DateTime.sunday;
+      final isPast = date.isBefore(today);
       final isSelected = day.day == selectedDay;
-      final bool isTappable = day.status == DayStatus.available;
+      final bool isTappable =
+          day.status == DayStatus.available && !isWeekend && !isPast;
+
       Color? bgColor;
       Color textColor = const Color(0xFF1A1A1A);
 
-      if (isSelected && isTappable) {
+      if (isWeekend || isPast) {
+        textColor = const Color(0xFFCCCCCC);
+      } else if (isSelected && isTappable) {
         bgColor = const Color(0xFF1A1A1A);
         textColor = Colors.white;
       } else if (day.status == DayStatus.available) {
         bgColor = const Color(0xFF4CAF50);
         textColor = Colors.white;
       } else if (day.status == DayStatus.booked) {
-        bgColor = const Color(0xFFE53935);
-        textColor = Colors.white;
-      } else if (day.status == DayStatus.holiday) {
         bgColor = const Color(0xFFE53935);
         textColor = Colors.white;
       }
@@ -827,7 +1434,7 @@ class _CalendarWidget extends StatelessWidget {
   }
 }
 
-// -- Calendar Legend --
+// -- Calendar Legend (no holiday) --
 class _CalendarLegend extends StatelessWidget {
   const _CalendarLegend();
 
@@ -835,11 +1442,11 @@ class _CalendarLegend extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _legendDot(const Color(0xFF4CAF50), 'Available Slots'),
+        _legendDot(const Color(0xFF4CAF50), 'Available'),
         const SizedBox(width: 16),
         _legendDot(const Color(0xFFE53935), 'Booked'),
         const SizedBox(width: 16),
-        _legendDot(const Color(0xFF1A1A1A), 'Holiday'),
+        _legendDot(const Color(0xFFCCCCCC), 'Unavailable'),
       ],
     );
   }
@@ -861,50 +1468,8 @@ class _CalendarLegend extends StatelessWidget {
   }
 }
 
-// -- Time Slot Tile --
-class _TimeSlotTile extends StatelessWidget {
-  final TimeSlot slot;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _TimeSlotTile({
-    required this.slot,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFFF9C4) : const Color(0xFFF7F7F7),
-          borderRadius: BorderRadius.circular(12),
-          border: isSelected
-              ? Border.all(color: const Color(0xFF1A1A1A), width: 1.5)
-              : Border.all(color: const Color(0xFFE0E0E0), width: 1),
-        ),
-        child: Center(
-          child: Text(
-            slot.label,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              color: const Color(0xFF1A1A1A),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ============================================================
-// PART 7: SCREEN 2 — SERVICE DETAIL
+// SCREEN 2 — SERVICE DETAIL (no max limit)
 // ============================================================
 
 class ServiceDetailScreen extends StatefulWidget {
@@ -938,6 +1503,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     final services = await widget.repo.getAvailableServices(widget.centerId);
     setState(() {
       _allServices = services;
+      if (services.isNotEmpty) {
+        _selectedIds.add(services.first.id);
+      }
       _loading = false;
     });
   }
@@ -973,7 +1541,6 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // -- Header Image --
                   const _ServiceHeaderImage(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -981,7 +1548,6 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 16),
-                        // -- Oil Change Service title + price --
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -1004,20 +1570,23 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                 fontWeight: FontWeight.w600,
                                 color: Color(0xFF1A1A1A))),
                         const SizedBox(height: 14),
-                        // -- Service checkboxes --
-                        ..._allServices.map((svc) => _ServiceCheckboxTile(
-                              service: svc,
-                              isChecked: _selectedIds.contains(svc.id),
-                              onChanged: (val) {
-                                setState(() {
-                                  if (val) {
-                                    _selectedIds.add(svc.id);
-                                  } else {
-                                    _selectedIds.remove(svc.id);
-                                  }
-                                });
-                              },
-                            )),
+                        ..._allServices.map((svc) {
+                          final isChecked = _selectedIds.contains(svc.id);
+                          return _ServiceCheckboxTile(
+                            service: svc,
+                            isChecked: isChecked,
+                            isDisabled: false,
+                            onChanged: (val) {
+                              setState(() {
+                                if (val) {
+                                  _selectedIds.add(svc.id);
+                                } else {
+                                  _selectedIds.remove(svc.id);
+                                }
+                              });
+                            },
+                          );
+                        }),
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -1026,13 +1595,13 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               ),
             ),
           ),
-          // -- Bottom Buttons --
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
             child: Column(
               children: [
                 _PrimaryButton(
-                  label: 'Book Service Now ${_totalPrice.toStringAsFixed(0)}₼',
+                  label:
+                  'Book Service Now ${_totalPrice.toStringAsFixed(0)}₼',
                   onTap: _onBook,
                 ),
                 const SizedBox(height: 10),
@@ -1050,7 +1619,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   }
 }
 
-// -- Service Header Image placeholder --
+// -- Service Header Image --
 class _ServiceHeaderImage extends StatelessWidget {
   const _ServiceHeaderImage();
 
@@ -1060,18 +1629,24 @@ class _ServiceHeaderImage extends StatelessWidget {
       width: double.infinity,
       height: 200,
       color: const Color(0xFFF5F5F5),
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.water_drop, size: 64, color: Color(0xFFBDBDBD)),
-            SizedBox(height: 8),
-            Text('TOYOTA Oil',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF999999))),
-          ],
+      child: Image.asset(
+        'assets/png/mock/5_30_oil.jpeg',
+        width: double.infinity,
+        height: 200,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.water_drop, size: 64, color: Color(0xFFBDBDBD)),
+              SizedBox(height: 8),
+              Text('TOYOTA Oil',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF999999))),
+            ],
+          ),
         ),
       ),
     );
@@ -1082,47 +1657,65 @@ class _ServiceHeaderImage extends StatelessWidget {
 class _ServiceCheckboxTile extends StatelessWidget {
   final ServiceOption service;
   final bool isChecked;
+  final bool isDisabled;
   final ValueChanged<bool> onChanged;
 
   const _ServiceCheckboxTile({
     required this.service,
     required this.isChecked,
+    this.isDisabled = false,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: InkWell(
-        onTap: () => onChanged(!isChecked),
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            children: [
-              Icon(service.icon, size: 22, color: const Color(0xFF555555)),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(service.name,
-                    style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF1A1A1A))),
-              ),
-              SizedBox(
-                width: 24,
-                height: 24,
-                child: Checkbox(
-                  value: isChecked,
-                  onChanged: (v) => onChanged(v ?? false),
-                  activeColor: const Color(0xFF1A1A1A),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4)),
-                  side: const BorderSide(color: Color(0xFFCCCCCC), width: 1.5),
+    final double opacity = isDisabled && !isChecked ? 0.4 : 1.0;
+    return Opacity(
+      opacity: opacity,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: InkWell(
+          onTap: isDisabled && !isChecked ? null : () => onChanged(!isChecked),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              children: [
+                Icon(service.icon,
+                    size: 22, color: const Color(0xFF555555)),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(service.name,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF1A1A1A))),
+                      Text('${service.price.toStringAsFixed(0)} AZN',
+                          style: const TextStyle(
+                              fontSize: 13, color: Color(0xFF999999))),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Checkbox(
+                    value: isChecked,
+                    onChanged: isDisabled && !isChecked
+                        ? null
+                        : (v) => onChanged(v ?? false),
+                    activeColor: const Color(0xFF1A1A1A),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4)),
+                    side: const BorderSide(
+                        color: Color(0xFFCCCCCC), width: 1.5),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1131,7 +1724,7 @@ class _ServiceCheckboxTile extends StatelessWidget {
 }
 
 // ============================================================
-// PART 8: SCREEN 3 — SUMMARY
+// SCREEN 3 — SUMMARY
 // ============================================================
 
 class SummaryScreen extends StatefulWidget {
@@ -1211,9 +1804,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
     widget.onBookingConfirmed(result);
   }
 
-  String _formatDate(DateTime d) =>
-      '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
-
   @override
   Widget build(BuildContext context) {
     if (_loading) return const _LoadingScaffold(title: 'Summary');
@@ -1229,27 +1819,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
-                  // -- Your Car --
-                  const _SectionTitle(text: 'Your Car'),
-                  const SizedBox(height: 10),
-                  _CarInfoTile(car: _car!),
-                  const SizedBox(height: 24),
-                  // -- Selected Services --
-                  const _SectionTitle(text: 'Selected Services'),
-                  const SizedBox(height: 10),
-                  ...widget.selectedServices
-                      .map((s) => _SelectedServiceTile(service: s)),
                   const SizedBox(height: 20),
-                  // -- Coupon Section --
-                  _CouponSection(
-                    coupon: _coupon,
-                    controller: _couponController,
-                    onApply: _applyCoupon,
-                    onRemove: _removeCoupon,
-                  ),
-                  const SizedBox(height: 24),
-                  // -- Price Breakdown --
                   const _SectionTitle(text: 'Prices (Cost Breakdown)'),
                   const SizedBox(height: 12),
                   _PriceBreakdown(
@@ -1258,28 +1828,18 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     serviceTotal: _serviceTotal,
                     discountedTotal: _discountedTotal,
                   ),
-                  const SizedBox(height: 24),
-                  // -- Other Data --
-                  const _SectionTitle(text: 'Other Data (Service Details)'),
-                  const SizedBox(height: 12),
-                  _OtherDataRow(
-                    icon: Icons.calendar_today,
-                    label: 'Date & Time',
-                    value:
-                        '${_formatDate(widget.date)} - ${widget.timeSlot.label.split(' - ').first}',
-                  ),
-                  const SizedBox(height: 8),
-                  _OtherDataRow(
-                    icon: Icons.location_on_outlined,
-                    label: 'Service Location',
-                    value: widget.center.name,
+                  const SizedBox(height: 20),
+                  _CouponSection(
+                    coupon: _coupon,
+                    controller: _couponController,
+                    onApply: _applyCoupon,
+                    onRemove: _removeCoupon,
                   ),
                   const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
-          // -- Confirm Button --
           _BottomButton(
             label: _confirming ? 'Confirming...' : 'Confirm Booking',
             onTap: _confirming ? null : _confirmBooking,
@@ -1293,7 +1853,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
 // -- Car Info Tile --
 class _CarInfoTile extends StatelessWidget {
   final CarInfo car;
-
   const _CarInfoTile({required this.car});
 
   @override
@@ -1307,8 +1866,17 @@ class _CarInfoTile extends StatelessWidget {
             color: const Color(0xFFF2F2F2),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(Icons.directions_car,
-              size: 30, color: Color(0xFF888888)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              car.imagePath,
+              width: 56,
+              height: 56,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Icon(Icons.directions_car,
+                  size: 28, color: Color(0xFFBDBDBD)),
+            ),
+          ),
         ),
         const SizedBox(width: 14),
         Column(
@@ -1316,8 +1884,8 @@ class _CarInfoTile extends StatelessWidget {
           children: [
             Text(car.name,
                 style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                     color: Color(0xFF1A1A1A))),
             const SizedBox(height: 2),
             Row(
@@ -1340,7 +1908,6 @@ class _CarInfoTile extends StatelessWidget {
 // -- Selected Service Tile --
 class _SelectedServiceTile extends StatelessWidget {
   final ServiceOption service;
-
   const _SelectedServiceTile({required this.service});
 
   @override
@@ -1356,7 +1923,8 @@ class _SelectedServiceTile extends StatelessWidget {
               color: const Color(0xFFF2F2F2),
               borderRadius: BorderRadius.circular(22),
             ),
-            child: Icon(service.icon, size: 22, color: const Color(0xFF555555)),
+            child:
+            Icon(service.icon, size: 22, color: const Color(0xFF555555)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1375,6 +1943,11 @@ class _SelectedServiceTile extends StatelessWidget {
               ],
             ),
           ),
+          Text('${service.price.toStringAsFixed(0)} AZN',
+              style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A1A))),
         ],
       ),
     );
@@ -1397,7 +1970,6 @@ class _CouponSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Coupon already applied
     if (coupon != null && coupon!.isValid) {
       return Container(
         padding: const EdgeInsets.all(14),
@@ -1432,10 +2004,12 @@ class _CouponSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text('Coupon Code: ${coupon!.code}',
-                style: const TextStyle(fontSize: 14, color: Color(0xFF555555))),
+                style:
+                const TextStyle(fontSize: 14, color: Color(0xFF555555))),
             const SizedBox(height: 2),
             Text(coupon!.message,
-                style: const TextStyle(fontSize: 14, color: Color(0xFF555555))),
+                style:
+                const TextStyle(fontSize: 14, color: Color(0xFF555555))),
             const SizedBox(height: 6),
             const Text('Discount Value',
                 style: TextStyle(fontSize: 13, color: Color(0xFF999999))),
@@ -1449,7 +2023,6 @@ class _CouponSection extends StatelessWidget {
       );
     }
 
-    // Coupon input
     return Row(
       children: [
         Expanded(
@@ -1459,7 +2032,7 @@ class _CouponSection extends StatelessWidget {
               hintText: 'Enter coupon code',
               hintStyle: const TextStyle(color: Color(0xFFBBBBBB)),
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: Color(0xFFE0E0E0))),
@@ -1473,7 +2046,8 @@ class _CouponSection extends StatelessWidget {
         GestureDetector(
           onTap: onApply,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            padding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
               color: const Color(0xFF1A1A1A),
               borderRadius: BorderRadius.circular(12),
@@ -1508,18 +2082,16 @@ class _PriceBreakdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _priceRow('Service Price', '${serviceTotal.toStringAsFixed(0)}₼',
-            isBold: true),
         const SizedBox(height: 8),
         ...services.map((s) => Padding(
-              padding: const EdgeInsets.only(left: 20, bottom: 6),
-              child: _priceRow(
-                s.name,
-                '${s.price.toStringAsFixed(0)}₼',
-                icon: s.icon,
-                fontSize: 14,
-              ),
-            )),
+          padding: const EdgeInsets.only(left: 20, bottom: 6),
+          child: _priceRow(
+            s.name,
+            '${s.price.toStringAsFixed(0)}₼',
+            icon: s.icon,
+            fontSize: 14,
+          ),
+        )),
         if (coupon != null && coupon!.isValid) ...[
           const SizedBox(height: 8),
           _priceRow(
@@ -1528,7 +2100,7 @@ class _PriceBreakdown extends StatelessWidget {
         ],
         const SizedBox(height: 8),
         _priceRow(
-          'Grand Total',
+          'Total',
           '${discountedTotal.toStringAsFixed(0)}₼',
           isBold: true,
         ),
@@ -1538,9 +2110,9 @@ class _PriceBreakdown extends StatelessWidget {
 
   Widget _priceRow(String label, String value,
       {bool isBold = false,
-      Color? color,
-      IconData? icon,
-      double fontSize = 15}) {
+        Color? color,
+        IconData? icon,
+        double fontSize = 15}) {
     return Row(
       children: [
         if (icon != null) ...[
@@ -1554,14 +2126,14 @@ class _PriceBreakdown extends StatelessWidget {
                   fontWeight: isBold ? FontWeight.w700 : FontWeight.w400,
                   color: color ?? const Color(0xFF1A1A1A))),
         ),
-        // Dotted line effect
         Expanded(
           child: LayoutBuilder(
             builder: (_, constraints) => Row(
               children: List.generate(
                 (constraints.maxWidth / 6).floor(),
-                (_) => const Text('. ',
-                    style: TextStyle(fontSize: 10, color: Color(0xFFCCCCCC))),
+                    (_) => const Text('. ',
+                    style:
+                    TextStyle(fontSize: 10, color: Color(0xFFCCCCCC))),
               ),
             ),
           ),
@@ -1576,40 +2148,8 @@ class _PriceBreakdown extends StatelessWidget {
   }
 }
 
-// -- Other Data Row --
-class _OtherDataRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _OtherDataRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: const Color(0xFF999999)),
-        const SizedBox(width: 8),
-        Text('$label . . . . ',
-            style: const TextStyle(fontSize: 14, color: Color(0xFF999999))),
-        Expanded(
-          child: Text(value,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A))),
-        ),
-      ],
-    );
-  }
-}
-
 // ============================================================
-// PART 9: SCREEN 4 — BOOKING CONFIRMED
+// SCREEN 4 — BOOKING CONFIRMED
 // ============================================================
 
 class BookingConfirmedScreen extends StatelessWidget {
@@ -1627,85 +2167,62 @@ class BookingConfirmedScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _BookingAppBar(title: 'Summary', showNotification: false),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Celebration text
-              const Text(
-                'Booking Confirmed 🎉',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1A1A1A),
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Your service slot has been booked successfully.\nWe\'ll notify you before the appointment.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF999999),
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Car image placeholder
-              Container(
-                width: 180,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Column(
+      body: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.directions_car,
-                        size: 52, color: Color(0xFFBDBDBD)),
-                    SizedBox(height: 4),
-                    Text('Toyota Absheron',
-                        style:
-                            TextStyle(fontSize: 11, color: Color(0xFF999999))),
+                    const Text(
+                      'Booking Confirmed 🎉',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Container(
+                      width: 220,
+                      height: 140,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF2F2F2),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          'assets/png/mock/lexus_booked_photo.png',
+                          width: 220,
+                          height: 140,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
-              // Go to Home button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: onGoHome,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1A1A1A),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28)),
-                  ),
-                  child: const Text('Go to Home',
-                      style:
-                          TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          _BottomButton(label: 'Go to Home', onTap: onGoHome),
+        ],
       ),
     );
   }
 }
 
 // ============================================================
-// SHARED WIDGETS (used across screens)
+// SHARED WIDGETS
 // ============================================================
 
-// -- AppBar --
 class _BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showNotification;
@@ -1721,24 +2238,21 @@ class _BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
-        onPressed: () => Navigator.of(context).maybePop(),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF1A1A1A),
+        ),
       ),
-      title: Text(title,
-          style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1A1A1A))),
-      centerTitle: true,
+      centerTitle: false,
     );
   }
 }
 
-// -- Section Title --
 class _SectionTitle extends StatelessWidget {
   final String text;
-
   const _SectionTitle({required this.text});
 
   @override
@@ -1751,7 +2265,6 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-// -- Primary Button (bottom) --
 class _BottomButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
@@ -1771,14 +2284,15 @@ class _BottomButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF1A1A1A),
               foregroundColor: Colors.white,
-              disabledBackgroundColor: const Color(0xFF888888),
+              disabledBackgroundColor: const Color(0xFFCCCCCC),
+              disabledForegroundColor: const Color(0xFF999999),
               elevation: 0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28)),
             ),
             child: Text(label,
-                style:
-                    const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+                style: const TextStyle(
+                    fontSize: 17, fontWeight: FontWeight.w600)),
           ),
         ),
       ),
@@ -1786,7 +2300,6 @@ class _BottomButton extends StatelessWidget {
   }
 }
 
-// -- Primary Button (inline) --
 class _PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -1804,17 +2317,17 @@ class _PrimaryButton extends StatelessWidget {
           backgroundColor: const Color(0xFF1A1A1A),
           foregroundColor: Colors.white,
           elevation: 0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(27)),
         ),
         child: Text(label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            style:
+            const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
       ),
     );
   }
 }
 
-// -- Outline Button (inline) --
 class _OutlineButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -1832,20 +2345,19 @@ class _OutlineButton extends StatelessWidget {
           foregroundColor: const Color(0xFF1A1A1A),
           side: const BorderSide(color: Color(0xFFDDDDDD), width: 1.5),
           elevation: 0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(27)),
         ),
         child: Text(label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            style:
+            const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
       ),
     );
   }
 }
 
-// -- Loading Scaffold --
 class _LoadingScaffold extends StatelessWidget {
   final String title;
-
   const _LoadingScaffold({required this.title});
 
   @override

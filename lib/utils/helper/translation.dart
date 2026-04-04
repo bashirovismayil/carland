@@ -1604,6 +1604,11 @@ class Translations {
       'en': 'Collapse',
       'ru': 'Свернуть',
     },
+    AppStrings.bookServiceSlot: {
+      'az': 'Servis rezerv edin',
+      'en': 'Book service slot',
+      'ru': 'Забронировать слот для услуги',
+    },
     AppStrings.editCarDetails: {
       'az': 'Avtomobil detallarını redaktə et',
       'en': 'Edit car details',

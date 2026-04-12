@@ -6,7 +6,10 @@ import '../../../../../core/constants/colors/app_colors.dart';
 import '../../../../../core/constants/texts/app_strings.dart';
 import '../../../../../core/localization/app_translation.dart';
 import '../../../../../core/mixins/flip_card_mixin.dart';
+import '../../../../../core/mixins/peek_hint_mixin.dart';
 import '../../../../../data/remote/models/remote/get_car_services_response.dart';
+import '../../../../../data/remote/services/local/peek_hint_local_service.dart';
+import '../../../../../utils/di/locator.dart';
 import '../../../../../utils/helper/service_edit_helper.dart';
 import '../../../../../utils/helper/service_percentage_calculator.dart';
 import '../../../details/maintenance_widgets/service_card_edit_content.dart';
@@ -24,6 +27,8 @@ class ServiceCard extends StatefulWidget {
   final int? currentMileage;
   final VoidCallback? onExpand;
   final bool isForceCollapsed;
+  final bool shouldPeekHint;
+  final VoidCallback? onPeekHintComplete;
 
   const ServiceCard({
     super.key,
@@ -36,6 +41,8 @@ class ServiceCard extends StatefulWidget {
     this.currentMileage,
     this.onExpand,
     this.isForceCollapsed = false,
+    this.shouldPeekHint = false,
+    this.onPeekHintComplete,
   });
 
   @override
@@ -43,7 +50,7 @@ class ServiceCard extends StatefulWidget {
 }
 
 class _ServiceCardState extends State<ServiceCard>
-    with TickerProviderStateMixin, FlipCardMixin {
+    with TickerProviderStateMixin, FlipCardMixin, PeekHintMixin {
   bool _isExpanded = false;
 
   late AnimationController _controller;
@@ -51,6 +58,8 @@ class _ServiceCardState extends State<ServiceCard>
   late Animation<double> _headerHeight;
   late Animation<double> _contentSize;
   late Animation<double> _contentOpacity;
+
+  final _peekHintService = locator<PeekHintLocalService>();
 
   bool get _needsEdit => ServiceEditHelper.needsEdit(widget.service);
 
@@ -95,11 +104,40 @@ class _ServiceCardState extends State<ServiceCard>
     }
 
     initFlipController();
+    initPeekHint(vsync: this, maxAngle: 40.0);
+
+    debugPrint('---------------- ServiceCard initState: ${widget.service.serviceName}');
+    debugPrint('---------------- shouldPeekHint: ${widget.shouldPeekHint}, needsEdit: $_needsEdit');
+
+    if (widget.shouldPeekHint && !_needsEdit) {
+      _schedulePeekHint();
+    }
+  }
+
+  void _schedulePeekHint() {
+    debugPrint('---------------- _schedulePeekHint called for ${widget.service.serviceName}');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 800), () {
+        debugPrint('---------------- Peek delay fired. mounted: $mounted, isFlipped: $isFlipped');
+        if (mounted && !isFlipped) {
+          triggerPeekHint();
+          debugPrint('---------------- triggerPeekHint() called!');
+          widget.onPeekHintComplete?.call();
+        }
+      });
+    });
   }
 
   @override
   void didUpdateWidget(covariant ServiceCard oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.shouldPeekHint &&
+        !oldWidget.shouldPeekHint &&
+        !_needsEdit &&
+        !peekHintPlayed) {
+      debugPrint('---------------- didUpdateWidget: shouldPeekHint changed to true for ${widget.service.serviceName}');
+      _schedulePeekHint();
+    }
 
     if (oldWidget.service.percentageId != widget.service.percentageId) {
       if (isFlipped) {
@@ -128,6 +166,7 @@ class _ServiceCardState extends State<ServiceCard>
 
   @override
   void dispose() {
+    disposePeekHint();
     disposeFlipController();
     _controller.dispose();
     super.dispose();
@@ -141,6 +180,19 @@ class _ServiceCardState extends State<ServiceCard>
       _controller.forward();
     } else {
       _controller.reverse();
+    }
+  }
+
+  void _handleFlip() {
+    // Cancel peek hint if it's still playing to avoid dual rotateY conflict.
+    cancelPeekHint();
+
+    if (isFlipped) {
+      unflipCard();
+    } else {
+      flipCard();
+      // Mark that the user has manually flipped a card.
+      _peekHintService.markUserFlipped();
     }
   }
 
@@ -162,41 +214,34 @@ class _ServiceCardState extends State<ServiceCard>
             final showBack = angle > math.pi / 2;
 
             return GestureDetector(
-              // onLongPressStart: canFlip ? (_) => flipCard() : null,
-              // onLongPressEnd: canFlip ? (_) => unflipCard() : null,
-              // onLongPressCancel: canFlip ? () => unflipCard() : null,
-              onTap: canFlip
-                  ? () {
-                if (isFlipped) {
-                  unflipCard();
-                } else {
-                  flipCard();
-                }
-              }
-                  : null,
-              child: Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, 0.001)
-                  ..rotateY(angle),
-                child: showBack
-                    ? Transform(
+              onTap: canFlip ? _handleFlip : null,
+              child: buildPeekHintTransform(
+                child: Transform(
                   alignment: Alignment.center,
-                  transform: Matrix4.identity()..rotateY(math.pi),
-                  child: ServiceCardBackFace(
-                    remainingKm: widget.service.remainingKm,
-                    remainingMonths: widget.service.remainingMonths,
-                    kmPercentage: widget.service.kmPercentage,
-                    monthPercentage: widget.service.monthPercentageDigit,
-                    isTimeBased: ServicePercentageCalculator.isTimeBased(
-                        widget.service),
-                    hasBoth: widget.service.intervalKm > 0 &&
-                        widget.service.intervalMonth > 0,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001)
+                    ..rotateY(angle),
+                  child: showBack
+                      ? Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()..rotateY(math.pi),
+                    child: ServiceCardBackFace(
+                      remainingKm: widget.service.remainingKm,
+                      remainingMonths: widget.service.remainingMonths,
+                      kmPercentage: widget.service.kmPercentage,
+                      monthPercentage:
+                      widget.service.monthPercentageDigit,
+                      isTimeBased:
+                      ServicePercentageCalculator.isTimeBased(
+                          widget.service),
+                      hasBoth: widget.service.intervalKm > 0 &&
+                          widget.service.intervalMonth > 0,
+                    ),
+                  )
+                      : _buildFrontFace(
+                    percentage: percentage,
+                    needsEdit: needsEdit,
                   ),
-                )
-                    : _buildFrontFace(
-                  percentage: percentage,
-                  needsEdit: needsEdit,
                 ),
               ),
             );
@@ -333,7 +378,14 @@ class _ServiceCardState extends State<ServiceCard>
                                 km: widget.service.lastServiceKm,
                                 date: widget.service.lastServiceDate,
                               ),
-                              const SizedBox(height: 10),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                child: Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: Colors.grey.shade200,
+                                ),
+                              ),
                               ServiceInfoRow(
                                 title: AppTranslation.translate(
                                     AppStrings.nextService),

@@ -540,6 +540,8 @@ class AppStrings {
 
   static const String remainingService = 'remainingService';
   static const String remainingKm = 'remainingKm';
+  static const String left = 'left';
+  static const String serviceDue = 'serviceDue';
   static const String remainingMonths = 'remainingMonths';
   static const String tapToFlipBack = 'tapToFlipBack';
   static const String kText = 'kText';

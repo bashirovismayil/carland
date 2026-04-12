@@ -1,12 +1,11 @@
-import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/colors/app_colors.dart';
 import '../../../core/constants/texts/app_strings.dart';
-import '../../../core/localization/app_translation.dart';
 import '../../../cubit/add/car/get_car_list_cubit.dart';
 import '../../../data/remote/models/remote/get_car_list_response.dart';
+import '../../../widgets/slide_down_notification.dart';
 import 'car_menu_button.dart';
 import 'no_image_placeholder.dart';
 
@@ -83,9 +82,11 @@ class CarImageSection extends StatelessWidget {
   }
 }
 
-class _VerifyBadge extends StatefulWidget {
+class _VerifyBadge extends StatelessWidget {
   final String assetPath;
   final String verifyTextKey;
+
+  static const double _badgeSize = 42.0;
 
   const _VerifyBadge({
     required this.assetPath,
@@ -93,95 +94,20 @@ class _VerifyBadge extends StatefulWidget {
   });
 
   @override
-  State<_VerifyBadge> createState() => _VerifyBadgeState();
-}
-
-class _VerifyBadgeState extends State<_VerifyBadge> {
-  static const double _badgeSize = 42.0;
-
-  final _overlayController = OverlayPortalController();
-  final _link = LayerLink();
-  Timer? _autoDismissTimer;
-
-  @override
-  void dispose() {
-    _autoDismissTimer?.cancel();
-    super.dispose();
-  }
-
-  void _showTooltip() {
-    _autoDismissTimer?.cancel();
-    _overlayController.show();
-    _autoDismissTimer = Timer(const Duration(seconds: 5), () {
-      if (mounted) _overlayController.hide();
-    });
-  }
-
-  void _hideTooltip() {
-    _autoDismissTimer?.cancel();
-    _overlayController.hide();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _link,
-      child: OverlayPortal(
-        controller: _overlayController,
-        overlayChildBuilder: (_) => _buildTooltipOverlay(),
-        child: GestureDetector(
-          onTap: _showTooltip,
-          child: SizedBox(
-            width: _badgeSize,
-            height: _badgeSize,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Image.asset(widget.assetPath),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTooltipOverlay() {
     return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => _hideTooltip(),
-      child: Stack(
-        children: [
-          CompositedTransformFollower(
-            link: _link,
-            offset: const Offset(0, 30),
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 240),
-                padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.textPrimary,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Text(
-                  AppTranslation.translate(widget.verifyTextKey),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+      onTap: () => showSlideDownNotification(
+        context,
+        assetPath: assetPath,
+        verifyTextKey: verifyTextKey,
+      ),
+      child: SizedBox(
+        width: _badgeSize,
+        height: _badgeSize,
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: Image.asset(assetPath),
+        ),
       ),
     );
   }

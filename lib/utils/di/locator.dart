@@ -118,6 +118,7 @@ import '../../data/remote/services/local/hidden_services_local_service.dart';
 import '../../data/remote/services/local/language_local_service.dart';
 import '../../data/remote/services/local/login_local_services.dart';
 import '../../data/remote/services/local/onboard_local_services.dart';
+import '../../data/remote/services/local/peek_hint_local_service.dart';
 import '../../data/remote/services/local/register_local_service.dart';
 import '../../data/remote/services/local/user_local_service.dart';
 import '../../data/remote/services/remote/add_car_service.dart';
@@ -172,6 +173,7 @@ Future<void> setupLocator() async {
   final Box<int> userBox = await Hive.openBox<int>('userBox');
   final Box<String> languageBox = await Hive.openBox<String>('languageBox');
   final Box<String> carOrderBox = await Hive.openBox<String>('carOrderBox');
+  final Box<int> peekHintBox = await Hive.openBox<int>('peekHintBox');
   final Box<bool> hiddenServicesBox =
       await Hive.openBox<bool>('hiddenServicesBox');
   final encryptionKey = await PinLocalService.getEncryptionKey();
@@ -214,6 +216,9 @@ Future<void> setupLocator() async {
   );
   locator.registerLazySingleton<CarOrderLocalService>(
     () => CarOrderLocalService(carOrderBox),
+  );
+  locator.registerLazySingleton<PeekHintLocalService>(
+    () => PeekHintLocalService(peekHintBox),
   );
   locator.registerLazySingleton<HiddenServicesLocalService>(
     () => HiddenServicesLocalService(hiddenServicesBox),
@@ -437,7 +442,7 @@ Future<void> setupLocator() async {
     ),
   );
   locator.registerLazySingleton<CarPhotoCacheService>(
-        () => CarPhotoCacheService(),
+    () => CarPhotoCacheService(),
   );
 
 // Cubit
@@ -597,14 +602,14 @@ Future<void> setupLocator() async {
   );
   // Delete Car Photo
   locator.registerLazySingleton<DeleteCarPhotoService>(
-        () => DeleteCarPhotoService(),
+    () => DeleteCarPhotoService(),
   );
   locator.registerLazySingleton<DeleteCarPhotoContractor>(
-        () => DeleteCarPhotoRepository(
+    () => DeleteCarPhotoRepository(
       locator<DeleteCarPhotoService>(),
     ),
   );
   locator.registerFactory<DeleteCarPhotoCubit>(
-        () => DeleteCarPhotoCubit(),
+    () => DeleteCarPhotoCubit(),
   );
 }

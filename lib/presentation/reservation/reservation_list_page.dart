@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/colors/app_colors.dart';
 import '../../core/constants/texts/app_strings.dart';
 import '../../core/localization/app_translation.dart';
 import '../history/history_page.dart';
-
-// ============================================================
-// MAP NAVIGATION MIXIN
-// ============================================================
+import '../user/user_main_nav.dart';
 
 mixin MapNavigationMixin {
   static const _centerMapLinks = {
@@ -15,7 +13,6 @@ mixin MapNavigationMixin {
     'lexus': 'https://maps.app.goo.gl/82yz8abn1AVeMxAv9',
   };
 
-  /// Returns the Google Maps URL for the given center name, or null if not found.
   String? getMapUrl(String centerName) {
     final nameLower = centerName.toLowerCase();
     for (final entry in _centerMapLinks.entries) {
@@ -26,7 +23,6 @@ mixin MapNavigationMixin {
     return null;
   }
 
-  /// Opens Google Maps for the given center name.
   Future<void> navigateToCenter(String centerName) async {
     final url = getMapUrl(centerName);
     if (url == null) return;
@@ -74,36 +70,46 @@ class _ReservationListPageState extends State<ReservationListPage> {
     if (mounted) setState(() {});
   }
 
-  /// Converts a BookingResult into ServiceData cards
-  List<ServiceData> _bookingResultToCards(BookingResult booking) {
-    return booking.services.map((svc) {
-      final timeLabel = booking.timeSlot.label.split(' - ').first;
-      final d = booking.date;
-      final dateStr =
-          '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year} - $timeLabel';
+  /// Converts a BookingResult into a SINGLE ServiceData card
+  /// using the main service name (first service).
+  ServiceData _bookingResultToCard(BookingResult booking) {
+    final mainService = booking.services.isNotEmpty
+        ? booking.services.first
+        : null;
+    final timeLabel = booking.timeSlot.label.split(' - ').first;
+    final d = booking.date;
+    final dateStr =
+        '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year} - $timeLabel';
 
-      ServiceIconType iconType;
-      final nameLower = svc.name.toLowerCase();
-      if (nameLower.contains('brake') || nameLower.contains('check')) {
-        iconType = ServiceIconType.brakes;
-      } else if (nameLower.contains('oil') ||
-          nameLower.contains('filter') ||
-          nameLower.contains('change')) {
-        iconType = ServiceIconType.oil;
-      } else {
-        iconType = ServiceIconType.battery;
-      }
+    ServiceIconType iconType;
+    final nameLower = (mainService?.name ?? '').toLowerCase();
+    if (nameLower.contains('brake') || nameLower.contains('check')) {
+      iconType = ServiceIconType.brakes;
+    } else if (nameLower.contains('oil') ||
+        nameLower.contains('filter') ||
+        nameLower.contains('change')) {
+      iconType = ServiceIconType.oil;
+    } else {
+      iconType = ServiceIconType.battery;
+    }
 
-      return ServiceData(
-        icon: iconType,
-        title: svc.name,
-        time: timeLabel,
-        dateRange: dateStr,
-        centerName: booking.center.name,
-        centerImagePath: booking.center.imagePath,
-        distance: booking.center.distance,
-      );
-    }).toList();
+    // Build subtitle showing additional services count
+    final extraCount = booking.services.length - 1;
+    final title = mainService?.name ?? 'Service';
+    final displayTitle = extraCount > 0
+        ? '$title (+$extraCount more)'
+        : title;
+
+    return ServiceData(
+      icon: iconType,
+      title: displayTitle,
+      time: timeLabel,
+      dateRange: dateStr,
+      centerName: booking.center.name,
+      centerImagePath: booking.center.imagePath,
+      distance: booking.center.distance,
+      bookingId: booking.id,
+    );
   }
 
   void _startBookingFlow() {
@@ -113,11 +119,29 @@ class _ReservationListPageState extends State<ReservationListPage> {
     );
   }
 
+  void _editBooking(String bookingId) {
+    final booking = BookingStore.bookings.value
+        .where((b) => b.id == bookingId)
+        .firstOrNull;
+    if (booking == null) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HistoryPage(editBooking: booking),
+      ),
+    );
+  }
+
+  void _cancelBooking(String bookingId) {
+    BookingStore.removeBooking(bookingId);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Combine initial + dynamic booking cards
+    // Combine initial + dynamic booking cards (1 card per booking)
     final dynamicCards = BookingStore.bookings.value
-        .expand(_bookingResultToCards)
+        .map(_bookingResultToCard)
         .toList();
     final allCards = [..._initialServices, ...dynamicCards];
 
@@ -144,13 +168,23 @@ class _ReservationListPageState extends State<ReservationListPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 25),
-              ScreenTitle(title: AppTranslation.translate(AppStrings.upcomingList)),
+              ScreenTitle(
+                  title:
+                  AppTranslation.translate(AppStrings.upcomingList)),
               const SizedBox(height: 20),
               Expanded(
                 child: ListView.separated(
                   itemCount: allCards.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 16),
-                  itemBuilder: (_, i) => ServiceCard(service: allCards[i]),
+                  itemBuilder: (_, i) => ServiceCard(
+                    service: allCards[i],
+                    onEdit: allCards[i].bookingId != null
+                        ? () => _editBooking(allCards[i].bookingId!)
+                        : null,
+                    onCancel: allCards[i].bookingId != null
+                        ? () => _cancelBooking(allCards[i].bookingId!)
+                        : null,
+                  ),
                 ),
               ),
             ],
@@ -162,7 +196,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
 }
 
 // ============================================================
-// DATA MODELS (kept identical to your original)
+// DATA MODELS
 // ============================================================
 
 enum ServiceIconType { brakes, oil, battery }
@@ -175,6 +209,7 @@ class ServiceData {
   final String centerName;
   final String centerImagePath;
   final String distance;
+  final String? bookingId;
 
   const ServiceData({
     required this.icon,
@@ -184,6 +219,7 @@ class ServiceData {
     required this.centerName,
     required this.centerImagePath,
     required this.distance,
+    this.bookingId,
   });
 }
 
@@ -216,34 +252,38 @@ class ScreenTitle extends StatelessWidget {
 
 class ServiceCard extends StatelessWidget {
   final ServiceData service;
+  final VoidCallback? onEdit;
+  final VoidCallback? onCancel;
 
-  const ServiceCard({super.key, required this.service});
+  const ServiceCard({
+    super.key,
+    required this.service,
+    this.onEdit,
+    this.onCancel,
+  });
 
   void _showCancelMenu(BuildContext context) {
+    globalNavBarKey.currentState?.hide();
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) => CancelMenuSheet(
-        onCancelTap: () {
-          Navigator.pop(context);
-          _showCancelDialog(context);
+      isScrollControlled: true,
+      useRootNavigator: true,
+      builder: (_) => BookingActionSheet(
+        service: service,
+        onEdit: () {
+          Navigator.of(context, rootNavigator: true).pop();
+          if (onEdit != null) onEdit!();
         },
+        onCancel: () {
+          Navigator.of(context, rootNavigator: true).pop();
+          if (onCancel != null) onCancel!();
+        },
+        onKeep: () => Navigator.of(context, rootNavigator: true).pop(),
       ),
-    );
-  }
-
-  void _showCancelDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => CancelBookingDialog(
-        serviceName: service.title,
-        dateTime: service.dateRange,
-        location: '${service.centerName}, Baku',
-        onCancel: () => Navigator.pop(context),
-        onKeep: () => Navigator.pop(context),
-      ),
-    );
+    ).whenComplete(() {
+      globalNavBarKey.currentState?.show();
+    });
   }
 
   @override
@@ -563,10 +603,6 @@ class CenterDistanceRow extends StatelessWidget {
   }
 }
 
-// ============================================================
-// NAVIGATE BUTTON
-// ============================================================
-
 class NavigateButton extends StatelessWidget {
   final VoidCallback onTap;
 
@@ -585,7 +621,7 @@ class NavigateButton extends StatelessWidget {
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.map_outlined, size: 16, color: Colors.white),
+            FaIcon(FontAwesomeIcons.locationArrow, size: 16, color: Colors.white),
           ],
         ),
       ),
@@ -594,16 +630,44 @@ class NavigateButton extends StatelessWidget {
 }
 
 // ============================================================
-// CANCEL MENU BOTTOM SHEET
+// BOOKING ACTION SHEET (unified: menu → confirmation in one sheet)
 // ============================================================
 
-class CancelMenuSheet extends StatelessWidget {
-  final VoidCallback onCancelTap;
+enum _BookingSheetView { menu, confirm }
 
-  const CancelMenuSheet({super.key, required this.onCancelTap});
+class BookingActionSheet extends StatefulWidget {
+  final ServiceData service;
+  final VoidCallback onEdit;
+  final VoidCallback onCancel;
+  final VoidCallback onKeep;
+
+  const BookingActionSheet({
+    super.key,
+    required this.service,
+    required this.onEdit,
+    required this.onCancel,
+    required this.onKeep,
+  });
+
+  @override
+  State<BookingActionSheet> createState() => _BookingActionSheetState();
+}
+
+class _BookingActionSheetState extends State<BookingActionSheet> {
+  _BookingSheetView _view = _BookingSheetView.menu;
 
   @override
   Widget build(BuildContext context) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      child: _view == _BookingSheetView.menu
+          ? _buildMenuView(context)
+          : _buildConfirmView(context),
+    );
+  }
+
+  Widget _buildMenuView(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -623,18 +687,150 @@ class CancelMenuSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            MenuSheetItem(
+            _MenuSheetItem(
               icon: Icons.edit_outlined,
               label: 'Edit Booking',
-              onTap: () => Navigator.pop(context),
+              onTap: widget.onEdit,
             ),
-            MenuSheetItem(
+            _MenuSheetItem(
               icon: Icons.cancel_outlined,
               label: 'Cancel Booking',
               isDestructive: true,
-              onTap: onCancelTap,
+              onTap: () => setState(() => _view = _BookingSheetView.confirm),
             ),
             const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConfirmView(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(24, 0, 24, 16 + bottomPadding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDDDDDD),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text('Cancel Booking?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1A1A1A))),
+            const SizedBox(height: 12),
+            const Text('You are about to cancel your\nappointment:',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF999999),
+                    height: 1.4)),
+            const SizedBox(height: 20),
+
+            // Booking details card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7F7F7),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                children: [
+                  Text(widget.service.title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1A1A1A),
+                          height: 1.3)),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.calendar_today,
+                          size: 14, color: Color(0xFF999999)),
+                      const SizedBox(width: 6),
+                      Text(widget.service.dateRange,
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF999999))),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.location_on_outlined,
+                          size: 14, color: Color(0xFF999999)),
+                      const SizedBox(width: 6),
+                      Text(widget.service.centerName,
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF999999))),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: widget.onCancel,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE53935),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(27)),
+                ),
+                child: const Text('Cancel Booking',
+                    style:
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Keep button
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: OutlinedButton(
+                onPressed: widget.onKeep,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF1A1A1A),
+                  side:
+                  const BorderSide(color: Color(0xFFDDDDDD), width: 1.5),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(27)),
+                ),
+                child: const Text('Keep Appointment',
+                    style:
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              ),
+            ),
           ],
         ),
       ),
@@ -643,17 +839,16 @@ class CancelMenuSheet extends StatelessWidget {
 }
 
 // ============================================================
-// MENU SHEET ITEM
+// MENU SHEET ITEM (private, used inside BookingActionSheet)
 // ============================================================
 
-class MenuSheetItem extends StatelessWidget {
+class _MenuSheetItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isDestructive;
   final VoidCallback onTap;
 
-  const MenuSheetItem({
-    super.key,
+  const _MenuSheetItem({
     required this.icon,
     required this.label,
     this.isDestructive = false,
@@ -675,136 +870,6 @@ class MenuSheetItem extends StatelessWidget {
             Text(label,
                 style: TextStyle(
                     fontSize: 16, fontWeight: FontWeight.w500, color: color)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// CANCEL BOOKING DIALOG
-// ============================================================
-
-class CancelBookingDialog extends StatelessWidget {
-  final String serviceName;
-  final String dateTime;
-  final String location;
-  final VoidCallback onCancel;
-  final VoidCallback onKeep;
-
-  const CancelBookingDialog({
-    super.key,
-    required this.serviceName,
-    required this.dateTime,
-    required this.location,
-    required this.onCancel,
-    required this.onKeep,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF2F2F2),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(Icons.close,
-                      size: 18, color: Color(0xFF1A1A1A)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text('Cancel Booking?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A))),
-            const SizedBox(height: 12),
-            const Text('You are about to cancel your\nappointment:',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF999999),
-                    height: 1.4)),
-            const SizedBox(height: 20),
-            Text(serviceName,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
-                    height: 1.3)),
-            const SizedBox(height: 12),
-            Text(dateTime,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF999999))),
-            const SizedBox(height: 4),
-            Text(location,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF999999))),
-            const SizedBox(height: 28),
-            // Cancel button
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: onCancel,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1A1A1A),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(27)),
-                ),
-                child: const Text('Cancel Booking',
-                    style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Keep button
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: OutlinedButton(
-                onPressed: onKeep,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF1A1A1A),
-                  side:
-                  const BorderSide(color: Color(0xFFDDDDDD), width: 1.5),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(27)),
-                ),
-                child: const Text('Keep Appointment',
-                    style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              ),
-            ),
           ],
         ),
       ),

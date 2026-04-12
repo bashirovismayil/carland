@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors/app_colors.dart';
+import '../../../../../core/constants/texts/app_strings.dart';
+import '../../../../../core/localization/app_translation.dart';
 import '../../../../../data/remote/models/remote/get_car_services_response.dart';
 import '../../../../../utils/helper/service_percentage_calculator.dart';
 import '../../../../../widgets/circular_progress_chart.dart';
@@ -35,6 +37,12 @@ class ServiceCardHeader extends StatelessWidget {
           size: 60,
           strokeWidth: 7,
           getColor: ServicePercentageCalculator.getChartColor,
+          label: percentage > 0
+              ? AppTranslation.translate(AppStrings.left)
+              : null,
+          alertText: percentage <= 0
+              ? AppTranslation.translate(AppStrings.serviceDue)
+              : null,
         ),
         const SizedBox(width: 4),
         ServiceMenuButton(

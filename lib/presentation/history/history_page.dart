@@ -1,8 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-import '../../core/constants/colors/app_colors.dart';
-
 class ServiceCenter {
   final String id;
   final String name;
@@ -82,6 +80,8 @@ class CarInfo {
   });
 }
 
+enum PaymentMethod { payNow, payLater }
+
 class BookingResult {
   final String id;
   final CarInfo car;
@@ -92,6 +92,7 @@ class BookingResult {
   final double totalPrice;
   final double discountedPrice;
   final CouponResult? coupon;
+  final PaymentMethod paymentMethod;
 
   const BookingResult({
     required this.id,
@@ -103,7 +104,38 @@ class BookingResult {
     required this.totalPrice,
     required this.discountedPrice,
     this.coupon,
+    this.paymentMethod = PaymentMethod.payLater,
   });
+
+  /// The main (first) service name — used as the card title in reservation list
+  String get mainServiceName =>
+      services.isNotEmpty ? services.first.name : 'Service';
+
+  BookingResult copyWith({
+    String? id,
+    CarInfo? car,
+    ServiceCenter? center,
+    List<ServiceOption>? services,
+    DateTime? date,
+    TimeSlot? timeSlot,
+    double? totalPrice,
+    double? discountedPrice,
+    CouponResult? coupon,
+    PaymentMethod? paymentMethod,
+  }) {
+    return BookingResult(
+      id: id ?? this.id,
+      car: car ?? this.car,
+      center: center ?? this.center,
+      services: services ?? this.services,
+      date: date ?? this.date,
+      timeSlot: timeSlot ?? this.timeSlot,
+      totalPrice: totalPrice ?? this.totalPrice,
+      discountedPrice: discountedPrice ?? this.discountedPrice,
+      coupon: coupon ?? this.coupon,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+    );
+  }
 }
 
 // ============================================================
@@ -130,6 +162,7 @@ abstract interface class IBookingRepository {
     required TimeSlot timeSlot,
     required List<ServiceOption> services,
     required CouponResult? coupon,
+    required PaymentMethod paymentMethod,
   });
 }
 
@@ -345,28 +378,25 @@ class MockBookingRepository implements IBookingRepository {
 
     final daysInMonth = DateUtils.getDaysInMonth(year, month);
 
-    // Collect indices of future weekdays (non-weekend, non-past)
     final List<int> futureWeekdays = [];
     for (int i = 1; i <= daysInMonth; i++) {
       final date = DateTime(year, month, i);
-      final isWeekend = date.weekday == DateTime.saturday ||
-          date.weekday == DateTime.sunday;
+      final isWeekend = date.weekday == DateTime.sunday;
       if (!isWeekend && !date.isBefore(today)) {
         futureWeekdays.add(i);
       }
     }
 
-    // Pick 2-3 random weekdays to be booked (red)
-    final bookedCount = futureWeekdays.length >= 3 ? (2 + rng.nextInt(2)) : futureWeekdays.length.clamp(0, 2);
+    final bookedCount = futureWeekdays.length >= 3
+        ? (2 + rng.nextInt(2))
+        : futureWeekdays.length.clamp(0, 2);
     final shuffled = List<int>.from(futureWeekdays)..shuffle(rng);
     final bookedDays = shuffled.take(bookedCount).toSet();
 
     final List<CalendarDay> days = [];
     for (int i = 1; i <= daysInMonth; i++) {
       final date = DateTime(year, month, i);
-      final isWeekend = date.weekday == DateTime.saturday ||
-          date.weekday == DateTime.sunday;
-
+      final isWeekend = date.weekday == DateTime.sunday;
       if (isWeekend || date.isBefore(today)) {
         days.add(CalendarDay(day: i, status: DayStatus.normal));
       } else if (bookedDays.contains(i)) {
@@ -488,6 +518,7 @@ class MockBookingRepository implements IBookingRepository {
     required TimeSlot timeSlot,
     required List<ServiceOption> services,
     required CouponResult? coupon,
+    required PaymentMethod paymentMethod,
   }) async {
     await Future.delayed(const Duration(milliseconds: 800));
     final total = services.fold<double>(0, (s, e) => s + e.price);
@@ -505,6 +536,7 @@ class MockBookingRepository implements IBookingRepository {
       totalPrice: total,
       discountedPrice: discounted,
       coupon: coupon,
+      paymentMethod: paymentMethod,
     );
   }
 }
@@ -523,6 +555,17 @@ class BookingStore {
     bookings.value = [...bookings.value, booking];
   }
 
+  static void updateBooking(String bookingId, BookingResult updated) {
+    bookings.value = bookings.value.map((b) {
+      return b.id == bookingId ? updated : b;
+    }).toList();
+  }
+
+  static void removeBooking(String bookingId) {
+    bookings.value =
+        bookings.value.where((b) => b.id != bookingId).toList();
+  }
+
   static void clear() {
     bookings.value = [];
   }
@@ -533,7 +576,10 @@ class BookingStore {
 // ============================================================
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+  /// If provided, the flow starts in edit mode for this booking.
+  final BookingResult? editBooking;
+
+  const HistoryPage({super.key, this.editBooking});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -544,7 +590,65 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    // First page: Choose your service (center selection only)
+    // If editing, skip center selection and go straight to date/time
+    if (widget.editBooking != null) {
+      final booking = widget.editBooking!;
+      return DateTimeSelectionScreen(
+        repo: _repo,
+        center: booking.center,
+        initialDate: booking.date,
+        initialSlot: booking.timeSlot,
+        onContinue: (date, slot) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ServiceDetailScreen(
+                repo: _repo,
+                centerId: booking.center.id,
+                initialSelectedIds:
+                booking.services.map((s) => s.id).toSet(),
+                previousPaymentMethod: booking.paymentMethod,
+                onContinue: (services, paymentMethod) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SummaryScreen(
+                        repo: _repo,
+                        center: booking.center,
+                        date: date,
+                        timeSlot: slot,
+                        selectedServices: services,
+                        paymentMethod: paymentMethod,
+                        editingBookingId: booking.id,
+                        onBookingConfirmed: (result) {
+                          // Update existing booking
+                          BookingStore.updateBooking(booking.id, result);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BookingConfirmedScreen(
+                                booking: result,
+                                isEdit: true,
+                                onGoHome: () {
+                                  Navigator.of(context)
+                                      .popUntil((r) => r.isFirst);
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    // Normal new booking flow
     return ChooseServiceScreen(
       repo: _repo,
       onCenterSelected: (center) {
@@ -561,7 +665,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     builder: (_) => ServiceDetailScreen(
                       repo: _repo,
                       centerId: center.id,
-                      onContinue: (services) {
+                      onContinue: (services, paymentMethod) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -571,6 +675,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               date: date,
                               timeSlot: slot,
                               selectedServices: services,
+                              paymentMethod: paymentMethod,
                               onBookingConfirmed: (result) {
                                 BookingStore.addBooking(result);
                                 Navigator.push(
@@ -687,19 +792,23 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
 }
 
 // ============================================================
-// SCREEN 1 — TIME & DATE SELECTION (second page, after center)
+// SCREEN 1 — TIME & DATE SELECTION
 // ============================================================
 
 class DateTimeSelectionScreen extends StatefulWidget {
   final IBookingRepository repo;
   final ServiceCenter center;
   final void Function(DateTime date, TimeSlot slot) onContinue;
+  final DateTime? initialDate;
+  final TimeSlot? initialSlot;
 
   const DateTimeSelectionScreen({
     super.key,
     required this.repo,
     required this.center,
     required this.onContinue,
+    this.initialDate,
+    this.initialSlot,
   });
 
   @override
@@ -713,13 +822,20 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
   TimeSlot? _selectedSlot;
   bool _loading = true;
 
-  // Default: April 2026
   int _calendarYear = 2026;
   int _calendarMonth = 4;
 
   @override
   void initState() {
     super.initState();
+    if (widget.initialDate != null) {
+      _calendarYear = widget.initialDate!.year;
+      _calendarMonth = widget.initialDate!.month;
+      _selectedDay = widget.initialDate!.day;
+    }
+    if (widget.initialSlot != null) {
+      _selectedSlot = widget.initialSlot;
+    }
     _loadCalendar();
   }
 
@@ -768,7 +884,6 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
       y--;
     }
 
-    // Prevent navigating to months fully in the past
     final now = DateTime.now();
     final lastDayOfTarget = DateTime(y, m, DateUtils.getDaysInMonth(y, m));
     if (lastDayOfTarget.isBefore(DateTime(now.year, now.month, now.day))) {
@@ -817,7 +932,6 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  // Selected center info banner
                   _SelectedCenterBanner(center: widget.center),
                   const SizedBox(height: 24),
                   const _SectionTitle(text: 'Select Date'),
@@ -834,9 +948,8 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
                   const SizedBox(height: 8),
                   const _CalendarLegend(),
                   const SizedBox(height: 24),
-                  // Show selected time if picked
                   if (_selectedSlot != null) ...[
-                    const _SectionTitle(text: 'Selected Ttime'),
+                    const _SectionTitle(text: 'Selected Time'),
                     const SizedBox(height: 12),
                     _SelectedTimeBanner(slot: _selectedSlot!),
                     const SizedBox(height: 8),
@@ -1020,7 +1133,6 @@ class _ClockTimePickerSheetState extends State<_ClockTimePickerSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 12),
-          // Handle bar
           Container(
             width: 40,
             height: 4,
@@ -1042,13 +1154,11 @@ class _ClockTimePickerSheetState extends State<_ClockTimePickerSheet> {
               child: CircularProgressIndicator(color: Color(0xFF1A1A1A)),
             )
           else ...[
-            // Clock animation + wheel picker
             SizedBox(
               height: 260,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Selection highlight lines
                   Container(
                     height: 52,
                     margin: const EdgeInsets.symmetric(horizontal: 40),
@@ -1061,7 +1171,6 @@ class _ClockTimePickerSheetState extends State<_ClockTimePickerSheet> {
                       ),
                     ),
                   ),
-                  // Distorted circular wheel scroll
                   SizedBox(
                     height: 260,
                     child: ListWheelScrollView.useDelegate(
@@ -1102,7 +1211,6 @@ class _ClockTimePickerSheetState extends State<_ClockTimePickerSheet> {
             ),
             const SizedBox(height: 16),
           ],
-          // Continue button — disabled until time selected
           Padding(
             padding: EdgeInsets.fromLTRB(20, 8, 20, 12 + bottomPadding),
             child: SizedBox(
@@ -1220,7 +1328,7 @@ class _ServiceCenterTile extends StatelessWidget {
   }
 }
 
-// -- Calendar Widget (Monday-first, vertical day labels) --
+// -- Calendar Widget --
 class _CalendarWidget extends StatelessWidget {
   final int year, month;
   final List<CalendarDay> days;
@@ -1240,28 +1348,11 @@ class _CalendarWidget extends StatelessWidget {
 
   static const _dayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   static const _dayFullLabels = [
-    'MON',
-    'TUE',
-    'WED',
-    'THU',
-    'FRI',
-    'SAT',
-    'SUN'
+    'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'
   ];
   static const _monthNames = [
-    '',
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
+    '', 'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   @override
@@ -1277,7 +1368,6 @@ class _CalendarWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Month header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -1297,11 +1387,10 @@ class _CalendarWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          // Vertical day labels (letter + abbreviation stacked)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(7, (i) {
-              final isWeekend = i == 5 || i == 6; // Saturday or Sunday
+              final isWeekend = i == 6;
               return SizedBox(
                 width: 40,
                 height: 40,
@@ -1354,8 +1443,7 @@ class _CalendarWidget extends StatelessWidget {
 
     for (final day in days) {
       final date = DateTime(year, month, day.day);
-      final isWeekend = date.weekday == DateTime.saturday ||
-          date.weekday == DateTime.sunday;
+      final isWeekend = date.weekday == DateTime.sunday;
       final isPast = date.isBefore(today);
       final isSelected = day.day == selectedDay;
       final bool isTappable =
@@ -1416,7 +1504,6 @@ class _CalendarWidget extends StatelessWidget {
       );
     }
 
-    // Build rows of 7
     final rows = <Widget>[];
     for (int i = 0; i < cells.length; i += 7) {
       final end = (i + 7 > cells.length) ? cells.length : i + 7;
@@ -1434,7 +1521,7 @@ class _CalendarWidget extends StatelessWidget {
   }
 }
 
-// -- Calendar Legend (no holiday) --
+// -- Calendar Legend --
 class _CalendarLegend extends StatelessWidget {
   const _CalendarLegend();
 
@@ -1469,19 +1556,24 @@ class _CalendarLegend extends StatelessWidget {
 }
 
 // ============================================================
-// SCREEN 2 — SERVICE DETAIL (no max limit)
+// SCREEN 2 — SERVICE DETAIL (with separator + Pay Now / Pay Later)
 // ============================================================
 
 class ServiceDetailScreen extends StatefulWidget {
   final IBookingRepository repo;
   final String centerId;
-  final void Function(List<ServiceOption> services) onContinue;
+  final void Function(List<ServiceOption> services, PaymentMethod method)
+  onContinue;
+  final Set<String>? initialSelectedIds;
+  final PaymentMethod? previousPaymentMethod;
 
   const ServiceDetailScreen({
     super.key,
     required this.repo,
     required this.centerId,
     required this.onContinue,
+    this.initialSelectedIds,
+    this.previousPaymentMethod,
   });
 
   @override
@@ -1503,7 +1595,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     final services = await widget.repo.getAvailableServices(widget.centerId);
     setState(() {
       _allServices = services;
-      if (services.isNotEmpty) {
+      if (widget.initialSelectedIds != null &&
+          widget.initialSelectedIds!.isNotEmpty) {
+        _selectedIds.addAll(widget.initialSelectedIds!);
+      } else if (services.isNotEmpty) {
         _selectedIds.add(services.first.id);
       }
       _loading = false;
@@ -1514,22 +1609,62 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
       .where((s) => _selectedIds.contains(s.id))
       .fold<double>(0, (sum, s) => sum + s.price);
 
-  void _onBook() {
+  void _onPayNow() {
     if (_selectedIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please select at least one service'),
-            backgroundColor: Colors.red),
-      );
+      _showNoServiceWarning();
+      return;
+    }
+    _showApplePaySheet();
+  }
+
+  void _onPayLater() {
+    if (_selectedIds.isEmpty) {
+      _showNoServiceWarning();
       return;
     }
     widget.onContinue(
-        _allServices.where((s) => _selectedIds.contains(s.id)).toList());
+      _allServices.where((s) => _selectedIds.contains(s.id)).toList(),
+      PaymentMethod.payLater,
+    );
+  }
+
+  void _showNoServiceWarning() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text('Please select at least one service'),
+          backgroundColor: Colors.red),
+    );
+  }
+
+  void _showApplePaySheet() {
+    final total = _totalPrice;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _ApplePaySheet(
+        totalAmount: total,
+        onConfirm: () {
+          Navigator.pop(ctx);
+          widget.onContinue(
+            _allServices.where((s) => _selectedIds.contains(s.id)).toList(),
+            PaymentMethod.payNow,
+          );
+        },
+        onCancel: () => Navigator.pop(ctx),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     if (_loading) return const _LoadingScaffold(title: 'Service detail');
+
+    // Separate main service (first) from additional services
+    final mainService =
+    _allServices.isNotEmpty ? _allServices.first : null;
+    final additionalServices =
+    _allServices.length > 1 ? _allServices.sublist(1) : <ServiceOption>[];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1548,6 +1683,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 16),
+                        // ── Oil Change Service header ──
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -1563,30 +1699,85 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                     color: Color(0xFF1A1A1A))),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        const Text('Select Multiple Services',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF1A1A1A))),
-                        const SizedBox(height: 14),
-                        ..._allServices.map((svc) {
-                          final isChecked = _selectedIds.contains(svc.id);
-                          return _ServiceCheckboxTile(
-                            service: svc,
-                            isChecked: isChecked,
+                        // Main service checkbox
+                        if (mainService != null) ...[
+                          const SizedBox(height: 12),
+                          _ServiceCheckboxTile(
+                            service: mainService,
+                            isChecked:
+                            _selectedIds.contains(mainService.id),
                             isDisabled: false,
                             onChanged: (val) {
                               setState(() {
                                 if (val) {
-                                  _selectedIds.add(svc.id);
+                                  _selectedIds.add(mainService.id);
                                 } else {
-                                  _selectedIds.remove(svc.id);
+                                  _selectedIds.remove(mainService.id);
                                 }
                               });
                             },
-                          );
-                        }),
+                          ),
+                        ],
+
+                        // ── Separator ──
+                        if (additionalServices.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              const Expanded(
+                                child: Divider(
+                                  color: Color(0xFFE0E0E0),
+                                  thickness: 1,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12),
+                                child: Text(
+                                  'You can optionally select additional services',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF999999),
+                                  ),
+                                ),
+                              ),
+                              const Expanded(
+                                child: Divider(
+                                  color: Color(0xFFE0E0E0),
+                                  thickness: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // ── Select Multiple Services ──
+                          const Text('Select Multiple Services',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF1A1A1A))),
+                          const SizedBox(height: 14),
+                          ...additionalServices.map((svc) {
+                            final isChecked =
+                            _selectedIds.contains(svc.id);
+                            return _ServiceCheckboxTile(
+                              service: svc,
+                              isChecked: isChecked,
+                              isDisabled: false,
+                              onChanged: (val) {
+                                setState(() {
+                                  if (val) {
+                                    _selectedIds.add(svc.id);
+                                  } else {
+                                    _selectedIds.remove(svc.id);
+                                  }
+                                });
+                              },
+                            );
+                          }),
+                        ],
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -1595,25 +1786,318 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-            child: Column(
-              children: [
-                _PrimaryButton(
-                  label:
-                  'Book Service Now ${_totalPrice.toStringAsFixed(0)}₼',
-                  onTap: _onBook,
-                ),
-                const SizedBox(height: 10),
-                _OutlineButton(
-                  label: 'Schedule Later',
-                  onTap: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: 12),
-              ],
-            ),
+
+          // ── Pay Now / Pay Later buttons ──
+          _PaymentButtonsSection(
+            totalPrice: _totalPrice,
+            onPayNow: _onPayNow,
+            onPayLater: _onPayLater,
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// PAYMENT BUTTONS SECTION (Pay Now + Pay Later)
+// ============================================================
+
+class _PaymentButtonsSection extends StatelessWidget {
+  final double totalPrice;
+  final VoidCallback onPayNow;
+  final VoidCallback onPayLater;
+
+  const _PaymentButtonsSection({
+    required this.totalPrice,
+    required this.onPayNow,
+    required this.onPayLater,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Total price row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Total',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF999999))),
+                Text('${totalPrice.toStringAsFixed(0)}₼',
+                    style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A1A1A))),
+              ],
+            ),
+            const SizedBox(height: 14),
+            // Pay Now button (dark, with Apple Pay icon)
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: onPayNow,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1A1A1A),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(27)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.apple, size: 22, color: Colors.white),
+                    const SizedBox(width: 8),
+                    const Text('Pay Now',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Pay Later button (outline)
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: OutlinedButton(
+                onPressed: onPayLater,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF1A1A1A),
+                  side: const BorderSide(color: Color(0xFFDDDDDD), width: 1.5),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(27)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.schedule,
+                        size: 20, color: Color(0xFF1A1A1A)),
+                    const SizedBox(width: 8),
+                    const Text('Pay Later',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// APPLE PAY BOTTOM SHEET
+// ============================================================
+
+class _ApplePaySheet extends StatefulWidget {
+  final double totalAmount;
+  final VoidCallback onConfirm;
+  final VoidCallback onCancel;
+
+  const _ApplePaySheet({
+    required this.totalAmount,
+    required this.onConfirm,
+    required this.onCancel,
+  });
+
+  @override
+  State<_ApplePaySheet> createState() => _ApplePaySheetState();
+}
+
+class _ApplePaySheetState extends State<_ApplePaySheet> {
+  bool _processing = false;
+
+  Future<void> _handlePay() async {
+    setState(() => _processing = true);
+    // Simulate payment processing
+    await Future.delayed(const Duration(milliseconds: 1200));
+    if (mounted) {
+      widget.onConfirm();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(24, 0, 24, 16 + bottomPadding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDDDDDD),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Apple Pay icon
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1A1A1A),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.apple, size: 36, color: Colors.white),
+            ),
+            const SizedBox(height: 20),
+
+            const Text('Apple Pay',
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1A1A1A))),
+            const SizedBox(height: 8),
+            Text(
+              'Confirm payment of ${widget.totalAmount.toStringAsFixed(0)}₼',
+              style: const TextStyle(
+                  fontSize: 15, color: Color(0xFF999999)),
+            ),
+            const SizedBox(height: 24),
+
+            // Payment info card
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7F7F7),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Card',
+                          style: TextStyle(
+                              fontSize: 14, color: Color(0xFF999999))),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1A1A1A),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text('VISA',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white)),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('•••• 4291',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF1A1A1A))),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Amount',
+                          style: TextStyle(
+                              fontSize: 14, color: Color(0xFF999999))),
+                      Text('${widget.totalAmount.toStringAsFixed(0)}₼',
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF1A1A1A))),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Confirm button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: _processing ? null : _handlePay,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1A1A1A),
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: const Color(0xFF555555),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28)),
+                ),
+                child: _processing
+                    ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2.5,
+                  ),
+                )
+                    : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.lock_outline,
+                        size: 18, color: Colors.white),
+                    const SizedBox(width: 8),
+                    const Text('Confirm with Apple Pay',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // Cancel
+            TextButton(
+              onPressed: widget.onCancel,
+              child: const Text('Cancel',
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF999999))),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1733,7 +2217,9 @@ class SummaryScreen extends StatefulWidget {
   final DateTime date;
   final TimeSlot timeSlot;
   final List<ServiceOption> selectedServices;
+  final PaymentMethod paymentMethod;
   final void Function(BookingResult result) onBookingConfirmed;
+  final String? editingBookingId;
 
   const SummaryScreen({
     super.key,
@@ -1742,7 +2228,9 @@ class SummaryScreen extends StatefulWidget {
     required this.date,
     required this.timeSlot,
     required this.selectedServices,
+    required this.paymentMethod,
     required this.onBookingConfirmed,
+    this.editingBookingId,
   });
 
   @override
@@ -1799,14 +2287,23 @@ class _SummaryScreenState extends State<SummaryScreen> {
       timeSlot: widget.timeSlot,
       services: widget.selectedServices,
       coupon: _coupon,
+      paymentMethod: widget.paymentMethod,
     );
+
+    // If editing, preserve the original booking ID
+    final finalResult = widget.editingBookingId != null
+        ? result.copyWith(id: widget.editingBookingId)
+        : result;
+
     setState(() => _confirming = false);
-    widget.onBookingConfirmed(result);
+    widget.onBookingConfirmed(finalResult);
   }
 
   @override
   Widget build(BuildContext context) {
     if (_loading) return const _LoadingScaffold(title: 'Summary');
+
+    final isEdit = widget.editingBookingId != null;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1820,6 +2317,14 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
+
+                  // Payment method indicator
+                  _PaymentMethodBanner(
+                    method: widget.paymentMethod,
+                    isEdit: isEdit,
+                  ),
+                  const SizedBox(height: 20),
+
                   const _SectionTitle(text: 'Prices (Cost Breakdown)'),
                   const SizedBox(height: 12),
                   _PriceBreakdown(
@@ -1829,20 +2334,90 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     discountedTotal: _discountedTotal,
                   ),
                   const SizedBox(height: 20),
-                  _CouponSection(
-                    coupon: _coupon,
-                    controller: _couponController,
-                    onApply: _applyCoupon,
-                    onRemove: _removeCoupon,
-                  ),
+
+                  // Only show coupon for pay later (no coupon on already-paid)
+                  if (widget.paymentMethod == PaymentMethod.payLater)
+                    _CouponSection(
+                      coupon: _coupon,
+                      controller: _couponController,
+                      onApply: _applyCoupon,
+                      onRemove: _removeCoupon,
+                    ),
                   const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
           _BottomButton(
-            label: _confirming ? 'Confirming...' : 'Confirm Booking',
+            label: _confirming
+                ? 'Confirming...'
+                : isEdit
+                ? 'Update Booking'
+                : 'Confirm Booking',
             onTap: _confirming ? null : _confirmBooking,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// PAYMENT METHOD BANNER
+// ============================================================
+
+class _PaymentMethodBanner extends StatelessWidget {
+  final PaymentMethod method;
+  final bool isEdit;
+
+  const _PaymentMethodBanner({
+    required this.method,
+    this.isEdit = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isPaid = method == PaymentMethod.payNow;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: isPaid ? const Color(0xFFE8F5E9) : const Color(0xFFFFF8E1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isPaid ? const Color(0xFF4CAF50) : const Color(0xFFFFC107),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            isPaid ? Icons.check_circle : Icons.schedule,
+            size: 22,
+            color:
+            isPaid ? const Color(0xFF4CAF50) : const Color(0xFFF9A825),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isPaid ? 'Paid via Apple Pay' : 'Pay at Service Center',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: isPaid
+                        ? const Color(0xFF2E7D32)
+                        : const Color(0xFFF57F17),
+                  ),
+                ),
+                if (isEdit && isPaid)
+                  const Text(
+                    'Payment already processed',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF999999)),
+                  ),
+              ],
+            ),
           ),
         ],
       ),
@@ -2155,11 +2730,13 @@ class _PriceBreakdown extends StatelessWidget {
 class BookingConfirmedScreen extends StatelessWidget {
   final BookingResult booking;
   final VoidCallback onGoHome;
+  final bool isEdit;
 
   const BookingConfirmedScreen({
     super.key,
     required this.booking,
     required this.onGoHome,
+    this.isEdit = false,
   });
 
   @override
@@ -2176,10 +2753,12 @@ class BookingConfirmedScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Booking Confirmed 🎉',
+                    Text(
+                      isEdit
+                          ? 'Booking Updated 🎉'
+                          : 'Booking Confirmed 🎉',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF1A1A1A),

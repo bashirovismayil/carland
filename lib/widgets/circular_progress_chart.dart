@@ -7,6 +7,9 @@ class CircularPercentageChart extends StatefulWidget {
   final double strokeWidth;
   final Color Function(int percentage) getColor;
   final Duration animationDuration;
+  final String? label;
+  final String? alertText;
+  final Duration alertInterval;
 
   const CircularPercentageChart({
     super.key,
@@ -15,6 +18,9 @@ class CircularPercentageChart extends StatefulWidget {
     this.strokeWidth = 7,
     required this.getColor,
     this.animationDuration = const Duration(milliseconds: 1500),
+    this.label,
+    this.alertText,
+    this.alertInterval = const Duration(seconds: 2),
   });
 
   @override
@@ -23,9 +29,16 @@ class CircularPercentageChart extends StatefulWidget {
 }
 
 class _CircularPercentageChartState extends State<CircularPercentageChart>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+
+  AnimationController? _alertFadeController;
+  bool _showAlertText = false;
+  bool _alertActive = false;
+
+  bool get _shouldAlert =>
+      widget.percentage <= 0 && widget.alertText != null;
 
   @override
   void initState() {
@@ -46,6 +59,50 @@ class _CircularPercentageChartState extends State<CircularPercentageChart>
     );
 
     _controller.forward();
+
+    if (_shouldAlert) {
+      _startAlertCycle();
+    }
+  }
+
+  void _startAlertCycle() {
+    if (_alertActive) return;
+    _alertActive = true;
+
+    _alertFadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 350),
+    );
+
+    _scheduleNextToggle();
+  }
+
+  void _scheduleNextToggle() {
+    Future.delayed(widget.alertInterval, () {
+      if (!mounted || !_alertActive) return;
+
+      if (_showAlertText) {
+        _alertFadeController!.reverse().then((_) {
+          if (!mounted) return;
+          setState(() => _showAlertText = false);
+          _scheduleNextToggle();
+        });
+      } else {
+        // Fade in alert text
+        setState(() => _showAlertText = true);
+        _alertFadeController!.forward().then((_) {
+          if (!mounted) return;
+          _scheduleNextToggle();
+        });
+      }
+    });
+  }
+
+  void _stopAlertCycle() {
+    _alertActive = false;
+    _alertFadeController?.dispose();
+    _alertFadeController = null;
+    _showAlertText = false;
   }
 
   @override
@@ -64,11 +121,19 @@ class _CircularPercentageChartState extends State<CircularPercentageChart>
       _controller.reset();
       _controller.forward();
     }
+
+    if (_shouldAlert && !_alertActive) {
+      _startAlertCycle();
+    } else if (!_shouldAlert && _alertActive) {
+      _stopAlertCycle();
+      setState(() {});
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _alertFadeController?.dispose();
     super.dispose();
   }
 
@@ -90,16 +155,87 @@ class _CircularPercentageChartState extends State<CircularPercentageChart>
               strokeWidth: widget.strokeWidth,
             ),
             child: Center(
+              child: _shouldAlert
+                  ? _buildAlertContent(color)
+                  : _buildNormalContent(currentPercentage, color),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNormalContent(int currentPercentage, Color color) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '$currentPercentage%',
+          style: TextStyle(
+            fontSize: widget.size * 0.22,
+            fontWeight: FontWeight.bold,
+            color: color,
+            height: 1.1,
+          ),
+        ),
+        if (widget.label != null) ...[
+          const SizedBox(height: 1),
+          Text(
+            widget.label!,
+            style: TextStyle(
+              fontSize: widget.size * 0.135,
+              fontWeight: FontWeight.w600,
+              color: color.withOpacity(0.7),
+              height: 1.0,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildAlertContent(Color color) {
+    final fadeAnim = _alertFadeController!;
+
+    return AnimatedBuilder(
+      animation: fadeAnim,
+      builder: (context, _) {
+        final t = fadeAnim.value;
+
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Opacity(
+              opacity: (1.0 - t).clamp(0.0, 1.0),
               child: Text(
-                '$currentPercentage%',
+                '0%',
                 style: TextStyle(
                   fontSize: widget.size * 0.22,
                   fontWeight: FontWeight.bold,
                   color: color,
+                  height: 1.1,
                 ),
               ),
             ),
-          ),
+            Opacity(
+              opacity: t.clamp(0.0, 1.0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: Text(
+                  widget.alertText!,
+                  style: TextStyle(
+                    fontSize: widget.size * 0.135,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                    height: 1.15,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

@@ -2271,6 +2271,16 @@ class Translations {
       'en': 'Remaining km',
       'ru': 'Оставшиеся км',
     },
+    AppStrings.left: {
+      'az': 'Qaldı',
+      'en': 'Left',
+      'ru': 'Oст.',
+    },
+    AppStrings.serviceDue: {
+      'az': 'Servis vaxtıdır',
+      'en': 'Service time',
+      'ru': 'Время обслуживания'
+    },
     AppStrings.remainingMonths: {
       'az': 'Müddət üzrə',
       'en': 'Remaining months',

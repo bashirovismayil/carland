@@ -17,6 +17,10 @@ const bool _kNativeNavBarEnabled = true;
 final RouteObserver<ModalRoute<void>> navBarRouteObserver =
 RouteObserver<ModalRoute<void>>();
 
+/// Global key so that other pages (e.g. bottom-sheets in ReservationListPage)
+/// can hide / show the native nav bar.
+final GlobalKey<NativeGlassNavBarState> globalNavBarKey = GlobalKey();
+
 class UserMainNavigationPage extends StatelessWidget {
   const UserMainNavigationPage({super.key});
 
@@ -38,8 +42,6 @@ class UserMainNavigationView extends StatefulWidget {
 
 class _UserMainNavigationViewState extends State<UserMainNavigationView>
     with RouteAware {
-  final GlobalKey<NativeGlassNavBarState> _navBarKey = GlobalKey();
-
   static const List<Widget> _pages = [
     HomePage(),
     HistoryPage(),
@@ -65,7 +67,7 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
   @override
   void didPushNext() {
     if (_kNativeNavBarEnabled) {
-      _navBarKey.currentState?.hide();
+      globalNavBarKey.currentState?.hide();
     }
   }
 
@@ -74,7 +76,7 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
     if (_kNativeNavBarEnabled) {
       Future.delayed(const Duration(milliseconds: 50), () {
         if (mounted) {
-          _navBarKey.currentState?.show();
+          globalNavBarKey.currentState?.show();
         }
       });
     }
@@ -95,16 +97,21 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
           ),
           bottomNavigationBar: _kNativeNavBarEnabled
               ? NativeGlassNavBar(
-            key: _navBarKey,
+            key: globalNavBarKey,
             currentIndex: cubit.currentIndex,
             onTap: (index) => cubit.changeTab(index),
             tabs: [
-              NativeGlassNavBarItem(label: "", symbol: 'home_nav_icon'),
-              NativeGlassNavBarItem(label: "", symbol: 'settings_nav_icon'),
-              NativeGlassNavBarItem(label: "", symbol: 'calendar_nav_icon'),
-              NativeGlassNavBarItem(label: "", symbol: 'user_nav_icon'),
+              NativeGlassNavBarItem(
+                  label: "", symbol: 'home_nav_icon'),
+              NativeGlassNavBarItem(
+                  label: "", symbol: 'settings_nav_icon'),
+              NativeGlassNavBarItem(
+                  label: "", symbol: 'calendar_nav_icon'),
+              NativeGlassNavBarItem(
+                  label: "", symbol: 'user_nav_icon'),
             ],
-            fallback: _buildOriginalNavBar(context, cubit, bottomPadding),
+            fallback:
+            _buildOriginalNavBar(context, cubit, bottomPadding),
           )
               : _buildOriginalNavBar(context, cubit, bottomPadding),
         );

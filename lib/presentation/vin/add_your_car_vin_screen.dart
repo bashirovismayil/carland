@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import '../../../core/constants/colors/app_colors.dart';
@@ -17,6 +19,8 @@ class AddYourCarVinPage extends HookWidget {
   Widget build(BuildContext context) {
     final vinController = useTextEditingController();
     final isButtonEnabled = useState(false);
+    final hasInvalidInput = useState(false);
+    final errorResetTimer = useRef<Timer?>(null);
 
     useEffect(() {
       void listener() {
@@ -26,6 +30,19 @@ class AddYourCarVinPage extends HookWidget {
       vinController.addListener(listener);
       return () => vinController.removeListener(listener);
     }, [vinController]);
+
+    useEffect(() {
+      return () => errorResetTimer.value?.cancel();
+    }, []);
+
+    void triggerInvalidInput() {
+      HapticFeedback.lightImpact();
+      hasInvalidInput.value = true;
+      errorResetTimer.value?.cancel();
+      errorResetTimer.value = Timer(const Duration(seconds: 2), () {
+        hasInvalidInput.value = false;
+      });
+    }
 
     return Scaffold(
       backgroundColor: AppColors.primaryWhite,
@@ -44,9 +61,14 @@ class AddYourCarVinPage extends HookWidget {
                     const SizedBox(height: AppTheme.spacingSm),
                     _buildDescription(),
                     const SizedBox(height: AppTheme.spacingLg),
-                    _buildVinInput(context, vinController),
+                    _buildVinInput(
+                      context,
+                      vinController,
+                      hasInvalidInput.value,
+                      triggerInvalidInput,
+                    ),
                     const SizedBox(height: AppTheme.spacingSm),
-                    _buildVinTutorialText(),
+                    _buildVinTutorialText(hasInvalidInput.value),
                   ],
                 ),
               ),
@@ -141,7 +163,11 @@ class AddYourCarVinPage extends HookWidget {
   }
 
   Widget _buildVinInput(
-      BuildContext context, TextEditingController controller) {
+      BuildContext context,
+      TextEditingController controller,
+      bool hasError,
+      VoidCallback onInvalidCharacter,
+      ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -154,14 +180,22 @@ class AddYourCarVinPage extends HookWidget {
           ),
         ),
         const SizedBox(height: AppTheme.spacingSm),
-        Container(
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: hasError
+                ? AppColors.errorColor.withOpacity(0.05)
+                : Colors.white,
             borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-            border: Border.all(color: AppColors.borderGrey),
+            border: Border.all(
+              color: hasError ? AppColors.errorColor : AppColors.borderGrey,
+              width: hasError ? 1.5 : 1,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: hasError
+                    ? AppColors.errorColor.withOpacity(0.1)
+                    : Colors.black.withOpacity(0.03),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -172,12 +206,13 @@ class AddYourCarVinPage extends HookWidget {
             textCapitalization: TextCapitalization.characters,
             maxLength: 17,
             inputFormatters: [
-              VinInputFormatter(),
+              VinInputFormatter(onInvalidCharacter: onInvalidCharacter),
             ],
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               letterSpacing: 1.5,
+              color: hasError ? AppColors.errorColor : AppColors.textPrimary,
             ),
             decoration: InputDecoration(
               hintText: AppTranslation.translate(AppStrings.vinPlaceholder),
@@ -199,7 +234,31 @@ class AddYourCarVinPage extends HookWidget {
     );
   }
 
-  Widget _buildVinTutorialText() {
+  Widget _buildVinTutorialText(bool hasError) {
+    if (hasError) {
+      return Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 14,
+            color: AppColors.errorColor,
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              AppTranslation.translate(AppStrings.vinInvalidCharacter),
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.errorColor,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Text(
       AppTranslation.translate(AppStrings.vinFormatHint),
       style: const TextStyle(

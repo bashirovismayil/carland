@@ -7,6 +7,9 @@ class PeekHintLocalService {
   static const int maxPeekCount = 2;
   static const String _peekCountKey = 'peekHintShownCount';
   static const String _userFlippedKey = 'userHasFlippedCard';
+  static const String _touchHintFirstLaunchConsumedKey =
+      'touchHintFirstLaunchConsumed';
+
   int get peekShownCount => _box.get(_peekCountKey, defaultValue: 0)!;
 
   bool get userHasFlippedCard =>
@@ -14,6 +17,13 @@ class PeekHintLocalService {
 
   bool get shouldShowPeekHint =>
       !userHasFlippedCard && peekShownCount < maxPeekCount;
+
+  bool get isFirstAppLaunch =>
+      _box.get(_touchHintFirstLaunchConsumedKey, defaultValue: 0)! == 0;
+
+  Future<void> markFirstAppLaunchConsumed() async {
+    await _box.put(_touchHintFirstLaunchConsumedKey, 1);
+  }
 
   Future<void> incrementPeekCount() async {
     final current = peekShownCount;
@@ -27,5 +37,6 @@ class PeekHintLocalService {
   Future<void> reset() async {
     await _box.delete(_peekCountKey);
     await _box.delete(_userFlippedKey);
+    await _box.delete(_touchHintFirstLaunchConsumedKey);
   }
 }

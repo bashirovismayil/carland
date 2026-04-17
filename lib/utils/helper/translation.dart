@@ -997,6 +997,11 @@ class Translations {
       'en': 'N° 19XZE4F54NE012640',
       'ru': 'N° 19XZE4F54NE012640',
     },
+    AppStrings.vinInvalidCharacter: {
+      'az': 'Yanlış simvol',
+      'en': 'Invalid character',
+      'ru': 'Неверный символ',
+    },
     AppStrings.vinSearch: {
       'az': 'BAN axtarılır...',
       'en': 'Searching VIN...',
@@ -1625,7 +1630,7 @@ class Translations {
       'ru': 'Показать',
     },
     AppStrings.hiddenServices: {
-      'az': 'Gizli servislər',
+      'az': 'Gizlədilmiş servislər',
       'en': 'Hidden services',
       'ru': 'Скрытые услуги',
     },

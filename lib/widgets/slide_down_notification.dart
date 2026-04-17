@@ -143,7 +143,7 @@ class _SlideDownNotificationState extends State<_SlideDownNotification>
                       AppTranslation.translate(widget.verifyTextKey),
                       style: TextStyle(
                         color: AppColors.textPrimary,
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w500,
                         height: 1.4,
                         decoration: TextDecoration.none,

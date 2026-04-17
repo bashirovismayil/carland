@@ -259,6 +259,7 @@ class AppStrings {
   static const String vinScanDescription = "vinAuthorizationDescription";
   static const String enterCarVin = "enterCarVin";
   static const String vinPlaceholder = "vinPlaceholder";
+  static const String vinInvalidCharacter = "vinInvalidCharacter";
   static const String vinSearch = "vinSearch";
   static const String typeVinManually = "typeVinManually";
   static const String or = "or";

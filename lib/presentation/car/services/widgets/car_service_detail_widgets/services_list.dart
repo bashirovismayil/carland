@@ -43,17 +43,26 @@ class _ServicesListState extends State<ServicesList>
   final _peekHintService = locator<PeekHintLocalService>();
   bool _hiddenSectionExpanded = false;
   int? _expandedPercentageId;
-
-  /// Tracks whether the peek hint has been triggered in this widget lifecycle.
   bool _peekHintTriggered = false;
-
-  /// The percentageId of the first visible flippable card that gets the peek.
   int? _peekTargetId;
+
+  // ============================================================
+  // TÜRETİLMİŞ LİSTELER CACHE'İ
+  // Her build'de sort + filter tekrarlanmasın.
+  // Invalidation: services değişince, hidden state değişince.
+  // ============================================================
+  List<ResponseList>? _cachedSorted;
+  List<ResponseList>? _cachedVisible;
+  List<ResponseList>? _cachedHidden;
 
   @override
   void initState() {
     super.initState();
     initReorderAnimation();
+    if (_peekHintService.isFirstAppLaunch) {
+      _peekHintService.markFirstAppLaunchConsumed();
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final keys = _visibleServices.map((s) => s.percentageId).toList();
       handleReorder(keys);
@@ -65,28 +74,33 @@ class _ServicesListState extends State<ServicesList>
   void didUpdateWidget(covariant ServicesList oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.services != widget.services) {
+      _invalidateAllCaches('services reference changed');
       final newVisibleKeys =
       _visibleServices.map((s) => s.percentageId).toList();
       handleReorder(newVisibleKeys);
-
-      // Re-evaluate peek target when service list changes.
       _peekHintTriggered = false;
       _peekTargetId = null;
       _resolvePeekTarget();
     }
   }
 
-  /// Determines which card (if any) should receive the peek hint.
-  /// Picks the first visible, non-needsEdit card.
-  void _resolvePeekTarget() {
-    debugPrint('🔍 _resolvePeekTarget called');
-    debugPrint('🔍 _peekHintTriggered: $_peekHintTriggered');
-    debugPrint('🔍 shouldShowPeekHint: ${_peekHintService.shouldShowPeekHint}');
-    debugPrint('🔍 peekShownCount: ${_peekHintService.peekShownCount}');
-    debugPrint('🔍 userHasFlippedCard: ${_peekHintService.userHasFlippedCard}');
-    debugPrint('🔍 visible services count: ${_visibleServices.length}');
-    debugPrint('🔍 visible flippable count: ${_visibleServices.where((s) => !ServiceEditHelper.needsEdit(s)).length}');
+  void _invalidateAllCaches(String reason) {
+    _cachedSorted = null;
+    _cachedVisible = null;
+    _cachedHidden = null;
+    debugPrint('[SVC_LIST] caches invalidated (all) reason="$reason"');
+  }
 
+  void _invalidateHiddenPartitioning(String reason) {
+    // sort sırası aynı, sadece visible/hidden partitioning değişir.
+    _cachedVisible = null;
+    _cachedHidden = null;
+    debugPrint(
+      '[SVC_LIST] caches invalidated (visible+hidden) reason="$reason"',
+    );
+  }
+
+  void _resolvePeekTarget() {
     if (_peekHintTriggered) return;
     if (!_peekHintService.shouldShowPeekHint) return;
 
@@ -97,14 +111,11 @@ class _ServicesListState extends State<ServicesList>
     if (candidates.isNotEmpty) {
       _peekTargetId = candidates.first.percentageId;
       _peekHintTriggered = true;
-      debugPrint('🔍 Peek target set: $_peekTargetId');
+      debugPrint('[SVC_LIST] peek target set: $_peekTargetId');
       setState(() {});
-    } else {
-      debugPrint('🔍 No flippable candidates found');
     }
   }
 
-  /// Called by the card after its peek animation finishes.
   void _onPeekHintComplete() {
     _peekHintService.incrementPeekCount();
   }
@@ -115,7 +126,13 @@ class _ServicesListState extends State<ServicesList>
     super.dispose();
   }
 
+  // === CACHE'Lİ GETTER'LAR ===
+
   List<ResponseList> get _sortedServices {
+    final cached = _cachedSorted;
+    if (cached != null) return cached;
+
+    debugPrint('[SVC_LIST] sorting services (cache miss, n=${widget.services.length})');
     final sorted = List<ResponseList>.from(widget.services)
       ..sort((a, b) {
         final aNeedsEdit = ServiceEditHelper.needsEdit(a);
@@ -126,20 +143,34 @@ class _ServicesListState extends State<ServicesList>
         return ServicePercentageCalculator.getEffectivePercentage(a)
             .compareTo(ServicePercentageCalculator.getEffectivePercentage(b));
       });
+    _cachedSorted = sorted;
     return sorted;
   }
 
-  List<ResponseList> get _visibleServices => _sortedServices
-      .where((s) => !_hiddenServicesService.isHidden(s.percentageId))
-      .toList();
+  List<ResponseList> get _visibleServices {
+    final cached = _cachedVisible;
+    if (cached != null) return cached;
+    final v = _sortedServices
+        .where((s) => !_hiddenServicesService.isHidden(s.percentageId))
+        .toList(growable: false);
+    _cachedVisible = v;
+    return v;
+  }
 
-  List<ResponseList> get _hiddenServices => _sortedServices
-      .where((s) => _hiddenServicesService.isHidden(s.percentageId))
-      .toList();
+  List<ResponseList> get _hiddenServices {
+    final cached = _cachedHidden;
+    if (cached != null) return cached;
+    final h = _sortedServices
+        .where((s) => _hiddenServicesService.isHidden(s.percentageId))
+        .toList(growable: false);
+    _cachedHidden = h;
+    return h;
+  }
 
   void _onToggleHidden(int percentageId) {
     final wasVisible = !_hiddenServicesService.isHidden(percentageId);
     _hiddenServicesService.toggleHidden(percentageId);
+    _invalidateHiddenPartitioning('hidden toggled id=$percentageId');
     setState(() {});
 
     if (wasVisible) {
@@ -215,35 +246,82 @@ class _ServicesListState extends State<ServicesList>
     });
   }
 
+  // ============================================================
+  // LAZY ITEM BUILDERS
+  // build() içinde bir kez lambda listesi oluşturulur.
+  // Her lambda sadece çağrıldığında ilgili widget'ı inşa eder.
+  // SliverChildBuilderDelegate, off-screen item'ların lambda'larını
+  // ÇAĞIRMAZ — gerçek lazy rendering.
+  // ============================================================
+  List<WidgetBuilder> _buildItemBuilders() {
+    final builders = <WidgetBuilder>[];
+    final visible = _visibleServices;
+    final hidden = _hiddenServices;
+
+    builders.add((ctx) => ServicesListHeader(isLoading: widget.isLoading));
+    builders.add((ctx) => const SizedBox(height: 12));
+
+    for (var i = 0; i < visible.length; i++) {
+      final service = visible[i];
+      builders.add((ctx) {
+        // RİSKLİ NOKTA — ölçüm logu:
+        // Bu log scroll sırasında ekranda olmayan kartlar için
+        // düşmemelidir. Düşüyorsa lazy mantığı kırılmış demektir.
+        debugPrint('[SVC_LIST] build visible card id=${service.percentageId}');
+        return buildAnimatedItem(
+          itemKey: service.percentageId,
+          child: _buildServiceCard(service, isHidden: false),
+        );
+      });
+      final isLast = i == visible.length - 1;
+      if (!isLast || hidden.isNotEmpty) {
+        builders.add((ctx) => const SizedBox(height: 16));
+      }
+    }
+
+    if (hidden.isNotEmpty) {
+      builders.add((ctx) => _buildHiddenServicesDivider(hidden.length));
+      if (_hiddenSectionExpanded) {
+        builders.add((ctx) => const SizedBox(height: 16));
+        for (var i = 0; i < hidden.length; i++) {
+          final service = hidden[i];
+          builders.add((ctx) {
+            debugPrint(
+              '[SVC_LIST] build hidden card id=${service.percentageId}',
+            );
+            return _buildServiceCard(service, isHidden: true);
+          });
+          if (i != hidden.length - 1) {
+            builders.add((ctx) => const SizedBox(height: 16));
+          }
+        }
+      }
+    }
+
+    return builders;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final visibleServices = _visibleServices;
-    final hiddenServices = _hiddenServices;
+    debugPrint('[SVC_LIST] build() — assembling item builders');
+    final builders = _buildItemBuilders();
 
     return SliverList(
-      delegate: SliverChildListDelegate([
-        ServicesListHeader(isLoading: widget.isLoading),
-        const SizedBox(height: 12),
-        ...visibleServices.expand((service) => [
-          buildAnimatedItem(
-            itemKey: service.percentageId,
-            child: _buildServiceCard(service, isHidden: false),
-          ),
-          if (service != visibleServices.last || hiddenServices.isNotEmpty)
-            const SizedBox(height: 16),
-        ]),
-        if (hiddenServices.isNotEmpty) ...[
-          _buildHiddenServicesDivider(hiddenServices.length),
-          if (_hiddenSectionExpanded) ...[
-            const SizedBox(height: 16),
-            ...hiddenServices.expand((service) => [
-              _buildServiceCard(service, isHidden: true),
-              if (service != hiddenServices.last)
-                const SizedBox(height: 16),
-            ]),
-          ],
-        ],
-      ]),
+      delegate: SliverChildBuilderDelegate(
+            (context, index) {
+          // RİSKLİ NOKTA — ölçüm logu:
+          // Scroll esnasında sadece yeni viewport'a giren item'lar için
+          // bu log düşmeli. Tüm listedeki item'lar için her frame düşüyorsa
+          // SliverChildBuilderDelegate lazy davranmıyor demektir.
+          debugPrint(
+            '[SVC_LIST] itemBuilder index=$index/${builders.length}',
+          );
+          return builders[index](context);
+        },
+        childCount: builders.length,
+        // addAutomaticKeepAlives: true (default). ServiceCard state'ini
+        // AutomaticKeepAliveClientMixin ile koruyor.
+      ),
     );
   }
 

@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+import '../reservation/reservation_list_page.dart';
+
 class ServiceCenter {
   final String id;
   final String name;
@@ -607,8 +609,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 centerId: booking.center.id,
                 initialSelectedIds:
                 booking.services.map((s) => s.id).toSet(),
-                previousPaymentMethod: booking.paymentMethod,
-                onContinue: (services, paymentMethod) {
+                onContinue: (services) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -618,7 +619,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         date: date,
                         timeSlot: slot,
                         selectedServices: services,
-                        paymentMethod: paymentMethod,
+                        initialPaymentMethod: booking.paymentMethod,
                         editingBookingId: booking.id,
                         onBookingConfirmed: (result) {
                           // Update existing booking
@@ -629,9 +630,14 @@ class _HistoryPageState extends State<HistoryPage> {
                               builder: (_) => BookingConfirmedScreen(
                                 booking: result,
                                 isEdit: true,
-                                onGoHome: () {
-                                  Navigator.of(context)
-                                      .popUntil((r) => r.isFirst);
+                                onGoToReservations: () {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                      const ReservationListPage(),
+                                    ),
+                                        (r) => r.isFirst,
+                                  );
                                 },
                               ),
                             ),
@@ -665,7 +671,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     builder: (_) => ServiceDetailScreen(
                       repo: _repo,
                       centerId: center.id,
-                      onContinue: (services, paymentMethod) {
+                      onContinue: (services) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -675,7 +681,6 @@ class _HistoryPageState extends State<HistoryPage> {
                               date: date,
                               timeSlot: slot,
                               selectedServices: services,
-                              paymentMethod: paymentMethod,
                               onBookingConfirmed: (result) {
                                 BookingStore.addBooking(result);
                                 Navigator.push(
@@ -683,9 +688,15 @@ class _HistoryPageState extends State<HistoryPage> {
                                   MaterialPageRoute(
                                     builder: (_) => BookingConfirmedScreen(
                                       booking: result,
-                                      onGoHome: () {
+                                      onGoToReservations: () {
                                         Navigator.of(context)
-                                            .popUntil((r) => r.isFirst);
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                            const ReservationListPage(),
+                                          ),
+                                              (r) => r.isFirst,
+                                        );
                                       },
                                     ),
                                   ),
@@ -1556,16 +1567,14 @@ class _CalendarLegend extends StatelessWidget {
 }
 
 // ============================================================
-// SCREEN 2 — SERVICE DETAIL (with separator + Pay Now / Pay Later)
+// SCREEN 2 — SERVICE DETAIL (select services, then Continue)
 // ============================================================
 
 class ServiceDetailScreen extends StatefulWidget {
   final IBookingRepository repo;
   final String centerId;
-  final void Function(List<ServiceOption> services, PaymentMethod method)
-  onContinue;
+  final void Function(List<ServiceOption> services) onContinue;
   final Set<String>? initialSelectedIds;
-  final PaymentMethod? previousPaymentMethod;
 
   const ServiceDetailScreen({
     super.key,
@@ -1573,7 +1582,6 @@ class ServiceDetailScreen extends StatefulWidget {
     required this.centerId,
     required this.onContinue,
     this.initialSelectedIds,
-    this.previousPaymentMethod,
   });
 
   @override
@@ -1609,22 +1617,13 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
       .where((s) => _selectedIds.contains(s.id))
       .fold<double>(0, (sum, s) => sum + s.price);
 
-  void _onPayNow() {
-    if (_selectedIds.isEmpty) {
-      _showNoServiceWarning();
-      return;
-    }
-    _showApplePaySheet();
-  }
-
-  void _onPayLater() {
+  void _onContinue() {
     if (_selectedIds.isEmpty) {
       _showNoServiceWarning();
       return;
     }
     widget.onContinue(
       _allServices.where((s) => _selectedIds.contains(s.id)).toList(),
-      PaymentMethod.payLater,
     );
   }
 
@@ -1633,26 +1632,6 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
       const SnackBar(
           content: Text('Please select at least one service'),
           backgroundColor: Colors.red),
-    );
-  }
-
-  void _showApplePaySheet() {
-    final total = _totalPrice;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => _ApplePaySheet(
-        totalAmount: total,
-        onConfirm: () {
-          Navigator.pop(ctx);
-          widget.onContinue(
-            _allServices.where((s) => _selectedIds.contains(s.id)).toList(),
-            PaymentMethod.payNow,
-          );
-        },
-        onCancel: () => Navigator.pop(ctx),
-      ),
     );
   }
 
@@ -1787,12 +1766,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
             ),
           ),
 
-          // ── Pay Now / Pay Later buttons ──
-          _PaymentButtonsSection(
-            totalPrice: _totalPrice,
-            onPayNow: _onPayNow,
-            onPayLater: _onPayLater,
-          ),
+          // ── Continue button ──
+          _BottomButton(label: 'Continue', onTap: _onContinue),
         ],
       ),
     );
@@ -1800,18 +1775,21 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
 }
 
 // ============================================================
-// PAYMENT BUTTONS SECTION (Pay Now + Pay Later)
+// PAYMENT BUTTONS SECTION (Pay Now + Pay at Service)
+// Used on the Summary screen as the payment choice.
 // ============================================================
 
 class _PaymentButtonsSection extends StatelessWidget {
   final double totalPrice;
-  final VoidCallback onPayNow;
-  final VoidCallback onPayLater;
+  final VoidCallback? onPayNow;
+  final VoidCallback? onPayAtService;
+  final bool isBusy;
 
   const _PaymentButtonsSection({
     required this.totalPrice,
     required this.onPayNow,
-    required this.onPayLater,
+    required this.onPayAtService,
+    this.isBusy = false,
   });
 
   @override
@@ -1854,33 +1832,45 @@ class _PaymentButtonsSection extends StatelessWidget {
               width: double.infinity,
               height: 54,
               child: ElevatedButton(
-                onPressed: onPayNow,
+                onPressed: isBusy ? null : onPayNow,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1A1A1A),
                   foregroundColor: Colors.white,
+                  disabledBackgroundColor: const Color(0xFFCCCCCC),
+                  disabledForegroundColor: const Color(0xFF999999),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(27)),
                 ),
-                child: Row(
+                child: isBusy
+                    ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2.5,
+                  ),
+                )
+                    : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.apple, size: 22, color: Colors.white),
-                    const SizedBox(width: 8),
-                    const Text('Pay Now',
+                  children: const [
+                    Icon(Icons.apple, size: 22, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Pay Now',
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600)),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 10),
-            // Pay Later button (outline)
+            // Pay at Service button (outline)
             SizedBox(
               width: double.infinity,
               height: 54,
               child: OutlinedButton(
-                onPressed: onPayLater,
+                onPressed: isBusy ? null : onPayAtService,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFF1A1A1A),
                   side: const BorderSide(color: Color(0xFFDDDDDD), width: 1.5),
@@ -1890,11 +1880,11 @@ class _PaymentButtonsSection extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.schedule,
+                  children: const [
+                    Icon(Icons.schedule,
                         size: 20, color: Color(0xFF1A1A1A)),
-                    const SizedBox(width: 8),
-                    const Text('Pay Later',
+                    SizedBox(width: 8),
+                    Text('Pay at Service',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600)),
                   ],
@@ -2217,7 +2207,7 @@ class SummaryScreen extends StatefulWidget {
   final DateTime date;
   final TimeSlot timeSlot;
   final List<ServiceOption> selectedServices;
-  final PaymentMethod paymentMethod;
+  final PaymentMethod? initialPaymentMethod;
   final void Function(BookingResult result) onBookingConfirmed;
   final String? editingBookingId;
 
@@ -2228,8 +2218,8 @@ class SummaryScreen extends StatefulWidget {
     required this.date,
     required this.timeSlot,
     required this.selectedServices,
-    required this.paymentMethod,
     required this.onBookingConfirmed,
+    this.initialPaymentMethod,
     this.editingBookingId,
   });
 
@@ -2279,7 +2269,29 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
   void _removeCoupon() => setState(() => _coupon = null);
 
-  Future<void> _confirmBooking() async {
+  void _onPayNow() {
+    if (_confirming) return;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _ApplePaySheet(
+        totalAmount: _discountedTotal,
+        onConfirm: () {
+          Navigator.pop(ctx);
+          _confirmBooking(PaymentMethod.payNow);
+        },
+        onCancel: () => Navigator.pop(ctx),
+      ),
+    );
+  }
+
+  void _onPayAtService() {
+    if (_confirming) return;
+    _confirmBooking(PaymentMethod.payLater);
+  }
+
+  Future<void> _confirmBooking(PaymentMethod method) async {
     setState(() => _confirming = true);
     final result = await widget.repo.confirmBooking(
       center: widget.center,
@@ -2287,7 +2299,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
       timeSlot: widget.timeSlot,
       services: widget.selectedServices,
       coupon: _coupon,
-      paymentMethod: widget.paymentMethod,
+      paymentMethod: method,
     );
 
     // If editing, preserve the original booking ID
@@ -2295,6 +2307,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
         ? result.copyWith(id: widget.editingBookingId)
         : result;
 
+    if (!mounted) return;
     setState(() => _confirming = false);
     widget.onBookingConfirmed(finalResult);
   }
@@ -2302,8 +2315,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) return const _LoadingScaffold(title: 'Summary');
-
-    final isEdit = widget.editingBookingId != null;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -2318,13 +2329,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 children: [
                   const SizedBox(height: 20),
 
-                  // Payment method indicator
-                  _PaymentMethodBanner(
-                    method: widget.paymentMethod,
-                    isEdit: isEdit,
-                  ),
-                  const SizedBox(height: 20),
-
                   const _SectionTitle(text: 'Prices (Cost Breakdown)'),
                   const SizedBox(height: 12),
                   _PriceBreakdown(
@@ -2335,89 +2339,22 @@ class _SummaryScreenState extends State<SummaryScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Only show coupon for pay later (no coupon on already-paid)
-                  if (widget.paymentMethod == PaymentMethod.payLater)
-                    _CouponSection(
-                      coupon: _coupon,
-                      controller: _couponController,
-                      onApply: _applyCoupon,
-                      onRemove: _removeCoupon,
-                    ),
+                  _CouponSection(
+                    coupon: _coupon,
+                    controller: _couponController,
+                    onApply: _applyCoupon,
+                    onRemove: _removeCoupon,
+                  ),
                   const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
-          _BottomButton(
-            label: _confirming
-                ? 'Confirming...'
-                : isEdit
-                ? 'Update Booking'
-                : 'Confirm Booking',
-            onTap: _confirming ? null : _confirmBooking,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ============================================================
-// PAYMENT METHOD BANNER
-// ============================================================
-
-class _PaymentMethodBanner extends StatelessWidget {
-  final PaymentMethod method;
-  final bool isEdit;
-
-  const _PaymentMethodBanner({
-    required this.method,
-    this.isEdit = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isPaid = method == PaymentMethod.payNow;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: isPaid ? const Color(0xFFE8F5E9) : const Color(0xFFFFF8E1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isPaid ? const Color(0xFF4CAF50) : const Color(0xFFFFC107),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            isPaid ? Icons.check_circle : Icons.schedule,
-            size: 22,
-            color:
-            isPaid ? const Color(0xFF4CAF50) : const Color(0xFFF9A825),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isPaid ? 'Paid via Apple Pay' : 'Pay at Service Center',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: isPaid
-                        ? const Color(0xFF2E7D32)
-                        : const Color(0xFFF57F17),
-                  ),
-                ),
-                if (isEdit && isPaid)
-                  const Text(
-                    'Payment already processed',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF999999)),
-                  ),
-              ],
-            ),
+          _PaymentButtonsSection(
+            totalPrice: _discountedTotal,
+            onPayNow: _onPayNow,
+            onPayAtService: _onPayAtService,
+            isBusy: _confirming,
           ),
         ],
       ),
@@ -2729,13 +2666,13 @@ class _PriceBreakdown extends StatelessWidget {
 
 class BookingConfirmedScreen extends StatelessWidget {
   final BookingResult booking;
-  final VoidCallback onGoHome;
+  final VoidCallback onGoToReservations;
   final bool isEdit;
 
   const BookingConfirmedScreen({
     super.key,
     required this.booking,
-    required this.onGoHome,
+    required this.onGoToReservations,
     this.isEdit = false,
   });
 
@@ -2743,7 +2680,10 @@ class BookingConfirmedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _BookingAppBar(title: 'Summary', showNotification: false),
+      appBar: _BookingAppBar(
+        title: isEdit ? 'Booking Updated' : 'Booking Confirmed',
+        showNotification: false,
+      ),
       body: Column(
         children: [
           Expanded(
@@ -2753,18 +2693,6 @@ class BookingConfirmedScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      isEdit
-                          ? 'Booking Updated 🎉'
-                          : 'Booking Confirmed 🎉',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF1A1A1A),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
                     Container(
                       width: 220,
                       height: 140,
@@ -2785,13 +2713,28 @@ class BookingConfirmedScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 32),
+                    Text(
+                      isEdit
+                          ? 'Booking Updated 🎉'
+                          : 'Booking Confirmed 🎉',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
                     const SizedBox(height: 40),
                   ],
                 ),
               ),
             ),
           ),
-          _BottomButton(label: 'Go to Home', onTap: onGoHome),
+          _BottomButton(
+            label: 'Go to Reservations',
+            onTap: onGoToReservations,
+          ),
         ],
       ),
     );

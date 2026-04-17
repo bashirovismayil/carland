@@ -42,7 +42,7 @@ class ServiceCardBackFace extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 29),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -58,7 +58,7 @@ class ServiceCardBackFace extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 19),
             if (!hasBoth && isTimeBased)
               _buildInfoTile(
                 icon: Icons.calendar_month_rounded,

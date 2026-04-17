@@ -836,6 +836,8 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
   int _calendarYear = 2026;
   int _calendarMonth = 4;
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -848,6 +850,27 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
       _selectedSlot = widget.initialSlot;
     }
     _loadCalendar();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  /// After a time slot is picked, nudge the scroll view down so that the
+  /// "Selected Time" section doesn't stay hidden behind the Continue button.
+  void _scrollToSelectedTime() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final maxExtent = _scrollController.position.maxScrollExtent;
+      final target = (_scrollController.position.pixels + 180).clamp(0.0, maxExtent);
+      _scrollController.animateTo(
+        target,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   Future<void> _loadCalendar() async {
@@ -879,6 +902,7 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
         onTimeSelected: (slot) {
           setState(() => _selectedSlot = slot);
           Navigator.pop(ctx);
+          _scrollToSelectedTime();
         },
       ),
     );
@@ -938,6 +962,7 @@ class _DateTimeSelectionScreenState extends State<DateTimeSelectionScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
+              controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -2466,7 +2491,6 @@ class _SelectedServiceTile extends StatelessWidget {
   }
 }
 
-// -- Coupon Section --
 class _CouponSection extends StatelessWidget {
   final CouponResult? coupon;
   final TextEditingController controller;
@@ -2660,9 +2684,6 @@ class _PriceBreakdown extends StatelessWidget {
   }
 }
 
-// ============================================================
-// SCREEN 4 — BOOKING CONFIRMED
-// ============================================================
 
 class BookingConfirmedScreen extends StatelessWidget {
   final BookingResult booking;
@@ -2740,10 +2761,6 @@ class BookingConfirmedScreen extends StatelessWidget {
     );
   }
 }
-
-// ============================================================
-// SHARED WIDGETS
-// ============================================================
 
 class _BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

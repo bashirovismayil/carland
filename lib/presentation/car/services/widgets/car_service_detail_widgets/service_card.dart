@@ -56,25 +56,20 @@ class _ServiceCardState extends State<ServiceCard>
         FlipCardMixin,
         PeekHintMixin,
         AutomaticKeepAliveClientMixin {
-  // ============================================================
-  // STATIC SABITLER (allocation azaltmak için)
-  // Her build'de yeniden yaratılmak yerine class yükleme sırasında
-  // bir kez hesaplanır ve paylaşılır.
-  // ============================================================
   static const _kCardRadius = BorderRadius.all(Radius.circular(16));
   static const _kInnerHeaderRadius = BorderRadius.all(Radius.circular(8));
   static const _kBookButtonRadius = BorderRadius.all(Radius.circular(100));
 
   static const _kHeaderPadding =
-  EdgeInsets.symmetric(horizontal: 16, vertical: 14);
-  static const _kCardPadding = EdgeInsets.all(20);
+      EdgeInsets.symmetric(horizontal: 16, vertical: 5);
+  static const _kCardPadding = EdgeInsets.all(19);
   static const _kInnerHeaderPadding =
-  EdgeInsets.symmetric(horizontal: 12, vertical: 6);
+      EdgeInsets.symmetric(horizontal: 12, vertical: 6);
   static const _kDividerPadding =
-  EdgeInsets.symmetric(vertical: 10, horizontal: 16);
+      EdgeInsets.symmetric(vertical: 8, horizontal: 16);
   static const _kBookButtonPadding = EdgeInsets.symmetric(vertical: 14);
   static const _kEditTailPadding =
-  EdgeInsets.only(top: 5.0, right: 1, left: 12);
+      EdgeInsets.only(top: 5.0, right: 1, left: 12);
   static const _kIconPadding = EdgeInsets.only(right: 6);
 
   static const _kNameStyleSemi = TextStyle(
@@ -92,8 +87,6 @@ class _ServiceCardState extends State<ServiceCard>
   static const _kHideDuration = Duration(milliseconds: 300);
   static const _kFlipDuration = Duration(milliseconds: 280);
   static const _kVisibilityThreshold = 0.15;
-
-  // Runtime-const (withOpacity/shade runtime hesaplanır, static final ile bir kez).
   static final _kShadow = <BoxShadow>[
     BoxShadow(
       color: Colors.black.withOpacity(0.06),
@@ -103,10 +96,6 @@ class _ServiceCardState extends State<ServiceCard>
   ];
   static final _kBorderExpanded = AppColors.primaryBlack.withOpacity(0.08);
   static final _kBorderCollapsed = Colors.grey.shade200;
-
-  // ============================================================
-  // STATE
-  // ============================================================
   bool _isExpanded = false;
 
   late AnimationController _controller;
@@ -114,24 +103,11 @@ class _ServiceCardState extends State<ServiceCard>
   late Animation<double> _headerHeight;
   late Animation<double> _contentSize;
   late Animation<double> _contentOpacity;
-
   final _peekHintService = locator<PeekHintLocalService>();
-
-  /// İlk açılış mı? Session boyunca sabit.
   late final bool _isFirstLaunch;
-
-  /// needsEdit memoized. initState'te bir kez, didUpdateWidget'ta service
-  /// değişirse yeniden hesaplanır. Her build'de helper çağrısı yapılmaz.
   late bool _needsEdit;
-
-  /// Touch hint ikonu için izole notifier.
-  /// - null ise: ilk açılış, statik ikon gösterilir (animasyon yok)
-  /// - non-null ise: 2+ açılış, VisibilityDetector bu notifier'ı günceller
-  ///   ve SADECE ValueListenableBuilder rebuild olur, kart gövdesi DEĞİL.
   ValueNotifier<bool>? _iconVisibilityNotifier;
 
-  // SliverChildBuilderDelegate state'i unmount etmesin diye.
-  // mevcut SliverChildListDelegate davranışıyla eşdeğerlik sağlar.
   @override
   bool get wantKeepAlive => true;
 
@@ -183,8 +159,8 @@ class _ServiceCardState extends State<ServiceCard>
 
     debugPrint(
       '[SVC_CARD] initState id=${widget.service.percentageId} '
-          'name="${widget.service.serviceName}" '
-          'firstLaunch=$_isFirstLaunch needsEdit=$_needsEdit',
+      'name="${widget.service.serviceName}" '
+      'firstLaunch=$_isFirstLaunch needsEdit=$_needsEdit',
     );
 
     if (widget.shouldPeekHint && !_needsEdit) {
@@ -219,11 +195,10 @@ class _ServiceCardState extends State<ServiceCard>
         flipController.value = 0.0;
       }
 
-      // Service değişti: memoized _needsEdit'i güncelle.
       _needsEdit = ServiceEditHelper.needsEdit(widget.service);
       debugPrint(
         '[SVC_CARD] service changed id=${widget.service.percentageId} '
-            'needsEdit=$_needsEdit',
+        'needsEdit=$_needsEdit',
       );
 
       if (!_needsEdit) {
@@ -275,10 +250,6 @@ class _ServiceCardState extends State<ServiceCard>
     }
   }
 
-  /// VisibilityDetector callback.
-  /// KRİTİK: setState çağırmaz. Sadece notifier'ı günceller → kart
-  /// gövdesi rebuild olmaz, yalnızca ValueListenableBuilder altındaki
-  /// AnimatedOpacity subtree'si yenilenir.
   void _onVisibilityChanged(VisibilityInfo info) {
     final notifier = _iconVisibilityNotifier;
     if (notifier == null || !mounted) return;
@@ -286,33 +257,21 @@ class _ServiceCardState extends State<ServiceCard>
     final nowVisible = info.visibleFraction > _kVisibilityThreshold;
     if (nowVisible != notifier.value) {
       notifier.value = nowVisible;
-      // Scroll sırasında çok sık çıkar, sorun yoksa kapalı tutuyorum.
-      // debugPrint('[SVC_CARD] vis ${widget.service.percentageId} → $nowVisible');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // AutomaticKeepAliveClientMixin gereği.
     super.build(context);
-
-    // RİSKLİ NOKTA — ölçüm logu:
-    // Bu log scroll sırasında tek bir kart için ÇOK sık çıkmamalı.
-    // Eğer her scroll tick'inde ilgili kartın build'i düşüyorsa
-    // isolation bozuk demektir. Normalde: initState, didUpdateWidget
-    // ve ebeveyn setState'te düşer.
     debugPrint('[SVC_CARD] build id=${widget.service.percentageId}');
 
     final percentage =
-    ServicePercentageCalculator.getEffectivePercentage(widget.service);
+        ServicePercentageCalculator.getEffectivePercentage(widget.service);
     final needsEdit = _needsEdit;
     final canFlip = !needsEdit;
 
-    // Yüzleri build() başında BİR KEZ inşa ediyoruz.
-    // AnimatedBuilder her flip tick'inde bunları REFERANS olarak
-    // yeniden kullanır — subtree reconstruct EDİLMEZ.
     final frontFace =
-    _buildFrontFace(percentage: percentage, needsEdit: needsEdit);
+        _buildFrontFace(percentage: percentage, needsEdit: needsEdit);
     final backFace = _buildBackFace();
 
     final Widget content = AnimatedOpacity(
@@ -332,9 +291,6 @@ class _ServiceCardState extends State<ServiceCard>
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, 0.001)
                     ..rotateY(angle),
-                  // Prebuilt referanslar — builder her tick'inde yeniden
-                  // inşa etmez, Flutter element tree aynı instance'ı görüp
-                  // subtree'yi diff-skip eder.
                   child: showBack ? backFace : frontFace,
                 ),
               );
@@ -344,7 +300,6 @@ class _ServiceCardState extends State<ServiceCard>
       ),
     );
 
-    // İlk açılışta VisibilityDetector'a gerek yok — ikon statik.
     if (_isFirstLaunch) return content;
 
     return VisibilityDetector(
@@ -355,8 +310,6 @@ class _ServiceCardState extends State<ServiceCard>
   }
 
   Widget _buildBackFace() {
-    // Rotated wrapper dahil önceden inşa; flip tick'lerinde yeniden
-    // inşa edilmez.
     return Transform(
       alignment: Alignment.center,
       transform: Matrix4.identity()..rotateY(math.pi),
@@ -366,33 +319,25 @@ class _ServiceCardState extends State<ServiceCard>
         kmPercentage: widget.service.kmPercentage,
         monthPercentage: widget.service.monthPercentageDigit,
         isTimeBased: ServicePercentageCalculator.isTimeBased(widget.service),
-        hasBoth: widget.service.intervalKm > 0 &&
-            widget.service.intervalMonth > 0,
+        hasBoth:
+            widget.service.intervalKm > 0 && widget.service.intervalMonth > 0,
       ),
     );
   }
 
   Widget _buildFrontFace({required int percentage, required bool needsEdit}) {
-    // "Stable content" = SizeTransition/FadeTransition sınırı altındaki
-    // TÜM ağaç. ListenableBuilder'ın DIŞINDA inşa edilir; controller
-    // tick'leri bu ağacı yeniden inşa etmez. SizeTransition/FadeTransition
-    // zaten kendi animation dinleyicilerine sahip — izole güncellerler.
     final stableContent =
-    _buildStableContent(percentage: percentage, needsEdit: needsEdit);
+        _buildStableContent(percentage: percentage, needsEdit: needsEdit);
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Controller'a bağlı TEK şey: Container shell'in border color'ı.
-        // ListenableBuilder sadece Container'ı yeniden inşa eder,
-        // stableContent child olarak AYNI referansla geçer.
         ListenableBuilder(
           listenable: _controller,
           child: stableContent,
           builder: (context, child) {
-            final borderColor = _controller.value > 0.3
-                ? _kBorderExpanded
-                : _kBorderCollapsed;
+            final borderColor =
+                _controller.value > 0.3 ? _kBorderExpanded : _kBorderCollapsed;
             return Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -423,8 +368,6 @@ class _ServiceCardState extends State<ServiceCard>
           child: SizeTransition(
             sizeFactor: _headerHeight,
             axisAlignment: -1.0,
-            // Opacity(value) yerine FadeTransition(animation) —
-            // izole rebuild, tasarım birebir aynı.
             child: FadeTransition(
               opacity: _headerOpacity,
               child: Padding(
@@ -552,7 +495,6 @@ class _ServiceCardState extends State<ServiceCard>
   }
 
   Widget _buildTouchHintIcon() {
-    // İlk açılış: ORIGINAL DAVRANIŞ — statik ikon, animasyon yok.
     if (_isFirstLaunch) {
       return const Positioned(
         right: 4,
@@ -566,9 +508,6 @@ class _ServiceCardState extends State<ServiceCard>
         ),
       );
     }
-
-    // 2. ve sonraki açılışlar: ValueListenable ile viewport-bazlı fade.
-    // Kart gövdesi REBUILD OLMAZ — sadece bu küçük subtree yenilenir.
     return Positioned(
       right: 4,
       top: 0,
@@ -578,8 +517,6 @@ class _ServiceCardState extends State<ServiceCard>
           padding: _kIconPadding,
           child: ValueListenableBuilder<bool>(
             valueListenable: _iconVisibilityNotifier!,
-            // child parameter: _TouchHintIconContent her tick'te yeniden
-            // inşa edilmez, referans olarak geçer.
             child: const _TouchHintIconContent(),
             builder: (context, visible, child) {
               return AnimatedOpacity(
@@ -623,8 +560,6 @@ class _ServiceCardState extends State<ServiceCard>
   }
 }
 
-/// İkon içeriği — hem statik hem animasyonlu modda aynı.
-/// Const constructor sayesinde widget reuse edilir.
 class _TouchHintIconContent extends StatelessWidget {
   const _TouchHintIconContent();
 

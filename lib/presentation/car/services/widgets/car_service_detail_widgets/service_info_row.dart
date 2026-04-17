@@ -29,7 +29,7 @@ class ServiceInfoRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: _titleStyle),
-        const SizedBox(height: 6),
+        const SizedBox(height: 5),
         Row(
           children: [
             Expanded(child: _buildDateSection(context)),

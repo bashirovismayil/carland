@@ -44,6 +44,8 @@ class ServiceOption {
   final String description;
   final double price;
   final IconData icon;
+  final int? monthPercentageDigit;
+  final int? kmPercentage;
 
   const ServiceOption({
     required this.id,
@@ -51,6 +53,8 @@ class ServiceOption {
     required this.description,
     required this.price,
     required this.icon,
+    this.monthPercentageDigit,
+    this.kmPercentage,
   });
 }
 
@@ -426,11 +430,22 @@ class MockBookingRepository implements IBookingRepository {
   Future<List<ServiceOption>> getAvailableServices(String centerId) =>
       _simulate([
         const ServiceOption(
-          id: 'svc_1',
-          name: 'Oil and filter',
-          description: 'Full synthetic oil & filter change',
+          id: 'svc_0',
+          name: 'Engine oil',
+          description: 'Full synthetic engine oil change',
           price: 90,
           icon: Icons.water_drop_outlined,
+          monthPercentageDigit: 18,
+          kmPercentage: 35,
+        ),
+        const ServiceOption(
+          id: 'svc_1',
+          name: 'Oil and filter',
+          description: 'Oil filter replacement',
+          price: 30,
+          icon: Icons.filter_alt_outlined,
+          monthPercentageDigit: 60,
+          kmPercentage: 45,
         ),
         const ServiceOption(
           id: 'svc_2',
@@ -438,6 +453,8 @@ class MockBookingRepository implements IBookingRepository {
           description: 'Cabin air filter replacement',
           price: 30,
           icon: Icons.filter_alt_outlined,
+          monthPercentageDigit: 72,
+          kmPercentage: 80,
         ),
         const ServiceOption(
           id: 'svc_3',
@@ -445,6 +462,8 @@ class MockBookingRepository implements IBookingRepository {
           description: 'Engine air filter replacement',
           price: 30,
           icon: Icons.air,
+          monthPercentageDigit: 50,
+          kmPercentage: 50,
         ),
         const ServiceOption(
           id: 'svc_4',
@@ -452,6 +471,8 @@ class MockBookingRepository implements IBookingRepository {
           description: 'Wheel balancing for all 4 tires',
           price: 25,
           icon: Icons.tire_repair,
+          monthPercentageDigit: 90,
+          kmPercentage: 30,
         ),
         const ServiceOption(
           id: 'svc_5',
@@ -459,6 +480,8 @@ class MockBookingRepository implements IBookingRepository {
           description: 'Front & rear wheel alignment',
           price: 45,
           icon: Icons.sync_alt,
+          monthPercentageDigit: 25,
+          kmPercentage: 60,
         ),
         const ServiceOption(
           id: 'svc_6',
@@ -466,6 +489,8 @@ class MockBookingRepository implements IBookingRepository {
           description: 'Transmission fluid flush & filter',
           price: 135,
           icon: Icons.miscellaneous_services,
+          monthPercentageDigit: 40,
+          kmPercentage: 55,
         ),
         const ServiceOption(
           id: 'svc_7',
@@ -473,6 +498,8 @@ class MockBookingRepository implements IBookingRepository {
           description: 'Brake fluid replacement',
           price: 88,
           icon: Icons.settings,
+          monthPercentageDigit: 65,
+          kmPercentage: 20,
         ),
         const ServiceOption(
           id: 'svc_8',
@@ -480,6 +507,8 @@ class MockBookingRepository implements IBookingRepository {
           description: 'Full vehicle safety inspection',
           price: 55,
           icon: Icons.verified_user_outlined,
+          monthPercentageDigit: 85,
+          kmPercentage: 90,
         ),
       ]);
 
@@ -1638,13 +1667,56 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     });
   }
 
+  // ── Gruplama ──────────────────────────────────────────────────────────────
+
+  /// İsmi "engine oil" veya "mühərrik yağı" içeren ilk servis → main.
+  ServiceOption? get _mainService =>
+      _allServices.cast<ServiceOption?>().firstWhere(
+            (s) {
+          final name = (s?.name ?? '').toLowerCase();
+          return name.contains('engine oil') ||
+              name.contains('mühərrik yağı');
+        },
+        orElse: () => null,
+      );
+
+  /// Engine oil dışındaki tüm servisler → "Select Multiple Services" altı.
+  List<ServiceOption> get _additionalServices => _allServices.where((s) {
+    final name = s.name.toLowerCase();
+    return !name.contains('engine oil') &&
+        !name.contains('mühərrik yağı');
+  }).toList();
+
+  // ── Percentage seçimi ─────────────────────────────────────────────────────
+
+  /// monthPercentageDigit ve kmPercentage'dan hangisi 0'a daha yakınsa
+  /// (daha küçük = daha az kaldı = daha acil) onu göster.
+  String _resolvePercentageLabel(ServiceOption s) {
+    final month = s.monthPercentageDigit ?? 0;
+    final km = s.kmPercentage ?? 0;
+    if (month <= km) {
+      return '$month% (time remaining)';
+    } else {
+      return '$km% (km remaining)';
+    }
+  }
+
+  // ── Toplam fiyat ──────────────────────────────────────────────────────────
+
   double get _totalPrice => _allServices
       .where((s) => _selectedIds.contains(s.id))
       .fold<double>(0, (sum, s) => sum + s.price);
 
+  // ── Actions ───────────────────────────────────────────────────────────────
+
   void _onContinue() {
     if (_selectedIds.isEmpty) {
-      _showNoServiceWarning();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one service'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
     widget.onContinue(
@@ -1652,23 +1724,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     );
   }
 
-  void _showNoServiceWarning() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text('Please select at least one service'),
-          backgroundColor: Colors.red),
-    );
-  }
+  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     if (_loading) return const _LoadingScaffold(title: 'Service detail');
 
-    // Separate main service (first) from additional services
-    final mainService =
-    _allServices.isNotEmpty ? _allServices.first : null;
-    final additionalServices =
-    _allServices.length > 1 ? _allServices.sublist(1) : <ServiceOption>[];
+    final mainService = _mainService;
+    final additionalServices = _additionalServices;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1687,30 +1750,38 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 16),
-                        // ── Oil Change Service header ──
+
+                        // ── Başlık + toplam fiyat ──
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Oil Change Service',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF1A1A1A))),
-                            Text('${_totalPrice.toStringAsFixed(0)}₼',
-                                style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF1A1A1A))),
+                            const Text(
+                              'Oil Change Service',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1A1A1A),
+                              ),
+                            ),
+                            Text(
+                              '${_totalPrice.toStringAsFixed(0)}₼',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1A1A1A),
+                              ),
+                            ),
                           ],
                         ),
-                        // Main service checkbox
+
+                        // ── Engine oil servisi (main) ──
                         if (mainService != null) ...[
                           const SizedBox(height: 12),
                           _ServiceCheckboxTile(
                             service: mainService,
-                            isChecked:
-                            _selectedIds.contains(mainService.id),
-                            isDisabled: false,
+                            percentageLabel:
+                            _resolvePercentageLabel(mainService),
+                            isChecked: _selectedIds.contains(mainService.id),
                             onChanged: (val) {
                               setState(() {
                                 if (val) {
@@ -1723,7 +1794,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           ),
                         ],
 
-                        // ── Separator ──
+                        // ── Diğer servisler ──
                         if (additionalServices.isNotEmpty) ...[
                           const SizedBox(height: 16),
                           Row(
@@ -1755,21 +1826,20 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-
-                          // ── Select Multiple Services ──
-                          const Text('Select Multiple Services',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF1A1A1A))),
+                          const Text(
+                            'Select Multiple Services',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1A1A1A),
+                            ),
+                          ),
                           const SizedBox(height: 14),
                           ...additionalServices.map((svc) {
-                            final isChecked =
-                            _selectedIds.contains(svc.id);
                             return _ServiceCheckboxTile(
                               service: svc,
-                              isChecked: isChecked,
-                              isDisabled: false,
+                              percentageLabel: _resolvePercentageLabel(svc),
+                              isChecked: _selectedIds.contains(svc.id),
                               onChanged: (val) {
                                 setState(() {
                                   if (val) {
@@ -1782,6 +1852,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                             );
                           }),
                         ],
+
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -1790,14 +1861,105 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               ),
             ),
           ),
-
-          // ── Continue button ──
           _BottomButton(label: 'Continue', onTap: _onContinue),
         ],
       ),
     );
   }
 }
+
+// ============================================================
+// _ServiceCheckboxTile — percentageLabel eklendi
+// ============================================================
+
+class _ServiceCheckboxTile extends StatelessWidget {
+  final ServiceOption service;
+  final String percentageLabel; // <-- yeni: 0'a yakın olan değer
+  final bool isChecked;
+  final bool isDisabled;
+  final ValueChanged<bool> onChanged;
+
+  const _ServiceCheckboxTile({
+    required this.service,
+    required this.percentageLabel,
+    required this.isChecked,
+    this.isDisabled = false,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final double opacity = isDisabled && !isChecked ? 0.4 : 1.0;
+    return Opacity(
+      opacity: opacity,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: InkWell(
+          onTap: isDisabled && !isChecked ? null : () => onChanged(!isChecked),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              children: [
+                Icon(service.icon, size: 22, color: const Color(0xFF555555)),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        service.name,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF1A1A1A),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${service.price.toStringAsFixed(0)} AZN',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF999999),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      // 0'a yakın olan percentage gösterilir
+                      Text(
+                        percentageLabel,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF999999),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Checkbox(
+                    value: isChecked,
+                    onChanged: isDisabled && !isChecked
+                        ? null
+                        : (v) => onChanged(v ?? false),
+                    activeColor: const Color(0xFF1A1A1A),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4)),
+                    side: const BorderSide(
+                        color: Color(0xFFCCCCCC), width: 1.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 
 // ============================================================
 // PAYMENT BUTTONS SECTION (Pay Now + Pay at Service)
@@ -2153,74 +2315,6 @@ class _ServiceHeaderImage extends StatelessWidget {
 }
 
 // -- Service Checkbox Tile --
-class _ServiceCheckboxTile extends StatelessWidget {
-  final ServiceOption service;
-  final bool isChecked;
-  final bool isDisabled;
-  final ValueChanged<bool> onChanged;
-
-  const _ServiceCheckboxTile({
-    required this.service,
-    required this.isChecked,
-    this.isDisabled = false,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final double opacity = isDisabled && !isChecked ? 0.4 : 1.0;
-    return Opacity(
-      opacity: opacity,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 4),
-        child: InkWell(
-          onTap: isDisabled && !isChecked ? null : () => onChanged(!isChecked),
-          borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              children: [
-                Icon(service.icon,
-                    size: 22, color: const Color(0xFF555555)),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(service.name,
-                          style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF1A1A1A))),
-                      Text('${service.price.toStringAsFixed(0)} AZN',
-                          style: const TextStyle(
-                              fontSize: 13, color: Color(0xFF999999))),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: Checkbox(
-                    value: isChecked,
-                    onChanged: isDisabled && !isChecked
-                        ? null
-                        : (v) => onChanged(v ?? false),
-                    activeColor: const Color(0xFF1A1A1A),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4)),
-                    side: const BorderSide(
-                        color: Color(0xFFCCCCCC), width: 1.5),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 // ============================================================
 // SCREEN 3 — SUMMARY

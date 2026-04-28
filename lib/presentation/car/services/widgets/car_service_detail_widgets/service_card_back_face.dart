@@ -42,7 +42,7 @@ class ServiceCardBackFace extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 29),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -76,32 +76,31 @@ class ServiceCardBackFace extends StatelessWidget {
                 isActive: true,
               )
             else ...[
-                _buildInfoTile(
-                  icon: Icons.route_rounded,
-                  value: _formatKm(remainingKm),
-                  label: AppTranslation.translate(AppStrings.remainingKm),
-                  percentage: kmPercentage,
-                  isActive: !isTimeBased,
-                ),
-                const SizedBox(height: 16),
-                _buildDivider(),
-                const SizedBox(height: 16),
-                _buildInfoTile(
-                  icon: Icons.calendar_month_rounded,
-                  value: _formatDays(remainingMonths),
-                  label: AppTranslation.translate(AppStrings.remainingMonths),
-                  percentage: monthPercentage,
-                  isActive: isTimeBased,
-                ),
-              ],
+              _buildInfoTile(
+                icon: Icons.route_rounded,
+                value: _formatKm(remainingKm),
+                label: AppTranslation.translate(AppStrings.remainingKm),
+                percentage: kmPercentage,
+                isActive: !isTimeBased,
+              ),
+              const SizedBox(height: 16),
+              _buildDivider(),
+              const SizedBox(height: 16),
+              _buildInfoTile(
+                icon: Icons.calendar_month_rounded,
+                value: _formatDays(remainingMonths),
+                label: AppTranslation.translate(AppStrings.remainingMonths),
+                percentage: monthPercentage,
+                isActive: isTimeBased,
+              ),
+            ],
             if (!hasBoth) const SizedBox(height: 78),
-            const SizedBox(height: 10),
+          //  const SizedBox(height: 10),
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildInfoTile({
     required IconData icon,
@@ -159,25 +158,31 @@ class ServiceCardBackFace extends StatelessWidget {
   }
 
   Widget _buildPercentageBadge(int percentage, Color color, bool isActive) {
-    return Container(
-      width: 52,
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: isActive ? color.withOpacity(0.12) : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(20),
-        border: isActive
-            ? Border.all(color: color.withOpacity(0.3), width: 1)
-            : null,
-      ),
-      child: Text(
-        '$percentage%',
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-          color: isActive ? color : Colors.grey.shade600,
+    return Column(
+      children: [
+        Container(
+          width: 52,
+          padding: const EdgeInsets.symmetric(vertical: 5),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isActive ? color.withOpacity(0.12) : Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(20),
+            border: isActive
+                ? Border.all(color: color.withOpacity(0.3), width: 1)
+                : null,
+          ),
+          child: Text(
+            '$percentage%',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+              color: isActive ? color : Colors.grey.shade600,
+            ),
+          ),
         ),
-      ),
+        const SizedBox(height: 4),
+        Text(AppTranslation.translate(AppStrings.left), style: TextStyle(fontSize: 12)),
+      ],
     );
   }
 
@@ -202,6 +207,7 @@ class ServiceCardBackFace extends StatelessWidget {
 
     return '${km < 0 ? '-' : ''}${buffer.toString()} km';
   }
+
   String _formatDays(String rawDays) {
     final totalDays = int.tryParse(rawDays);
     if (totalDays == null) return rawDays;
@@ -223,6 +229,8 @@ class ServiceCardBackFace extends StatelessWidget {
       parts.add('$days ${AppTranslation.translate(AppStrings.dayText)}');
     }
 
-    return parts.isEmpty ? '0 ${AppTranslation.translate(AppStrings.dayText)}' : parts.join(' ');
+    return parts.isEmpty
+        ? '0 ${AppTranslation.translate(AppStrings.dayText)}'
+        : parts.join(' ');
   }
 }

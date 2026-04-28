@@ -102,13 +102,17 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
             onTap: (index) => cubit.changeTab(index),
             tabs: [
               NativeGlassNavBarItem(
-                  label: "", symbol: 'home_nav_icon'),
+                  label: context.currentLanguage(AppStrings.homePage),
+                  symbol: 'home_nav_icon'),
               NativeGlassNavBarItem(
-                  label: "", symbol: 'settings_nav_icon'),
+                  label: context.currentLanguage(AppStrings.settingsPage),
+                  symbol: 'settings_nav_icon'),
               NativeGlassNavBarItem(
-                  label: "", symbol: 'calendar_nav_icon'),
+                  label: context.currentLanguage(AppStrings.bookingPage),
+                  symbol: 'calendar_nav_icon'),
               NativeGlassNavBarItem(
-                  label: "", symbol: 'user_nav_icon'),
+                  label: context.currentLanguage(AppStrings.profilePage),
+                  symbol: 'user_nav_icon'),
             ],
             fallback:
             _buildOriginalNavBar(context, cubit, bottomPadding),

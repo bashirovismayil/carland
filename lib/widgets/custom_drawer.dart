@@ -12,6 +12,12 @@ import '../presentation/settings/settings_page.dart';
 import '../presentation/settings/support/support_page.dart';
 
 class CustomDrawer extends StatefulWidget {
+  /// Drawer'ın aktif olup olmadığını kontrol eder.
+  /// `true`  -> drawer normal şekilde çalışır (eski davranış).
+  /// `false` -> drawer tamamen kapalıdır; profil fotoğrafına tıklanınca
+  ///            navigation bar üzerinden en sağdaki "Profil səhifəsi" sekmesine geçilir.
+  static const bool isVisible = false;
+
   final String userName;
   final String userSurname;
   final VoidCallback onLogout;

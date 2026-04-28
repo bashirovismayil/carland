@@ -46,11 +46,6 @@ class _ServicesListState extends State<ServicesList>
   bool _peekHintTriggered = false;
   int? _peekTargetId;
 
-  // ============================================================
-  // TÜRETİLMİŞ LİSTELER CACHE'İ
-  // Her build'de sort + filter tekrarlanmasın.
-  // Invalidation: services değişince, hidden state değişince.
-  // ============================================================
   List<ResponseList>? _cachedSorted;
   List<ResponseList>? _cachedVisible;
   List<ResponseList>? _cachedHidden;
@@ -246,13 +241,6 @@ class _ServicesListState extends State<ServicesList>
     });
   }
 
-  // ============================================================
-  // LAZY ITEM BUILDERS
-  // build() içinde bir kez lambda listesi oluşturulur.
-  // Her lambda sadece çağrıldığında ilgili widget'ı inşa eder.
-  // SliverChildBuilderDelegate, off-screen item'ların lambda'larını
-  // ÇAĞIRMAZ — gerçek lazy rendering.
-  // ============================================================
   List<WidgetBuilder> _buildItemBuilders() {
     final builders = <WidgetBuilder>[];
     final visible = _visibleServices;
@@ -264,9 +252,6 @@ class _ServicesListState extends State<ServicesList>
     for (var i = 0; i < visible.length; i++) {
       final service = visible[i];
       builders.add((ctx) {
-        // RİSKLİ NOKTA — ölçüm logu:
-        // Bu log scroll sırasında ekranda olmayan kartlar için
-        // düşmemelidir. Düşüyorsa lazy mantığı kırılmış demektir.
         debugPrint('[SVC_LIST] build visible card id=${service.percentageId}');
         return buildAnimatedItem(
           itemKey: service.percentageId,
@@ -309,18 +294,12 @@ class _ServicesListState extends State<ServicesList>
     return SliverList(
       delegate: SliverChildBuilderDelegate(
             (context, index) {
-          // RİSKLİ NOKTA — ölçüm logu:
-          // Scroll esnasında sadece yeni viewport'a giren item'lar için
-          // bu log düşmeli. Tüm listedeki item'lar için her frame düşüyorsa
-          // SliverChildBuilderDelegate lazy davranmıyor demektir.
           debugPrint(
             '[SVC_LIST] itemBuilder index=$index/${builders.length}',
           );
           return builders[index](context);
         },
         childCount: builders.length,
-        // addAutomaticKeepAlives: true (default). ServiceCard state'ini
-        // AutomaticKeepAliveClientMixin ile koruyor.
       ),
     );
   }

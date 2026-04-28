@@ -846,9 +846,9 @@ class Translations {
       'ru': 'Главная Страница',
     },
     AppStrings.settingsPage: {
-      'az': 'Parametrlər',
-      'en': 'Settings page',
-      'ru': 'Страница Настроек',
+      'az': 'Servis tarixçəsi',
+      'en': 'Service history',
+      'ru': 'История сервиса',
     },
     AppStrings.bookingPage: {
       'az': 'Rezervasiya',
@@ -856,7 +856,7 @@ class Translations {
       'ru': 'Страница Бронирования',
     },
     AppStrings.profilePage: {
-      'az': 'Profil səhifəsi',
+      'az': 'Profil',
       'en': 'Profile page',
       'ru': 'Страница Профиля',
     },
@@ -2302,12 +2302,12 @@ class Translations {
       'ru': 'тыс',
     },
     AppStrings.yearText: {
-      'az': 'il',
+      'az': 'il,',
       'en': 'yr',
       'ru': 'г',
     },
     AppStrings.monthText: {
-      'az': 'ay',
+      'az': 'ay,',
       'en': 'month',
       'ru': 'мес',
     },

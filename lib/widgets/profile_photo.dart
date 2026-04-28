@@ -5,6 +5,7 @@ import '../cubit/navigation/user/user_nav_bar_cubit.dart';
 import '../cubit/photo/profile/profile_photo_cubit.dart';
 import '../cubit/photo/profile/profile_photo_state.dart';
 import '../utils/di/locator.dart';
+import 'custom_drawer.dart';
 
 class ProfilePhoto extends StatefulWidget {
   final double? radius;
@@ -36,7 +37,7 @@ class _ProfilePhotoState extends State<ProfilePhoto> {
 
     return GestureDetector(
       onTap: () {
-        if (widget.openDrawerOnTap) {
+        if (widget.openDrawerOnTap && CustomDrawer.isVisible) {
           Scaffold.of(context).openDrawer();
         } else {
           context.read<UserNavBarCubit>().goToSettingsPage();

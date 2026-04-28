@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubit/language/language_cubit.dart';
 import '../../cubit/language/language_state.dart';
+import '../../widgets/custom_drawer.dart';
 import 'widgets/home_body.dart';
 import 'widgets/home_drawer_wrapper.dart';
 
@@ -15,7 +16,7 @@ class HomePage extends StatelessWidget {
         return Scaffold(
           key: ValueKey(state.locale),
           backgroundColor: Colors.white,
-          drawer: const HomeDrawerWrapper(),
+          drawer: CustomDrawer.isVisible ? const HomeDrawerWrapper() : null,
           body: const SafeArea(child: HomeBody()),
         );
       },

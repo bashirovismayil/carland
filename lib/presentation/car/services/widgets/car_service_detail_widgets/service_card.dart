@@ -552,7 +552,9 @@ class _ServiceCardState extends State<ServiceCard>
   Widget _buildBookServiceButton() {
     return GestureDetector(
       onTap: () {
-        Go.to(context, HistoryPage());
+        // Entered from a specific car's service detail — the car is already
+        // implicit, so skip the car-selection step in the booking flow.
+        Go.to(context, const HistoryPage(requireCarSelection: false));
       },
       child: Container(
         width: double.infinity,

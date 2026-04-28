@@ -1,6 +1,12 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../cubit/add/car/get_car_list_cubit.dart';
+import '../../cubit/add/car/get_car_list_state.dart';
+import '../../data/remote/models/remote/get_car_list_response.dart';
 import '../reservation/reservation_list_page.dart';
 
 class ServiceCenter {
@@ -610,7 +616,18 @@ class HistoryPage extends StatefulWidget {
   /// If provided, the flow starts in edit mode for this booking.
   final BookingResult? editBooking;
 
-  const HistoryPage({super.key, this.editBooking});
+  /// When `true` (default — used by the bottom navigation bar entry), the user
+  /// is asked to pick which of their cars the booking is for, after the
+  /// "Choose your service" step. When `false` (used when the flow is launched
+  /// from a specific car's service detail page), the car is already implicit
+  /// and the step is skipped.
+  final bool requireCarSelection;
+
+  const HistoryPage({
+    super.key,
+    this.editBooking,
+    this.requireCarSelection = true,
+  });
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -648,6 +665,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         date: date,
                         timeSlot: slot,
                         selectedServices: services,
+                        selectedCar: booking.car,
                         initialPaymentMethod: booking.paymentMethod,
                         editingBookingId: booking.id,
                         onBookingConfirmed: (result) {
@@ -687,62 +705,87 @@ class _HistoryPageState extends State<HistoryPage> {
     return ChooseServiceScreen(
       repo: _repo,
       onCenterSelected: (center) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => DateTimeSelectionScreen(
-              repo: _repo,
-              center: center,
-              onContinue: (date, slot) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ServiceDetailScreen(
-                      repo: _repo,
-                      centerId: center.id,
-                      onContinue: (services) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => SummaryScreen(
-                              repo: _repo,
-                              center: center,
-                              date: date,
-                              timeSlot: slot,
-                              selectedServices: services,
-                              onBookingConfirmed: (result) {
-                                BookingStore.addBooking(result);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => BookingConfirmedScreen(
-                                      booking: result,
-                                      onGoToReservations: () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                            const ReservationListPage(),
-                                          ),
-                                              (r) => r.isFirst,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                );
-              },
+        if (widget.requireCarSelection) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChooseCarScreen(
+                onCarSelected: (car) =>
+                    _continueAfterCarSelection(context, center, car),
+              ),
             ),
-          ),
-        );
+          );
+        } else {
+          _continueAfterCarSelection(context, center, null);
+        }
       },
+    );
+  }
+
+  /// Continues the booking flow once the service center (and optionally a car)
+  /// have been picked. [selectedCar] is `null` when the flow is launched from
+  /// a context where the car is already implicit (e.g. the service-detail
+  /// page) — in that case the summary falls back to the default user car.
+  void _continueAfterCarSelection(
+    BuildContext context,
+    ServiceCenter center,
+    CarInfo? selectedCar,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DateTimeSelectionScreen(
+          repo: _repo,
+          center: center,
+          onContinue: (date, slot) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ServiceDetailScreen(
+                  repo: _repo,
+                  centerId: center.id,
+                  onContinue: (services) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SummaryScreen(
+                          repo: _repo,
+                          center: center,
+                          date: date,
+                          timeSlot: slot,
+                          selectedServices: services,
+                          selectedCar: selectedCar,
+                          onBookingConfirmed: (result) {
+                            BookingStore.addBooking(result);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BookingConfirmedScreen(
+                                  booking: result,
+                                  onGoToReservations: () {
+                                    Navigator.of(context)
+                                        .pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const ReservationListPage(),
+                                      ),
+                                      (r) => r.isFirst,
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -826,6 +869,384 @@ class _ChooseServiceScreenState extends State<ChooseServiceScreen> {
           ),
           _BottomButton(label: 'Continue', onTap: _onContinue),
         ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// SCREEN 0.5 — CHOOSE YOUR CAR (only when entered from the nav bar,
+// where the car is not already implicit). Backed by the real
+// `GetCarListCubit` so the user picks from the cars they actually own.
+// ============================================================
+
+class ChooseCarScreen extends StatefulWidget {
+  /// Callback invoked once the user confirms a car. The selected car is
+  /// converted into the booking-flow [CarInfo] DTO so downstream screens stay
+  /// agnostic of the data source.
+  final void Function(CarInfo car) onCarSelected;
+
+  const ChooseCarScreen({
+    super.key,
+    required this.onCarSelected,
+  });
+
+  @override
+  State<ChooseCarScreen> createState() => _ChooseCarScreenState();
+}
+
+class _ChooseCarScreenState extends State<ChooseCarScreen> {
+  int? _selectedCarId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Make sure the cubit has data even if this page is opened before Home.
+    final cubit = context.read<GetCarListCubit>();
+    if (cubit.state is GetCarListInitial || cubit.state is GetCarListError) {
+      cubit.getCarList();
+    }
+  }
+
+  CarInfo _toCarInfo(GetCarListResponse car) => CarInfo(
+        name: '${car.brand} ${car.model}'.trim(),
+        plateNumber: car.plateNumber,
+        // The booking-flow [CarInfo] uses an asset path; the real photo for
+        // this car is fetched via [GetCarListCubit.watchCarPhoto] in the UI,
+        // so we leave this empty and rely on the existing errorBuilder
+        // fallbacks elsewhere (which show a generic car icon).
+        imagePath: '',
+      );
+
+  void _onContinue(List<GetCarListResponse> cars) {
+    final selected = cars.firstWhere(
+      (c) => c.carId == _selectedCarId,
+      orElse: () => cars.first,
+    );
+    widget.onCarSelected(_toCarInfo(selected));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<GetCarListCubit, GetCarListState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: _BookingAppBar(title: 'Choose your car'),
+          body: switch (state) {
+            GetCarListLoading() || GetCarListInitial() =>
+              const Center(
+                child: CircularProgressIndicator(color: Color(0xFF1A1A1A)),
+              ),
+            GetCarListError(:final message) => _CarListErrorState(
+                message: message,
+                onRetry: () =>
+                    context.read<GetCarListCubit>().getCarList(),
+              ),
+            GetCarListSuccess(:final carList) when carList.isEmpty =>
+              const _CarListEmptyState(),
+            GetCarListSuccess(:final carList) =>
+              _buildLoaded(context, carList),
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildLoaded(BuildContext context, List<GetCarListResponse> cars) {
+    // Default to first car the first time we render the list.
+    _selectedCarId ??= cars.first.carId;
+
+    return Column(
+      children: [
+        Expanded(
+          child: RefreshIndicator(
+            color: const Color(0xFF1A1A1A),
+            onRefresh: () =>
+                context.read<GetCarListCubit>().refreshCarList(),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Which car is this booking for?',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF777777),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...cars.map((c) => _CarOptionTile(
+                        car: c,
+                        isSelected: c.carId == _selectedCarId,
+                        onTap: () =>
+                            setState(() => _selectedCarId = c.carId),
+                      )),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ),
+        ),
+        _BottomButton(
+          label: 'Continue',
+          onTap: () => _onContinue(cars),
+        ),
+      ],
+    );
+  }
+}
+
+// -- Selectable Car Tile (real car) --
+class _CarOptionTile extends StatelessWidget {
+  final GetCarListResponse car;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _CarOptionTile({
+    required this.car,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F7F7),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF1A1A1A) : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
+                width: 64,
+                height: 64,
+                child: _CarThumbnail(carId: car.carId),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${car.brand} ${car.model}'.trim(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.credit_card,
+                        size: 14,
+                        color: Color(0xFF999999),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        car.plateNumber,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF999999),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              size: 22,
+              color: isSelected
+                  ? const Color(0xFF1A1A1A)
+                  : const Color(0xFFCCCCCC),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Streams the real car photo from [GetCarListCubit] (same caching
+/// behaviour as the home page's car cards).
+class _CarThumbnail extends StatefulWidget {
+  final int carId;
+  const _CarThumbnail({required this.carId});
+
+  @override
+  State<_CarThumbnail> createState() => _CarThumbnailState();
+}
+
+class _CarThumbnailState extends State<_CarThumbnail> {
+  late Stream<Uint8List?> _photoStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _photoStream =
+        context.read<GetCarListCubit>().watchCarPhoto(widget.carId);
+  }
+
+  @override
+  void didUpdateWidget(covariant _CarThumbnail oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.carId != widget.carId) {
+      _photoStream =
+          context.read<GetCarListCubit>().watchCarPhoto(widget.carId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cached =
+        context.read<GetCarListCubit>().getCachedPhoto(widget.carId);
+    return StreamBuilder<Uint8List?>(
+      stream: _photoStream,
+      initialData: cached,
+      builder: (context, snapshot) {
+        final data = snapshot.data;
+        if (data != null) {
+          return Image.memory(
+            data,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _placeholder(),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            color: const Color(0xFFEDEDED),
+            child: const Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+            ),
+          );
+        }
+        return _placeholder();
+      },
+    );
+  }
+
+  Widget _placeholder() => Container(
+        color: const Color(0xFFEDEDED),
+        child: const Icon(
+          Icons.directions_car,
+          size: 28,
+          color: Color(0xFFBDBDBD),
+        ),
+      );
+}
+
+class _CarListEmptyState extends StatelessWidget {
+  const _CarListEmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(Icons.directions_car_outlined,
+                size: 64, color: Color(0xFFBDBDBD)),
+            SizedBox(height: 12),
+            Text(
+              'No cars yet',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              'Add a car from the home screen first to book a service.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Color(0xFF777777)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CarListErrorState extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _CarListErrorState({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline,
+                size: 56, color: Color(0xFFE53935)),
+            const SizedBox(height: 12),
+            const Text(
+              'Could not load your cars',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style:
+                  const TextStyle(fontSize: 13, color: Color(0xFF777777)),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: onRetry,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF1A1A1A),
+                side: const BorderSide(color: Color(0xFFDDDDDD), width: 1.5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24)),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 28, vertical: 12),
+              ),
+              child: const Text('Retry',
+                  style:
+                      TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -2330,6 +2751,11 @@ class SummaryScreen extends StatefulWidget {
   final void Function(BookingResult result) onBookingConfirmed;
   final String? editingBookingId;
 
+  /// Optional pre-selected car (set when the user picked a car earlier in the
+  /// flow). When `null`, the summary falls back to the default user car
+  /// returned by the repository.
+  final CarInfo? selectedCar;
+
   const SummaryScreen({
     super.key,
     required this.repo,
@@ -2340,6 +2766,7 @@ class SummaryScreen extends StatefulWidget {
     required this.onBookingConfirmed,
     this.initialPaymentMethod,
     this.editingBookingId,
+    this.selectedCar,
   });
 
   @override
@@ -2421,10 +2848,16 @@ class _SummaryScreenState extends State<SummaryScreen> {
       paymentMethod: method,
     );
 
-    // If editing, preserve the original booking ID
-    final finalResult = widget.editingBookingId != null
-        ? result.copyWith(id: widget.editingBookingId)
+    // If the user explicitly picked a car earlier in the flow, make sure the
+    // booking result reflects it instead of the repository's default car.
+    var finalResult = widget.selectedCar != null
+        ? result.copyWith(car: widget.selectedCar)
         : result;
+
+    // If editing, preserve the original booking ID
+    if (widget.editingBookingId != null) {
+      finalResult = finalResult.copyWith(id: widget.editingBookingId);
+    }
 
     if (!mounted) return;
     setState(() => _confirming = false);

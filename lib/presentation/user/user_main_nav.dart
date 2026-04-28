@@ -196,7 +196,7 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
     required VoidCallback onTap,
   }) {
     final isActive = index == currentIndex;
-    final double iconOffset = (index == 1) ? 6.0 : 0.0;
+    final double iconOffset = (index == 1) ? 5.0 : 0.0;
 
     return Expanded(
       child: Tooltip(
@@ -204,31 +204,56 @@ class _UserMainNavigationViewState extends State<UserMainNavigationView>
         triggerMode: TooltipTriggerMode.longPress,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(30),
-          child: Center(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: isActive ? Colors.black : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.only(left: iconOffset),
-                  child: SvgPicture.asset(
-                    isActive ? activeIcon : icon,
-                    width: 24,
-                    height: 24,
-                    colorFilter: ColorFilter.mode(
-                      isActive ? Colors.white : Colors.grey,
-                      BlendMode.srcIn,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: isActive ? Colors.black : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: iconOffset),
+                      child: SvgPicture.asset(
+                        isActive ? activeIcon : icon,
+                        width: 20,
+                        height: 20,
+                        colorFilter: ColorFilter.mode(
+                          isActive ? Colors.white : Colors.grey,
+                          BlendMode.srcIn,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 4),
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  style: TextStyle(
+                    fontSize: 11,
+                    height: 1.1,
+                    fontWeight:
+                        isActive ? FontWeight.w600 : FontWeight.w500,
+                    color: isActive ? Colors.black : Colors.grey,
+                  ),
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

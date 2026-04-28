@@ -211,6 +211,23 @@ class _ServiceCardState extends State<ServiceCard>
       return;
     }
 
+    final newNeedsEdit = ServiceEditHelper.needsEdit(widget.service);
+    if (newNeedsEdit != _needsEdit) {
+      debugPrint(
+        '[SVC_CARD] needsEdit flipped id=${widget.service.percentageId} '
+        '$_needsEdit -> $newNeedsEdit',
+      );
+      _needsEdit = newNeedsEdit;
+      if (_needsEdit) {
+        _isExpanded = false;
+        _controller.value = 0.0;
+      } else {
+        _isExpanded = true;
+        _controller.value = 1.0;
+      }
+      return;
+    }
+
     if (_needsEdit &&
         widget.isForceCollapsed != oldWidget.isForceCollapsed &&
         widget.isForceCollapsed &&

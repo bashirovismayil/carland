@@ -1033,7 +1033,7 @@ class _CarOptionTile extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: SizedBox(
-                width: 64,
+                width: 114,
                 height: 64,
                 child: _CarThumbnail(carId: car.carId),
               ),
